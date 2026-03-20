@@ -1,3 +1,5 @@
+"use client";
+
 import Header from "@/components/layout/Header";
 import StatCard from "@/components/ui/StatCard";
 import PlatformBadge from "@/components/ui/PlatformBadge";
