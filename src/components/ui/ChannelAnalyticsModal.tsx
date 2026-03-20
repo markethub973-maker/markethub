@@ -50,7 +50,7 @@ interface Props {
 }
 
 export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
-  const [recentVideos, setRecentVideos] = useState<any[]>([]);
+  const [recentVideos, setRecentVideos] = useState<{ id: string; title: string; views: number; likes: number; comments: number; publishedAt: string }[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const { ageData, genderData, countriesBase } = getDemographics(channel);
 
