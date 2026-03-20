@@ -11,6 +11,7 @@ import {
   Settings,
   Zap,
   LogOut,
+  Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,6 +21,7 @@ const navItems = [
   { href: "/channels", label: "Channels", icon: Users },
   { href: "/trending", label: "Trending", icon: TrendingUp },
   { href: "/competitors", label: "Competitors", icon: BarChart3 },
+  { href: "/alerts", label: "Alerts", icon: Bell },
 ];
 
 export default function Sidebar() {
