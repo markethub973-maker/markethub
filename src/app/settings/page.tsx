@@ -3,19 +3,35 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import { User, Lock, Bell, Globe, Shield, Save, Check } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SettingsPage() {
-  const [username, setUsername] = useState("admin");
-  const [email, setEmail] = useState("contact@markethubpromo.com");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [saved, setSaved] = useState(false);
   const [notifications, setNotifications] = useState({ email: true, trending: true, weekly: false });
   const [region, setRegion] = useState("US");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [plan, setPlan] = useState("free");
 
   useEffect(() => {
-    const u = localStorage.getItem("mh_user");
-    if (u) setUsername(u);
-    const e = localStorage.getItem("mh_email");
-    if (e) setEmail(e);
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      setEmail(user.email || "");
+      setName(user.user_metadata?.name || "");
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("plan, is_admin")
+        .eq("id", user.id)
+        .single();
+      if (profile) {
+        setIsAdmin(profile.is_admin);
+        setPlan(profile.plan);
+      }
+    });
+
     const n = localStorage.getItem("mh_notif");
     if (n) setNotifications(JSON.parse(n));
     const r = localStorage.getItem("mh_region");
@@ -23,8 +39,6 @@ export default function SettingsPage() {
   }, []);
 
   const handleSave = () => {
-    localStorage.setItem("mh_user", username);
-    localStorage.setItem("mh_email", email);
     localStorage.setItem("mh_notif", JSON.stringify(notifications));
     localStorage.setItem("mh_region", region);
     setSaved(true);
@@ -34,6 +48,8 @@ export default function SettingsPage() {
   const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
   const inputStyle = { border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" };
   const labelStyle = { color: "#78614E" };
+
+  const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1) + " Plan";
 
   return (
     <div>
@@ -49,11 +65,11 @@ export default function SettingsPage() {
           </div>
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-semibold block mb-1.5" style={labelStyle}>Username</label>
+              <label className="text-xs font-semibold block mb-1.5" style={labelStyle}>Nume</label>
               <input
                 type="text"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
+                value={name}
+                onChange={e => setName(e.target.value)}
                 className="w-full px-4 py-2.5 text-sm rounded-lg focus:outline-none"
                 style={inputStyle}
                 onFocus={e => (e.currentTarget.style.border = "1px solid #F59E0B")}
@@ -65,11 +81,9 @@ export default function SettingsPage() {
               <input
                 type="email"
                 value={email}
-                onChange={e => setEmail(e.target.value)}
+                readOnly
                 className="w-full px-4 py-2.5 text-sm rounded-lg focus:outline-none"
-                style={inputStyle}
-                onFocus={e => (e.currentTarget.style.border = "1px solid #F59E0B")}
-                onBlur={e => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.35)")}
+                style={{ ...inputStyle, opacity: 0.7 }}
               />
             </div>
           </div>
@@ -83,20 +97,14 @@ export default function SettingsPage() {
           </div>
           <div className="space-y-4">
             <div>
-              <label className="text-xs font-semibold block mb-1.5" style={labelStyle}>Parola curenta</label>
-              <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 text-sm rounded-lg focus:outline-none" style={inputStyle}
-                onFocus={e => (e.currentTarget.style.border = "1px solid #F59E0B")}
-                onBlur={e => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.35)")} />
-            </div>
-            <div>
               <label className="text-xs font-semibold block mb-1.5" style={labelStyle}>Parola noua</label>
-              <input type="password" placeholder="••••••••" className="w-full px-4 py-2.5 text-sm rounded-lg focus:outline-none" style={inputStyle}
+              <input type="password" placeholder="••••••••" title="Parola noua" aria-label="Parola noua" className="w-full px-4 py-2.5 text-sm rounded-lg focus:outline-none" style={inputStyle}
                 onFocus={e => (e.currentTarget.style.border = "1px solid #F59E0B")}
                 onBlur={e => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.35)")} />
             </div>
           </div>
           <p className="text-xs mt-3" style={{ color: "#C4AA8A" }}>
-            Parola curenta: <b style={{ color: "#5C4A35" }}>markethub2024</b>
+            Schimbarea parolei se face prin emailul de resetare trimis de Supabase.
           </p>
         </div>
 
@@ -148,26 +156,28 @@ export default function SettingsPage() {
             <option value="RO">🇷🇴 Romania</option>
             <option value="GB">🇬🇧 UK</option>
             <option value="DE">🇩🇪 Germany</option>
-            <option value="FR">🇫🇷 France</option>
+            <option value="FR">🇫🷷 France</option>
           </select>
         </div>
 
-        {/* Plan */}
-        <div className="rounded-2xl p-6" style={{ ...cardStyle, background: "linear-gradient(135deg, rgba(245,158,11,0.06), rgba(217,119,6,0.06))" }}>
-          <div className="flex items-center gap-2 mb-4">
-            <Shield className="w-4 h-4" style={{ color: "#F59E0B" }} />
-            <h3 className="font-semibold" style={{ color: "#292524" }}>Plan curent</h3>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-bold text-lg" style={{ color: "#292524" }}>Free Plan</p>
-              <p className="text-sm mt-0.5" style={{ color: "#A8967E" }}>3/10 canale urmarite · 30 zile istoric</p>
+        {/* Plan — ascuns pentru admin */}
+        {!isAdmin && (
+          <div className="rounded-2xl p-6" style={{ ...cardStyle, background: "linear-gradient(135deg, rgba(245,158,11,0.06), rgba(217,119,6,0.06))" }}>
+            <div className="flex items-center gap-2 mb-4">
+              <Shield className="w-4 h-4" style={{ color: "#F59E0B" }} />
+              <h3 className="font-semibold" style={{ color: "#292524" }}>Plan curent</h3>
             </div>
-            <a href="/upgrade" className="px-4 py-2 rounded-lg text-sm font-bold" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
-              Upgrade →
-            </a>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-bold text-lg" style={{ color: "#292524" }}>{planLabel}</p>
+                <p className="text-sm mt-0.5" style={{ color: "#A8967E" }}>3/10 canale urmarite · 30 zile istoric</p>
+              </div>
+              <a href="/upgrade" className="px-4 py-2 rounded-lg text-sm font-bold" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                Upgrade →
+              </a>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Save */}
         <button
