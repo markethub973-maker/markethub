@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   PlayCircle,
@@ -14,6 +15,7 @@ import {
   Bell,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
@@ -24,15 +26,39 @@ const navItems = [
   { href: "/alerts", label: "Alerts", icon: Bell },
 ];
 
+type Profile = {
+  plan: string;
+  is_admin: boolean;
+};
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const [profile, setProfile] = useState<Profile | null>(null);
 
-  const handleLogout = () => {
-    localStorage.removeItem("mh_auth");
-    localStorage.removeItem("mh_user");
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("plan, is_admin")
+        .eq("id", user.id)
+        .single();
+      if (data) setProfile(data);
+    });
+  }, []);
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
     router.push("/login");
+    router.refresh();
   };
+
+  const planLabel = profile?.plan
+    ? profile.plan.charAt(0).toUpperCase() + profile.plan.slice(1) + " Plan"
+    : "Free Plan";
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-40" style={{ backgroundColor: "#1C1814" }}>
@@ -100,16 +126,20 @@ export default function Sidebar() {
           <Settings className="w-4 h-4" />
           Settings
         </Link>
-        <div className="mt-4 mx-1 p-3 rounded-lg" style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}>
-          <p className="text-xs font-medium" style={{ color: "#F5D7A0" }}>Free Plan</p>
-          <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>3/10 tracked channels</p>
-          <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,248,240,0.1)" }}>
-            <div className="h-full w-[30%] rounded-full" style={{ background: "linear-gradient(90deg, #F59E0B, #D97706)" }} />
+
+        {/* Plan box — hidden for admin */}
+        {!profile?.is_admin && (
+          <div className="mt-4 mx-1 p-3 rounded-lg" style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}>
+            <p className="text-xs font-medium" style={{ color: "#F5D7A0" }}>{planLabel}</p>
+            <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>3/10 tracked channels</p>
+            <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,248,240,0.1)" }}>
+              <div className="h-full w-[30%] rounded-full" style={{ background: "linear-gradient(90deg, #F59E0B, #D97706)" }} />
+            </div>
+            <Link href="/upgrade" className="mt-2.5 block w-full py-1.5 rounded-md text-xs font-bold text-center transition-colors" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+              Upgrade
+            </Link>
           </div>
-          <Link href="/upgrade" className="mt-2.5 block w-full py-1.5 rounded-md text-xs font-bold text-center transition-colors" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
-            Upgrade
-          </Link>
-        </div>
+        )}
 
         {/* Logout */}
         <button

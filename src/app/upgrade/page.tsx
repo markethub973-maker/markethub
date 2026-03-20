@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import Header from "@/components/layout/Header";
 import { Check, Zap, Star, Building2 } from "lucide-react";
 
 const plans = [
   {
+    key: null,
     name: "Free",
     price: "$0",
     period: "pentru totdeauna",
@@ -21,6 +23,7 @@ const plans = [
     missing: ["TikTok & Instagram", "Comparatii nelimitate", "API access", "Suport prioritar"],
   },
   {
+    key: "pro",
     name: "Pro",
     price: "$29",
     period: "/ luna",
@@ -41,6 +44,7 @@ const plans = [
     missing: [],
   },
   {
+    key: "enterprise",
     name: "Enterprise",
     price: "$99",
     period: "/ luna",
@@ -62,6 +66,31 @@ const plans = [
 ];
 
 export default function UpgradePage() {
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState("");
+
+  const handleUpgrade = async (planKey: string) => {
+    setCheckoutError("");
+    setLoadingPlan(planKey);
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan: planKey }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setCheckoutError(data.error || "A aparut o eroare. Incearca din nou.");
+        setLoadingPlan(null);
+        return;
+      }
+      window.location.href = data.url;
+    } catch {
+      setCheckoutError("Eroare de retea. Incearca din nou.");
+      setLoadingPlan(null);
+    }
+  };
+
   return (
     <div>
       <Header title="Upgrade Plan" subtitle="Alege planul potrivit pentru tine" />
@@ -77,6 +106,13 @@ export default function UpgradePage() {
           <p className="text-sm" style={{ color: "#A8967E" }}>Fara contracte. Anuleaza oricand.</p>
         </div>
 
+        {/* Error banner */}
+        {checkoutError && (
+          <div className="max-w-md mx-auto mb-6 text-sm px-4 py-3 rounded-xl text-center" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#dc2626", border: "1px solid rgba(239,68,68,0.2)" }}>
+            {checkoutError}
+          </div>
+        )}
+
         {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           {plans.map((plan) => (
@@ -90,7 +126,7 @@ export default function UpgradePage() {
             >
               {plan.highlight && (
                 <div className="text-xs font-bold text-center mb-3 py-1 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
-                  ⭐ POPULAR
+                  POPULAR
                 </div>
               )}
 
@@ -116,16 +152,21 @@ export default function UpgradePage() {
 
               <button
                 type="button"
+                disabled={plan.current || loadingPlan === plan.key}
+                onClick={() => plan.key && handleUpgrade(plan.key)}
                 className="w-full py-3 rounded-xl text-sm font-bold transition-all"
                 style={plan.highlight
-                  ? { backgroundColor: "rgba(255,255,255,0.95)", color: "#D97706" }
+                  ? { backgroundColor: "rgba(255,255,255,0.95)", color: "#D97706", opacity: loadingPlan === plan.key ? 0.7 : 1 }
                   : plan.current
                   ? { backgroundColor: "rgba(245,215,160,0.15)", color: "#A8967E", cursor: "default" }
-                  : { backgroundColor: "#F59E0B", color: "#1C1814" }
+                  : { backgroundColor: "#F59E0B", color: "#1C1814", opacity: loadingPlan === plan.key ? 0.7 : 1 }
                 }
-                disabled={plan.current}
               >
-                {plan.current ? "Plan curent" : "Alege " + plan.name}
+                {loadingPlan === plan.key
+                  ? "Se incarca..."
+                  : plan.current
+                  ? "Plan curent"
+                  : "Alege " + plan.name}
               </button>
             </div>
           ))}
