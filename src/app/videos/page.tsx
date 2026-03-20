@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import PlatformBadge from "@/components/ui/PlatformBadge";
 import { formatNumber, formatDate } from "@/lib/utils";
@@ -23,6 +24,7 @@ const SORTS = [
 ];
 
 export default function VideosPage() {
+  const searchParams = useSearchParams();
   const [videos, setVideos] = useState<YTVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [region, setRegion] = useState("US");
@@ -51,7 +53,19 @@ export default function VideosPage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => { fetchTrending(region); }, [region, fetchTrending]);
+  // If navigated here from header search (?q=...)
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) {
+      setSearchInput(q);
+      fetchSearch(q);
+    } else {
+      fetchTrending(region);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => { if (!searchParams.get("q")) fetchTrending(region); }, [region, fetchTrending, searchParams]);
 
   const sorted = [...videos].sort((a, b) => {
     if (sort === "views") return b.views - a.views;
