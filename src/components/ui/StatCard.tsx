@@ -13,11 +13,11 @@ export default function StatCard({ title, value, change, icon, accent = "#39D3B8
   const positive = (change ?? 0) >= 0;
 
   return (
-    <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition-shadow">
+    <div className="rounded-xl p-5 transition-shadow hover:shadow-md" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{title}</p>
-          <p className="mt-1.5 text-2xl font-bold text-gray-900">{value}</p>
+          <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "#A8967E" }}>{title}</p>
+          <p className="mt-1.5 text-2xl font-bold" style={{ color: "#292524" }}>{value}</p>
         </div>
         {icon && (
           <div

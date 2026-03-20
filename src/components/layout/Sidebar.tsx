@@ -25,13 +25,13 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-[#0f0e1a] flex flex-col z-40">
+    <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-40" style={{ backgroundColor: "#1C1814" }}>
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5 border-b border-white/10">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#39D3B8] to-[#4F4DF0] flex items-center justify-center">
+      <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(245,215,160,0.1)" }}>
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
           <Zap className="w-4 h-4 text-white" />
         </div>
-        <span className="text-white font-bold text-lg tracking-tight">ViralStat</span>
+        <span className="font-bold text-lg tracking-tight" style={{ color: "#FFF8F0" }}>ViralStat</span>
       </div>
 
       {/* Nav */}
@@ -44,10 +44,26 @@ export default function Sidebar() {
               href={href}
               className={cn(
                 "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
-                active
-                  ? "bg-[#39D3B8]/15 text-[#39D3B8] border border-[#39D3B8]/30"
-                  : "text-gray-400 hover:text-white hover:bg-white/5"
               )}
+              style={active ? {
+                backgroundColor: "rgba(245,158,11,0.15)",
+                color: "#F59E0B",
+                border: "1px solid rgba(245,158,11,0.3)"
+              } : {
+                color: "#A8967E",
+              }}
+              onMouseEnter={(e) => {
+                if (!active) {
+                  e.currentTarget.style.color = "#FFF8F0";
+                  e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!active) {
+                  e.currentTarget.style.color = "#A8967E";
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }
+              }}
             >
               <Icon className="w-4 h-4" />
               {label}
@@ -57,21 +73,30 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom */}
-      <div className="px-3 py-4 border-t border-white/10">
+      <div className="px-3 py-4" style={{ borderTop: "1px solid rgba(245,215,160,0.1)" }}>
         <Link
           href="/settings"
-          className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 transition-all"
+          className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+          style={{ color: "#A8967E" }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "#FFF8F0";
+            e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "#A8967E";
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
         >
           <Settings className="w-4 h-4" />
           Settings
         </Link>
-        <div className="mt-4 mx-1 p-3 rounded-lg bg-gradient-to-br from-[#4F4DF0]/20 to-[#39D3B8]/20 border border-white/10">
-          <p className="text-xs text-gray-300 font-medium">Free Plan</p>
-          <p className="text-xs text-gray-500 mt-0.5">3/10 tracked channels</p>
-          <div className="mt-2 h-1.5 bg-white/10 rounded-full overflow-hidden">
-            <div className="h-full w-[30%] bg-gradient-to-r from-[#39D3B8] to-[#4F4DF0] rounded-full" />
+        <div className="mt-4 mx-1 p-3 rounded-lg" style={{ background: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}>
+          <p className="text-xs font-medium" style={{ color: "#F5D7A0" }}>Free Plan</p>
+          <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>3/10 tracked channels</p>
+          <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,248,240,0.1)" }}>
+            <div className="h-full w-[30%] rounded-full" style={{ background: "linear-gradient(90deg, #F59E0B, #D97706)" }} />
           </div>
-          <button className="mt-2.5 w-full py-1.5 rounded-md bg-[#39D3B8] text-[#0f0e1a] text-xs font-bold hover:bg-[#39D3B8]/90 transition-colors">
+          <button className="mt-2.5 w-full py-1.5 rounded-md text-xs font-bold transition-colors" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
             Upgrade
           </button>
         </div>

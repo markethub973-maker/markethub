@@ -30,43 +30,43 @@ export default function TrendingPage() {
           {top3.map((topic, i) => (
             <div
               key={topic.id}
-              className={`rounded-xl p-5 border ${
-                i === 0
-                  ? "bg-gradient-to-br from-orange-500 to-pink-600 border-transparent text-white"
-                  : "bg-white border-gray-100"
-              } shadow-sm`}
+              className="rounded-xl p-5"
+              style={i === 0
+                ? { background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "white", boxShadow: "0 4px 12px rgba(245,158,11,0.3)" }
+                : { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
+              }
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
                   {i === 0 ? (
-                    <Flame className="w-5 h-5 text-yellow-300" />
+                    <Flame className="w-5 h-5" style={{ color: "rgba(255,255,255,0.9)" }} />
                   ) : (
-                    <Hash className="w-4 h-4 text-gray-400" />
+                    <Hash className="w-4 h-4" style={{ color: "#C4AA8A" }} />
                   )}
-                  <span className={`text-xs font-semibold ${i === 0 ? "text-white/80" : "text-gray-500"}`}>
+                  <span className="text-xs font-semibold" style={{ color: i === 0 ? "rgba(255,255,255,0.8)" : "#A8967E" }}>
                     #{i + 1} Trending
                   </span>
                 </div>
                 <PlatformBadge platform={topic.platform} />
               </div>
-              <h3 className={`text-xl font-bold mb-1 ${i === 0 ? "text-white" : "text-gray-900"}`}>
+              <h3 className="text-xl font-bold mb-1" style={{ color: i === 0 ? "white" : "#292524" }}>
                 {topic.keyword}
               </h3>
-              <p className={`text-sm ${i === 0 ? "text-white/70" : "text-gray-500"}`}>
+              <p className="text-sm" style={{ color: i === 0 ? "rgba(255,255,255,0.7)" : "#A8967E" }}>
                 {topic.category}
               </p>
-              <div className={`mt-4 pt-4 border-t ${i === 0 ? "border-white/20" : "border-gray-50"} flex justify-between text-sm`}>
+              <div className="mt-4 pt-4 flex justify-between text-sm" style={{ borderTop: i === 0 ? "1px solid rgba(255,255,255,0.2)" : "1px solid rgba(245,215,160,0.2)" }}>
                 <div>
-                  <p className={`text-xs ${i === 0 ? "text-white/60" : "text-gray-400"}`}>Videos</p>
-                  <p className={`font-bold ${i === 0 ? "text-white" : "text-gray-900"}`}>{formatNumber(topic.videoCount)}</p>
+                  <p className="text-xs" style={{ color: i === 0 ? "rgba(255,255,255,0.6)" : "#C4AA8A" }}>Videos</p>
+                  <p className="font-bold" style={{ color: i === 0 ? "white" : "#292524" }}>{formatNumber(topic.videoCount)}</p>
                 </div>
                 <div>
-                  <p className={`text-xs ${i === 0 ? "text-white/60" : "text-gray-400"}`}>Total Views</p>
-                  <p className={`font-bold ${i === 0 ? "text-white" : "text-gray-900"}`}>{formatNumber(topic.totalViews)}</p>
+                  <p className="text-xs" style={{ color: i === 0 ? "rgba(255,255,255,0.6)" : "#C4AA8A" }}>Total Views</p>
+                  <p className="font-bold" style={{ color: i === 0 ? "white" : "#292524" }}>{formatNumber(topic.totalViews)}</p>
                 </div>
                 <div>
-                  <p className={`text-xs ${i === 0 ? "text-white/60" : "text-gray-400"}`}>Growth</p>
-                  <p className={`font-bold ${i === 0 ? "text-yellow-300" : "text-emerald-600"}`}>
+                  <p className="text-xs" style={{ color: i === 0 ? "rgba(255,255,255,0.6)" : "#C4AA8A" }}>Growth</p>
+                  <p className="font-bold" style={{ color: i === 0 ? "rgba(255,255,200,1)" : "#16a34a" }}>
                     +{topic.growthPercent}%
                   </p>
                 </div>
@@ -81,11 +81,11 @@ export default function TrendingPage() {
             <button
               key={p}
               onClick={() => setPlatform(p)}
-              className={`px-4 py-2 text-sm font-medium rounded-lg border transition-colors ${
-                platform === p
-                  ? "bg-[#39D3B8] text-white border-[#39D3B8]"
-                  : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
-              }`}
+              className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
+              style={platform === p
+                ? { backgroundColor: "#F59E0B", color: "#1C1814", border: "1px solid #F59E0B" }
+                : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }
+              }
             >
               {p === "all" ? "All Platforms" : p.charAt(0).toUpperCase() + p.slice(1)}
             </button>
@@ -96,11 +96,11 @@ export default function TrendingPage() {
               <button
                 key={cat}
                 onClick={() => setCategory(cat)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-colors ${
-                  category === cat
-                    ? "bg-[#4F4DF0] text-white border-[#4F4DF0]"
-                    : "bg-white text-gray-500 border-gray-200 hover:bg-gray-50"
-                }`}
+                className="px-3 py-1.5 text-xs font-medium rounded-full transition-colors"
+                style={category === cat
+                  ? { backgroundColor: "#F59E0B", color: "#1C1814", border: "1px solid #F59E0B" }
+                  : { backgroundColor: "#FFFCF7", color: "#A8967E", border: "1px solid rgba(245,215,160,0.35)" }
+                }
               >
                 {cat}
               </button>
@@ -109,10 +109,10 @@ export default function TrendingPage() {
         </div>
 
         {/* Topics Table */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+              <tr className="text-xs uppercase tracking-wide" style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E" }}>
                 <th className="text-left px-5 py-3">#</th>
                 <th className="text-left px-3 py-3">Keyword / Topic</th>
                 <th className="text-left px-3 py-3">Platform</th>
@@ -124,33 +124,32 @@ export default function TrendingPage() {
             </thead>
             <tbody>
               {filtered.map((t, i) => (
-                <tr key={t.id} className="border-t border-gray-50 hover:bg-gray-50/50 transition-colors">
+                <tr key={t.id} className="transition-colors" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.07)")}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+                >
                   <td className="px-5 py-3">
-                    <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
+                    <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold" style={{ backgroundColor: "rgba(245,215,160,0.2)", color: "#78614E" }}>
                       {i + 1}
                     </span>
                   </td>
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-2">
-                      <Hash className="w-4 h-4 text-[#39D3B8]" />
-                      <span className="font-semibold text-gray-800">{t.keyword}</span>
+                      <Hash className="w-4 h-4" style={{ color: "#F59E0B" }} />
+                      <span className="font-semibold" style={{ color: "#3D2E1E" }}>{t.keyword}</span>
                     </div>
                   </td>
                   <td className="px-3 py-3"><PlatformBadge platform={t.platform} /></td>
                   <td className="px-3 py-3">
-                    <span className="bg-[#4F4DF0]/10 text-[#4F4DF0] text-xs font-medium px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
                       {t.category}
                     </span>
                   </td>
-                  <td className="px-3 py-3 text-right font-medium text-gray-700">{formatNumber(t.videoCount)}</td>
-                  <td className="px-3 py-3 text-right text-gray-500">{formatNumber(t.totalViews)}</td>
+                  <td className="px-3 py-3 text-right font-medium" style={{ color: "#5C4A35" }}>{formatNumber(t.videoCount)}</td>
+                  <td className="px-3 py-3 text-right" style={{ color: "#A8967E" }}>{formatNumber(t.totalViews)}</td>
                   <td className="px-5 py-3 text-right">
-                    <span className={`flex items-center justify-end gap-1 font-bold text-xs ${
-                      t.growthPercent >= 0 ? "text-emerald-600" : "text-red-500"
-                    }`}>
-                      {t.growthPercent >= 0
-                        ? <TrendingUp className="w-3.5 h-3.5" />
-                        : <TrendingDown className="w-3.5 h-3.5" />}
+                    <span className={`flex items-center justify-end gap-1 font-bold text-xs ${t.growthPercent >= 0 ? "text-emerald-600" : "text-red-500"}`}>
+                      {t.growthPercent >= 0 ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                       {t.growthPercent >= 0 ? "+" : ""}{t.growthPercent}%
                     </span>
                   </td>
@@ -160,7 +159,7 @@ export default function TrendingPage() {
           </table>
 
           {filtered.length === 0 && (
-            <div className="text-center py-12 text-gray-400 text-sm">No topics found for selected filters.</div>
+            <div className="text-center py-12 text-sm" style={{ color: "#C4AA8A" }}>No topics found for selected filters.</div>
           )}
         </div>
       </div>

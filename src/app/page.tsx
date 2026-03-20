@@ -69,7 +69,8 @@ export default function DashboardPage() {
           {platformStats.map((p) => (
             <div
               key={p.platform}
-              className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm"
+              className="rounded-xl p-4"
+              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
             >
               <div className="flex items-center justify-between mb-3">
                 <PlatformBadge platform={p.platform} />
@@ -80,12 +81,12 @@ export default function DashboardPage() {
                   {p.growthPercent}%
                 </span>
               </div>
-              <p className="text-xl font-bold text-gray-900">
+              <p className="text-xl font-bold" style={{ color: "#292524" }}>
                 {formatNumber(p.totalViews)}
               </p>
-              <p className="text-xs text-gray-400 mt-0.5">views</p>
-              <div className="mt-3 pt-3 border-t border-gray-50 flex justify-between text-xs text-gray-500">
-                <span>ER: <b className="text-gray-700">{p.avgEngagementRate}%</b></span>
+              <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>views</p>
+              <div className="mt-3 pt-3 flex justify-between text-xs" style={{ borderTop: "1px solid rgba(245,215,160,0.2)", color: "#A8967E" }}>
+                <span>ER: <b style={{ color: "#5C4A35" }}>{p.avgEngagementRate}%</b></span>
                 <span>{formatNumber(p.topVideos)} videos</span>
               </div>
             </div>
@@ -107,24 +108,24 @@ export default function DashboardPage() {
           </div>
 
           {/* Trending Now */}
-          <div className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm">
+          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
             <div className="flex items-center gap-2 mb-4">
-              <Flame className="w-4 h-4 text-orange-500" />
-              <h3 className="font-semibold text-gray-900">Trending Now</h3>
+              <Flame className="w-4 h-4" style={{ color: "#F59E0B" }} />
+              <h3 className="font-semibold" style={{ color: "#292524" }}>Trending Now</h3>
             </div>
             <div className="space-y-3">
               {trendingVideos.map((v, i) => (
                 <div key={v.id} className="flex items-start gap-3">
-                  <span className="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0 mt-0.5">
+                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5" style={{ backgroundColor: "rgba(245,215,160,0.2)", color: "#78614E" }}>
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium text-gray-800 truncate leading-tight">
+                    <p className="text-xs font-medium truncate leading-tight" style={{ color: "#3D2E1E" }}>
                       {v.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <PlatformBadge platform={v.platform} />
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs" style={{ color: "#C4AA8A" }}>
                         {formatNumber(v.views)} views
                       </span>
                     </div>
@@ -139,17 +140,17 @@ export default function DashboardPage() {
         </div>
 
         {/* Top Videos Table */}
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-50">
-            <h3 className="font-semibold text-gray-900">Top Videos This Week</h3>
-            <a href="/videos" className="text-xs text-[#39D3B8] font-semibold hover:underline">
+        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
+            <h3 className="font-semibold" style={{ color: "#292524" }}>Top Videos This Week</h3>
+            <a href="/videos" className="text-xs font-semibold hover:underline" style={{ color: "#F59E0B" }}>
               View all →
             </a>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 text-xs text-gray-500 uppercase tracking-wide">
+                <tr className="text-xs uppercase tracking-wide" style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E" }}>
                   <th className="text-left px-5 py-3">Video</th>
                   <th className="text-left px-3 py-3">Platform</th>
                   <th className="text-right px-3 py-3">Views</th>
@@ -161,38 +162,41 @@ export default function DashboardPage() {
               </thead>
               <tbody>
                 {topVideos.slice(0, 5).map((v) => (
-                  <tr key={v.id} className="border-t border-gray-50 hover:bg-gray-50/50 transition-colors">
+                  <tr key={v.id} className="transition-colors" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}
+                    onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.07)")}
+                    onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+                  >
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-16 h-9 rounded-md bg-gray-200 overflow-hidden flex-shrink-0">
+                        <div className="w-16 h-9 rounded-md overflow-hidden flex-shrink-0" style={{ backgroundColor: "#EDE0C8" }}>
                           <img src={v.thumbnail} alt="" className="w-full h-full object-cover" />
                         </div>
                         <div>
-                          <p className="font-medium text-gray-800 text-xs leading-tight max-w-[220px] truncate">
+                          <p className="font-medium text-xs leading-tight max-w-[220px] truncate" style={{ color: "#3D2E1E" }}>
                             {v.title}
                           </p>
-                          <p className="text-xs text-gray-400 mt-0.5">{v.channel}</p>
+                          <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>{v.channel}</p>
                         </div>
                       </div>
                     </td>
                     <td className="px-3 py-3">
                       <PlatformBadge platform={v.platform} />
                     </td>
-                    <td className="px-3 py-3 text-right font-medium text-gray-700 text-xs">
+                    <td className="px-3 py-3 text-right font-medium text-xs" style={{ color: "#5C4A35" }}>
                       {formatNumber(v.views)}
                     </td>
-                    <td className="px-3 py-3 text-right text-gray-500 text-xs">
+                    <td className="px-3 py-3 text-right text-xs" style={{ color: "#A8967E" }}>
                       {formatNumber(v.likes)}
                     </td>
                     <td className="px-3 py-3 text-right">
-                      <span className="bg-emerald-50 text-emerald-600 text-xs font-semibold px-1.5 py-0.5 rounded">
+                      <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
                         {v.engagementRate}%
                       </span>
                     </td>
                     <td className="px-3 py-3 text-right text-xs font-bold text-emerald-600">
                       +{v.growthPercent}%
                     </td>
-                    <td className="px-5 py-3 text-right text-xs text-gray-400">
+                    <td className="px-5 py-3 text-right text-xs" style={{ color: "#C4AA8A" }}>
                       {formatDate(v.publishedAt)}
                     </td>
                   </tr>
