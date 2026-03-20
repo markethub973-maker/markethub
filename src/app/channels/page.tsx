@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import PlatformBadge from "@/components/ui/PlatformBadge";
 import { topChannels, type Platform } from "@/lib/mockData";
 import { formatNumber } from "@/lib/utils";
-import { Users, TrendingUp, TrendingDown, PlayCircle, Eye } from "lucide-react";
+import { Users, TrendingUp, TrendingDown, PlayCircle, Eye, Search } from "lucide-react";
 
 const PLATFORMS: { label: string; value: Platform | "all" }[] = [
   { label: "All", value: "all" },
@@ -18,9 +18,11 @@ const PLATFORMS: { label: string; value: Platform | "all" }[] = [
 export default function ChannelsPage() {
   const [platform, setPlatform] = useState<Platform | "all">("all");
   const [sort, setSort] = useState("subscribers");
+  const [search, setSearch] = useState("");
 
   const filtered = topChannels
     .filter((c) => (platform === "all" ? true : c.platform === platform))
+    .filter((c) => search.trim() === "" ? true : c.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
       if (sort === "subscribers") return b.subscribers - a.subscribers;
       if (sort === "views") return b.totalViews - a.totalViews;
@@ -34,6 +36,19 @@ export default function ChannelsPage() {
       <Header title="Channels" subtitle="Track top creators across all platforms" />
 
       <div className="p-6 space-y-5">
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
+          <input
+            type="text"
+            placeholder="Cauta canal (ex: MrBeast, cristiano, MKBHD...)"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg focus:outline-none"
+            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7", color: "#292524" }}
+          />
+        </div>
+
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7" }}>
