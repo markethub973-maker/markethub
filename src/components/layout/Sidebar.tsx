@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   PlayCircle,
@@ -10,6 +10,7 @@ import {
   BarChart3,
   Settings,
   Zap,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,13 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    localStorage.removeItem("mh_auth");
+    localStorage.removeItem("mh_user");
+    router.push("/login");
+  };
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-40" style={{ backgroundColor: "#1C1814" }}>
@@ -100,6 +108,25 @@ export default function Sidebar() {
             Upgrade
           </button>
         </div>
+
+        {/* Logout */}
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="mt-2 flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full transition-all"
+          style={{ color: "#A8967E" }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "#ef4444";
+            e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.08)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "#A8967E";
+            e.currentTarget.style.backgroundColor = "transparent";
+          }}
+        >
+          <LogOut className="w-4 h-4" />
+          Logout
+        </button>
       </div>
     </aside>
   );
