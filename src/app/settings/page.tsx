@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
-import { User, Lock, Bell, Globe, Shield, Save, Check } from "lucide-react";
+import { User, Lock, Bell, Globe, Shield, Save, Check, Instagram } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function SettingsPage() {
@@ -13,6 +13,8 @@ export default function SettingsPage() {
   const [region, setRegion] = useState("US");
   const [isAdmin, setIsAdmin] = useState(false);
   const [plan, setPlan] = useState("free");
+  const [igUsername, setIgUsername] = useState<string | null>(null);
+  const [igStatus, setIgStatus] = useState<string | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -30,6 +32,17 @@ export default function SettingsPage() {
         setIsAdmin(profile.is_admin);
         setPlan(profile.plan);
       }
+
+      const { data: igProfile } = await supabase
+        .from("profiles")
+        .select("instagram_username")
+        .eq("id", user.id)
+        .single();
+      if (igProfile?.instagram_username) setIgUsername(igProfile.instagram_username);
+
+      const params = new URLSearchParams(window.location.search);
+      const ig = params.get("instagram");
+      if (ig) setIgStatus(ig);
     });
 
     const n = localStorage.getItem("mh_notif");
@@ -158,6 +171,46 @@ export default function SettingsPage() {
             <option value="DE">🇩🇪 Germany</option>
             <option value="FR">🇫🷷 France</option>
           </select>
+        </div>
+
+        {/* Instagram Connect */}
+        <div className="rounded-2xl p-6" style={cardStyle}>
+          <div className="flex items-center gap-2 mb-5">
+            <Instagram className="w-4 h-4" style={{ color: "#E1306C" }} />
+            <h3 className="font-semibold" style={{ color: "#292524" }}>Cont Instagram</h3>
+          </div>
+          {igUsername ? (
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium" style={{ color: "#292524" }}>@{igUsername}</p>
+                <p className="text-xs mt-0.5" style={{ color: "#16a34a" }}>Cont conectat</p>
+              </div>
+              <a
+                href="/api/auth/instagram"
+                className="px-4 py-2 rounded-lg text-sm font-semibold"
+                style={{ border: "1px solid rgba(245,215,160,0.35)", color: "#78614E" }}
+              >
+                Reconecteaza
+              </a>
+            </div>
+          ) : (
+            <div>
+              {igStatus === "error" && <p className="text-xs mb-3" style={{ color: "#dc2626" }}>Eroare la conectare. Incearca din nou.</p>}
+              {igStatus === "no_page" && <p className="text-xs mb-3" style={{ color: "#dc2626" }}>Nu ai o Pagina Facebook conectata la contul Instagram.</p>}
+              {igStatus === "no_ig_account" && <p className="text-xs mb-3" style={{ color: "#dc2626" }}>Nu ai un cont Instagram Business conectat la o Pagina Facebook.</p>}
+              <p className="text-xs mb-4" style={{ color: "#A8967E" }}>
+                Conecteaza contul tau Instagram Business pentru a vedea analytics detaliate.
+              </p>
+              <a
+                href="/api/auth/instagram"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold"
+                style={{ backgroundColor: "#E1306C", color: "white" }}
+              >
+                <Instagram className="w-4 h-4" />
+                Conecteaza Instagram
+              </a>
+            </div>
+          )}
         </div>
 
         {/* Plan — ascuns pentru admin */}
