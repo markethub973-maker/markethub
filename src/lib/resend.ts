@@ -1,11 +1,13 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 const FROM = "MarketHub Pro <noreply@markethubpromo.com>";
 
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
+
 export async function sendWelcomeEmail(email: string, name: string) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: "Bun venit la MarketHub Pro!",
@@ -39,7 +41,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
 export async function sendPaymentConfirmationEmail(email: string, name: string, plan: string) {
   const planLabel = plan === "pro" ? "Pro" : "Enterprise";
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: `Abonament ${planLabel} activat — MarketHub Pro`,
@@ -73,7 +75,7 @@ export async function sendPaymentConfirmationEmail(email: string, name: string, 
 }
 
 export async function sendSubscriptionCancelledEmail(email: string, name: string) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: email,
     subject: "Abonamentul tau a fost anulat — MarketHub Pro",
