@@ -49,40 +49,62 @@ export async function GET(req: NextRequest) {
     const longData = await longRes.json();
     const longToken = longData.access_token || tokenData.access_token;
 
-    // Get Facebook Pages
+    // Try me/accounts first, fallback to direct page query
     const pagesRes = await fetch(
       `https://graph.facebook.com/v21.0/me/accounts?access_token=${longToken}`
     );
     const pagesData = await pagesRes.json();
-    console.log("[Instagram CB] tokenData:", JSON.stringify(tokenData));
-    console.log("[Instagram CB] longData:", JSON.stringify(longData));
-    console.log("[Instagram CB] pagesData:", JSON.stringify(pagesData));
+    console.error("[Instagram CB] pagesData:", JSON.stringify(pagesData));
 
-    if (!pagesData.data || pagesData.data.length === 0) {
-      return NextResponse.redirect(`${appUrl}/settings?instagram=no_page`);
-    }
-
-    // Find Instagram Business Account connected to a Page
     let igUserId = null;
     let igUsername = null;
 
-    for (const page of pagesData.data) {
-      const igRes = await fetch(
-        `https://graph.facebook.com/v21.0/${page.id}?fields=instagram_business_account&access_token=${page.access_token}`
-      );
-      const igData = await igRes.json();
+    const pages = pagesData.data && pagesData.data.length > 0 ? pagesData.data : [];
 
-      if (igData.instagram_business_account?.id) {
-        igUserId = igData.instagram_business_account.id;
-
-        // Get username
-        const profileRes = await fetch(
-          `https://graph.facebook.com/v21.0/${igUserId}?fields=username&access_token=${longToken}`
+    // If me/accounts is empty (Business Manager access), try known pages directly
+    if (pages.length === 0) {
+      const knownPageIds = (process.env.FACEBOOK_PAGE_IDS || "").split(",").filter(Boolean);
+      for (const pageId of knownPageIds) {
+        const pageRes = await fetch(
+          `https://graph.facebook.com/v21.0/${pageId}?fields=access_token,instagram_business_account&access_token=${longToken}`
         );
-        const profileData = await profileRes.json();
-        igUsername = profileData.username || null;
-        break;
+        const pageData = await pageRes.json();
+        console.error("[Instagram CB] direct page:", JSON.stringify(pageData));
+        if (pageData.instagram_business_account?.id) {
+          igUserId = pageData.instagram_business_account.id;
+          const profileRes = await fetch(
+            `https://graph.facebook.com/v21.0/${igUserId}?fields=username&access_token=${longToken}`
+          );
+          const profileData = await profileRes.json();
+          igUsername = profileData.username || null;
+          break;
+        }
       }
+    } else {
+      for (const page of pages) {
+        const igRes = await fetch(
+          `https://graph.facebook.com/v21.0/${page.id}?fields=instagram_business_account&access_token=${page.access_token}`
+        );
+        const igData = await igRes.json();
+        if (igData.instagram_business_account?.id) {
+          igUserId = igData.instagram_business_account.id;
+          const profileRes = await fetch(
+            `https://graph.facebook.com/v21.0/${igUserId}?fields=username&access_token=${longToken}`
+          );
+          const profileData = await profileRes.json();
+          igUsername = profileData.username || null;
+          break;
+        }
+      }
+    }
+
+    if (!igUserId && process.env.INSTAGRAM_ACCOUNT_ID) {
+      igUserId = process.env.INSTAGRAM_ACCOUNT_ID;
+      const profileRes = await fetch(
+        `https://graph.facebook.com/v21.0/${igUserId}?fields=username&access_token=${longToken}`
+      );
+      const profileData = await profileRes.json();
+      igUsername = profileData.username || null;
     }
 
     if (!igUserId) {
