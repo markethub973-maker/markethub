@@ -54,6 +54,9 @@ export async function GET(req: NextRequest) {
       `https://graph.facebook.com/v21.0/me/accounts?access_token=${longToken}`
     );
     const pagesData = await pagesRes.json();
+    console.log("[Instagram CB] tokenData:", JSON.stringify(tokenData));
+    console.log("[Instagram CB] longData:", JSON.stringify(longData));
+    console.log("[Instagram CB] pagesData:", JSON.stringify(pagesData));
 
     if (!pagesData.data || pagesData.data.length === 0) {
       return NextResponse.redirect(`${appUrl}/settings?instagram=no_page`);
