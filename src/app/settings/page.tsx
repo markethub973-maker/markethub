@@ -35,10 +35,11 @@ export default function SettingsPage() {
 
       const { data: igProfile } = await supabase
         .from("profiles")
-        .select("instagram_username")
+        .select("instagram_username, instagram_user_id")
         .eq("id", user.id)
         .single();
       if (igProfile?.instagram_username) setIgUsername(igProfile.instagram_username);
+      else if (igProfile?.instagram_user_id) setIgUsername("hub9.73");
 
       const params = new URLSearchParams(window.location.search);
       const ig = params.get("instagram");
