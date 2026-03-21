@@ -24,9 +24,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
-  await sendWelcomeEmail(email, name).catch((err) => {
-    console.error("[Resend] sendWelcomeEmail error:", err);
-  });
+  try {
+    const result = await sendWelcomeEmail(email, name);
+    console.log("[Resend] success:", JSON.stringify(result));
+  } catch (err) {
+    console.error("[Resend] error:", err);
+  }
 
   return NextResponse.json({ user: data.user, message: "Cont creat cu succes!" });
 }

@@ -7,7 +7,7 @@ function getResend() {
 }
 
 export async function sendWelcomeEmail(email: string, name: string) {
-  await getResend().emails.send({
+  return await getResend().emails.send({
     from: FROM,
     to: email,
     subject: "Bun venit la MarketHub Pro!",
