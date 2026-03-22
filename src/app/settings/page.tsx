@@ -15,6 +15,8 @@ export default function SettingsPage() {
   const [plan, setPlan] = useState("free");
   const [igUsername, setIgUsername] = useState<string | null>(null);
   const [igStatus, setIgStatus] = useState<string | null>(null);
+  const [ytChannelId, setYtChannelId] = useState("");
+  const [ytSaved, setYtSaved] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -40,6 +42,7 @@ export default function SettingsPage() {
         .single();
       if (igProfile?.instagram_username) setIgUsername(igProfile.instagram_username);
       else if (igProfile?.instagram_user_id) setIgUsername("hub9.73");
+      if ((igProfile as any)?.youtube_channel_id) setYtChannelId((igProfile as any).youtube_channel_id);
 
       const params = new URLSearchParams(window.location.search);
       const ig = params.get("instagram");
@@ -172,6 +175,47 @@ export default function SettingsPage() {
             <option value="DE">🇩🇪 Germany</option>
             <option value="FR">🇫🷷 France</option>
           </select>
+        </div>
+
+        {/* YouTube Channel */}
+        <div className="rounded-2xl p-6" style={cardStyle}>
+          <div className="flex items-center gap-2 mb-5">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <h3 className="font-semibold" style={{ color: "#292524" }}>Canal YouTube</h3>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs font-semibold block mb-1.5" style={labelStyle}>Channel ID</label>
+              <input
+                type="text"
+                value={ytChannelId}
+                onChange={e => setYtChannelId(e.target.value)}
+                placeholder="UCxxxxxxxxxxxxxxxxxx"
+                className="w-full px-4 py-2.5 text-sm rounded-lg focus:outline-none"
+                style={inputStyle}
+                onFocus={e => (e.currentTarget.style.border = "1px solid #FF0000")}
+                onBlur={e => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.35)")}
+              />
+              <p className="text-xs mt-1.5" style={{ color: "#C4AA8A" }}>
+                Gaseste-l pe YouTube → canalul tau → Settings → Advanced settings
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={async () => {
+                const supabase = (await import("@/lib/supabase/client")).createClient();
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) return;
+                await supabase.from("profiles").update({ youtube_channel_id: ytChannelId } as any).eq("id", user.id);
+                setYtSaved(true);
+                setTimeout(() => setYtSaved(false), 2500);
+              }}
+              className="px-4 py-2 rounded-lg text-sm font-bold"
+              style={{ backgroundColor: ytSaved ? "#16a34a" : "#FF0000", color: "white" }}
+            >
+              {ytSaved ? "Salvat!" : "Salveaza canal"}
+            </button>
+          </div>
         </div>
 
         {/* Instagram Connect */}

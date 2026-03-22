@@ -19,6 +19,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
   { href: "/", label: "Overview", icon: LayoutDashboard },
+  { href: "/my-channel", label: "My Channel", icon: PlayCircle },
   { href: "/videos", label: "Top Videos", icon: PlayCircle },
   { href: "/channels", label: "Channels", icon: Users },
   { href: "/trending", label: "Trending", icon: TrendingUp },
