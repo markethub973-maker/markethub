@@ -8,7 +8,7 @@ export async function GET() {
 
   try {
     const [roRes, socialRes] = await Promise.all([
-      fetch(`${BASE}/everything?q=romania+stiri&language=ro&sortBy=publishedAt&pageSize=6&apiKey=${key}`, { cache: "no-store" }),
+      fetch(`${BASE}/everything?q=romania&sortBy=publishedAt&pageSize=6&apiKey=${key}`, { cache: "no-store" }),
       fetch(`${BASE}/everything?q=youtube+tiktok+instagram+creator&language=en&sortBy=publishedAt&pageSize=8&apiKey=${key}`, { cache: "no-store" }),
     ]);
 
