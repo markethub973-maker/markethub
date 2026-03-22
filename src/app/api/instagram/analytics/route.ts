@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { resolveIGToken } from "@/lib/igToken";
 
 export async function GET() {
   const supabase = await createClient();
@@ -19,9 +20,12 @@ export async function GET() {
     return NextResponse.json({ error: "Instagram not connected" }, { status: 400 });
   }
 
-  const { instagram_access_token: token, instagram_user_id: igId, instagram_username: username } = profile;
+  const { instagram_user_id: igId, instagram_username: username } = profile;
 
   try {
+    // Resolve correct token (Page Token if User Token doesn't work)
+    const token = await resolveIGToken(profile.instagram_access_token, igId);
+
     // Get profile stats
     const profileRes = await fetch(
       `https://graph.facebook.com/v21.0/${igId}?fields=followers_count,media_count,profile_picture_url,name,biography,website&access_token=${token}`
@@ -34,7 +38,7 @@ export async function GET() {
 
     // Get insights (reach, impressions - last 30 days)
     const insightsRes = await fetch(
-      `https://graph.facebook.com/v21.0/${igId}/insights?metric=reach,impressions,profile_views&period=day&since=${Math.floor(Date.now() / 1000) - 30 * 86400}&until=${Math.floor(Date.now() / 1000)}&access_token=${token}`
+      `https://graph.facebook.com/v21.0/${igId}/insights?metric=reach,impressions&period=day&since=${Math.floor(Date.now() / 1000) - 30 * 86400}&until=${Math.floor(Date.now() / 1000)}&access_token=${token}`
     );
     const insightsData = await insightsRes.json();
 
@@ -52,8 +56,8 @@ export async function GET() {
       biography: profileData.biography,
       website: profileData.website,
       profile_picture_url: profileData.profile_picture_url,
-      insights: insightsData.data || [],
-      media: mediaData.data || [],
+      insights: insightsData.error ? [] : (insightsData.data || []),
+      media: mediaData.error ? [] : (mediaData.data || []),
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });

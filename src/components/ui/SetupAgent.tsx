@@ -7,7 +7,6 @@ type Message = { role: "user" | "assistant"; content: string };
 
 const SUGGESTIONS = [
   "Cum configurez YouTube API?",
-  "Cum adaug Spotify?",
   "Instagram nu functioneaza",
   "Unde gasesc Channel ID-ul?",
   "Cum descarc PDF-ul de setup?",
@@ -36,7 +35,7 @@ function Bubble({ msg }: { msg: Message }) {
 export default function SetupAgent() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Salut! Sunt agentul ViralStat 👋\n\nTe pot ajuta să configurezi orice API sau să înțelegi orice funcție a platformei.\n\nCu ce te pot ajuta?" },
+    { role: "assistant", content: "Salut! Sunt agentul MarketHub Pro 👋\n\nTe pot ajuta să configurezi orice API sau să înțelegi orice funcție a platformei.\n\nCu ce te pot ajuta?" },
   ]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -116,7 +115,7 @@ export default function SetupAgent() {
           onClick={() => setOpen(true)}
           className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
           style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", boxShadow: "0 4px 20px rgba(245,158,11,0.4)" }}
-          title="Setup Agent ViralStat">
+          title="Setup Agent MarketHub Pro">
           <Bot className="w-6 h-6 text-white" />
           <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center text-white text-xs font-bold"
             style={{ backgroundColor: "#16a34a" }}>AI</span>
@@ -135,7 +134,7 @@ export default function SetupAgent() {
               <Bot className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-white">Setup Agent ViralStat</p>
+              <p className="text-sm font-bold text-white">Setup Agent MarketHub Pro</p>
               <p className="text-xs text-amber-200">
                 {streaming ? "Scrie..." : "Online · Răspunde în română"}
               </p>

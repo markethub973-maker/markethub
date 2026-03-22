@@ -214,14 +214,18 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Instagram token expired */}
+        {/* Instagram connection issue */}
         {igError && !igData && (
           <div className="rounded-xl p-4 flex items-center justify-between" style={{ backgroundColor: "rgba(225,48,108,0.06)", border: "1px solid rgba(225,48,108,0.2)" }}>
             <div className="flex items-center gap-3">
               <Instagram className="w-4 h-4" style={{ color: "#E1306C" }} />
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>Token Instagram expirat</p>
-                <p className="text-xs" style={{ color: "#A8967E" }}>Reconectează contul pentru a vedea datele</p>
+                <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                  {igError.toLowerCase().includes("token") || igError.toLowerCase().includes("expired") || igError.toLowerCase().includes("session")
+                    ? "Token Instagram expirat"
+                    : "Instagram — eroare conexiune"}
+                </p>
+                <p className="text-xs" style={{ color: "#A8967E" }}>Reconectează contul din Settings sau verifică permisiunile</p>
               </div>
             </div>
             <a href="/settings" className="px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0" style={{ backgroundColor: "#E1306C", color: "white" }}>
@@ -241,8 +245,8 @@ export default function DashboardPage() {
               {[
                 { icon: <Users className="w-3 h-3" />, label: "Followers", val: formatNumber(igData.followers_count) },
                 { icon: <PlayCircle className="w-3 h-3" />, label: "Posts", val: formatNumber(igData.media_count) },
-                { icon: <Eye className="w-3 h-3" />, label: "Reach (30z)", val: igData.insights?.find((i: any) => i.name === "reach")?.values?.slice(-1)[0]?.value ? formatNumber(igData.insights.find((i: any) => i.name === "reach").values.slice(-1)[0].value) : "—" },
-                { icon: <TrendingUp className="w-3 h-3" />, label: "Profile Views", val: igData.insights?.find((i: any) => i.name === "profile_views")?.values?.slice(-1)[0]?.value ? formatNumber(igData.insights.find((i: any) => i.name === "profile_views").values.slice(-1)[0].value) : "—" },
+                { icon: <Eye className="w-3 h-3" />, label: "Reach (30z)", val: (() => { const v = igData.insights?.find((i: any) => i.name === "reach")?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
+                { icon: <TrendingUp className="w-3 h-3" />, label: "Profile Views", val: (() => { const v = igData.insights?.find((i: any) => i.name === "profile_views")?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
               ].map(s => (
                 <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(225,48,108,0.06)" }}>
                   <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>{s.icon}{s.label}</div>

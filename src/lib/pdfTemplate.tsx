@@ -87,7 +87,7 @@ function Tip({ children }: { children: string }) {
 function PageFooter({ name }: { name: string }) {
   return (
     <View style={styles.pageFooter} fixed>
-      <Text style={styles.pageFooterText}>ViralStat — Ghid Setup Personalizat pentru {name}</Text>
+      <Text style={styles.pageFooterText}>MarketHub Pro — Ghid Setup Personalizat pentru {name}</Text>
       <Text style={styles.pageFooterText} render={({ pageNumber, totalPages }) => `Pagina ${pageNumber} / ${totalPages}`} />
     </View>
   );
@@ -95,7 +95,7 @@ function PageFooter({ name }: { name: string }) {
 
 export function WelcomePDF({ name, email, plan, date }: { name: string; email: string; plan: string; date: string }) {
   return (
-    <Document title={`ViralStat Setup Guide — ${name}`} author="ViralStat" language="ro">
+    <Document title={`MarketHub Pro Setup Guide — ${name}`} author="MarketHub Pro" language="ro">
 
       {/* ═══ COVER PAGE ═══ */}
       <Page size="A4" style={styles.coverPage}>
@@ -103,7 +103,7 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
           <View style={styles.badge}><Text style={styles.badgeText}>VIRALSTAT · GHID PERSONALIZAT</Text></View>
           <Text style={styles.coverTitle}>Ghidul Tău Complet{"\n"}de Configurare</Text>
           <Text style={styles.coverSubtitle}>
-            Tot ce ai nevoie pentru a activa datele reale în platforma ta ViralStat —
+            Tot ce ai nevoie pentru a activa datele reale în platforma ta MarketHub Pro —
             instrucțiuni pas cu pas pentru fiecare API, explicații clare și link-uri directe.
           </Text>
           <Text style={{ color: "#C4AA8A", fontSize: 11, marginBottom: 4 }}>Pregătit special pentru:</Text>
@@ -123,21 +123,20 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
         <View style={styles.coverFooter}>
           <Text style={styles.coverFooterText}>markethubpromo.com</Text>
           <Text style={styles.coverFooterText}>Confidential · Uz Personal</Text>
-          <Text style={styles.coverFooterText}>© ViralStat {new Date().getFullYear()}</Text>
+          <Text style={styles.coverFooterText}>© MarketHub Pro {new Date().getFullYear()}</Text>
         </View>
       </Page>
 
       {/* ═══ TABLE OF CONTENTS ═══ */}
       <Page size="A4" style={styles.page}>
         <Text style={{ fontSize: 20, fontFamily: "Helvetica-Bold", color: dark, marginBottom: 6 }}>Cuprins</Text>
-        <Text style={{ fontSize: 10, color: muted, marginBottom: 24 }}>Acest ghid conține instrucțiuni pentru 5 platforme API</Text>
+        <Text style={{ fontSize: 10, color: muted, marginBottom: 24 }}>Acest ghid conține instrucțiuni pentru 4 platforme API</Text>
 
         {[
           { n: 1, title: "YouTube Data API", sub: "Trending, canale, video-uri, analitica proprie" },
-          { n: 2, title: "Spotify Web API", sub: "Charts globale, artisti, playlist-uri" },
-          { n: 3, title: "Instagram & Facebook", sub: "Analitica cont propriu, reach, impressions" },
-          { n: 4, title: "News API", sub: "Stiri Romania si Creator Economy" },
-          { n: 5, title: "Configurare Finala", sub: "Verifica setarile, troubleshooting, suport" },
+          { n: 2, title: "Instagram & Facebook", sub: "Analitica cont propriu, reach, impressions" },
+          { n: 3, title: "News API", sub: "Stiri Romania si Creator Economy" },
+          { n: 4, title: "Configurare Finala", sub: "Verifica setarile, troubleshooting, suport" },
         ].map(item => (
           <View key={item.n} style={styles.tocItem}>
             <View style={styles.tocNum}><Text style={styles.tocNumText}>{item.n}</Text></View>
@@ -150,11 +149,10 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
           <Text style={{ fontSize: 11, fontFamily: "Helvetica-Bold", color: dark, marginBottom: 8 }}>Timp estimat de configurare</Text>
           <Text style={{ fontSize: 10, color: muted, lineHeight: 1.7 }}>
             YouTube API: ~10 minute{"\n"}
-            Spotify API: ~5 minute{"\n"}
             Instagram/Facebook: ~15 minute (necesita cont business){"\n"}
             News API: ~2 minute{"\n"}
             {"  "}────────────────{"\n"}
-            Total: aproximativ 30-35 de minute
+            Total: aproximativ 27-30 de minute
           </Text>
         </View>
         <PageFooter name={name} />
@@ -187,7 +185,7 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
         <Step n={3} title="Creeaza un proiect nou">
           <Text style={styles.stepText}>
             Sus in bara, click pe selectorul de proiecte → "NEW PROJECT"{"\n"}
-            • Project name: ViralStat (sau orice nume){"\n"}
+            • Project name: MarketHub Pro (sau orice nume){"\n"}
             • Click "CREATE" si asteapta ~10 secunde
           </Text>
         </Step>
@@ -208,7 +206,7 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
           </Text>
           <Warning>Nu impartasi API key-ul cu nimeni! Trateaza-l ca o parola.</Warning>
         </Step>
-        <Step n={6} title="Lipeste in ViralStat Settings">
+        <Step n={6} title="Lipeste in MarketHub Pro Settings">
           <Text style={styles.stepText}>
             Mergi la markethubpromo.com → Settings (meniu stanga, jos){"\n"}
             Campul "YouTube API Key" → lipeste key-ul{"\n"}
@@ -222,67 +220,10 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
         <PageFooter name={name} />
       </Page>
 
-      {/* ═══ SECTION 2: SPOTIFY ═══ */}
+      {/* ═══ SECTION 2: INSTAGRAM & FACEBOOK ═══ */}
       <Page size="A4" style={styles.page}>
         <View style={styles.sectionHeader}>
           <View style={styles.sectionNumber}><Text style={styles.sectionNumberText}>2</Text></View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.sectionTitle}>Spotify Web API</Text>
-            <Text style={styles.sectionPlatform}>Spotify Developer Dashboard</Text>
-          </View>
-        </View>
-        <Text style={styles.intro}>
-          Spotify API ofera acces la charts globale (Top 50, Viral 50) pentru 30+ tari, date artisti,
-          discografie, scor popularitate si preview audio. Nu necesita cont premium — orice cont Spotify functioneaza.
-        </Text>
-
-        <Step n={1} title="Creeaza sau foloseste contul Spotify">
-          <Text style={styles.stepText}>Ai nevoie de un cont Spotify (gratuit sau premium).</Text>
-          <Url url="https://www.spotify.com/signup" />
-        </Step>
-        <Step n={2} title="Acceseaza Spotify Developer Dashboard">
-          <Text style={styles.stepText}>Logheaza-te cu contul Spotify si accepta termenii pentru developeri.</Text>
-          <Url url="https://developer.spotify.com/dashboard" />
-        </Step>
-        <Step n={3} title="Creeaza o aplicatie">
-          <Text style={styles.stepText}>
-            Click "Create app" (buton verde){"\n"}
-            • App name: ViralStat{"\n"}
-            • App description: Analytics dashboard{"\n"}
-            • Website: https://markethubpromo.com{"\n"}
-            • Redirect URI: https://markethubpromo.com (adauga si da save){"\n"}
-            • Bifeaza: "I understand and agree with Spotify's..."{"\n"}
-            Click "Save"
-          </Text>
-        </Step>
-        <Step n={4} title="Copiaza Client ID si Client Secret">
-          <Text style={styles.stepText}>
-            Dupa creare, click pe aplicatia ta → Settings{"\n"}
-            Vei vedea:{"\n"}
-            • Client ID: sir alfanumeric de 32 caractere{"\n"}
-            • Client Secret: click "View client secret" → copiaza{"\n"}
-            {"\n"}
-            Salveaza amandoua intr-un loc sigur.
-          </Text>
-          <Warning>Client Secret este confidential — nu il pune in cod sau nu il trimite pe email.</Warning>
-        </Step>
-        <Step n={5} title="Adauga in ViralStat Settings">
-          <Text style={styles.stepText}>
-            Mergi la markethubpromo.com → Settings{"\n"}
-            Completeaza campurile:{"\n"}
-            • "Spotify Client ID" → lipeste Client ID{"\n"}
-            • "Spotify Client Secret" → lipeste Client Secret{"\n"}
-            Click "Salveaza" pentru fiecare
-          </Text>
-          <Tip>Dupa salvare, pagina Spotify din meniu va afisa date reale din 30+ tari</Tip>
-        </Step>
-        <PageFooter name={name} />
-      </Page>
-
-      {/* ═══ SECTION 3: INSTAGRAM & FACEBOOK ═══ */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.sectionHeader}>
-          <View style={styles.sectionNumber}><Text style={styles.sectionNumberText}>3</Text></View>
           <View style={{ flex: 1 }}>
             <Text style={styles.sectionTitle}>Instagram & Facebook API</Text>
             <Text style={styles.sectionPlatform}>Meta for Developers</Text>
@@ -309,7 +250,7 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
           <Text style={{ ...styles.stepText, marginTop: 6 }}>
             Click "My Apps" → "Create App"{"\n"}
             Alege tipul: "Business" → Next{"\n"}
-            App name: ViralStat → Create App
+            App name: MarketHub Pro → Create App
           </Text>
         </Step>
         <Step n={3} title="Adauga Instagram Graph API">
@@ -328,7 +269,7 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
           </Text>
           <Warning>Token-urile expirate cauzeaza erori. Daca vezi eroare 404 in platforma, regenereaza tokenul.</Warning>
         </Step>
-        <Step n={5} title="Conecteaza in ViralStat">
+        <Step n={5} title="Conecteaza in MarketHub Pro">
           <Text style={styles.stepText}>
             Mergi la markethubpromo.com → Settings{"\n"}
             Sectiunea Instagram → click "Conecteaza Instagram"{"\n"}
@@ -340,17 +281,17 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
         <PageFooter name={name} />
       </Page>
 
-      {/* ═══ SECTION 4: NEWS API ═══ */}
+      {/* ═══ SECTION 3: NEWS API ═══ */}
       <Page size="A4" style={styles.page}>
         <View style={styles.sectionHeader}>
-          <View style={styles.sectionNumber}><Text style={styles.sectionNumberText}>4</Text></View>
+          <View style={styles.sectionNumber}><Text style={styles.sectionNumberText}>3</Text></View>
           <View style={{ flex: 1 }}>
             <Text style={styles.sectionTitle}>News API</Text>
             <Text style={styles.sectionPlatform}>newsapi.org</Text>
           </View>
         </View>
         <Text style={styles.intro}>
-          News API furnizeaza stiri in timp real din Romania si global. In ViralStat vei vedea
+          News API furnizeaza stiri in timp real din Romania si global. In MarketHub Pro vei vedea
           Top Headlines Romania + stiri Creator Economy (YouTube, TikTok, Instagram). Planul gratuit:
           100 cereri/zi, suficient pentru uz normal.
         </Text>
@@ -366,7 +307,7 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
             Sectiunea "Your API key" → copiaza key-ul (32 caractere)
           </Text>
         </Step>
-        <Step n={3} title="Adauga in ViralStat Settings">
+        <Step n={3} title="Adauga in MarketHub Pro Settings">
           <Text style={styles.stepText}>
             markethubpromo.com → Settings{"\n"}
             Campul "News API Key" → lipeste key-ul{"\n"}
@@ -377,7 +318,7 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
         <View style={{ marginTop: 10, padding: 14, backgroundColor: "rgba(245,215,160,0.1)", borderRadius: 6, borderWidth: 1, borderColor: border }}>
           <Text style={{ fontSize: 10, fontFamily: "Helvetica-Bold", color: dark, marginBottom: 6 }}>Limitari Plan Gratuit</Text>
           <Text style={{ fontSize: 9.5, color: muted, lineHeight: 1.65 }}>
-            • 100 cereri/zi (ViralStat face cache 30min deci foloseste putine cereri){"\n"}
+            • 100 cereri/zi (MarketHub Pro face cache 30min deci foloseste putine cereri){"\n"}
             • Stiri cu max 1 luna in urma{"\n"}
             • Fara filtrare avansata{"\n"}
             Plan Developer ($449/luna): fara limite, date in timp real{"\n"}
@@ -387,10 +328,10 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
         <PageFooter name={name} />
       </Page>
 
-      {/* ═══ SECTION 5: FINAL CONFIG ═══ */}
+      {/* ═══ SECTION 4: FINAL CONFIG ═══ */}
       <Page size="A4" style={styles.page}>
         <View style={styles.sectionHeader}>
-          <View style={styles.sectionNumber}><Text style={styles.sectionNumberText}>5</Text></View>
+          <View style={styles.sectionNumber}><Text style={styles.sectionNumberText}>4</Text></View>
           <View style={{ flex: 1 }}>
             <Text style={styles.sectionTitle}>Configurare Finala si Troubleshooting</Text>
             <Text style={styles.sectionPlatform}>Verificare + Rezolvare Probleme Comune</Text>
@@ -401,7 +342,6 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
         {[
           "YouTube API Key adaugat in Settings → apare trending pe pagina Trending si Global",
           "YouTube Channel ID adaugat → pagina My Channel afiseaza datele canalului tau",
-          "Spotify Client ID + Secret → pagina Spotify Charts functioneaza cu 30+ tari",
           "Instagram conectat → datele apar pe Overview (foloweri, reach, impressions)",
           "News API Key → pagina News afiseaza stiri Romania + Creator Economy",
         ].map((item, i) => (
@@ -416,7 +356,6 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
           { prob: "Eroare: API key not configured", sol: "Mergi la Settings si salveaza din nou key-ul. Asigura-te ca nu are spatii goale." },
           { prob: "YouTube: quota exceeded", sol: "Ai depasit 10.000 unitati/zi gratuite. Asteapta pana a doua zi sau creeaza alt proiect." },
           { prob: "Instagram 404 / token expired", sol: "Tokenul Meta expira periodic. Mergi la Settings → reconecteaza Instagram." },
-          { prob: "Spotify: nu apar date", sol: "Verifica ca Client ID si Client Secret sunt corecte. Nu amesteca ID-ul cu Secret-ul." },
           { prob: "News: eroare de conexiune", sol: "Verifica News API key. Planul gratuit permite doar 100 cereri/zi." },
         ].map((item, i) => (
           <View key={i} style={{ marginBottom: 8, borderWidth: 1, borderColor: border, borderRadius: 5, overflow: "hidden" }}>
@@ -438,7 +377,7 @@ export function WelcomePDF({ name, email, plan, date }: { name: string; email: s
             Email suport: support@markethubpromo.com{"\n"}
             Site: markethubpromo.com{"\n"}
             {"\n"}
-            Salut, {name}! Mult succes cu ViralStat 🎯
+            Salut, {name}! Mult succes cu MarketHub Pro 🎯
           </Text>
         </View>
         <PageFooter name={name} />

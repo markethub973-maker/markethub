@@ -27,26 +27,24 @@ export default function SettingsPage() {
       setEmail(user.email || "");
       setName(user.user_metadata?.name || "");
 
+      // Un singur query pentru toate datele din profiles
       const { data: profile } = await supabase
         .from("profiles")
-        .select("plan, is_admin")
+        .select("plan, is_admin, instagram_username, instagram_user_id, youtube_channel_id")
         .eq("id", user.id)
-        .single();
-      if (profile) {
-        setIsAdmin(profile.is_admin);
-        setPlan(profile.plan);
-      }
+        .single() as any;
 
-      const { data: igProfile } = await supabase
-        .from("profiles")
-        .select("instagram_username, instagram_user_id")
-        .eq("id", user.id)
-        .single();
-      if (igProfile?.instagram_username) setIgUsername(igProfile.instagram_username);
-      else if (igProfile?.instagram_user_id) setIgUsername("hub9.73");
-      if ((igProfile as any)?.youtube_channel_id) {
-        setYtChannelId((igProfile as any).youtube_channel_id);
-        setYtConnected(true);
+      if (profile) {
+        setIsAdmin(profile.is_admin || false);
+        setPlan(profile.plan || "free");
+
+        if (profile.instagram_username) setIgUsername(profile.instagram_username);
+        else if (profile.instagram_user_id) setIgUsername("hub9.73");
+
+        if (profile.youtube_channel_id) {
+          setYtChannelId(profile.youtube_channel_id);
+          setYtConnected(true);
+        }
       }
 
       const params = new URLSearchParams(window.location.search);

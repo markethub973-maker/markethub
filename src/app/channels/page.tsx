@@ -66,6 +66,9 @@ export default function ChannelsPage() {
         .then(d => setYtResults(Array.isArray(d) ? d : []))
         .finally(() => setYtLoading(false));
     }, 500);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [search]);
 
   const filtered = [...channels].sort((a, b) => {

@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     return new NextResponse(buffer as unknown as BodyInit, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="ViralStat-Setup-${name.replace(/\s+/g, "-")}.pdf"`,
+        "Content-Disposition": `attachment; filename="MarketHub-Pro-Setup-${name.replace(/\s+/g, "-")}.pdf"`,
         "Content-Length": buffer.length.toString(),
       },
     });

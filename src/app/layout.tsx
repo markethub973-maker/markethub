@@ -6,7 +6,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ViralStat — Social Video Intelligence",
+  title: "MarketHub Pro — Social Video Intelligence",
   description: "Cross-platform social video analytics for YouTube, TikTok, Instagram and Facebook",
 };
 

@@ -13,9 +13,13 @@ import {
   Zap,
   LogOut,
   Bell,
-  Music,
   Newspaper,
   Map,
+  LineChart,
+  Library,
+  Megaphone,
+  Mail,
+  UserSquare2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -28,7 +32,11 @@ const navItems = [
   { href: "/trending", label: "Trending", icon: TrendingUp },
   { href: "/competitors", label: "Competitors", icon: BarChart3 },
   { href: "/alerts", label: "Alerts", icon: Bell },
-  { href: "/spotify", label: "Spotify", icon: Music },
+  { href: "/marketing", label: "Marketing", icon: Megaphone },
+  { href: "/ads-library", label: "Ads Library", icon: Library },
+  { href: "/email-reports", label: "Email Rapoarte", icon: Mail },
+  { href: "/clients", label: "Multi-Cont", icon: UserSquare2 },
+  { href: "/trends", label: "Google Trends", icon: LineChart },
   { href: "/news", label: "News", icon: Newspaper },
   { href: "/global", label: "Global Trending", icon: Map },
 ];
@@ -74,7 +82,7 @@ export default function Sidebar() {
         <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
           <Zap className="w-4 h-4 text-white" />
         </div>
-        <span className="font-bold text-lg tracking-tight" style={{ color: "#FFF8F0" }}>ViralStat</span>
+        <span className="font-bold text-lg tracking-tight" style={{ color: "#FFF8F0" }}>MarketHub Pro</span>
       </div>
 
       {/* Nav */}

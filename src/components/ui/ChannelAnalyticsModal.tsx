@@ -145,7 +145,7 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
             <h3 className="font-semibold mb-4 flex items-center gap-2" style={{ color: "#292524" }}>
               <User2 className="w-4 h-4" style={{ color: "#F59E0B" }} />
               Audienta Demographics
-              <span className="text-xs font-normal px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>estimata</span>
+              <span className="text-xs font-normal px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>estimare statistica per categorie</span>
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
