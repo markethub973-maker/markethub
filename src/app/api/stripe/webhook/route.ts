@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createServerClient } from "@supabase/ssr";
+import { sendPaymentConfirmationEmail, sendSubscriptionCancelledEmail } from "@/lib/resend";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -28,14 +29,33 @@ export async function POST(req: Request) {
         plan,
         stripe_subscription_id: session.subscription,
       }).eq("id", userId);
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email, name")
+        .eq("id", userId)
+        .single();
+      if (profile?.email) {
+        await sendPaymentConfirmationEmail(profile.email, profile.name ?? "", plan).catch(() => {});
+      }
     }
   }
 
   if (event.type === "customer.subscription.deleted") {
     const sub = event.data.object as any;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("email, name")
+      .eq("stripe_subscription_id", sub.id)
+      .single();
+
     await supabase.from("profiles")
       .update({ plan: "free", stripe_subscription_id: null })
       .eq("stripe_subscription_id", sub.id);
+
+    if (profile?.email) {
+      await sendSubscriptionCancelledEmail(profile.email, profile.name ?? "").catch(() => {});
+    }
   }
 
   return NextResponse.json({ received: true });
