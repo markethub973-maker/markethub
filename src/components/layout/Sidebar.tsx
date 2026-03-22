@@ -15,6 +15,7 @@ import {
   Bell,
   Music,
   Newspaper,
+  Map,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -29,6 +30,7 @@ const navItems = [
   { href: "/alerts", label: "Alerts", icon: Bell },
   { href: "/spotify", label: "Spotify", icon: Music },
   { href: "/news", label: "News", icon: Newspaper },
+  { href: "/global", label: "Global Trending", icon: Map },
 ];
 
 type Profile = {
