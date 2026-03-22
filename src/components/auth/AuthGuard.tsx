@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "@/components/layout/Sidebar";
+import SetupAgent from "@/components/ui/SetupAgent";
 import { createClient } from "@/lib/supabase/client";
 
 const PUBLIC_PATHS = ["/login", "/register"];
@@ -35,6 +36,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     <>
       <Sidebar />
       <main className="ml-64 min-h-screen">{children}</main>
+      <SetupAgent />
     </>
   );
 }
