@@ -71,7 +71,13 @@ export default function SetupAgent() {
         body: JSON.stringify({ messages: newMessages.map(m => ({ role: m.role, content: m.content })) }),
       });
 
-      if (!res.ok) throw new Error("Agent error");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        if (errData.error === "Agent not configured") {
+          throw new Error("not_configured");
+        }
+        throw new Error("api_error");
+      }
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
       let fullText = "";
@@ -87,10 +93,13 @@ export default function SetupAgent() {
         });
         bottomRef.current?.scrollIntoView({ behavior: "smooth" });
       }
-    } catch {
+    } catch (err: any) {
+      const msg = err?.message === "not_configured"
+        ? "Agentul AI nu este configurat încă.\n\nAdministratorul trebuie să adauge ANTHROPIC_API_KEY în setările serverului (Vercel → markethub → Environment Variables).\n\nPentru asistență directă: support@markethubpromo.com"
+        : "A apărut o eroare la conectarea cu agentul. Încearcă din nou sau contactează support@markethubpromo.com";
       setMessages(prev => {
         const updated = [...prev];
-        updated[updated.length - 1] = { role: "assistant", content: "A apărut o eroare. Încearcă din nou sau contactează support@markethubpromo.com" };
+        updated[updated.length - 1] = { role: "assistant", content: msg };
         return updated;
       });
     } finally {
