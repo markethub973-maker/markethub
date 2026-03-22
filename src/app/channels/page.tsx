@@ -68,13 +68,12 @@ export default function ChannelsPage() {
     }, 500);
   }, [search]);
 
-  const filtered = channels
-    .sort((a, b) => {
-      if (sort === "subscribers") return b.subscribers - a.subscribers;
-      if (sort === "views") return b.totalViews - a.totalViews;
-      if (sort === "er") return b.engagementRate - a.engagementRate;
-      return 0;
-    });
+  const filtered = [...channels].sort((a, b) => {
+    if (sort === "subscribers") return b.subscribers - a.subscribers;
+    if (sort === "views") return b.totalViews - a.totalViews;
+    if (sort === "er") return b.engagementRate - a.engagementRate;
+    return 0;
+  });
 
   const toggleCompare = (ch: Channel) => {
     if (compareList.find(c => c.id === ch.id)) {
