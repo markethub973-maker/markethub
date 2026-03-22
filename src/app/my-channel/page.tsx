@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import { formatNumber, formatDate } from "@/lib/utils";
-import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube } from "lucide-react";
+import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown } from "lucide-react";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
@@ -11,6 +11,18 @@ export default function MyChannelPage() {
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sortKey, setSortKey] = useState<string>("publishedAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
+  const handleSort = (key: string) => {
+    if (sortKey === key) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortKey(key); setSortDir("desc"); }
+  };
+
+  const SortIcon = ({ col }: { col: string }) => {
+    if (sortKey !== col) return <ChevronUp className="w-3 h-3 opacity-20" />;
+    return sortDir === "asc" ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />;
+  };
 
   useEffect(() => {
     fetch("/api/youtube/my-channel")
@@ -131,15 +143,29 @@ export default function MyChannelPage() {
                 <thead>
                   <tr className="text-xs uppercase tracking-wide" style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E" }}>
                     <th className="text-left px-5 py-3">Video</th>
-                    <th className="text-right px-3 py-3">Views</th>
-                    <th className="text-right px-3 py-3">Likes</th>
-                    <th className="text-right px-3 py-3">Comments</th>
-                    <th className="text-right px-3 py-3">ER</th>
-                    <th className="text-right px-5 py-3">Publicat</th>
+                    {[
+                      { key: "views", label: "Views" },
+                      { key: "likes", label: "Likes" },
+                      { key: "comments", label: "Comments" },
+                      { key: "er", label: "ER" },
+                      { key: "publishedAt", label: "Publicat" },
+                    ].map(col => (
+                      <th key={col.key} className="text-right px-3 py-3 cursor-pointer select-none"
+                        onClick={() => handleSort(col.key)}>
+                        <div className="flex items-center justify-end gap-1">
+                          {col.label}<SortIcon col={col.key} />
+                        </div>
+                      </th>
+                    ))}
                   </tr>
                 </thead>
                 <tbody>
-                  {data.videos.map((v: any) => {
+                  {[...data.videos].map((v: any) => { v._er = v.views > 0 ? ((v.likes + v.comments) / v.views) * 100 : 0; return v; })
+                    .sort((a: any, b: any) => {
+                      const val = (x: any) => sortKey === "er" ? x._er : sortKey === "publishedAt" ? new Date(x.publishedAt).getTime() : x[sortKey];
+                      return sortDir === "asc" ? val(a) - val(b) : val(b) - val(a);
+                    })
+                    .map((v: any) => {
                     const er = v.views > 0 ? (((v.likes + v.comments) / v.views) * 100).toFixed(1) : "0.0";
                     return (
                       <tr key={v.id} className="transition-colors" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}
