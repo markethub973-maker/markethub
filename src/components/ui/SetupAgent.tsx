@@ -6,10 +6,10 @@ import { MessageCircle, X, Send, Bot, Download, ChevronDown } from "lucide-react
 type Message = { role: "user" | "assistant"; content: string };
 
 const SUGGESTIONS = [
-  "Cum configurez YouTube API?",
-  "Instagram nu functioneaza",
+  "Sunt client nou, ce fac?",
   "Unde gasesc Channel ID-ul?",
-  "Cum descarc PDF-ul de setup?",
+  "Marketing Analytics ce arata?",
+  "Instagram e obligatoriu?",
 ];
 
 function Bubble({ msg }: { msg: Message }) {
