@@ -32,8 +32,9 @@ export async function GET(req: NextRequest) {
       { headers: h, cache: "no-store" }
     );
     const searchData = await safeJson(searchRes);
+    if (searchData.error) return NextResponse.json({ error: "Spotify search error: " + searchData.error }, { status: 400 });
     const artist = searchData.artists?.items?.[0];
-    if (!artist) return NextResponse.json({ error: "Artist not found on Spotify" }, { status: 404 });
+    if (!artist) return NextResponse.json({ error: "Artist not found: " + q }, { status: 404 });
 
     const [topTracksRes, albumsRes, relatedRes] = await Promise.all([
       fetch(`https://api.spotify.com/v1/artists/${artist.id}/top-tracks?market=US`, { headers: h, cache: "no-store" }),

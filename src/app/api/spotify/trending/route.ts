@@ -12,7 +12,7 @@ async function getSpotifyToken(): Promise<string> {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: "grant_type=client_credentials",
-    next: { revalidate: 3500 },
+    cache: "no-store",
   });
 
   const data = await res.json();
@@ -29,13 +29,14 @@ export async function GET() {
     const headers = { Authorization: `Bearer ${token}` };
 
     const [releasesRes, playlistsRes] = await Promise.all([
-      fetch("https://api.spotify.com/v1/browse/new-releases?limit=10&country=RO", { headers, next: { revalidate: 3600 } }),
-      fetch("https://api.spotify.com/v1/browse/featured-playlists?limit=6&country=RO", { headers, next: { revalidate: 3600 } }),
+      fetch("https://api.spotify.com/v1/browse/new-releases?limit=10&country=RO", { headers, cache: "no-store" }),
+      fetch("https://api.spotify.com/v1/browse/featured-playlists?limit=6&country=RO", { headers, cache: "no-store" }),
     ]);
 
+    const safeJson = async (r: Response) => { const t = await r.text(); try { return JSON.parse(t); } catch { return {}; } };
     const [releasesData, playlistsData] = await Promise.all([
-      releasesRes.json(),
-      playlistsRes.json(),
+      safeJson(releasesRes),
+      safeJson(playlistsRes),
     ]);
 
     const albums = (releasesData.albums?.items || []).map((a: any) => ({
