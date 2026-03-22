@@ -1,22 +1,20 @@
 import { NextResponse } from "next/server";
 
 async function getSpotifyToken(): Promise<string> {
-  const clientId = process.env.SPOTIFY_CLIENT_ID!;
-  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET!;
-  const basic = Buffer.from(`${clientId}:${clientSecret}`).toString("base64");
-
+  const basic = Buffer.from(`${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`).toString("base64");
   const res = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
-    headers: {
-      Authorization: `Basic ${basic}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
+    headers: { Authorization: `Basic ${basic}`, "Content-Type": "application/x-www-form-urlencoded" },
     body: "grant_type=client_credentials",
     cache: "no-store",
   });
-
   const data = await res.json();
   return data.access_token;
+}
+
+async function safeJson(r: Response) {
+  const t = await r.text();
+  try { return JSON.parse(t); } catch { return {}; }
 }
 
 export async function GET() {
@@ -28,36 +26,14 @@ export async function GET() {
     const token = await getSpotifyToken();
     const headers = { Authorization: `Bearer ${token}` };
 
-    const [releasesRes, playlistsRes] = await Promise.all([
-      fetch("https://api.spotify.com/v1/browse/new-releases?limit=10&country=RO", { headers, cache: "no-store" }),
-      fetch("https://api.spotify.com/v1/browse/featured-playlists?limit=6&country=RO", { headers, cache: "no-store" }),
+    // Only use featured-playlists (works with client credentials)
+    const [featRO, featUS, featUK] = await Promise.all([
+      fetch("https://api.spotify.com/v1/browse/featured-playlists?limit=6&country=RO", { headers, cache: "no-store" }).then(safeJson),
+      fetch("https://api.spotify.com/v1/browse/featured-playlists?limit=4&country=US", { headers, cache: "no-store" }).then(safeJson),
+      fetch("https://api.spotify.com/v1/browse/featured-playlists?limit=4&country=GB", { headers, cache: "no-store" }).then(safeJson),
     ]);
 
-    const safeJson = async (r: Response) => { const t = await r.text(); try { return JSON.parse(t); } catch { return { _raw: t.slice(0, 80) }; } };
-    const [releasesData, playlistsData] = await Promise.all([
-      safeJson(releasesRes),
-      safeJson(playlistsRes),
-    ]);
-    if (releasesData._raw || playlistsData._raw) {
-      return NextResponse.json({ error: "Spotify API raw: " + (releasesData._raw || playlistsData._raw) }, { status: 500 });
-    }
-    // Debug: return raw structure
-    if (!releasesData.albums?.items?.length && !playlistsData.playlists?.items?.length) {
-      return NextResponse.json({ _debug: { releases_keys: Object.keys(releasesData), playlists_keys: Object.keys(playlistsData), releases_raw: JSON.stringify(releasesData).slice(0,200), playlists_raw: JSON.stringify(playlistsData).slice(0,200) }});
-    }
-
-    const albums = (releasesData.albums?.items || []).map((a: any) => ({
-      id: a.id,
-      name: a.name,
-      artist: a.artists.map((ar: any) => ar.name).join(", "),
-      thumbnail: a.images?.[0]?.url || "",
-      releaseDate: a.release_date,
-      totalTracks: a.total_tracks,
-      permalink: a.external_urls?.spotify || "",
-      type: a.album_type,
-    }));
-
-    const playlists = (playlistsData.playlists?.items || []).map((p: any) => ({
+    const playlists = (featRO.playlists?.items || []).map((p: any) => ({
       id: p.id,
       name: p.name,
       description: p.description,
@@ -66,7 +42,18 @@ export async function GET() {
       permalink: p.external_urls?.spotify || "",
     }));
 
-    return NextResponse.json({ albums, playlists });
+    const globalPlaylists = [
+      ...(featUS.playlists?.items || []),
+      ...(featUK.playlists?.items || []),
+    ].map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      thumbnail: p.images?.[0]?.url || "",
+      tracks: p.tracks?.total || 0,
+      permalink: p.external_urls?.spotify || "",
+    }));
+
+    return NextResponse.json({ playlists, globalPlaylists, albums: [] });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

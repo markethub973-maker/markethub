@@ -312,8 +312,18 @@ export default function SpotifyPage() {
             </div>
 
             {artistError && (
-              <div className="rounded-xl p-4" style={cardStyle}>
-                <p className="text-sm" style={{ color: "#dc2626" }}>{artistError}</p>
+              <div className="rounded-xl p-5" style={cardStyle}>
+                <p className="text-sm font-semibold mb-2" style={{ color: "#dc2626" }}>Artist negăsit</p>
+                <p className="text-xs" style={{ color: "#A8967E" }}>
+                  Spotify restricționează API-ul de căutare pentru aplicații fără "Extended Access".
+                  Această funcție va fi activată după aprobarea aplicației de către Spotify.
+                </p>
+                <a href={`https://open.spotify.com/search/${encodeURIComponent(artistQuery)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 mt-3 px-4 py-2 rounded-lg text-sm font-semibold"
+                  style={{ backgroundColor: G, color: "white" }}>
+                  Caută direct pe Spotify →
+                </a>
               </div>
             )}
 
