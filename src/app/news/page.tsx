@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
-import { Newspaper, Globe, ExternalLink, Clock } from "lucide-react";
+import { Newspaper, Globe, ExternalLink, Clock, Download } from "lucide-react";
+import { exportCSV, exportJSON } from "@/lib/utils";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
@@ -32,6 +33,27 @@ export default function NewsPage() {
     <div>
       <Header title="News" subtitle="Stiri Romania + Creator Economy — date reale" />
       <div className="p-6 space-y-6">
+        {data && (
+          <div className="flex items-center justify-end gap-2">
+            <button type="button" onClick={() => exportCSV("news-ro", ["Titlu", "Sursa", "Data", "URL"],
+              (data.ro || []).map((a: any) => [a.title, a.source, a.publishedAt, a.url])
+            )} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
+              style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
+              <Download className="w-3 h-3" />CSV România
+            </button>
+            <button type="button" onClick={() => exportCSV("news-creator", ["Titlu", "Sursa", "Data", "URL"],
+              (data.social || []).map((a: any) => [a.title, a.source, a.publishedAt, a.url])
+            )} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
+              style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
+              <Download className="w-3 h-3" />CSV Creator Economy
+            </button>
+            <button type="button" onClick={() => exportJSON("news-all", { exportedAt: new Date().toISOString(), ...data })}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
+              style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
+              <Download className="w-3 h-3" />JSON Complet
+            </button>
+          </div>
+        )}
 
         {loading && (
           <div className="flex items-center justify-center h-40">

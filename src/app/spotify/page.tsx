@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Header from "@/components/layout/Header";
 import { formatNumber } from "@/lib/utils";
-import { Music, PlayCircle, Disc, Search, Users, TrendingUp, ChevronRight, Globe } from "lucide-react";
+import { Music, PlayCircle, Disc, Search, Users, TrendingUp, ChevronRight, Globe, Download } from "lucide-react";
+import { exportCSV, exportJSON } from "@/lib/utils";
 
 const G = "#1DB954";
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -205,18 +206,39 @@ export default function SpotifyPage() {
               {/* Top Chart playlists tabs */}
               {chartsData?.charts?.length > 0 && (
                 <div className="rounded-xl overflow-hidden" style={cardStyle}>
-                  {/* Playlist selector */}
-                  <div className="flex" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                    {chartsData.charts.map((pl: any, i: number) => (
-                      <button key={pl.id} type="button" onClick={() => setActivePlaylist(i)}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-3 text-xs font-semibold transition-colors"
-                        style={activePlaylist === i
-                          ? { backgroundColor: "rgba(29,185,84,0.08)", color: G, borderBottom: `2px solid ${G}` }
-                          : { color: "#78614E" }}>
-                        {i === 0 ? "🏆" : i === 1 ? "🔥" : "✨"}
-                        <span className="truncate max-w-[80px]">{pl.name}</span>
-                      </button>
-                    ))}
+                  {/* Playlist selector + export */}
+                  <div className="flex items-center" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
+                    <div className="flex flex-1">
+                      {chartsData.charts.map((pl: any, i: number) => (
+                        <button key={pl.id} type="button" onClick={() => setActivePlaylist(i)}
+                          className="flex-1 flex items-center justify-center gap-2 px-3 py-3 text-xs font-semibold transition-colors"
+                          style={activePlaylist === i
+                            ? { backgroundColor: "rgba(29,185,84,0.08)", color: G, borderBottom: `2px solid ${G}` }
+                            : { color: "#78614E" }}>
+                          {i === 0 ? "🏆" : i === 1 ? "🔥" : "✨"}
+                          <span className="truncate max-w-[80px]">{pl.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                    {currentPlaylist?.tracks?.length > 0 && (
+                      <div className="flex gap-1 px-3">
+                        <button type="button" onClick={() => exportCSV(
+                          `spotify-${selectedCountry.code}-${currentPlaylist.name.replace(/\s+/g, "-")}`,
+                          ["#", "Track", "Artisti", "Album", "Popularitate", "Durata(s)", "URL"],
+                          currentPlaylist.tracks.map((t: any, i: number) => [i + 1, t.name, t.artists, t.album, t.popularity, Math.round(t.duration / 1000), t.permalink])
+                        )} className="flex items-center gap-1 px-2 py-1.5 rounded text-xs font-semibold"
+                          style={{ backgroundColor: "rgba(29,185,84,0.1)", color: G }}>
+                          <Download className="w-3 h-3" />CSV
+                        </button>
+                        <button type="button" onClick={() => exportJSON(
+                          `spotify-${selectedCountry.code}-${currentPlaylist.name.replace(/\s+/g, "-")}`,
+                          { country: selectedCountry, playlist: currentPlaylist.name, exportedAt: new Date().toISOString(), tracks: currentPlaylist.tracks }
+                        )} className="flex items-center gap-1 px-2 py-1.5 rounded text-xs font-semibold"
+                          style={{ backgroundColor: "rgba(29,185,84,0.1)", color: G }}>
+                          <Download className="w-3 h-3" />JSON
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Track list */}
@@ -305,10 +327,26 @@ export default function SpotifyPage() {
                         style={{ border: `3px solid ${G}` }} />
                     )}
                     <div className="flex-1 min-w-0">
-                      <a href={artistData.artist.permalink} target="_blank" rel="noopener noreferrer"
-                        className="text-2xl font-bold hover:underline block" style={{ color: "#292524" }}>
-                        {artistData.artist.name}
-                      </a>
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <a href={artistData.artist.permalink} target="_blank" rel="noopener noreferrer"
+                          className="text-2xl font-bold hover:underline" style={{ color: "#292524" }}>
+                          {artistData.artist.name}
+                        </a>
+                        <button type="button" onClick={() => exportCSV(
+                          `spotify-artist-${artistData.artist.name.replace(/\s+/g, "-")}`,
+                          ["#", "Track", "Album", "Popularitate", "Durata(s)", "URL"],
+                          artistData.topTracks.map((t: any, i: number) => [i + 1, t.name, t.album, t.popularity, Math.round(t.duration / 1000), t.permalink])
+                        )} className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold"
+                          style={{ backgroundColor: "rgba(29,185,84,0.1)", color: G }}>
+                          <Download className="w-3 h-3" />CSV Top Tracks
+                        </button>
+                        <button type="button" onClick={() => exportJSON(
+                          `spotify-artist-${artistData.artist.name.replace(/\s+/g, "-")}`, artistData
+                        )} className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold"
+                          style={{ backgroundColor: "rgba(29,185,84,0.1)", color: G }}>
+                          <Download className="w-3 h-3" />JSON Complet
+                        </button>
+                      </div>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {artistData.artist.genres?.slice(0, 4).map((g: string) => (
                           <span key={g} className="text-xs px-2 py-0.5 rounded-full capitalize"

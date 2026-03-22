@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Header from "@/components/layout/Header";
-import { formatNumber, formatDate } from "@/lib/utils";
-import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame } from "lucide-react";
+import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
+import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame, Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -191,6 +191,23 @@ export default function MyChannelPage() {
                 {t.icon}{t.label}
               </button>
             ))}
+            {sortedVideos.length > 0 && (
+              <div className="ml-auto flex items-center gap-1 pr-2">
+                <button type="button" onClick={() => exportCSV(
+                  `my-channel-videos`,
+                  ["#", "Titlu", "Views", "Likes", "Comentarii", "ER%", "Publicat", "URL"],
+                  sortedVideos.map((v: any, i: number) => [i + 1, v.title, v.views, v.likes, v.comments, v._er?.toFixed(2), v.publishedAt, `https://youtube.com/watch?v=${v.id}`])
+                )} className="flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold"
+                  style={{ backgroundColor: "rgba(255,0,0,0.08)", color: "#FF0000" }}>
+                  <Download className="w-3 h-3" />CSV
+                </button>
+                <button type="button" onClick={() => exportJSON(`my-channel-videos`, { channel: data?.name, exportedAt: new Date().toISOString(), videos: sortedVideos })}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded text-xs font-semibold"
+                  style={{ backgroundColor: "rgba(255,0,0,0.08)", color: "#FF0000" }}>
+                  <Download className="w-3 h-3" />JSON
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Search input */}

@@ -3,8 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Header from "@/components/layout/Header";
-import { formatNumber } from "@/lib/utils";
-import { TrendingUp, Eye, ThumbsUp, MessageCircle, Globe, ChevronRight } from "lucide-react";
+import { formatNumber, exportCSV, exportJSON } from "@/lib/utils";
+import { TrendingUp, Eye, ThumbsUp, MessageCircle, Globe, ChevronRight, Download } from "lucide-react";
 
 // Lazy load map to avoid SSR issues
 const WorldMap = dynamic(() => import("@/components/ui/WorldMap"), { ssr: false, loading: () => (
@@ -234,7 +234,27 @@ export default function GlobalTrendingPage() {
                 </h3>
                 <p className="text-xs" style={{ color: "#A8967E" }}>YouTube Most Popular · Actualizat la 30min</p>
               </div>
-              {loading && <span className="ml-auto text-xs" style={{ color: "#C4AA8A" }}>Se incarca...</span>}
+              <div className="ml-auto flex items-center gap-2">
+                {loading && <span className="text-xs" style={{ color: "#C4AA8A" }}>Se incarca...</span>}
+                {videos.length > 0 && (
+                  <>
+                    <button type="button" onClick={() => exportCSV(
+                      `youtube-trending-${selectedCountry.code}`,
+                      ["#", "Titlu", "Canal", "Views", "Likes", "Comentarii", "URL"],
+                      videos.map((v, i) => [i + 1, v.title, v.channel, v.views, v.likes, v.comments, `https://youtube.com/watch?v=${v.id}`])
+                    )} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                      style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
+                      <Download className="w-3 h-3" />CSV
+                    </button>
+                    <button type="button" onClick={() => exportJSON(
+                      `youtube-trending-${selectedCountry.code}`, { country: selectedCountry, exportedAt: new Date().toISOString(), videos }
+                    )} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
+                      style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
+                      <Download className="w-3 h-3" />JSON
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
 
             {loading && videos.length === 0 ? (
