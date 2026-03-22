@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Header from "@/components/layout/Header";
-import { Search, ExternalLink, AlertCircle, Globe2, Monitor, Smartphone, Instagram, Facebook, ChevronDown, ChevronUp, Eye, DollarSign, Users, Calendar } from "lucide-react";
+import { Search, ExternalLink, AlertCircle, Globe2, Monitor, Smartphone, Instagram, Facebook, ChevronDown, ChevronUp, Eye, DollarSign, Users, Calendar, Maximize2 } from "lucide-react";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const META = "#1877F2";
@@ -30,24 +30,6 @@ const AD_TYPES = [
 
 const EXAMPLES = ["Nike", "Zara", "eMAG", "Kaufland", "Lidl", "Booking", "Revolut", "Bolt"];
 
-function PlatformIcon({ platform }: { platform: string }) {
-  if (platform === "instagram") return <Instagram className="w-3 h-3" style={{ color: IG }} />;
-  if (platform === "facebook") return <Facebook className="w-3 h-3" style={{ color: META }} />;
-  if (platform === "messenger") return <Monitor className="w-3 h-3" style={{ color: "#00B2FF" }} />;
-  if (platform === "audience_network") return <Globe2 className="w-3 h-3" style={{ color: "#6B7280" }} />;
-  return <Smartphone className="w-3 h-3" style={{ color: "#6B7280" }} />;
-}
-
-function formatRange(val: { lower_bound?: string; upper_bound?: string } | undefined) {
-  if (!val) return null;
-  const lo = val.lower_bound ? parseInt(val.lower_bound).toLocaleString() : null;
-  const hi = val.upper_bound ? parseInt(val.upper_bound).toLocaleString() : null;
-  if (lo && hi) return `${lo} – ${hi}`;
-  if (lo) return `>= ${lo}`;
-  if (hi) return `<= ${hi}`;
-  return null;
-}
-
 function buildMetaLibraryUrl(query: string, country: string, adType: string) {
   const params = new URLSearchParams({
     active_status: "active",
@@ -59,162 +41,25 @@ function buildMetaLibraryUrl(query: string, country: string, adType: string) {
   return `https://www.facebook.com/ads/library/?${params.toString()}`;
 }
 
-function AdCard({ ad }: { ad: any }) {
-  const [expanded, setExpanded] = useState(false);
-  const daysSinceStart = ad.startDate
-    ? Math.floor((Date.now() - new Date(ad.startDate).getTime()) / 86400000)
-    : null;
-  const impressionsRange = formatRange(ad.impressions);
-  const spendRange = formatRange(ad.spend);
-  const audienceRange = formatRange(ad.audienceSize);
-
-  return (
-    <div className="rounded-xl overflow-hidden" style={cardStyle}>
-      <div className="p-4 pb-3">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <div className="flex-1 min-w-0">
-            <p className="font-bold text-sm truncate" style={{ color: "#292524" }}>{ad.pageName}</p>
-            <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-              {ad.platforms.map((p: string) => (
-                <span key={p} className="flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-full"
-                  style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
-                  <PlatformIcon platform={p} />
-                  <span className="capitalize">{p === "audience_network" ? "Network" : p}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-          <a href={ad.snapshotUrl} target="_blank" rel="noopener noreferrer"
-            className="flex-shrink-0 p-1.5 rounded-lg transition-colors"
-            style={{ backgroundColor: `${META}12`, color: META }}
-            title="Vezi reclama">
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
-        </div>
-
-        {ad.body && (
-          <p className="text-xs leading-relaxed line-clamp-3" style={{ color: "#78614E" }}>{ad.body}</p>
-        )}
-        {ad.linkTitle && (
-          <p className="text-xs font-semibold mt-1.5 truncate" style={{ color: "#292524" }}>{ad.linkTitle}</p>
-        )}
-        {ad.linkDescription && (
-          <p className="text-xs mt-0.5 line-clamp-2" style={{ color: "#A8967E" }}>{ad.linkDescription}</p>
-        )}
-      </div>
-
-      <div className="px-4 pb-3 grid grid-cols-2 gap-2">
-        {impressionsRange && (
-          <div className="rounded-lg p-2 text-center" style={{ backgroundColor: `${META}08`, border: `1px solid ${META}18` }}>
-            <Eye className="w-3 h-3 mx-auto mb-0.5" style={{ color: META }} />
-            <p className="text-xs font-bold" style={{ color: META }}>{impressionsRange}</p>
-            <p className="text-xs" style={{ color: "#A8967E" }}>Impresii</p>
-          </div>
-        )}
-        {spendRange && (
-          <div className="rounded-lg p-2 text-center" style={{ backgroundColor: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.15)" }}>
-            <DollarSign className="w-3 h-3 mx-auto mb-0.5" style={{ color: "#10B981" }} />
-            <p className="text-xs font-bold" style={{ color: "#10B981" }}>{spendRange} {ad.currency}</p>
-            <p className="text-xs" style={{ color: "#A8967E" }}>Buget estimat</p>
-          </div>
-        )}
-        {audienceRange && (
-          <div className="rounded-lg p-2 text-center" style={{ backgroundColor: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
-            <Users className="w-3 h-3 mx-auto mb-0.5" style={{ color: "#F59E0B" }} />
-            <p className="text-xs font-bold" style={{ color: "#F59E0B" }}>{audienceRange}</p>
-            <p className="text-xs" style={{ color: "#A8967E" }}>Audienta</p>
-          </div>
-        )}
-        {daysSinceStart !== null && (
-          <div className="rounded-lg p-2 text-center" style={{ backgroundColor: "rgba(107,114,128,0.05)", border: "1px solid rgba(107,114,128,0.12)" }}>
-            <Calendar className="w-3 h-3 mx-auto mb-0.5" style={{ color: "#6B7280" }} />
-            <p className="text-xs font-bold" style={{ color: "#6B7280" }}>{daysSinceStart}z</p>
-            <p className="text-xs" style={{ color: "#A8967E" }}>Activ de</p>
-          </div>
-        )}
-      </div>
-
-      {ad.demographicDistribution?.length > 0 && (
-        <div className="border-t" style={{ borderColor: "rgba(245,215,160,0.2)" }}>
-          <button type="button" onClick={() => setExpanded(v => !v)}
-            className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold"
-            style={{ color: "#A8967E" }}>
-            <span>Date demografice</span>
-            {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-          </button>
-          {expanded && (
-            <div className="px-4 pb-3 space-y-1">
-              {ad.demographicDistribution.slice(0, 8).map((d: any, i: number) => (
-                <div key={i} className="flex items-center gap-2">
-                  <span className="text-xs w-24 flex-shrink-0" style={{ color: "#78614E" }}>
-                    {d.age} {d.gender === "male" ? "B" : d.gender === "female" ? "F" : ""}
-                  </span>
-                  <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,215,160,0.2)" }}>
-                    <div className="h-full rounded-full" style={{
-                      width: `${Math.round(parseFloat(d.percentage) * 100)}%`,
-                      backgroundColor: d.gender === "female" ? IG : META,
-                    }} />
-                  </div>
-                  <span className="text-xs w-10 text-right" style={{ color: "#A8967E" }}>
-                    {Math.round(parseFloat(d.percentage) * 100)}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {ad.startDate && (
-        <div className="px-4 py-2 border-t" style={{ borderColor: "rgba(245,215,160,0.2)" }}>
-          <p className="text-xs" style={{ color: "#C4AA8A" }}>
-            Activ din {new Date(ad.startDate).toLocaleDateString("ro-RO", { day: "2-digit", month: "long", year: "numeric" })}
-            {ad.endDate ? ` — ${new Date(ad.endDate).toLocaleDateString("ro-RO", { day: "2-digit", month: "long" })}` : " — prezent"}
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
 export default function AdsLibraryPage() {
   const [query, setQuery] = useState("");
   const [country, setCountry] = useState("RO");
   const [adType, setAdType] = useState("all");
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [mode, setMode] = useState<"api" | "direct">("direct");
+  const [iframeUrl, setIframeUrl] = useState<string | null>(null);
+  const [iframeBlocked, setIframeBlocked] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const search = (q?: string) => {
     const term = (q || query).trim();
     if (!term) return;
+    const url = buildMetaLibraryUrl(term, country, adType);
+    setIframeUrl(url);
+    setIframeBlocked(false);
+  };
 
-    if (mode === "direct") {
-      window.open(buildMetaLibraryUrl(term, country, adType), "_blank");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-    setData(null);
-    fetch(`/api/ads-library?q=${encodeURIComponent(term)}&country=${country}&adType=${adType}&limit=24`)
-      .then(r => r.json())
-      .then(d => {
-        if (d.error) {
-          if (d.errorCode === "NO_PERMISSION") {
-            setMode("direct");
-            setError("API indisponibil — se deschide Meta Ad Library direct.");
-            window.open(buildMetaLibraryUrl(term, country, adType), "_blank");
-          } else {
-            setError(d.error);
-          }
-          return;
-        }
-        setData(d);
-      })
-      .catch(() => setError("Eroare de retea"))
-      .finally(() => setLoading(false));
+  const openExternal = () => {
+    if (iframeUrl) window.open(iframeUrl, "_blank");
   };
 
   return (
@@ -224,24 +69,6 @@ export default function AdsLibraryPage() {
 
         {/* Search */}
         <div className="rounded-xl p-4 space-y-3" style={cardStyle}>
-          {/* Mode toggle */}
-          <div className="flex items-center gap-2">
-            <button type="button" onClick={() => setMode("direct")}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-              style={mode === "direct"
-                ? { backgroundColor: META, color: "white" }
-                : { backgroundColor: `${META}10`, color: META, border: `1px solid ${META}25` }}>
-              Deschide Meta Library
-            </button>
-            <button type="button" onClick={() => setMode("api")}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors"
-              style={mode === "api"
-                ? { backgroundColor: META, color: "white" }
-                : { backgroundColor: `${META}10`, color: META, border: `1px solid ${META}25` }}>
-              API (necesita ads_read)
-            </button>
-          </div>
-
           <div className="flex gap-3 flex-wrap">
             <div className="relative flex-1 min-w-48">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: META }} />
@@ -261,10 +88,10 @@ export default function AdsLibraryPage() {
               style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFFCF7", color: "#292524" }}>
               {AD_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
-            <button type="button" onClick={() => search()} disabled={loading || !query.trim()}
+            <button type="button" onClick={() => search()} disabled={!query.trim()}
               className="px-6 py-3 rounded-xl text-sm font-bold"
-              style={{ backgroundColor: META, color: "white", opacity: loading ? 0.7 : 1 }}>
-              {loading ? "..." : mode === "direct" ? "Deschide" : "Cauta"}
+              style={{ backgroundColor: META, color: "white" }}>
+              Cauta
             </button>
           </div>
 
@@ -279,55 +106,94 @@ export default function AdsLibraryPage() {
               </button>
             ))}
           </div>
-
-          <p className="text-xs" style={{ color: "#C4AA8A" }}>
-            {mode === "direct"
-              ? "Se deschide Meta Ad Library direct pe facebook.com — date publice, fara API necesar."
-              : "Date din Meta Ads Library API — necesita permisiunea ads_read pe token."}
-          </p>
         </div>
 
-        {/* Error */}
-        {error && (
-          <div className="rounded-xl p-5 flex items-start gap-3" style={cardStyle}>
-            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
-            <div>
-              <p className="text-sm font-semibold" style={{ color: "#EF4444" }}>Eroare</p>
-              <p className="text-sm mt-1" style={{ color: "#A8967E" }}>{error}</p>
-            </div>
-          </div>
-        )}
+        {/* Iframe embed */}
+        {iframeUrl && (
+          <div className={fullscreen
+            ? "fixed inset-0 z-50 bg-white flex flex-col"
+            : "rounded-xl overflow-hidden"
+          } style={fullscreen ? {} : cardStyle}>
 
-        {/* API Results */}
-        {data && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold" style={{ color: "#292524" }}>
-                {data.total} reclame active{data.total === 24 ? "+" : ""} pentru &quot;{data.searchTerms}&quot; in {COUNTRIES.find(c => c.code === data.country)?.label || data.country}
-              </h3>
-              {data.total === 0 && (
-                <p className="text-sm" style={{ color: "#A8967E" }}>Nu s-au gasit reclame active.</p>
-              )}
+            {/* Toolbar */}
+            <div className="flex items-center justify-between px-4 py-2 flex-shrink-0"
+              style={{ backgroundColor: "rgba(24,119,242,0.05)", borderBottom: "1px solid rgba(24,119,242,0.15)" }}>
+              <div className="flex items-center gap-2">
+                <Facebook className="w-4 h-4" style={{ color: META }} />
+                <span className="text-xs font-semibold" style={{ color: "#292524" }}>Meta Ad Library</span>
+                <span className="text-xs" style={{ color: "#A8967E" }}>— {query} ({COUNTRIES.find(c => c.code === country)?.label})</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={() => setFullscreen(!fullscreen)}
+                  className="p-1.5 rounded-lg text-xs font-semibold flex items-center gap-1"
+                  style={{ backgroundColor: "rgba(24,119,242,0.1)", color: META }}>
+                  <Maximize2 className="w-3 h-3" />
+                  {fullscreen ? "Minimizeaza" : "Fullscreen"}
+                </button>
+                <a href={iframeUrl} target="_blank" rel="noopener noreferrer"
+                  className="p-1.5 rounded-lg text-xs font-semibold flex items-center gap-1"
+                  style={{ backgroundColor: "rgba(24,119,242,0.1)", color: META }}>
+                  <ExternalLink className="w-3 h-3" />
+                  Deschide in tab nou
+                </a>
+              </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              {data.ads.map((ad: any) => <AdCard key={ad.id} ad={ad} />)}
-            </div>
+
+            {/* iframe or blocked message */}
+            {!iframeBlocked ? (
+              <iframe
+                ref={iframeRef}
+                src={iframeUrl}
+                className="w-full border-0"
+                style={{ height: fullscreen ? "calc(100vh - 44px)" : 700 }}
+                sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+                onError={() => setIframeBlocked(true)}
+                onLoad={() => {
+                  // Facebook blocks iframes — detect by checking if we can access content
+                  try {
+                    const doc = iframeRef.current?.contentDocument;
+                    // If we can access it and it's empty/error, it's blocked
+                    if (doc && doc.body && doc.body.innerHTML === "") {
+                      setIframeBlocked(true);
+                    }
+                  } catch {
+                    // Cross-origin = loaded successfully (Facebook's page)
+                    // This is actually the success case for iframe
+                  }
+                }}
+              />
+            ) : (
+              <div className="p-12 text-center" style={{ minHeight: 400 }}>
+                <AlertCircle className="w-12 h-12 mx-auto mb-4" style={{ color: `${META}60` }} />
+                <p className="font-semibold text-lg mb-2" style={{ color: "#292524" }}>
+                  Facebook blocheaza afisarea in iframe
+                </p>
+                <p className="text-sm mb-6 max-w-md mx-auto" style={{ color: "#A8967E" }}>
+                  Din motive de securitate, Facebook nu permite afisarea Ad Library in alte site-uri.
+                  Deschide pagina direct pe facebook.com:
+                </p>
+                <a href={iframeUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold"
+                  style={{ backgroundColor: META, color: "white" }}>
+                  <ExternalLink className="w-4 h-4" />
+                  Deschide Meta Ad Library
+                </a>
+              </div>
+            )}
           </div>
         )}
 
         {/* Empty state */}
-        {!data && !loading && !error && (
+        {!iframeUrl && (
           <div className="rounded-xl p-12 text-center" style={cardStyle}>
             <Search className="w-12 h-12 mx-auto mb-4" style={{ color: `${META}40` }} />
             <p className="font-semibold text-lg mb-2" style={{ color: "#292524" }}>Cauta reclame active</p>
             <p className="text-sm max-w-md mx-auto mb-4" style={{ color: "#A8967E" }}>
-              Introdu numele oricarui brand si vezi toate reclamele active pe Facebook si Instagram.
+              Introdu numele oricarui brand si vezi toate reclamele active pe Facebook si Instagram direct in pagina.
             </p>
-            {mode === "direct" && (
-              <p className="text-xs" style={{ color: "#C4AA8A" }}>
-                Se va deschide Meta Ad Library direct pe facebook.com — date publice in timp real.
-              </p>
-            )}
+            <p className="text-xs" style={{ color: "#C4AA8A" }}>
+              Se incarca Meta Ad Library de pe facebook.com — date publice in timp real.
+            </p>
           </div>
         )}
       </div>
