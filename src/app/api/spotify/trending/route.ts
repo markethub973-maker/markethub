@@ -41,6 +41,10 @@ export async function GET() {
     if (releasesData._raw || playlistsData._raw) {
       return NextResponse.json({ error: "Spotify API raw: " + (releasesData._raw || playlistsData._raw) }, { status: 500 });
     }
+    // Debug: return raw structure
+    if (!releasesData.albums?.items?.length && !playlistsData.playlists?.items?.length) {
+      return NextResponse.json({ _debug: { releases_keys: Object.keys(releasesData), playlists_keys: Object.keys(playlistsData), releases_raw: JSON.stringify(releasesData).slice(0,200), playlists_raw: JSON.stringify(playlistsData).slice(0,200) }});
+    }
 
     const albums = (releasesData.albums?.items || []).map((a: any) => ({
       id: a.id,
