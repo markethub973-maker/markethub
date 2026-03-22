@@ -14,6 +14,7 @@ import {
   LogOut,
   Bell,
   Music,
+  Newspaper,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -27,6 +28,7 @@ const navItems = [
   { href: "/competitors", label: "Competitors", icon: BarChart3 },
   { href: "/alerts", label: "Alerts", icon: Bell },
   { href: "/spotify", label: "Spotify", icon: Music },
+  { href: "/news", label: "News", icon: Newspaper },
 ];
 
 type Profile = {
