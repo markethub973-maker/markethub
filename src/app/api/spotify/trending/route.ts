@@ -33,11 +33,14 @@ export async function GET() {
       fetch("https://api.spotify.com/v1/browse/featured-playlists?limit=6&country=RO", { headers, cache: "no-store" }),
     ]);
 
-    const safeJson = async (r: Response) => { const t = await r.text(); try { return JSON.parse(t); } catch { return {}; } };
+    const safeJson = async (r: Response) => { const t = await r.text(); try { return JSON.parse(t); } catch { return { _raw: t.slice(0, 80) }; } };
     const [releasesData, playlistsData] = await Promise.all([
       safeJson(releasesRes),
       safeJson(playlistsRes),
     ]);
+    if (releasesData._raw || playlistsData._raw) {
+      return NextResponse.json({ error: "Spotify API raw: " + (releasesData._raw || playlistsData._raw) }, { status: 500 });
+    }
 
     const albums = (releasesData.albums?.items || []).map((a: any) => ({
       id: a.id,
