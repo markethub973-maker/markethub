@@ -31,6 +31,16 @@ export default function CompetitorsPage() {
       <Header title="Competitor Analysis" subtitle="Benchmark against the competition" />
 
       <div className="p-6 space-y-6">
+
+        {/* Disclaimer */}
+        <div className="rounded-xl px-4 py-3 flex items-start gap-3" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.3)" }}>
+          <span className="text-sm">📊</span>
+          <p className="text-xs" style={{ color: "#78614E" }}>
+            <b>Date estimate</b> — Cifrele de market share și prețuri sunt bazate pe surse publice (G2, Capterra, site-uri oficiale).
+            Datele ViralStat sunt actualizate manual pe baza creșterii reale a platformei.
+          </p>
+        </div>
+
         {/* Market Share Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>

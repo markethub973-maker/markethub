@@ -6,7 +6,6 @@ import PlatformBadge from "@/components/ui/PlatformBadge";
 import ViewsChart from "@/components/charts/ViewsChart";
 import EngagementChart from "@/components/charts/EngagementChart";
 import PlatformShareChart from "@/components/charts/PlatformShareChart";
-import { platformStats } from "@/lib/mockData";
 import { formatNumber, formatDate } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import {
@@ -41,17 +40,55 @@ export default function DashboardPage() {
       .then(d => { if (!d.error) setFbData(d); })
       .catch(() => {});
 
-    fetch("/api/youtube/trending?max=10")
+    fetch("/api/youtube/trending?region=RO&max=12")
       .then(r => r.json())
       .then(d => { if (Array.isArray(d)) setYtVideos(d); })
       .catch(() => {});
   }, []);
 
-  const totalViews = platformStats.reduce((s, p) => s + p.totalViews, 0);
-  const totalEngagement = platformStats.reduce((s, p) => s + p.totalEngagement, 0);
-  const avgEngagement =
-    platformStats.reduce((s, p) => s + p.avgEngagementRate, 0) / platformStats.length;
-  const totalVideos = platformStats.reduce((s, p) => s + p.topVideos, 0);
+  // Compute real stats from YouTube trending
+  const ytTotalViews = ytVideos.reduce((s, v) => s + v.views, 0);
+  const ytTotalLikes = ytVideos.reduce((s, v) => s + v.likes, 0);
+  const ytTotalComments = ytVideos.reduce((s, v) => s + v.comments, 0);
+  const ytAvgER = ytVideos.length > 0
+    ? ytVideos.reduce((s, v) => s + (v.views > 0 ? (v.likes + v.comments) / v.views * 100 : 0), 0) / ytVideos.length
+    : 0;
+
+  // Platform cards: YouTube real + Instagram real (if available) + Facebook real (if available)
+  const platformCards = [
+    {
+      platform: "youtube" as const,
+      label: "YouTube Trending RO",
+      views: ytTotalViews,
+      er: Math.round(ytAvgER * 10) / 10,
+      count: ytVideos.length,
+      countLabel: "trending videos",
+      growth: null,
+      color: "#FF0000",
+    },
+    igData ? {
+      platform: "instagram" as const,
+      label: "Instagram",
+      views: igData.followers_count || 0,
+      er: null,
+      count: igData.media_count || 0,
+      countLabel: "posts",
+      growth: null,
+      color: "#E1306C",
+      isFollowers: true,
+    } : null,
+    fbData ? {
+      platform: "facebook" as const,
+      label: "Facebook",
+      views: fbData.fan_count || 0,
+      er: null,
+      count: fbData.followers_count || 0,
+      countLabel: "followers",
+      growth: null,
+      color: "#1877F2",
+      isFollowers: true,
+    } : null,
+  ].filter(Boolean) as any[];
 
   return (
     <div>
@@ -61,41 +98,41 @@ export default function DashboardPage() {
       />
 
       <div className="p-6 space-y-6">
-        {/* Stats Row */}
+        {/* Stats Row — computed from YouTube trending data */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            title="Total Views"
-            value={formatNumber(totalViews)}
-            change={11.8}
-            accent="#39D3B8"
+            title="Views (Trending RO)"
+            value={ytVideos.length > 0 ? formatNumber(ytTotalViews) : "—"}
+            change={undefined}
+            accent="#FF0000"
             icon={<Eye className="w-5 h-5" />}
           />
           <StatCard
-            title="Total Engagement"
-            value={formatNumber(totalEngagement)}
-            change={18.4}
+            title="Likes (Trending RO)"
+            value={ytVideos.length > 0 ? formatNumber(ytTotalLikes) : "—"}
+            change={undefined}
             accent="#4F4DF0"
             icon={<ThumbsUp className="w-5 h-5" />}
           />
           <StatCard
             title="Avg. Engagement Rate"
-            value={avgEngagement.toFixed(1) + "%"}
-            change={2.4}
+            value={ytVideos.length > 0 ? ytAvgER.toFixed(2) + "%" : "—"}
+            change={undefined}
             accent="#F9B851"
             icon={<TrendingUp className="w-5 h-5" />}
           />
           <StatCard
-            title="Tracked Videos"
-            value={formatNumber(totalVideos)}
-            change={7.2}
+            title="Comentarii (Trending)"
+            value={ytVideos.length > 0 ? formatNumber(ytTotalComments) : "—"}
+            change={undefined}
             accent="#E1306C"
-            icon={<PlayCircle className="w-5 h-5" />}
+            icon={<MessageCircle className="w-5 h-5" />}
           />
         </div>
 
-        {/* Platform Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {platformStats.map((p) => (
+        {/* Platform Cards — real data */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {platformCards.map((p) => (
             <div
               key={p.platform}
               className="rounded-xl p-4"
@@ -103,20 +140,21 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between mb-3">
                 <PlatformBadge platform={p.platform} />
-                <span
-                  className={`text-xs font-bold ${p.growthPercent >= 0 ? "text-emerald-600" : "text-red-500"}`}
-                >
-                  {p.growthPercent >= 0 ? "+" : ""}
-                  {p.growthPercent}%
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+                  Live
                 </span>
               </div>
               <p className="text-xl font-bold" style={{ color: "#292524" }}>
-                {formatNumber(p.totalViews)}
+                {formatNumber(p.views)}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>views</p>
+              <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>
+                {p.isFollowers ? "followers" : "views"}
+              </p>
               <div className="mt-3 pt-3 flex justify-between text-xs" style={{ borderTop: "1px solid rgba(245,215,160,0.2)", color: "#A8967E" }}>
-                <span>ER: <b style={{ color: "#5C4A35" }}>{p.avgEngagementRate}%</b></span>
-                <span>{formatNumber(p.topVideos)} videos</span>
+                {p.er !== null && (
+                  <span>ER: <b style={{ color: "#5C4A35" }}>{p.er}%</b></span>
+                )}
+                <span>{formatNumber(p.count)} {p.countLabel}</span>
               </div>
             </div>
           ))}
@@ -230,7 +268,7 @@ export default function DashboardPage() {
         {/* Top Videos Table */}
         <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
           <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-            <h3 className="font-semibold" style={{ color: "#292524" }}>Top Videos This Week</h3>
+            <h3 className="font-semibold" style={{ color: "#292524" }}>Top Videos Trending RO</h3>
             <a href="/videos" className="text-xs font-semibold hover:underline" style={{ color: "#F59E0B" }}>
               View all →
             </a>
@@ -249,7 +287,7 @@ export default function DashboardPage() {
               </thead>
               <tbody>
                 {ytVideos.slice(0, 8).map((v) => {
-                  const er = v.views > 0 ? (((v.likes + v.comments) / v.views) * 100).toFixed(1) : "0.0";
+                  const er = v.views > 0 ? (((v.likes + v.comments) / v.views) * 100).toFixed(2) : "0.00";
                   return (
                     <tr key={v.id} className="transition-colors" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}
                       onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.07)")}
