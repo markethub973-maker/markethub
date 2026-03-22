@@ -8,6 +8,7 @@ import EngagementChart from "@/components/charts/EngagementChart";
 import PlatformShareChart from "@/components/charts/PlatformShareChart";
 import { platformStats, topVideos } from "@/lib/mockData";
 import { formatNumber, formatDate } from "@/lib/utils";
+import { useState, useEffect } from "react";
 import {
   Eye,
   ThumbsUp,
@@ -15,9 +16,21 @@ import {
   TrendingUp,
   PlayCircle,
   Flame,
+  Instagram,
+  Users,
+  Heart,
 } from "lucide-react";
 
 export default function DashboardPage() {
+  const [igData, setIgData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/instagram/analytics")
+      .then(r => r.json())
+      .then(d => { if (!d.error) setIgData(d); })
+      .catch(() => {});
+  }, []);
+
   const totalViews = platformStats.reduce((s, p) => s + p.totalViews, 0);
   const totalEngagement = platformStats.reduce((s, p) => s + p.totalEngagement, 0);
   const avgEngagement =
@@ -140,6 +153,42 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+
+        {/* Instagram Insights */}
+        {igData && (
+          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+            <div className="flex items-center gap-2 mb-4">
+              <Instagram className="w-4 h-4" style={{ color: "#E1306C" }} />
+              <h3 className="font-semibold" style={{ color: "#292524" }}>Instagram — @{igData.username}</h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+              {[
+                { icon: <Users className="w-3 h-3" />, label: "Followers", val: formatNumber(igData.followers_count) },
+                { icon: <PlayCircle className="w-3 h-3" />, label: "Posts", val: formatNumber(igData.media_count) },
+                { icon: <Eye className="w-3 h-3" />, label: "Reach (30z)", val: igData.insights?.find((i: any) => i.name === "reach")?.values?.slice(-1)[0]?.value ? formatNumber(igData.insights.find((i: any) => i.name === "reach").values.slice(-1)[0].value) : "—" },
+                { icon: <TrendingUp className="w-3 h-3" />, label: "Profile Views", val: igData.insights?.find((i: any) => i.name === "profile_views")?.values?.slice(-1)[0]?.value ? formatNumber(igData.insights.find((i: any) => i.name === "profile_views").values.slice(-1)[0].value) : "—" },
+              ].map(s => (
+                <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(225,48,108,0.06)" }}>
+                  <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>{s.icon}{s.label}</div>
+                  <p className="text-base font-bold" style={{ color: "#292524" }}>{s.val}</p>
+                </div>
+              ))}
+            </div>
+            {igData.media?.length > 0 && (
+              <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                {igData.media.slice(0, 6).map((m: any) => (
+                  <a key={m.id} href={m.permalink} target="_blank" rel="noopener noreferrer" className="relative rounded-lg overflow-hidden aspect-square block group">
+                    <img src={m.thumbnail_url || m.media_url} alt="" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+                      <Heart className="w-3 h-3 text-white" />
+                      <span className="text-white text-xs font-bold">{formatNumber(m.like_count)}</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Top Videos Table */}
         <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
