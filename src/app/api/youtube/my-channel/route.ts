@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
 const BASE = "https://www.googleapis.com/youtube/v3";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -27,11 +27,13 @@ export async function GET() {
   }
 
   const channelId = profile.youtube_channel_id;
+  const order = req.nextUrl.searchParams.get("order") || "date";
+  const query = req.nextUrl.searchParams.get("q") || "";
 
   try {
     // Channel stats
     const channelRes = await fetch(
-      `${BASE}/channels?part=snippet,statistics,brandingSettings&id=${channelId}&key=${key}`
+      `${BASE}/channels?part=snippet,statistics&id=${channelId}&key=${key}`
     );
     const channelData = await channelRes.json();
 
@@ -43,31 +45,40 @@ export async function GET() {
     const stats = ch.statistics;
     const snippet = ch.snippet;
 
-    // Recent videos
-    const searchRes = await fetch(
-      `${BASE}/search?part=snippet&channelId=${channelId}&type=video&order=date&maxResults=12&key=${key}`
-    );
+    // Videos — recent, most viewed, or search
+    const searchParams = new URLSearchParams({
+      part: "snippet",
+      channelId,
+      type: "video",
+      maxResults: "12",
+      key,
+      ...(query ? { q: query } : { order }),
+    });
+
+    const searchRes = await fetch(`${BASE}/search?${searchParams}`);
     const searchData = await searchRes.json();
 
     let videos: any[] = [];
 
     if (searchData.items?.length) {
-      const videoIds = searchData.items.map((i: any) => i.id.videoId).join(",");
-      const videosRes = await fetch(
-        `${BASE}/videos?part=snippet,statistics&id=${videoIds}&key=${key}`
-      );
-      const videosData = await videosRes.json();
+      const videoIds = searchData.items.map((i: any) => i.id.videoId).filter(Boolean).join(",");
+      if (videoIds) {
+        const videosRes = await fetch(
+          `${BASE}/videos?part=snippet,statistics&id=${videoIds}&key=${key}`
+        );
+        const videosData = await videosRes.json();
 
-      videos = (videosData.items || []).map((v: any) => ({
-        id: v.id,
-        title: v.snippet.title,
-        thumbnail: v.snippet.thumbnails?.high?.url || v.snippet.thumbnails?.medium?.url || "",
-        publishedAt: v.snippet.publishedAt,
-        views: parseInt(v.statistics?.viewCount || "0"),
-        likes: parseInt(v.statistics?.likeCount || "0"),
-        comments: parseInt(v.statistics?.commentCount || "0"),
-        permalink: `https://www.youtube.com/watch?v=${v.id}`,
-      }));
+        videos = (videosData.items || []).map((v: any) => ({
+          id: v.id,
+          title: v.snippet.title,
+          thumbnail: v.snippet.thumbnails?.high?.url || v.snippet.thumbnails?.medium?.url || "",
+          publishedAt: v.snippet.publishedAt,
+          views: parseInt(v.statistics?.viewCount || "0"),
+          likes: parseInt(v.statistics?.likeCount || "0"),
+          comments: parseInt(v.statistics?.commentCount || "0"),
+          permalink: `https://www.youtube.com/watch?v=${v.id}`,
+        }));
+      }
     }
 
     return NextResponse.json({

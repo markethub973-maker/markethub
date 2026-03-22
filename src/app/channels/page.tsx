@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Header from "@/components/layout/Header";
 import PlatformBadge from "@/components/ui/PlatformBadge";
 import ChannelAnalyticsModal from "@/components/ui/ChannelAnalyticsModal";
@@ -41,6 +41,21 @@ export default function ChannelsPage() {
   const [analyticsChannel, setAnalyticsChannel] = useState<Channel | null>(null);
   const [compareList, setCompareList] = useState<Channel[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [ytResults, setYtResults] = useState<any[]>([]);
+  const [ytLoading, setYtLoading] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (platform !== "youtube" || search.trim().length < 2) { setYtResults([]); return; }
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setYtLoading(true);
+      fetch(`/api/youtube/channel-search?q=${encodeURIComponent(search)}&max=8`)
+        .then(r => r.json())
+        .then(d => setYtResults(Array.isArray(d) ? d : []))
+        .finally(() => setYtLoading(false));
+    }, 500);
+  }, [search, platform]);
 
   const filtered = topChannels
     .filter((c) => (platform === "all" ? true : c.platform === platform))
@@ -78,13 +93,46 @@ export default function ChannelsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
           <input
             type="text"
-            placeholder="Cauta canal (ex: MrBeast, cristiano, MKBHD...)"
+            placeholder={platform === "youtube" ? "Cauta orice canal YouTube real (ex: MrBeast, PewDiePie...)" : "Cauta canal (ex: MrBeast, cristiano, MKBHD...)"}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg focus:outline-none"
             style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7", color: "#292524" }}
           />
         </div>
+
+        {/* YouTube Real Search Results */}
+        {platform === "youtube" && search.trim().length >= 2 && (
+          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+            <div className="px-5 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(245,215,160,0.15)" }}>
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <span className="text-xs font-semibold" style={{ color: "#292524" }}>Rezultate reale YouTube pentru "{search}"</span>
+              {ytLoading && <span className="text-xs ml-auto" style={{ color: "#C4AA8A" }}>Se cauta...</span>}
+            </div>
+            <div className="divide-y" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
+              {ytResults.length === 0 && !ytLoading ? (
+                <p className="px-5 py-4 text-xs" style={{ color: "#C4AA8A" }}>Niciun canal gasit.</p>
+              ) : ytResults.map((ch: any) => (
+                <div key={ch.id} className="flex items-center gap-4 px-5 py-3">
+                  {ch.thumbnail && <img src={ch.thumbnail} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate" style={{ color: "#292524" }}>{ch.name}</p>
+                    <p className="text-xs truncate" style={{ color: "#A8967E" }}>{ch.description}</p>
+                  </div>
+                  <div className="text-right flex-shrink-0 space-y-0.5">
+                    <p className="text-xs font-bold" style={{ color: "#292524" }}>{formatNumber(ch.subscribers)} sub</p>
+                    <p className="text-xs" style={{ color: "#C4AA8A" }}>{formatNumber(ch.videoCount)} videos</p>
+                  </div>
+                  <a href={ch.permalink} target="_blank" rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold flex-shrink-0"
+                    style={{ backgroundColor: "#FF0000", color: "white" }}>
+                    Vezi →
+                  </a>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Filters + Actions */}
         <div className="flex flex-wrap items-center gap-3">

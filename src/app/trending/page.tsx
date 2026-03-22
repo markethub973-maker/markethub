@@ -1,17 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import PlatformBadge from "@/components/ui/PlatformBadge";
 import { trendingTopics, type Platform } from "@/lib/mockData";
 import { formatNumber } from "@/lib/utils";
-import { TrendingUp, TrendingDown, Flame, Hash } from "lucide-react";
+import { TrendingUp, TrendingDown, Flame, Hash, Globe } from "lucide-react";
 
 const CATEGORIES = ["All", "Technology", "Fitness", "Lifestyle", "Travel", "Food", "Education", "Fashion", "Comedy", "Sports"];
+
+const REGIONS = [
+  { code: "RO", label: "🇷🇴 Romania" },
+  { code: "US", label: "🌍 Global (US)" },
+  { code: "GB", label: "🇬🇧 UK" },
+  { code: "DE", label: "🇩🇪 Germany" },
+];
 
 export default function TrendingPage() {
   const [platform, setPlatform] = useState<Platform | "all">("all");
   const [category, setCategory] = useState("All");
+  const [region, setRegion] = useState("RO");
+  const [ytVideos, setYtVideos] = useState<any[]>([]);
+  const [ytLoading, setYtLoading] = useState(true);
+
+  useEffect(() => {
+    setYtLoading(true);
+    fetch(`/api/youtube/trending?region=${region}&max=6`)
+      .then(r => r.json())
+      .then(d => { if (Array.isArray(d)) setYtVideos(d); })
+      .finally(() => setYtLoading(false));
+  }, [region]);
 
   const filtered = trendingTopics
     .filter((t) => (platform === "all" ? true : t.platform === platform))
@@ -25,6 +43,52 @@ export default function TrendingPage() {
       <Header title="Trending Discovery" subtitle="Find viral content and emerging topics before they peak" />
 
       <div className="p-6 space-y-6">
+
+        {/* YouTube Trending Real — Multi-Region */}
+        <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              <h3 className="font-semibold" style={{ color: "#292524" }}>YouTube Trending — Date Reale</h3>
+            </div>
+            <div className="flex items-center gap-1">
+              <Globe className="w-3.5 h-3.5" style={{ color: "#A8967E" }} />
+              <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid rgba(245,215,160,0.35)" }}>
+                {REGIONS.map(r => (
+                  <button key={r.code} type="button" onClick={() => setRegion(r.code)}
+                    className="px-3 py-1.5 text-xs font-medium transition-colors"
+                    style={region === r.code ? { backgroundColor: "#FF0000", color: "white" } : { color: "#78614E", backgroundColor: "#FFFCF7" }}>
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          {ytLoading ? (
+            <p className="text-xs text-center py-4" style={{ color: "#C4AA8A" }}>Se incarca...</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {ytVideos.map((v, i) => (
+                <a key={v.id} href={`https://www.youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer"
+                  className="flex gap-3 p-3 rounded-lg transition-colors group"
+                  style={{ border: "1px solid rgba(245,215,160,0.2)" }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.07)")}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
+                  <div className="relative flex-shrink-0">
+                    <img src={v.thumbnail} alt="" className="w-20 h-12 rounded object-cover" />
+                    <span className="absolute top-1 left-1 text-xs font-bold px-1 rounded" style={{ backgroundColor: "#FF0000", color: "white" }}>#{i + 1}</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-medium leading-tight line-clamp-2 group-hover:underline" style={{ color: "#3D2E1E" }}>{v.title}</p>
+                    <p className="text-xs mt-1" style={{ color: "#C4AA8A" }}>{v.channel}</p>
+                    <p className="text-xs font-semibold mt-0.5" style={{ color: "#F59E0B" }}>{formatNumber(v.views)} views</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Hot Topics */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {top3.map((topic, i) => (
