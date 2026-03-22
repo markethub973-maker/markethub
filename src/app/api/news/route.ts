@@ -8,8 +8,8 @@ export async function GET() {
 
   try {
     const [roRes, socialRes] = await Promise.all([
-      fetch(`${BASE}/top-headlines?country=ro&pageSize=6&apiKey=${key}`, { next: { revalidate: 1800 } }),
-      fetch(`${BASE}/everything?q=youtube+tiktok+instagram+creator&language=en&sortBy=publishedAt&pageSize=8&apiKey=${key}`, { next: { revalidate: 1800 } }),
+      fetch(`${BASE}/everything?q=romania+stiri&language=ro&sortBy=publishedAt&pageSize=6&apiKey=${key}`, { cache: "no-store" }),
+      fetch(`${BASE}/everything?q=youtube+tiktok+instagram+creator&language=en&sortBy=publishedAt&pageSize=8&apiKey=${key}`, { cache: "no-store" }),
     ]);
 
     const [roData, socialData] = await Promise.all([roRes.json(), socialRes.json()]);
