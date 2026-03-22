@@ -26,18 +26,26 @@ const FbIcon = () => (
 
 export default function DashboardPage() {
   const [igData, setIgData] = useState<any>(null);
+  const [igError, setIgError] = useState<string | null>(null);
   const [fbData, setFbData] = useState<any>(null);
+  const [fbError, setFbError] = useState<string | null>(null);
   const [ytVideos, setYtVideos] = useState<any[]>([]);
 
   useEffect(() => {
     fetch("/api/instagram/analytics")
       .then(r => r.json())
-      .then(d => { if (!d.error) setIgData(d); })
+      .then(d => {
+        if (!d.error) setIgData(d);
+        else if (d.error !== "Unauthorized" && d.error !== "Instagram not connected") setIgError(d.error);
+      })
       .catch(() => {});
 
     fetch("/api/facebook/page")
       .then(r => r.json())
-      .then(d => { if (!d.error) setFbData(d); })
+      .then(d => {
+        if (!d.error) setFbData(d);
+        else if (d.error !== "Unauthorized" && d.error !== "Meta not connected" && d.error !== "No Facebook page found") setFbError(d.error);
+      })
       .catch(() => {});
 
     fetch("/api/youtube/trending?region=RO&max=12")
@@ -206,6 +214,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Instagram token expired */}
+        {igError && !igData && (
+          <div className="rounded-xl p-4 flex items-center justify-between" style={{ backgroundColor: "rgba(225,48,108,0.06)", border: "1px solid rgba(225,48,108,0.2)" }}>
+            <div className="flex items-center gap-3">
+              <Instagram className="w-4 h-4" style={{ color: "#E1306C" }} />
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#292524" }}>Token Instagram expirat</p>
+                <p className="text-xs" style={{ color: "#A8967E" }}>Reconectează contul pentru a vedea datele</p>
+              </div>
+            </div>
+            <a href="/settings" className="px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0" style={{ backgroundColor: "#E1306C", color: "white" }}>
+              Reconectează →
+            </a>
+          </div>
+        )}
+
         {/* Instagram Insights */}
         {igData && (
           <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
@@ -239,6 +263,22 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Facebook token expired */}
+        {fbError && !fbData && (
+          <div className="rounded-xl p-4 flex items-center justify-between" style={{ backgroundColor: "rgba(24,119,242,0.06)", border: "1px solid rgba(24,119,242,0.2)" }}>
+            <div className="flex items-center gap-3">
+              <FbIcon />
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#292524" }}>Token Facebook expirat</p>
+                <p className="text-xs" style={{ color: "#A8967E" }}>Reconectează contul Instagram din Settings pentru a restabili accesul</p>
+              </div>
+            </div>
+            <a href="/settings" className="px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0" style={{ backgroundColor: "#1877F2", color: "white" }}>
+              Reconectează →
+            </a>
           </div>
         )}
 
