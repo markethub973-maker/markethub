@@ -20,6 +20,7 @@ import {
   Megaphone,
   Mail,
   UserSquare2,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
@@ -39,6 +40,7 @@ const navItems = [
   { href: "/trends", label: "Google Trends", icon: LineChart },
   { href: "/news", label: "News", icon: Newspaper },
   { href: "/global", label: "Global Trending", icon: Map },
+  { href: "/ai-hub", label: "AI Hub", icon: Sparkles },
 ];
 
 type Profile = {
