@@ -179,7 +179,7 @@ export function MarketingReportPDF({ data }: { data: MarketingReportData }) {
                 <Text style={{ fontSize: 9, fontFamily: "Helvetica-Bold", color: i === 0 ? pink : light, width: 16, textAlign: "right" }}>{i + 1}</Text>
                 <Text style={{ fontSize: 10, color: dark, width: 35 }}>{d.day}</Text>
                 <View style={styles.barBg}>
-                  <View style={[styles.barFill, { width: `${(d.avg / bestDays[0].avg) * 100}%`, backgroundColor: pink }]} />
+                  <View style={[styles.barFill, { width: `${bestDays[0]?.avg > 0 ? (d.avg / bestDays[0].avg) * 100 : 0}%`, backgroundColor: pink }]} />
                 </View>
                 <Text style={{ fontSize: 9, color: light, width: 40, textAlign: "right" }}>{d.avg.toFixed(2)}%</Text>
               </View>

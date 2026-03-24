@@ -36,7 +36,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     <>
       <Sidebar />
       <main className="ml-64 min-h-screen">{children}</main>
-      <SetupAgent />
+      {pathname !== "/ai-hub" && <SetupAgent />}
     </>
   );
 }

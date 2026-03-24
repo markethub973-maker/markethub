@@ -22,20 +22,42 @@ export async function GET() {
   const token = profile.instagram_access_token;
 
   try {
-    // Try me/accounts first
+    let pageId: string | null = null;
+    let pageToken: string = token;
+
+    // Strategy 1: Token might be a Page Token — /me returns the page directly
+    const meRes = await fetch(
+      `https://graph.facebook.com/v21.0/me?fields=id,name,fan_count,followers_count,about,website,picture&access_token=${token}`
+    );
+    const meData = await meRes.json();
+
+    // If /me returns fan_count, the token IS a page token — we already have page data
+    if (!meData.error && meData.fan_count !== undefined) {
+      return NextResponse.json({
+        id: meData.id,
+        name: meData.name,
+        fan_count: meData.fan_count || 0,
+        followers_count: meData.followers_count || 0,
+        about: meData.about || null,
+        website: meData.website || null,
+        picture: meData.picture?.data?.url || null,
+        insights: await getInsights(meData.id, token),
+      });
+    }
+
+    // Strategy 2: Token is a User Token — get pages via /me/accounts
     const accountsRes = await fetch(
       `https://graph.facebook.com/v21.0/me/accounts?fields=id,name,fan_count,followers_count,access_token&access_token=${token}`
     );
     const accountsData = await accountsRes.json();
 
-    let pageId: string | null = null;
-    let pageToken: string = token;
-
     if (accountsData.data?.length > 0) {
       pageId = accountsData.data[0].id;
       pageToken = accountsData.data[0].access_token || token;
-    } else {
-      // Fallback to env page IDs
+    }
+
+    // Strategy 3: Fallback to env page IDs
+    if (!pageId) {
       const knownIds = (process.env.FACEBOOK_PAGE_IDS || "").split(",").filter(Boolean);
       if (knownIds.length > 0) pageId = knownIds[0];
     }
@@ -54,14 +76,6 @@ export async function GET() {
       return NextResponse.json({ error: pageData.error.message }, { status: 400 });
     }
 
-    // Get page insights
-    const since = Math.floor(Date.now() / 1000) - 30 * 86400;
-    const until = Math.floor(Date.now() / 1000);
-    const insightsRes = await fetch(
-      `https://graph.facebook.com/v21.0/${pageId}/insights?metric=page_impressions_unique,page_reach,page_views_total&period=day&since=${since}&until=${until}&access_token=${pageToken}`
-    );
-    const insightsData = await insightsRes.json();
-
     return NextResponse.json({
       id: pageData.id,
       name: pageData.name,
@@ -70,9 +84,23 @@ export async function GET() {
       about: pageData.about || null,
       website: pageData.website || null,
       picture: pageData.picture?.data?.url || null,
-      insights: insightsData.data || [],
+      insights: await getInsights(pageId, pageToken),
     });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
+async function getInsights(pageId: string, token: string): Promise<any[]> {
+  try {
+    const since = Math.floor(Date.now() / 1000) - 30 * 86400;
+    const until = Math.floor(Date.now() / 1000);
+    const res = await fetch(
+      `https://graph.facebook.com/v21.0/${pageId}/insights?metric=page_impressions_unique,page_views_total&period=day&since=${since}&until=${until}&access_token=${token}`
+    );
+    const data = await res.json();
+    return data.error ? [] : (data.data || []);
+  } catch {
+    return [];
   }
 }

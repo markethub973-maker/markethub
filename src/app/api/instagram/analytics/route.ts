@@ -33,7 +33,9 @@ export async function GET() {
     const profileData = await profileRes.json();
 
     if (profileData.error) {
-      return NextResponse.json({ error: profileData.error.message }, { status: 400 });
+      console.error("[IG Analytics] Profile error:", JSON.stringify(profileData.error));
+      console.error("[IG Analytics] igId:", igId, "token starts with:", token.substring(0, 20) + "...");
+      return NextResponse.json({ error: profileData.error.message, code: profileData.error.code }, { status: 400 });
     }
 
     // Get insights (reach, impressions - last 30 days)

@@ -297,8 +297,8 @@ export default function DashboardPage() {
               {[
                 { icon: <Users className="w-3 h-3" />, label: "Page Likes", val: formatNumber(fbData.fan_count) },
                 { icon: <Heart className="w-3 h-3" />, label: "Followers", val: formatNumber(fbData.followers_count) },
-                { icon: <Eye className="w-3 h-3" />, label: "Reach (30z)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_reach"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
-                { icon: <TrendingUp className="w-3 h-3" />, label: "Impressions (30z)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_impressions_unique"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
+                { icon: <Eye className="w-3 h-3" />, label: "Reach (30z)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_impressions_unique"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
+                { icon: <TrendingUp className="w-3 h-3" />, label: "Page Views (30z)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_views_total"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
               ].map(s => (
                 <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(24,119,242,0.06)" }}>
                   <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>{s.icon}{s.label}</div>

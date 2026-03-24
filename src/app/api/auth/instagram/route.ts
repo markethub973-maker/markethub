@@ -12,7 +12,7 @@ export async function GET() {
   const params = new URLSearchParams({
     client_id: process.env.META_APP_ID!,
     redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/instagram/callback`,
-    scope: "pages_show_list,business_management",
+    scope: "pages_show_list,pages_read_engagement,instagram_basic,instagram_manage_insights,business_management",
     response_type: "code",
     state: user.id,
   });
