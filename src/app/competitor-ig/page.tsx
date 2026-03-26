@@ -12,7 +12,7 @@ const EXAMPLES = ["nike", "redbull", "zara", "loreal", "cocacola", "nationalgeog
 
 function EngBadge({ rate }: { rate: number }) {
   const color = rate >= 5 ? "#1DB954" : rate >= 2 ? "#F59E0B" : rate >= 0.5 ? "#F59E0B" : "#EF4444";
-  const label = rate >= 5 ? "Excelent" : rate >= 2 ? "Bun" : rate >= 0.5 ? "Normal" : "Slab";
+  const label = rate >= 5 ? "Excellent" : rate >= 2 ? "Good" : rate >= 0.5 ? "Fair" : "Poor";
   return (
     <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: color + "18", color }}>
       {rate.toFixed(2)}% — {label}
@@ -46,7 +46,7 @@ export default function CompetitorIGPage() {
         setData(d);
         setHistory(prev => [q, ...prev.filter(x => x !== q)].slice(0, 6));
       })
-      .catch(() => setError("Eroare de rețea"))
+      .catch(() => setError("Network error"))
       .finally(() => setLoading(false));
   };
 
@@ -54,7 +54,7 @@ export default function CompetitorIGPage() {
 
   return (
     <div>
-      <Header title="Competitor Instagram" subtitle="Analizează orice cont Business Instagram — date reale" />
+      <Header title="Competitor Instagram" subtitle="Analyze any Instagram Business account - real data" />
       <div className="p-6 space-y-5">
 
         {/* Search */}
@@ -71,13 +71,13 @@ export default function CompetitorIGPage() {
             <button type="button" onClick={() => search()} disabled={loading || !query.trim()}
               className="px-6 py-3 rounded-xl text-sm font-bold"
               style={{ backgroundColor: IG, color: "white", opacity: loading ? 0.7 : 1 }}>
-              {loading ? "..." : "Analizează"}
+              {loading ? "..." : "Analyze"}
             </button>
           </div>
 
           {/* Examples + History */}
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-xs" style={{ color: "#C4AA8A" }}>Exemple:</span>
+            <span className="text-xs" style={{ color: "#C4AA8A" }}>Examples:</span>
             {(history.length > 0 ? history : EXAMPLES).map(ex => (
               <button key={ex} type="button" onClick={() => { setQuery(ex); search(ex); }}
                 className="px-2.5 py-1 rounded-full text-xs font-semibold"
@@ -87,7 +87,7 @@ export default function CompetitorIGPage() {
             ))}
           </div>
           <p className="text-xs" style={{ color: "#C4AA8A" }}>
-            Funcționează doar cu conturi <strong>Instagram Business sau Creator</strong> (nu conturi personale).
+            Works only with <strong>Instagram Business or Creator</strong> accounts (not personal accounts).
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export default function CompetitorIGPage() {
           <div className="rounded-xl p-5 flex items-start gap-3" style={cardStyle}>
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
             <div>
-              <p className="text-sm font-semibold" style={{ color: "#EF4444" }}>Cont negăsit</p>
+              <p className="text-sm font-semibold" style={{ color: "#EF4444" }}>Account not found</p>
               <p className="text-sm mt-1" style={{ color: "#A8967E" }}>{error}</p>
             </div>
           </div>
@@ -125,7 +125,7 @@ export default function CompetitorIGPage() {
                   {data.biography && <p className="text-sm mt-1 line-clamp-2" style={{ color: "#78614E" }}>{data.biography}</p>}
                   <div className="flex items-center gap-1 mt-2">
                     <EngBadge rate={data.avgEngRate} />
-                    <span className="text-xs ml-2" style={{ color: "#A8967E" }}>engagement rate mediu</span>
+                    <span className="text-xs ml-2" style={{ color: "#A8967E" }}>average engagement rate</span>
                   </div>
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function CompetitorIGPage() {
               <div className="grid grid-cols-3 gap-3 mt-4">
                 {[
                   { label: "Followers", value: formatNumber(data.followers), color: IG },
-                  { label: "Postări", value: data.mediaCount, color: "#F59E0B" },
+                  { label: "Posts", value: data.mediaCount, color: "#F59E0B" },
                   { label: "Eng. Rate", value: data.avgEngRate.toFixed(2) + "%", color: data.avgEngRate >= 3 ? "#1DB954" : "#F59E0B" },
                 ].map(s => (
                   <div key={s.label} className="rounded-lg p-3 text-center" style={{ backgroundColor: s.color + "08", border: `1px solid ${s.color}18` }}>
@@ -147,11 +147,11 @@ export default function CompetitorIGPage() {
               {/* Content mix */}
               {data.contentMix?.length > 0 && (
                 <div className="flex items-center gap-3 mt-3 flex-wrap">
-                  <span className="text-xs" style={{ color: "#C4AA8A" }}>Mix conținut:</span>
+                  <span className="text-xs" style={{ color: "#C4AA8A" }}>Content mix:</span>
                   {data.contentMix.map((c: any) => (
                     <span key={c.type} className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
                       style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
-                      {c.type === "Video" ? <Video className="w-3 h-3" /> : c.type === "Carusel" ? <Layers className="w-3 h-3" /> : <Image className="w-3 h-3" />}
+                      {c.type === "Video" ? <Video className="w-3 h-3" /> : c.type === "Carousel" ? <Layers className="w-3 h-3" /> : <Image className="w-3 h-3" />}
                       {c.type}: {c.count}
                     </span>
                   ))}
@@ -161,7 +161,7 @@ export default function CompetitorIGPage() {
 
             {/* Top Posts */}
             <div>
-              <h3 className="text-sm font-semibold mb-3" style={{ color: "#292524" }}>Top postări după engagement</h3>
+              <h3 className="text-sm font-semibold mb-3" style={{ color: "#292524" }}>Top posts by engagement</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {data.topPosts?.map((p: any, i: number) => (
                   <a key={p.id} href={p.permalink} target="_blank" rel="noopener noreferrer"
@@ -203,23 +203,23 @@ export default function CompetitorIGPage() {
             <div className="rounded-xl p-5" style={cardStyle}>
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="w-4 h-4" style={{ color: IG }} />
-                <h3 className="font-semibold" style={{ color: "#292524" }}>Insight competitiv</h3>
+                <h3 className="font-semibold" style={{ color: "#292524" }}>Competitive Insight</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="rounded-lg p-3" style={{ backgroundColor: "rgba(225,48,108,0.05)", border: "1px solid rgba(225,48,108,0.15)" }}>
                   <p className="text-xs font-bold mb-2" style={{ color: IG }}>Engagement Rate</p>
                   <p className="text-xs leading-relaxed" style={{ color: "#78614E" }}>
                     {data.avgEngRate >= 3
-                      ? `@${data.username} are un ER de ${data.avgEngRate.toFixed(2)}% — cont activ cu audiență engajată. Sunt un competitor puternic în nișă.`
-                      : `@${data.username} are ER de ${data.avgEngRate.toFixed(2)}% — sub media de 3%. Poți concura direct cu conținut mai interactiv.`}
+                      ? `@${data.username} has an ER of ${data.avgEngRate.toFixed(2)}% — active account with engaged audience. They're a strong competitor in this niche.`
+                      : `@${data.username} has an ER of ${data.avgEngRate.toFixed(2)}% — below the 3% average. You can compete directly with more interactive content.`}
                   </p>
                 </div>
                 <div className="rounded-lg p-3" style={{ backgroundColor: "rgba(245,215,160,0.1)", border: "1px solid rgba(245,215,160,0.25)" }}>
-                  <p className="text-xs font-bold mb-2" style={{ color: "#F59E0B" }}>Volum conținut</p>
+                  <p className="text-xs font-bold mb-2" style={{ color: "#F59E0B" }}>Content Volume</p>
                   <p className="text-xs leading-relaxed" style={{ color: "#78614E" }}>
                     {data.mediaCount > 500
-                      ? `Cu ${data.mediaCount} postări, @${data.username} are o prezență consolidată. Frecvența de postare contează — analizează zilele active.`
-                      : `@${data.username} are ${data.mediaCount} postări. Dacă postezi mai consistent, poți câștiga vizibilitate în aceeași nișă.`}
+                      ? `With ${data.mediaCount} posts, @${data.username} has an established presence. Posting frequency matters — analyze their active days.`
+                      : `@${data.username} has ${data.mediaCount} posts. If you post more consistently, you can gain visibility in the same niche.`}
                   </p>
                 </div>
               </div>
@@ -231,9 +231,9 @@ export default function CompetitorIGPage() {
         {!data && !loading && !error && (
           <div className="rounded-xl p-12 text-center" style={cardStyle}>
             <Users className="w-12 h-12 mx-auto mb-4" style={{ color: "rgba(225,48,108,0.3)" }} />
-            <p className="font-semibold text-lg mb-2" style={{ color: "#292524" }}>Analizează un competitor</p>
+            <p className="font-semibold text-lg mb-2" style={{ color: "#292524" }}>Analyze a competitor</p>
             <p className="text-sm" style={{ color: "#A8967E" }}>
-              Introdu username-ul oricărui cont Instagram Business și vezi followers, engagement rate, top postări și insights competitive.
+              Enter the username of any Instagram Business account and see followers, engagement rate, top posts, and competitive insights.
             </p>
           </div>
         )}

@@ -1,29 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { resolveIGAuth } from "@/lib/adminPlatformToken";
 
 export async function GET(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("instagram_access_token, instagram_user_id")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile?.instagram_access_token || !profile?.instagram_user_id) {
-    return NextResponse.json({ error: "Instagram not connected" }, { status: 400 });
-  }
+  const auth = await resolveIGAuth();
+  if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!auth.token || !auth.igId) return NextResponse.json({ error: "Instagram not connected" }, { status: 400 });
 
   const username = req.nextUrl.searchParams.get("username")?.trim().replace("@", "");
   if (!username) return NextResponse.json({ error: "Username required" }, { status: 400 });
 
-  const token = profile.instagram_access_token;
-  const igId = profile.instagram_user_id;
+  const { token, igId } = auth;
 
   try {
-    // Instagram Business Discovery API — allows looking up other business accounts
     const res = await fetch(
       `https://graph.facebook.com/v21.0/${igId}?fields=business_discovery.fields(id,username,name,biography,followers_count,media_count,profile_picture_url,website,media{id,caption,media_type,thumbnail_url,media_url,timestamp,like_count,comments_count,permalink})&username=${encodeURIComponent(username)}&access_token=${token}`
     );
@@ -31,13 +19,13 @@ export async function GET(req: NextRequest) {
 
     if (data.error) {
       if (data.error.code === 100) {
-        return NextResponse.json({ error: `Contul @${username} nu a fost găsit sau nu este un cont Business/Creator.` }, { status: 404 });
+        return NextResponse.json({ error: `Account @${username} not found or not a Business/Creator account.` }, { status: 404 });
       }
       return NextResponse.json({ error: data.error.message }, { status: 400 });
     }
 
     const bd = data.business_discovery;
-    if (!bd) return NextResponse.json({ error: `@${username} nu este un cont Business Instagram.` }, { status: 404 });
+    if (!bd) return NextResponse.json({ error: `@${username} is not an Instagram Business account.` }, { status: 404 });
 
     const followers = bd.followers_count || 0;
     const posts: any[] = bd.media?.data || [];
@@ -75,7 +63,7 @@ export async function GET(req: NextRequest) {
       topPosts,
       allPosts: postsWithEng,
       contentMix: Object.entries(typeCount).map(([type, count]) => ({
-        type: type === "VIDEO" ? "Video" : type === "CAROUSEL_ALBUM" ? "Carusel" : "Foto",
+        type: type === "VIDEO" ? "Video" : type === "CAROUSEL_ALBUM" ? "Carousel" : "Photo",
         count,
       })),
     });

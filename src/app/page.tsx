@@ -130,7 +130,7 @@ export default function DashboardPage() {
             icon={<TrendingUp className="w-5 h-5" />}
           />
           <StatCard
-            title="Comentarii (Trending)"
+            title="Comments (Trending)"
             value={ytVideos.length > 0 ? formatNumber(ytTotalComments) : "—"}
             change={undefined}
             accent="#E1306C"
@@ -208,7 +208,7 @@ export default function DashboardPage() {
                 </div>
               ))}
               {ytVideos.length === 0 && (
-                <p className="text-xs" style={{ color: "#C4AA8A" }}>Se incarca...</p>
+                <p className="text-xs" style={{ color: "#C4AA8A" }}>Loading...</p>
               )}
             </div>
           </div>
@@ -222,14 +222,14 @@ export default function DashboardPage() {
               <div>
                 <p className="text-sm font-semibold" style={{ color: "#292524" }}>
                   {igError.toLowerCase().includes("token") || igError.toLowerCase().includes("expired") || igError.toLowerCase().includes("session")
-                    ? "Token Instagram expirat"
-                    : "Instagram — eroare conexiune"}
+                    ? "Expired Instagram token"
+                    : "Instagram — connection error"}
                 </p>
-                <p className="text-xs" style={{ color: "#A8967E" }}>Reconectează contul din Settings sau verifică permisiunile</p>
+                <p className="text-xs" style={{ color: "#A8967E" }}>Reconnect your account in Settings or check permissions</p>
               </div>
             </div>
             <a href="/settings" className="px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0" style={{ backgroundColor: "#E1306C", color: "white" }}>
-              Reconectează →
+              Reconnect →
             </a>
           </div>
         )}
@@ -245,7 +245,7 @@ export default function DashboardPage() {
               {[
                 { icon: <Users className="w-3 h-3" />, label: "Followers", val: formatNumber(igData.followers_count) },
                 { icon: <PlayCircle className="w-3 h-3" />, label: "Posts", val: formatNumber(igData.media_count) },
-                { icon: <Eye className="w-3 h-3" />, label: "Reach (30z)", val: (() => { const v = igData.insights?.find((i: any) => i.name === "reach")?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
+                { icon: <Eye className="w-3 h-3" />, label: "Reach (30d)", val: (() => { const v = igData.insights?.find((i: any) => i.name === "reach")?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
                 { icon: <TrendingUp className="w-3 h-3" />, label: "Profile Views", val: (() => { const v = igData.insights?.find((i: any) => i.name === "profile_views")?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
               ].map(s => (
                 <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(225,48,108,0.06)" }}>
@@ -276,12 +276,12 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <FbIcon />
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>Token Facebook expirat</p>
-                <p className="text-xs" style={{ color: "#A8967E" }}>Reconectează contul Instagram din Settings pentru a restabili accesul</p>
+                <p className="text-sm font-semibold" style={{ color: "#292524" }}>Facebook token expired</p>
+                <p className="text-xs" style={{ color: "#A8967E" }}>Reconnect your Instagram account in Settings to restore access</p>
               </div>
             </div>
             <a href="/settings" className="px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0" style={{ backgroundColor: "#1877F2", color: "white" }}>
-              Reconectează →
+              Reconnect →
             </a>
           </div>
         )}
@@ -297,8 +297,8 @@ export default function DashboardPage() {
               {[
                 { icon: <Users className="w-3 h-3" />, label: "Page Likes", val: formatNumber(fbData.fan_count) },
                 { icon: <Heart className="w-3 h-3" />, label: "Followers", val: formatNumber(fbData.followers_count) },
-                { icon: <Eye className="w-3 h-3" />, label: "Reach (30z)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_impressions_unique"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
-                { icon: <TrendingUp className="w-3 h-3" />, label: "Page Views (30z)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_views_total"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
+                { icon: <Eye className="w-3 h-3" />, label: "Reach (30d)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_impressions_unique"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
+                { icon: <TrendingUp className="w-3 h-3" />, label: "Page Views (30d)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_views_total"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
               ].map(s => (
                 <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(24,119,242,0.06)" }}>
                   <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>{s.icon}{s.label}</div>
@@ -373,7 +373,7 @@ export default function DashboardPage() {
                 {ytVideos.length === 0 && (
                   <tr>
                     <td colSpan={6} className="px-5 py-8 text-center text-xs" style={{ color: "#C4AA8A" }}>
-                      Se incarca datele YouTube...
+                      Loading YouTube data...
                     </td>
                   </tr>
                 )}

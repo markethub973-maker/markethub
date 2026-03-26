@@ -54,7 +54,7 @@ export default function PlatformShareChart() {
         <p className="text-xs" style={{ color: "#A8967E" }}>% din reach/views reale</p>
       </div>
       {loading ? (
-        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#C4AA8A" }}>Se incarca...</div>
+        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#C4AA8A" }}>Loading...</div>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
           <PieChart>

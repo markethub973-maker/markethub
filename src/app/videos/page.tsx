@@ -1,19 +1,186 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import PlatformBadge from "@/components/ui/PlatformBadge";
 import { formatNumber, formatDate } from "@/lib/utils";
-import { MessageCircle, ThumbsUp, Eye, Search, Loader2, TrendingUp } from "lucide-react";
+import { MessageCircle, ThumbsUp, Eye, Search, Loader2, TrendingUp, Globe, ChevronDown } from "lucide-react";
 import type { YTVideo } from "@/lib/youtube";
 
-const REGIONS = [
-  { label: "🌍 Global (US)", value: "US" },
-  { label: "🇷🇴 Romania", value: "RO" },
-  { label: "🇬🇧 UK", value: "GB" },
-  { label: "🇩🇪 Germany", value: "DE" },
-  { label: "🇫🇷 France", value: "FR" },
+const ALL_COUNTRIES = [
+  { code: "AF", label: "🇦🇫 Afghanistan" },
+  { code: "AL", label: "🇦🇱 Albania" },
+  { code: "DZ", label: "🇩🇿 Algeria" },
+  { code: "AD", label: "🇦🇩 Andorra" },
+  { code: "AO", label: "🇦🇴 Angola" },
+  { code: "AG", label: "🇦🇬 Antigua & Barbuda" },
+  { code: "AR", label: "🇦🇷 Argentina" },
+  { code: "AM", label: "🇦🇲 Armenia" },
+  { code: "AU", label: "🇦🇺 Australia" },
+  { code: "AT", label: "🇦🇹 Austria" },
+  { code: "AZ", label: "🇦🇿 Azerbaijan" },
+  { code: "BS", label: "🇧🇸 Bahamas" },
+  { code: "BH", label: "🇧🇭 Bahrain" },
+  { code: "BD", label: "🇧🇩 Bangladesh" },
+  { code: "BB", label: "🇧🇧 Barbados" },
+  { code: "BY", label: "🇧🇾 Belarus" },
+  { code: "BE", label: "🇧🇪 Belgium" },
+  { code: "BZ", label: "🇧🇿 Belize" },
+  { code: "BJ", label: "🇧🇯 Benin" },
+  { code: "BT", label: "🇧🇹 Bhutan" },
+  { code: "BO", label: "🇧🇴 Bolivia" },
+  { code: "BA", label: "🇧🇦 Bosnia & Herzegovina" },
+  { code: "BW", label: "🇧🇼 Botswana" },
+  { code: "BR", label: "🇧🇷 Brazil" },
+  { code: "BN", label: "🇧🇳 Brunei" },
+  { code: "BG", label: "🇧🇬 Bulgaria" },
+  { code: "BF", label: "🇧🇫 Burkina Faso" },
+  { code: "BI", label: "🇧🇮 Burundi" },
+  { code: "CV", label: "🇨🇻 Cape Verde" },
+  { code: "KH", label: "🇰🇭 Cambodia" },
+  { code: "CM", label: "🇨🇲 Cameroon" },
+  { code: "CA", label: "🇨🇦 Canada" },
+  { code: "CF", label: "🇨🇫 Central African Republic" },
+  { code: "TD", label: "🇹🇩 Chad" },
+  { code: "CL", label: "🇨🇱 Chile" },
+  { code: "CN", label: "🇨🇳 China" },
+  { code: "CO", label: "🇨🇴 Colombia" },
+  { code: "KM", label: "🇰🇲 Comoros" },
+  { code: "CG", label: "🇨🇬 Congo" },
+  { code: "CR", label: "🇨🇷 Costa Rica" },
+  { code: "HR", label: "🇭🇷 Croatia" },
+  { code: "CU", label: "🇨🇺 Cuba" },
+  { code: "CY", label: "🇨🇾 Cyprus" },
+  { code: "CZ", label: "🇨🇿 Czech Republic" },
+  { code: "DK", label: "🇩🇰 Denmark" },
+  { code: "DJ", label: "🇩🇯 Djibouti" },
+  { code: "DO", label: "🇩🇴 Dominican Republic" },
+  { code: "EC", label: "🇪🇨 Ecuador" },
+  { code: "EG", label: "🇪🇬 Egypt" },
+  { code: "SV", label: "🇸🇻 El Salvador" },
+  { code: "GQ", label: "🇬🇶 Equatorial Guinea" },
+  { code: "ER", label: "🇪🇷 Eritrea" },
+  { code: "EE", label: "🇪🇪 Estonia" },
+  { code: "SZ", label: "🇸🇿 Eswatini" },
+  { code: "ET", label: "🇪🇹 Ethiopia" },
+  { code: "FJ", label: "🇫🇯 Fiji" },
+  { code: "FI", label: "🇫🇮 Finland" },
+  { code: "FR", label: "🇫🇷 France" },
+  { code: "GA", label: "🇬🇦 Gabon" },
+  { code: "GM", label: "🇬🇲 Gambia" },
+  { code: "GE", label: "🇬🇪 Georgia" },
+  { code: "DE", label: "🇩🇪 Germany" },
+  { code: "GH", label: "🇬🇭 Ghana" },
+  { code: "GR", label: "🇬🇷 Greece" },
+  { code: "GT", label: "🇬🇹 Guatemala" },
+  { code: "GN", label: "🇬🇳 Guinea" },
+  { code: "GW", label: "🇬🇼 Guinea-Bissau" },
+  { code: "GY", label: "🇬🇾 Guyana" },
+  { code: "HT", label: "🇭🇹 Haiti" },
+  { code: "HN", label: "🇭🇳 Honduras" },
+  { code: "HK", label: "🇭🇰 Hong Kong" },
+  { code: "HU", label: "🇭🇺 Hungary" },
+  { code: "IS", label: "🇮🇸 Iceland" },
+  { code: "IN", label: "🇮🇳 India" },
+  { code: "ID", label: "🇮🇩 Indonesia" },
+  { code: "IQ", label: "🇮🇶 Iraq" },
+  { code: "IE", label: "🇮🇪 Ireland" },
+  { code: "IL", label: "🇮🇱 Israel" },
+  { code: "IT", label: "🇮🇹 Italy" },
+  { code: "CI", label: "🇨🇮 Ivory Coast" },
+  { code: "JM", label: "🇯🇲 Jamaica" },
+  { code: "JP", label: "🇯🇵 Japan" },
+  { code: "JO", label: "🇯🇴 Jordan" },
+  { code: "KZ", label: "🇰🇿 Kazakhstan" },
+  { code: "KE", label: "🇰🇪 Kenya" },
+  { code: "KW", label: "🇰🇼 Kuwait" },
+  { code: "KG", label: "🇰🇬 Kyrgyzstan" },
+  { code: "LA", label: "🇱🇦 Laos" },
+  { code: "LV", label: "🇱🇻 Latvia" },
+  { code: "LB", label: "🇱🇧 Lebanon" },
+  { code: "LS", label: "🇱🇸 Lesotho" },
+  { code: "LR", label: "🇱🇷 Liberia" },
+  { code: "LY", label: "🇱🇾 Libya" },
+  { code: "LI", label: "🇱🇮 Liechtenstein" },
+  { code: "LT", label: "🇱🇹 Lithuania" },
+  { code: "LU", label: "🇱🇺 Luxembourg" },
+  { code: "MG", label: "🇲🇬 Madagascar" },
+  { code: "MW", label: "🇲🇼 Malawi" },
+  { code: "MY", label: "🇲🇾 Malaysia" },
+  { code: "MV", label: "🇲🇻 Maldives" },
+  { code: "ML", label: "🇲🇱 Mali" },
+  { code: "MT", label: "🇲🇹 Malta" },
+  { code: "MR", label: "🇲🇷 Mauritania" },
+  { code: "MU", label: "🇲🇺 Mauritius" },
+  { code: "MX", label: "🇲🇽 Mexico" },
+  { code: "MD", label: "🇲🇩 Moldova" },
+  { code: "MC", label: "🇲🇨 Monaco" },
+  { code: "MN", label: "🇲🇳 Mongolia" },
+  { code: "ME", label: "🇲🇪 Montenegro" },
+  { code: "MA", label: "🇲🇦 Morocco" },
+  { code: "MZ", label: "🇲🇿 Mozambique" },
+  { code: "MM", label: "🇲🇲 Myanmar" },
+  { code: "NA", label: "🇳🇦 Namibia" },
+  { code: "NP", label: "🇳🇵 Nepal" },
+  { code: "NL", label: "🇳🇱 Netherlands" },
+  { code: "NZ", label: "🇳🇿 New Zealand" },
+  { code: "NI", label: "🇳🇮 Nicaragua" },
+  { code: "NE", label: "🇳🇪 Niger" },
+  { code: "NG", label: "🇳🇬 Nigeria" },
+  { code: "MK", label: "🇲🇰 North Macedonia" },
+  { code: "NO", label: "🇳🇴 Norway" },
+  { code: "OM", label: "🇴🇲 Oman" },
+  { code: "PK", label: "🇵🇰 Pakistan" },
+  { code: "PA", label: "🇵🇦 Panama" },
+  { code: "PG", label: "🇵🇬 Papua New Guinea" },
+  { code: "PY", label: "🇵🇾 Paraguay" },
+  { code: "PE", label: "🇵🇪 Peru" },
+  { code: "PH", label: "🇵🇭 Philippines" },
+  { code: "PL", label: "🇵🇱 Poland" },
+  { code: "PT", label: "🇵🇹 Portugal" },
+  { code: "QA", label: "🇶🇦 Qatar" },
+  { code: "RO", label: "🇷🇴 Romania" },
+  { code: "RU", label: "🇷🇺 Russia" },
+  { code: "RW", label: "🇷🇼 Rwanda" },
+  { code: "WS", label: "🇼🇸 Samoa" },
+  { code: "SA", label: "🇸🇦 Saudi Arabia" },
+  { code: "SN", label: "🇸🇳 Senegal" },
+  { code: "RS", label: "🇷🇸 Serbia" },
+  { code: "SL", label: "🇸🇱 Sierra Leone" },
+  { code: "SG", label: "🇸🇬 Singapore" },
+  { code: "SK", label: "🇸🇰 Slovakia" },
+  { code: "SI", label: "🇸🇮 Slovenia" },
+  { code: "SO", label: "🇸🇴 Somalia" },
+  { code: "ZA", label: "🇿🇦 South Africa" },
+  { code: "SS", label: "🇸🇸 South Sudan" },
+  { code: "ES", label: "🇪🇸 Spain" },
+  { code: "LK", label: "🇱🇰 Sri Lanka" },
+  { code: "SD", label: "🇸🇩 Sudan" },
+  { code: "SR", label: "🇸🇷 Suriname" },
+  { code: "SE", label: "🇸🇪 Sweden" },
+  { code: "CH", label: "🇨🇭 Switzerland" },
+  { code: "TW", label: "🇹🇼 Taiwan" },
+  { code: "TJ", label: "🇹🇯 Tajikistan" },
+  { code: "TZ", label: "🇹🇿 Tanzania" },
+  { code: "TH", label: "🇹🇭 Thailand" },
+  { code: "TG", label: "🇹🇬 Togo" },
+  { code: "TT", label: "🇹🇹 Trinidad & Tobago" },
+  { code: "TN", label: "🇹🇳 Tunisia" },
+  { code: "TR", label: "🇹🇷 Turkey" },
+  { code: "TM", label: "🇹🇲 Turkmenistan" },
+  { code: "UG", label: "🇺🇬 Uganda" },
+  { code: "UA", label: "🇺🇦 Ukraine" },
+  { code: "AE", label: "🇦🇪 UAE" },
+  { code: "GB", label: "🇬🇧 United Kingdom" },
+  { code: "US", label: "🇺🇸 United States" },
+  { code: "UY", label: "🇺🇾 Uruguay" },
+  { code: "UZ", label: "🇺🇿 Uzbekistan" },
+  { code: "VE", label: "🇻🇪 Venezuela" },
+  { code: "VN", label: "🇻🇳 Vietnam" },
+  { code: "YE", label: "🇾🇪 Yemen" },
+  { code: "ZM", label: "🇿🇲 Zambia" },
+  { code: "ZW", label: "🇿🇼 Zimbabwe" },
 ];
 
 const SORTS = [
@@ -28,10 +195,24 @@ export default function VideosPage() {
   const [videos, setVideos] = useState<YTVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [region, setRegion] = useState("US");
+  const [isGlobal, setIsGlobal] = useState(true);
+  const [selectedCountry, setSelectedCountry] = useState<{ code: string; label: string } | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [sort, setSort] = useState("views");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [mode, setMode] = useState<"trending" | "search">("trending");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   const fetchTrending = useCallback(async (r: string) => {
     setLoading(true);
@@ -53,7 +234,6 @@ export default function VideosPage() {
     setLoading(false);
   }, []);
 
-  // If navigated here from header search (?q=...)
   useEffect(() => {
     const q = searchParams.get("q");
     if (q) {
@@ -66,6 +246,22 @@ export default function VideosPage() {
   }, []);
 
   useEffect(() => { if (!searchParams.get("q")) fetchTrending(region); }, [region, fetchTrending, searchParams]);
+
+  const handleGlobal = () => {
+    setIsGlobal(true);
+    setSelectedCountry(null);
+    setRegion("US");
+    setDropdownOpen(false);
+  };
+
+  const handleSelectCountry = (country: { code: string; label: string }) => {
+    setSelectedCountry(country);
+    setIsGlobal(false);
+    setRegion(country.code);
+    setDropdownOpen(false);
+  };
+
+  const currentLabel = isGlobal ? "🌍 Global" : (selectedCountry?.label ?? "🌍 Global");
 
   const sorted = [...videos].sort((a, b) => {
     if (sort === "views") return b.views - a.views;
@@ -80,7 +276,7 @@ export default function VideosPage() {
 
   return (
     <div>
-      <Header title="Top Videos" subtitle="Date reale YouTube — actualizate la fiecare ora" />
+      <Header title="Top Videos" subtitle="Real YouTube data — updated every hour" />
 
       <div className="p-6 space-y-5">
         {/* Search Bar */}
@@ -89,7 +285,7 @@ export default function VideosPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
             <input
               type="text"
-              placeholder="Cauta videoclipuri YouTube (ex: fotbal, gaming, muzica...)"
+              placeholder="Search YouTube videos (e.g.: football, gaming, music...)"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && fetchSearch(searchInput)}
@@ -103,7 +299,7 @@ export default function VideosPage() {
             style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
             type="button"
           >
-            Cauta
+            Search
           </button>
           {mode === "search" && (
             <button
@@ -119,27 +315,78 @@ export default function VideosPage() {
 
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
-          <select
-            value={region}
-            onChange={(e) => { setRegion(e.target.value); }}
-            className="px-3 py-2 text-sm rounded-lg focus:outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7", color: "#5C4A35" }}
-            disabled={mode === "search"}
-            title="Selecteaza regiunea"
-            aria-label="Selecteaza regiunea"
-          >
-            {REGIONS.map((r) => (
-              <option key={r.value} value={r.value}>{r.label}</option>
-            ))}
-          </select>
 
+          {/* Global Button */}
+          <button
+            type="button"
+            onClick={handleGlobal}
+            disabled={mode === "search"}
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
+            style={isGlobal && mode !== "search"
+              ? { backgroundColor: "#FF0000", color: "white", border: "1px solid #FF0000" }
+              : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)", opacity: mode === "search" ? 0.5 : 1 }
+            }
+          >
+            <Globe className="w-3.5 h-3.5" />
+            Global
+          </button>
+
+          {/* International Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => mode !== "search" && setDropdownOpen(prev => !prev)}
+              disabled={mode === "search"}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all"
+              style={!isGlobal && mode !== "search"
+                ? { backgroundColor: "#FF0000", color: "white", border: "1px solid #FF0000" }
+                : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)", opacity: mode === "search" ? 0.5 : 1 }
+              }
+            >
+              {!isGlobal ? selectedCountry?.label : "🗺️ International"}
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {dropdownOpen && (
+              <div
+                className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
+                style={{
+                  backgroundColor: "#FFFCF7",
+                  border: "1px solid rgba(245,215,160,0.4)",
+                  boxShadow: "0 8px 24px rgba(120,97,78,0.15)",
+                  maxHeight: "300px",
+                  minWidth: "200px",
+                }}
+              >
+                {ALL_COUNTRIES.map(c => (
+                  <button
+                    key={c.code}
+                    type="button"
+                    onClick={() => handleSelectCountry(c)}
+                    className="w-full text-left px-4 py-2.5 text-sm transition-colors"
+                    style={{
+                      color: selectedCountry?.code === c.code ? "#FF0000" : "#5C4A35",
+                      backgroundColor: selectedCountry?.code === c.code ? "rgba(255,0,0,0.06)" : "transparent",
+                      fontWeight: selectedCountry?.code === c.code ? "600" : "400",
+                    }}
+                    onMouseEnter={e => { if (selectedCountry?.code !== c.code) e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.2)"; }}
+                    onMouseLeave={e => { if (selectedCountry?.code !== c.code) e.currentTarget.style.backgroundColor = "transparent"; }}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Sort */}
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
             className="px-3 py-2 text-sm rounded-lg focus:outline-none"
             style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7", color: "#5C4A35" }}
-            title="Sorteaza dupa"
-            aria-label="Sorteaza dupa"
+            title="Sort by"
+            aria-label="Sort by"
           >
             {SORTS.map((s) => (
               <option key={s.value} value={s.value}>{s.label}</option>
@@ -149,12 +396,12 @@ export default function VideosPage() {
           <div className="ml-auto flex items-center gap-2">
             {mode === "trending" && (
               <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
-                <TrendingUp className="w-3 h-3" /> Trending {REGIONS.find(r => r.value === region)?.label}
+                <TrendingUp className="w-3 h-3" /> Trending {currentLabel}
               </span>
             )}
             {mode === "search" && (
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
-                Rezultate pentru: "{search}"
+                Results for: &quot;{search}&quot;
               </span>
             )}
             <span className="text-sm" style={{ color: "#C4AA8A" }}>{sorted.length} videos</span>
@@ -165,7 +412,7 @@ export default function VideosPage() {
         {loading && (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
-            <span className="ml-3" style={{ color: "#A8967E" }}>Se incarca datele YouTube...</span>
+            <span className="ml-3" style={{ color: "#A8967E" }}>Loading YouTube data...</span>
           </div>
         )}
 
@@ -234,7 +481,7 @@ export default function VideosPage() {
 
         {!loading && sorted.length === 0 && (
           <div className="text-center py-16" style={{ color: "#C4AA8A" }}>
-            <p>Nu s-au gasit rezultate.</p>
+            <p>No results found.</p>
           </div>
         )}
       </div>

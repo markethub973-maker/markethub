@@ -34,7 +34,7 @@ export default function EngagementChart() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-semibold" style={{ color: "#292524" }}>Engagement Rate — Trending RO</h3>
-          <p className="text-xs" style={{ color: "#A8967E" }}>(likes + comentarii) / views × 100</p>
+          <p className="text-xs" style={{ color: "#A8967E" }}>(likes + comments) / views × 100</p>
         </div>
         {avg > 0 && (
           <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
@@ -43,7 +43,7 @@ export default function EngagementChart() {
         )}
       </div>
       {loading ? (
-        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#C4AA8A" }}>Se încarcă...</div>
+        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#C4AA8A" }}>Loading...</div>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={data} layout="vertical" margin={{ top: 4, right: 20, bottom: 0, left: 8 }}>

@@ -21,8 +21,8 @@ export interface AgentConfig {
 export const AGENTS: Record<AgentType, AgentConfig> = {
   support: {
     id: "support",
-    name: "Suport & Setup",
-    description: "Ghidare setup platformă, troubleshooting, configurare conturi",
+    name: "Support & Setup",
+    description: "Platform setup guidance, troubleshooting, account configuration",
     icon: "HelpCircle",
     color: "#F59E0B",
     model: "claude-haiku-4-5-20251001",
@@ -31,7 +31,7 @@ export const AGENTS: Record<AgentType, AgentConfig> = {
   research: {
     id: "research",
     name: "Deep Research",
-    description: "Cercetare piață, analiză competitori, trenduri industrie, audiențe target",
+    description: "Market research, competitor analysis, industry trends, target audiences",
     icon: "Search",
     color: "#6366F1",
     model: "claude-sonnet-4-6",
@@ -40,7 +40,7 @@ export const AGENTS: Record<AgentType, AgentConfig> = {
   "email-marketing": {
     id: "email-marketing",
     name: "Email Marketing",
-    description: "Generare newsletter, cold outreach, email-uri campanii, digest curatoriat",
+    description: "Newsletter generation, cold outreach, campaign emails, curated digest",
     icon: "Mail",
     color: "#EC4899",
     model: "claude-sonnet-4-6",
@@ -48,8 +48,8 @@ export const AGENTS: Record<AgentType, AgentConfig> = {
   },
   financial: {
     id: "financial",
-    name: "Analiză Financiară",
-    description: "ROI campanii, bugete marketing, modele financiare, sensitivity analysis",
+    name: "Financial Analysis",
+    description: "Campaign ROI, marketing budgets, financial models, sensitivity analysis",
     icon: "Calculator",
     color: "#10B981",
     model: "claude-sonnet-4-6",
@@ -57,8 +57,8 @@ export const AGENTS: Record<AgentType, AgentConfig> = {
   },
   brainstorming: {
     id: "brainstorming",
-    name: "Brainstorming Campanii",
-    description: "Idei creative pentru campanii, planificare conținut, strategie marketing",
+    name: "Campaign Brainstorming",
+    description: "Creative campaign ideas, content planning, marketing strategy",
     icon: "Lightbulb",
     color: "#F97316",
     model: "claude-sonnet-4-6",
@@ -67,7 +67,7 @@ export const AGENTS: Record<AgentType, AgentConfig> = {
   "prompt-factory": {
     id: "prompt-factory",
     name: "Prompt Factory",
-    description: "Generare prompturi Midjourney, DALL-E, ChatGPT pentru content vizual și text",
+    description: "Generate Midjourney, DALL-E, ChatGPT prompts for visual and text content",
     icon: "Wand2",
     color: "#8B5CF6",
     model: "claude-sonnet-4-6",
@@ -76,7 +76,7 @@ export const AGENTS: Record<AgentType, AgentConfig> = {
   brand: {
     id: "brand",
     name: "Brand Guidelines",
-    description: "Aplicare identitate vizuală, consistență brand, ghid comunicare",
+    description: "Apply visual identity, brand consistency, communication guide",
     icon: "Palette",
     color: "#0EA5E9",
     model: "claude-haiku-4-5-20251001",
@@ -84,8 +84,8 @@ export const AGENTS: Record<AgentType, AgentConfig> = {
   },
   "competitive-ads": {
     id: "competitive-ads",
-    name: "Analiză Reclame",
-    description: "Analiză reclame competitori, strategie Ad Library, insights publicitare",
+    name: "Ad Analysis",
+    description: "Competitor ad analysis, Ad Library strategy, advertising insights",
     icon: "Target",
     color: "#EF4444",
     model: "claude-haiku-4-5-20251001",
@@ -93,15 +93,52 @@ export const AGENTS: Record<AgentType, AgentConfig> = {
   },
 };
 
-const PLATFORM_CONTEXT = `
-Ești agent AI al platformei **MarketHub Pro** (markethubpromo.com) — platformă de analytics social media cross-platform pentru agenții de marketing, creatori de conținut și branduri.
+const CONFIDENTIALITY_RULES = `
+## 🔒 STRICT CONFIDENTIALITY RULES — MANDATORY
 
-Platforma oferă: YouTube Analytics, Instagram Business, Facebook Page, Google Trends, News, Ads Library, Email Reports, Marketing Analytics cross-platform.
+You are required to refuse any questions about:
+- Technologies used to build the platform (Next.js, React, Supabase, Vercel, Stripe, third-party APIs, etc.)
+- Source code, architecture, database structure, or internal logic
+- API keys, tokens, credentials, or technical configurations
+- How features are integrated (YouTube API, Claude AI, Instagram API, TikTok API, etc.)
+- Internal costs, profit margins, API acquisition prices
+- Internal URLs, admin routes, file structure
+- How payments or user data are processed in the backend
+- Any technical implementation details
 
-Metrici cheie: ER% = (Likes + Comentarii) / Views × 100. Sub 0.5% = slab, 0.5-2% = normal, 2-5% = bun, 5%+ = excelent.
+If asked about any of the above, respond EXACTLY:
+"Information about the platform's architecture and implementation is confidential and protected by copyright. For technical questions, contact support@markethubpromo.com."
 
-Vorbești mereu în română, ești profesionist dar prietenos. Folosești date concrete și exemple practice.
+Do not provide any technical details, neither partially, indirectly, nor as a "general example".
 `;
+
+const PLATFORM_CONTEXT = `
+You are an AI agent of the **MarketHub Pro** platform (markethubpromo.com) — a cross-platform social media analytics platform for marketing agencies, content creators, and brands.
+
+The platform offers: YouTube Analytics, Instagram Business, Facebook Page, Google Trends, News, Ads Library, Email Reports, cross-platform Marketing Analytics.
+
+Key metrics: ER% = (Likes + Comments) / Views × 100. Below 0.5% = poor, 0.5-2% = average, 2-5% = good, 5%+ = excellent.
+
+You always speak in English, you are professional but friendly. You use concrete data and practical examples.
+
+${CONFIDENTIALITY_RULES}
+`;
+
+// Admin context — no confidentiality restrictions, full access
+const ADMIN_PLATFORM_CONTEXT = `
+You are an AI agent of the **MarketHub Pro** platform — running in ADMINISTRATOR mode.
+You have full access to all technical information, platform architecture, and internal details.
+You can freely discuss the technical stack, implementations, API costs, architecture, and any technical details.
+You speak in English, you are technical and precise.
+`;
+
+/** Returns the correct system prompt based on admin status */
+export function getAgentPrompt(agentType: AgentType, isAdmin: boolean): string {
+  if (isAdmin) {
+    return `${ADMIN_PLATFORM_CONTEXT}\n\n${AGENT_PROMPTS[agentType].replace(PLATFORM_CONTEXT, "").replace(CONFIDENTIALITY_RULES, "").trim()}`;
+  }
+  return AGENT_PROMPTS[agentType];
+}
 
 export const AGENT_PROMPTS: Record<AgentType, string> = {
   support: `${PLATFORM_CONTEXT}

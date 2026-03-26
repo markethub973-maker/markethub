@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
 import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame, Download } from "lucide-react";
@@ -11,6 +12,7 @@ const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,
 type Tab = "recent" | "popular" | "search";
 
 export default function MyChannelPage() {
+  const searchParams = useSearchParams();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,11 +29,23 @@ export default function MyChannelPage() {
     fetch(`/api/youtube/my-channel?${params}`)
       .then(r => r.json())
       .then(d => { if (d.error) setError(d.error); else { setData(d); setError(null); } })
-      .catch(() => setError("Eroare de conexiune"))
+      .catch(() => setError("Connection error"))
       .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => { fetchData("date"); }, [fetchData]);
+
+  // Handle ?q= from header search
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) {
+      setTab("search");
+      setSearchInput(q);
+      setSearchQ(q);
+      fetchData("relevance", q);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const switchTab = (t: Tab) => {
     setTab(t);
@@ -60,14 +74,14 @@ export default function MyChannelPage() {
   if (error === "No channel connected") {
     return (
       <div>
-        <Header title="My Channel" subtitle="Statistici canal YouTube" />
+        <Header title="My Channel" subtitle="YouTube channel statistics" />
         <div className="p-6">
           <div className="rounded-xl p-8 text-center" style={cardStyle}>
             <Youtube className="w-12 h-12 mx-auto mb-4" style={{ color: "#FF0000" }} />
-            <h3 className="font-bold text-lg mb-2" style={{ color: "#292524" }}>Canal neconectat</h3>
-            <p className="text-sm mb-4" style={{ color: "#A8967E" }}>Mergi la Settings si adauga Channel ID-ul tau YouTube.</p>
+            <h3 className="font-bold text-lg mb-2" style={{ color: "#292524" }}>Channel not connected</h3>
+            <p className="text-sm mb-4" style={{ color: "#A8967E" }}>Go to Settings and add your YouTube Channel ID.</p>
             <a href="/settings" className="inline-flex px-5 py-2.5 rounded-lg text-sm font-bold" style={{ backgroundColor: "#FF0000", color: "white" }}>
-              Mergi la Settings →
+              Go to Settings →
             </a>
           </div>
         </div>
@@ -78,10 +92,10 @@ export default function MyChannelPage() {
   if (error) {
     return (
       <div>
-        <Header title="My Channel" subtitle="Statistici canal YouTube" />
+        <Header title="My Channel" subtitle="YouTube channel statistics" />
         <div className="p-6">
           <div className="rounded-xl p-6" style={cardStyle}>
-            <p className="text-sm" style={{ color: "#dc2626" }}>Eroare: {error}</p>
+            <p className="text-sm" style={{ color: "#dc2626" }}>Error: {error}</p>
           </div>
         </div>
       </div>
@@ -110,14 +124,14 @@ export default function MyChannelPage() {
     : [];
 
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: "recent", label: "Recente", icon: <Clock className="w-3.5 h-3.5" /> },
-    { key: "popular", label: "Cele mai vizionate", icon: <Flame className="w-3.5 h-3.5" /> },
-    { key: "search", label: "Caută", icon: <Search className="w-3.5 h-3.5" /> },
+    { key: "recent", label: "Recent", icon: <Clock className="w-3.5 h-3.5" /> },
+    { key: "popular", label: "Most Viewed", icon: <Flame className="w-3.5 h-3.5" /> },
+    { key: "search", label: "Search", icon: <Search className="w-3.5 h-3.5" /> },
   ];
 
   return (
     <div>
-      <Header title="My Channel" subtitle="Statistici canal YouTube" />
+      <Header title="My Channel" subtitle="YouTube channel statistics" />
       <div className="p-6 space-y-6">
 
         {/* Channel Header */}
@@ -131,12 +145,12 @@ export default function MyChannelPage() {
               </div>
               {data.description && <p className="text-xs line-clamp-2" style={{ color: "#A8967E" }}>{data.description}</p>}
               <p className="text-xs mt-1" style={{ color: "#C4AA8A" }}>
-                Pe YouTube din {formatDate(data.publishedAt)}{data.country ? ` · ${data.country}` : ""}
+                On YouTube since {formatDate(data.publishedAt)}{data.country ? ` · ${data.country}` : ""}
               </p>
             </div>
             <a href={`https://www.youtube.com/channel/${data.id}`} target="_blank" rel="noopener noreferrer"
               className="px-4 py-2 rounded-lg text-xs font-bold flex-shrink-0" style={{ backgroundColor: "#FF0000", color: "white" }}>
-              Vezi canal →
+              View Channel →
             </a>
           </div>
         )}
@@ -218,20 +232,20 @@ export default function MyChannelPage() {
                 value={searchInput}
                 onChange={e => setSearchInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleSearch()}
-                placeholder="Cauta in canalul tau..."
+                placeholder="Search your channel..."
                 className="flex-1 px-3 py-2 text-sm rounded-lg focus:outline-none"
                 style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }}
               />
               <button type="button" onClick={handleSearch}
                 className="px-4 py-2 rounded-lg text-sm font-bold"
                 style={{ backgroundColor: "#FF0000", color: "white" }}>
-                Cauta
+                Search
               </button>
             </div>
           )}
 
           {loading ? (
-            <div className="px-5 py-10 text-center text-xs" style={{ color: "#C4AA8A" }}>Se incarca...</div>
+            <div className="px-5 py-10 text-center text-xs" style={{ color: "#C4AA8A" }}>Loading...</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -243,7 +257,7 @@ export default function MyChannelPage() {
                       { key: "likes", label: "Likes" },
                       { key: "comments", label: "Comments" },
                       { key: "er", label: "ER" },
-                      { key: "publishedAt", label: "Publicat" },
+                      { key: "publishedAt", label: "Published" },
                     ].map(col => (
                       <th key={col.key} className="text-right px-3 py-3 cursor-pointer select-none" onClick={() => handleSort(col.key)}>
                         <div className="flex items-center justify-end gap-1">{col.label}<SortIcon col={col.key} /></div>
@@ -253,7 +267,7 @@ export default function MyChannelPage() {
                 </thead>
                 <tbody>
                   {sortedVideos.length === 0 ? (
-                    <tr><td colSpan={6} className="px-5 py-8 text-center text-xs" style={{ color: "#C4AA8A" }}>Niciun rezultat</td></tr>
+                    <tr><td colSpan={6} className="px-5 py-8 text-center text-xs" style={{ color: "#C4AA8A" }}>No results</td></tr>
                   ) : sortedVideos.map((v: any) => {
                     const er = v._er.toFixed(1);
                     return (

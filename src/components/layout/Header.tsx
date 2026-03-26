@@ -1,7 +1,7 @@
 "use client";
 
 import { Bell, Search, ChevronDown, LogOut, User } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 
 interface HeaderProps {
@@ -9,12 +9,27 @@ interface HeaderProps {
   subtitle?: string;
 }
 
+const SEARCH_CONFIG: Record<string, { placeholder: string }> = {
+  "/videos":      { placeholder: "Search YouTube videos..." },
+  "/trending":    { placeholder: "Search trending videos..." },
+  "/news":        { placeholder: "Search news..." },
+  "/ads-library": { placeholder: "Search ads & brands..." },
+  "/my-channel":  { placeholder: "Search my videos..." },
+  "/channels":    { placeholder: "Search channels..." },
+  "/trends":      { placeholder: "Search Google Trends keyword..." },
+  "/calendar":    { placeholder: "Search posts..." },
+};
+
 export default function Header({ title, subtitle }: HeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const [username, setUsername] = useState("admin");
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const searchConfig = SEARCH_CONFIG[pathname];
+  const showSearch = !!searchConfig;
 
   useEffect(() => {
     const u = localStorage.getItem("mh_user");
@@ -32,9 +47,14 @@ export default function Header({ title, subtitle }: HeaderProps) {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  // Reset search input when navigating to a different page
+  useEffect(() => {
+    setSearchQuery("");
+  }, [pathname]);
+
   const handleSearch = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && searchQuery.trim()) {
-      router.push(`/videos?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`${pathname}?q=${encodeURIComponent(searchQuery.trim())}`);
       setSearchQuery("");
     }
   };
@@ -53,27 +73,29 @@ export default function Header({ title, subtitle }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Search */}
-        <div className="relative hidden md:flex items-center">
-          <Search className="absolute left-3 w-4 h-4" style={{ color: "#C4AA8A" }} />
-          <input
-            type="text"
-            placeholder="Cauta videoclipuri... (Enter)"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleSearch}
-            className="pl-9 pr-4 py-2 text-sm rounded-lg w-56 focus:outline-none"
-            style={{ backgroundColor: "#F5EFE6", border: "1px solid rgba(245,215,160,0.3)", color: "#292524" }}
-            onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
-            onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.3)")}
-          />
-        </div>
+        {/* Context-aware Search — only on supported pages */}
+        {showSearch && (
+          <div className="relative hidden md:flex items-center">
+            <Search className="absolute left-3 w-4 h-4" style={{ color: "#C4AA8A" }} />
+            <input
+              type="text"
+              placeholder={searchConfig.placeholder}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearch}
+              className="pl-9 pr-4 py-2 text-sm rounded-lg w-60 focus:outline-none"
+              style={{ backgroundColor: "#F5EFE6", border: "1px solid rgba(245,215,160,0.3)", color: "#292524" }}
+              onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
+              onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.3)")}
+            />
+          </div>
+        )}
 
         {/* Notifications */}
         <button
           type="button"
-          title="Notificari"
-          aria-label="Notificari"
+          title="Notifications"
+          aria-label="Notifications"
           className="relative p-2 rounded-lg transition-colors"
           style={{ color: "#78614E" }}
           onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.15)")}
@@ -118,7 +140,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
               >
                 <User className="w-3.5 h-3.5" />
-                Contul meu
+                My Account
               </button>
               <button
                 type="button"

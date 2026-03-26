@@ -35,7 +35,7 @@ function StatCard({ label, value, sub, color, icon: Icon }: { label: string; val
 
 function EngBadge({ rate }: { rate: number }) {
   const color = rate >= 5 ? "#1DB954" : rate >= 2 ? AMBER : rate >= 0.5 ? "#F59E0B" : "#EF4444";
-  const label = rate >= 5 ? "Excelent" : rate >= 2 ? "Bun" : rate >= 0.5 ? "Normal" : "Slab";
+  const label = rate >= 5 ? "Excellent" : rate >= 2 ? "Good" : rate >= 0.5 ? "Average" : "Poor";
   return (
     <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: color + "18", color }}>
       {rate.toFixed(2)}% — {label}
@@ -47,7 +47,7 @@ function timeAgo(ts: string) {
   const diff = (Date.now() - new Date(ts).getTime()) / 1000;
   if (diff < 3600) return `${Math.floor(diff / 60)}m`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
-  return `${Math.floor(diff / 86400)}z`;
+  return `${Math.floor(diff / 86400)}d`;
 }
 
 export default function MarketingPage() {
@@ -113,7 +113,7 @@ export default function MarketingPage() {
 
   // Day of week analysis
   const dayStats = ytVideos.reduce((acc: any, v: any) => {
-    const day = new Date(v.publishedAt).toLocaleDateString("ro-RO", { weekday: "short" });
+    const day = new Date(v.publishedAt).toLocaleDateString("en-US", { weekday: "short" });
     if (!acc[day]) acc[day] = { views: 0, count: 0 };
     acc[day].views += v.views;
     acc[day].count += 1;
@@ -128,9 +128,9 @@ export default function MarketingPage() {
   if (loading) {
     return (
       <div>
-        <Header title="Marketing Analytics" subtitle="YouTube · Facebook · Instagram — date cross-platform" />
+        <Header title="Marketing Analytics" subtitle="YouTube · Facebook · Instagram — cross-platform data" />
         <div className="p-6 flex items-center justify-center h-64">
-          <p className="text-sm" style={{ color: "#C4AA8A" }}>Se incarca datele...</p>
+          <p className="text-sm" style={{ color: "#C4AA8A" }}>Loading data...</p>
         </div>
       </div>
     );
@@ -139,17 +139,17 @@ export default function MarketingPage() {
   if (!hasAnyData) {
     return (
       <div>
-        <Header title="Marketing Analytics" subtitle="YouTube · Facebook · Instagram — date cross-platform" />
+        <Header title="Marketing Analytics" subtitle="YouTube · Facebook · Instagram — cross-platform data" />
         <div className="p-6">
           <div className="rounded-xl p-8 text-center" style={cardStyle}>
             <AlertCircle className="w-12 h-12 mx-auto mb-4" style={{ color: "rgba(239,68,68,0.4)" }} />
-            <p className="font-semibold text-lg mb-2" style={{ color: "#292524" }}>Niciun canal conectat</p>
+            <p className="font-semibold text-lg mb-2" style={{ color: "#292524" }}>No channel connected</p>
             <p className="text-sm mb-6" style={{ color: "#A8967E" }}>
-              Adauga YouTube Channel ID din Settings pentru a vedea datele de marketing.
+              Add your YouTube Channel ID from Settings to see marketing data.
             </p>
             <a href="/settings" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold"
               style={{ backgroundColor: AMBER, color: "#1C1814" }}>
-              Configureaza din Settings
+              Configure in Settings
             </a>
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function MarketingPage() {
 
   return (
     <div>
-      <Header title="Marketing Analytics" subtitle="YouTube · Facebook · Instagram — date cross-platform" />
+      <Header title="Marketing Analytics" subtitle="YouTube · Facebook · Instagram — cross-platform data" />
       <div className="p-6 space-y-5">
 
         {/* Channel Header */}
@@ -200,7 +200,7 @@ export default function MarketingPage() {
                 )}
                 <div className="flex items-center gap-1 mt-2">
                   <EngBadge rate={ytAvgER} />
-                  <span className="text-xs ml-2" style={{ color: "#A8967E" }}>engagement rate mediu YouTube</span>
+                  <span className="text-xs ml-2" style={{ color: "#A8967E" }}>average YouTube engagement rate</span>
                 </div>
               </div>
             </div>
@@ -210,7 +210,7 @@ export default function MarketingPage() {
         {/* Tabs */}
         <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ backgroundColor: "rgba(245,215,160,0.1)", border: "1px solid rgba(245,215,160,0.25)" }}>
           {([
-            ["overview", "Sumar Campanie"],
+            ["overview", "Campaign Summary"],
             ["youtube", "YouTube Analytics"],
             ["insights", "Cross-Platform"],
           ] as const).map(([t, label]) => (
@@ -228,27 +228,27 @@ export default function MarketingPage() {
             {/* KPI Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatCard
-                label="Abonati YouTube"
+                label="YouTube Subscribers"
                 value={ytChannel ? formatNumber(ytChannel.subscribers) : "—"}
-                sub={ytChannel ? `${formatNumber(ytChannel.videoCount)} videouri` : undefined}
+                sub={ytChannel ? `${formatNumber(ytChannel.videoCount)} videos` : undefined}
                 color={YT} icon={Users}
               />
               <StatCard
-                label="Views totale canal"
+                label="Total Channel Views"
                 value={ytChannel ? formatNumber(ytChannel.totalViews) : "—"}
-                sub="de la crearea canalului"
+                sub="since channel creation"
                 color={AMBER} icon={Eye}
               />
               <StatCard
-                label="Views recente"
+                label="Recent Views"
                 value={ytVideos.length > 0 ? formatNumber(ytTotalViews) : "—"}
-                sub={`ultimele ${ytVideos.length} videouri`}
+                sub={`last ${ytVideos.length} videos`}
                 color="#8B5CF6" icon={TrendingUp}
               />
               <StatCard
                 label={igData ? "Followers Instagram" : fbData ? "Followers Facebook" : "Trending RO"}
                 value={igData ? formatNumber(igData.followers_count) : fbData ? formatNumber(fbData.followers_count || fbData.fan_count) : formatNumber(trendingViews)}
-                sub={igData ? `${igData.media_count} postari` : fbData ? fbData.name : `${ytTrending.length} videouri trending`}
+                sub={igData ? `${igData.media_count} posts` : fbData ? fbData.name : `${ytTrending.length} trending videos`}
                 color={igData ? IG : fbData ? FB : YT} icon={igData ? Instagram : Users}
               />
             </div>
@@ -259,7 +259,7 @@ export default function MarketingPage() {
               <div className="rounded-xl p-5" style={cardStyle}>
                 <div className="flex items-center gap-2 mb-4">
                   <Clock className="w-4 h-4" style={{ color: YT }} />
-                  <h3 className="font-semibold" style={{ color: "#292524" }}>Cele mai bune zile de postare</h3>
+                  <h3 className="font-semibold" style={{ color: "#292524" }}>Best days to post</h3>
                 </div>
                 {bestDays.length > 0 ? (
                   <div className="space-y-2">
@@ -275,7 +275,7 @@ export default function MarketingPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm" style={{ color: "#C4AA8A" }}>Insuficiente date — adauga Channel ID din Settings.</p>
+                  <p className="text-sm" style={{ color: "#C4AA8A" }}>Insufficient data — add Channel ID from Settings.</p>
                 )}
               </div>
 
@@ -283,7 +283,7 @@ export default function MarketingPage() {
               <div className="rounded-xl p-5" style={cardStyle}>
                 <div className="flex items-center gap-2 mb-4">
                   <BarChart2 className="w-4 h-4" style={{ color: AMBER }} />
-                  <h3 className="font-semibold" style={{ color: "#292524" }}>Distributie followers per platforma</h3>
+                  <h3 className="font-semibold" style={{ color: "#292524" }}>Follower distribution by platform</h3>
                 </div>
                 {platformData.length > 0 ? (
                   <div className="flex items-center gap-4">
@@ -305,7 +305,7 @@ export default function MarketingPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm" style={{ color: "#C4AA8A" }}>Conecteaza cel putin o platforma.</p>
+                  <p className="text-sm" style={{ color: "#C4AA8A" }}>Connect at least one platform.</p>
                 )}
               </div>
             </div>
@@ -314,35 +314,35 @@ export default function MarketingPage() {
             <div className="rounded-xl p-5" style={cardStyle}>
               <div className="flex items-center gap-2 mb-4">
                 <Star className="w-4 h-4" style={{ color: AMBER }} />
-                <h3 className="font-semibold" style={{ color: "#292524" }}>Recomandari pentru campanii</h3>
+                <h3 className="font-semibold" style={{ color: "#292524" }}>Campaign recommendations</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {[
                   {
                     title: "Engagement Rate",
                     text: ytAvgER >= 5
-                      ? `ER de ${ytAvgER.toFixed(1)}% e excelent — audienta e foarte activa. Ideal pentru sponsorizari.`
+                      ? `ER of ${ytAvgER.toFixed(1)}% is excellent — the audience is very active. Ideal for sponsorships.`
                       : ytAvgER >= 2
-                      ? `ER de ${ytAvgER.toFixed(1)}% e bun. Creste interactiunea prin intrebari si call-to-action in videouri.`
+                      ? `ER of ${ytAvgER.toFixed(1)}% is good. Increase interaction through questions and call-to-actions in your videos.`
                       : ytAvgER > 0
-                      ? `ER de ${ytAvgER.toFixed(1)}% e sub medie. Focuseaza-te pe continut care genereaza comentarii.`
-                      : "Conecteaza canalul YouTube din Settings.",
+                      ? `ER of ${ytAvgER.toFixed(1)}% is below average. Focus on content that generates comments.`
+                      : "Connect your YouTube channel from Settings.",
                     color: ytAvgER >= 5 ? "#1DB954" : ytAvgER >= 2 ? AMBER : "#EF4444",
                   },
                   {
-                    title: "Frecventa postare",
+                    title: "Posting Frequency",
                     text: ytChannel
-                      ? `Ai ${formatNumber(ytChannel.videoCount)} videouri pe canal. ${ytChannel.videoCount < 50 ? "Creste frecventa la 2-3 videouri/saptamana." : "Frecventa e buna — mentine consistenta."}`
-                      : "Conecteaza canalul YouTube din Settings.",
+                      ? `You have ${formatNumber(ytChannel.videoCount)} videos on your channel. ${ytChannel.videoCount < 50 ? "Increase frequency to 2-3 videos/week." : "Frequency is good — maintain consistency."}`
+                      : "Connect your YouTube channel from Settings.",
                     color: YT,
                   },
                   {
                     title: "Cross-Platform",
                     text: platformData.length >= 3
-                      ? "Prezenta pe 3 platforme! Asigura-te ca reutilizezi continutul YouTube pe Instagram Reels si Facebook."
+                      ? "Present on 3 platforms! Make sure you repurpose YouTube content on Instagram Reels and Facebook."
                       : platformData.length === 2
-                      ? "Esti pe 2 platforme. Adauga si a treia pentru reach maxim."
-                      : "Esti doar pe o platforma. Extinde-te pe Instagram si Facebook pentru mai multa vizibilitate.",
+                      ? "You're on 2 platforms. Add a third for maximum reach."
+                      : "You're on just one platform. Expand to Instagram and Facebook for more visibility.",
                     color: "#8B5CF6",
                   },
                 ].map((r, i) => (
@@ -360,16 +360,16 @@ export default function MarketingPage() {
         {activeTab === "youtube" && (
           <div className="space-y-5">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <StatCard label="Views recente" value={formatNumber(ytTotalViews)} sub={`${ytVideos.length} videouri`} color={YT} icon={Eye} />
-              <StatCard label="Likes recente" value={formatNumber(ytTotalLikes)} color={AMBER} icon={ThumbsUp} />
-              <StatCard label="Comentarii" value={formatNumber(ytTotalComments)} color="#8B5CF6" icon={MessageCircle} />
-              <StatCard label="ER Mediu" value={`${ytAvgER.toFixed(2)}%`} sub="engagement rate" color="#1DB954" icon={TrendingUp} />
+              <StatCard label="Recent Views" value={formatNumber(ytTotalViews)} sub={`${ytVideos.length} videos`} color={YT} icon={Eye} />
+              <StatCard label="Recent Likes" value={formatNumber(ytTotalLikes)} color={AMBER} icon={ThumbsUp} />
+              <StatCard label="Comments" value={formatNumber(ytTotalComments)} color="#8B5CF6" icon={MessageCircle} />
+              <StatCard label="Avg ER" value={`${ytAvgER.toFixed(2)}%`} sub="engagement rate" color="#1DB954" icon={TrendingUp} />
             </div>
 
             {/* Video Performance Chart */}
             {videoChartData.length > 0 && (
               <div className="rounded-xl p-5" style={cardStyle}>
-                <h3 className="font-semibold mb-4" style={{ color: "#292524" }}>Performanta per video — views</h3>
+                <h3 className="font-semibold mb-4" style={{ color: "#292524" }}>Video performance — views</h3>
                 <ResponsiveContainer width="100%" height={250}>
                   <BarChart data={videoChartData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(245,215,160,0.2)" />
@@ -392,7 +392,7 @@ export default function MarketingPage() {
             {/* Best Video */}
             {bestVideo && (
               <div className="rounded-xl p-5" style={cardStyle}>
-                <h3 className="font-semibold mb-3" style={{ color: "#292524" }}>Cel mai performant video</h3>
+                <h3 className="font-semibold mb-3" style={{ color: "#292524" }}>Best performing video</h3>
                 <div className="flex items-start gap-4">
                   {bestVideo.thumbnail && (
                     <img src={bestVideo.thumbnail} alt="" className="w-40 h-24 rounded-lg object-cover flex-shrink-0" />
@@ -410,7 +410,7 @@ export default function MarketingPage() {
                         <ThumbsUp className="w-3 h-3" />{formatNumber(bestVideo.likes)} likes
                       </span>
                       <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                        <MessageCircle className="w-3 h-3" />{formatNumber(bestVideo.comments)} comentarii
+                        <MessageCircle className="w-3 h-3" />{formatNumber(bestVideo.comments)} comments
                       </span>
                     </div>
                     <div className="mt-2">
@@ -425,13 +425,13 @@ export default function MarketingPage() {
             {ytVideos.length > 0 && (
               <div className="rounded-xl overflow-hidden" style={cardStyle}>
                 <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                  <h3 className="font-semibold" style={{ color: "#292524" }}>Toate videourile recente</h3>
+                  <h3 className="font-semibold" style={{ color: "#292524" }}>All recent videos</h3>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
                       <tr style={{ borderBottom: "1px solid rgba(245,215,160,0.15)" }}>
-                        {["#", "Video", "Views", "Likes", "Comentarii", "ER%", "Data"].map(h => (
+                        {["#", "Video", "Views", "Likes", "Comments", "ER%", "Date"].map(h => (
                           <th key={h} className="px-4 py-3 text-left font-semibold" style={{ color: "#A8967E" }}>{h}</th>
                         ))}
                       </tr>
@@ -454,7 +454,7 @@ export default function MarketingPage() {
                             <td className="px-4 py-2.5" style={{ color: "#78614E" }}>{formatNumber(v.likes)}</td>
                             <td className="px-4 py-2.5" style={{ color: "#78614E" }}>{formatNumber(v.comments)}</td>
                             <td className="px-4 py-2.5"><EngBadge rate={er} /></td>
-                            <td className="px-4 py-2.5" style={{ color: "#C4AA8A" }}>{timeAgo(v.publishedAt)} in urma</td>
+                            <td className="px-4 py-2.5" style={{ color: "#C4AA8A" }}>{timeAgo(v.publishedAt)} ago</td>
                           </tr>
                         );
                       })}
@@ -467,7 +467,7 @@ export default function MarketingPage() {
             {ytVideos.length === 0 && (
               <div className="rounded-xl p-8 text-center" style={cardStyle}>
                 <p className="text-sm" style={{ color: "#C4AA8A" }}>
-                  Nu exista date YouTube. Adauga Channel ID din Settings.
+                  No YouTube data. Add Channel ID from Settings.
                 </p>
               </div>
             )}
@@ -480,24 +480,24 @@ export default function MarketingPage() {
             {/* Cross-platform summary */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatCard
-                label="YouTube Abonati"
+                label="YouTube Subscribers"
                 value={ytChannel ? formatNumber(ytChannel.subscribers) : "—"}
                 color={YT} icon={Users}
               />
               <StatCard
                 label="Instagram Followers"
                 value={igData ? formatNumber(igData.followers_count) : "—"}
-                sub={igData ? `@${igData.username}` : "neconectat"}
+                sub={igData ? `@${igData.username}` : "not connected"}
                 color={IG} icon={Users}
               />
               <StatCard
                 label="Facebook Followers"
                 value={fbData ? formatNumber(fbData.followers_count || fbData.fan_count) : "—"}
-                sub={fbData ? fbData.name : "neconectat"}
+                sub={fbData ? fbData.name : "not connected"}
                 color={FB} icon={Users}
               />
               <StatCard
-                label="Total Audienta"
+                label="Total Audience"
                 value={formatNumber(
                   (ytChannel?.subscribers || 0) +
                   (igData?.followers_count || 0) +
@@ -513,7 +513,7 @@ export default function MarketingPage() {
               <div className="rounded-xl p-5" style={cardStyle}>
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp className="w-4 h-4" style={{ color: AMBER }} />
-                  <h3 className="font-semibold" style={{ color: "#292524" }}>Google Trends — topicuri populare</h3>
+                  <h3 className="font-semibold" style={{ color: "#292524" }}>Google Trends — popular topics</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {trends.slice(0, 10).map((t: any, i: number) => (
@@ -563,7 +563,7 @@ export default function MarketingPage() {
               <div className="rounded-xl p-5" style={cardStyle}>
                 <div className="flex items-center gap-2 mb-4">
                   <Instagram className="w-4 h-4" style={{ color: IG }} />
-                  <h3 className="font-semibold" style={{ color: "#292524" }}>Ultimele postari Instagram</h3>
+                  <h3 className="font-semibold" style={{ color: "#292524" }}>Latest Instagram Posts</h3>
                 </div>
                 <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                   {igData.media.slice(0, 6).map((m: any) => (

@@ -1,206 +1,617 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
-import { CheckCircle, XCircle } from "lucide-react";
+  Plus, X, Search, Loader2, Users, TrendingUp, Heart, MessageCircle,
+  Eye, Instagram, Zap, Trash2, RefreshCw, ExternalLink, BarChart3,
+  ShieldCheck, Image, Video, ChevronDown, ChevronUp, ArrowUpDown
+} from "lucide-react";
 
-// Date publice actualizate — surse: G2, Capterra, site-uri oficiale (martie 2026)
-const competitors = [
-  { name: "Sprout Social", pricing: "$249/mo", features: ["Instagram", "Facebook", "YouTube", "TikTok"], strength: "Management", g2Rating: 4.4, capterra: 4.4 },
-  { name: "Hootsuite", pricing: "$99/mo", features: ["Instagram", "Facebook", "YouTube", "TikTok"], strength: "Scheduling", g2Rating: 4.2, capterra: 4.4 },
-  { name: "Brandwatch", pricing: "$1000/mo", features: ["Instagram", "Facebook", "YouTube", "TikTok"], strength: "Enterprise Analytics", g2Rating: 4.4, capterra: 4.2 },
-  { name: "Socialbakers", pricing: "$200/mo", features: ["Instagram", "Facebook"], strength: "AI Analytics", g2Rating: 4.0, capterra: 4.1 },
-  { name: "MarketHub Pro", pricing: "$49/mo", features: ["Instagram", "Facebook", "YouTube", "TikTok"], strength: "Valoare + Pret", g2Rating: null, capterra: null },
-];
+const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const IG = "#E1306C";
+const TT = "#00F2EA";
+const TT2 = "#FF0050";
 
-const pricingData = competitors.map(c => ({
-  name: c.name,
-  price: parseInt(c.pricing.replace(/[^0-9]/g, ""), 10),
-}));
+type IGProfile = {
+  username: string;
+  fullName: string;
+  biography: string;
+  avatar: string;
+  followers: number;
+  following: number;
+  postsCount: number;
+  isVerified: boolean;
+  isPrivate: boolean;
+  externalUrl: string | null;
+  category: string | null;
+};
 
-const COLORS = ["#94a3b8", "#78350F", "#92400E", "#D97706", "#F59E0B"];
+type IGPost = {
+  id: string;
+  shortcode: string;
+  thumbnail: string;
+  isVideo: boolean;
+  videoViews: number;
+  likes: number;
+  comments: number;
+  caption: string;
+  timestamp: number;
+};
 
-const tooltipStyle = { fontSize: 12, borderRadius: 8, border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7", color: "#292524" };
+type TikTokUser = {
+  uniqueId: string;
+  nickname: string;
+  avatar: string | null;
+  followers: number;
+  following: number;
+  likes: number;
+  videos: number;
+  verified: boolean;
+  bio: string | null;
+};
+
+type Competitor = {
+  id: string;
+  name: string;
+  igUsername: string;
+  tiktokUsername: string;
+  igData: { profile: IGProfile; engagementRate: number; posts: IGPost[] } | null;
+  tiktokData: TikTokUser | null;
+  lastUpdated: number;
+};
+
+function formatNum(n: number) {
+  if (!n) return "0";
+  if (n >= 1_000_000_000) return (n / 1_000_000_000).toFixed(1) + "B";
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
+  return n.toLocaleString();
+}
+
+function proxyImg(url: string) {
+  if (!url) return "";
+  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+}
+
+function timeAgo(ts: number) {
+  const diff = Date.now() - ts;
+  if (diff < 60000) return "just now";
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h`;
+  return `${Math.floor(diff / 86400000)}d`;
+}
+
+function loadCompetitors(): Competitor[] {
+  if (typeof window === "undefined") return [];
+  const stored = localStorage.getItem("mhp_competitors");
+  return stored ? JSON.parse(stored) : [];
+}
+
+function saveCompetitors(list: Competitor[]) {
+  localStorage.setItem("mhp_competitors", JSON.stringify(list));
+}
 
 export default function CompetitorsPage() {
+  const [competitors, setCompetitors] = useState<Competitor[]>(loadCompetitors);
+  const [showForm, setShowForm] = useState(false);
+  const [formName, setFormName] = useState("");
+  const [formIG, setFormIG] = useState("");
+  const [formTT, setFormTT] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [refreshingId, setRefreshingId] = useState<string | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [compareMode, setCompareMode] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    saveCompetitors(competitors);
+  }, [competitors]);
+
+  const fetchIGData = async (username: string) => {
+    if (!username) return null;
+    const res = await fetch(`/api/instagram-scraper?username=${encodeURIComponent(username)}`);
+    const data = await res.json();
+    if (data.error) return null;
+    return data as { profile: IGProfile; engagementRate: number; posts: IGPost[] };
+  };
+
+  const fetchTTData = async (username: string) => {
+    if (!username) return null;
+    const res = await fetch(`/api/tiktok?q=${encodeURIComponent(username)}&count=5`);
+    const data = await res.json();
+    if (data.error || !data.users?.length) return null;
+    const match = data.users.find((u: TikTokUser) =>
+      u.uniqueId.toLowerCase() === username.toLowerCase()
+    ) || data.users[0];
+    return match as TikTokUser;
+  };
+
+  const addCompetitor = async () => {
+    if (!formName.trim() || (!formIG.trim() && !formTT.trim())) return;
+    setAdding(true);
+    setError("");
+
+    try {
+      const [igData, tiktokData] = await Promise.all([
+        fetchIGData(formIG.trim().replace(/^@/, "")),
+        fetchTTData(formTT.trim().replace(/^@/, "")),
+      ]);
+
+      if (!igData && !tiktokData) {
+        setError("No data found for any username. Please check if they are correct.");
+        setAdding(false);
+        return;
+      }
+
+      const newComp: Competitor = {
+        id: Date.now().toString(),
+        name: formName.trim(),
+        igUsername: formIG.trim().replace(/^@/, ""),
+        tiktokUsername: formTT.trim().replace(/^@/, ""),
+        igData,
+        tiktokData,
+        lastUpdated: Date.now(),
+      };
+
+      setCompetitors(prev => [...prev, newComp]);
+      setFormName("");
+      setFormIG("");
+      setFormTT("");
+      setShowForm(false);
+    } catch {
+      setError("Error fetching data");
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const refreshCompetitor = async (id: string) => {
+    setRefreshingId(id);
+    const comp = competitors.find(c => c.id === id);
+    if (!comp) { setRefreshingId(null); return; }
+
+    const [igData, tiktokData] = await Promise.all([
+      fetchIGData(comp.igUsername),
+      fetchTTData(comp.tiktokUsername),
+    ]);
+
+    setCompetitors(prev => prev.map(c =>
+      c.id === id ? { ...c, igData: igData || c.igData, tiktokData: tiktokData || c.tiktokData, lastUpdated: Date.now() } : c
+    ));
+    setRefreshingId(null);
+  };
+
+  const deleteCompetitor = (id: string) => {
+    setCompetitors(prev => prev.filter(c => c.id !== id));
+    if (expandedId === id) setExpandedId(null);
+  };
+
+  const refreshAll = async () => {
+    for (const comp of competitors) {
+      await refreshCompetitor(comp.id);
+    }
+  };
+
+  // Sort competitors by IG followers descending
+  const sorted = [...competitors].sort((a, b) =>
+    (b.igData?.profile.followers || 0) - (a.igData?.profile.followers || 0)
+  );
+
+  // Totals for overview
+  const totalIGFollowers = competitors.reduce((s, c) => s + (c.igData?.profile.followers || 0), 0);
+  const totalTTFollowers = competitors.reduce((s, c) => s + (c.tiktokData?.followers || 0), 0);
+  const avgEngagement = competitors.filter(c => c.igData).length > 0
+    ? (competitors.reduce((s, c) => s + (c.igData?.engagementRate || 0), 0) / competitors.filter(c => c.igData).length).toFixed(2)
+    : "0";
+  const maxEngagement = competitors.reduce((max, c) => {
+    const rate = c.igData?.engagementRate || 0;
+    return rate > (max?.igData?.engagementRate || 0) ? c : max;
+  }, competitors[0]);
+
   return (
     <div>
-      <Header title="Competitor Analysis" subtitle="Comparatie cu instrumente de pe piata" />
+      <Header title="Competitor Analysis" subtitle="Monitor competitors in real time — Instagram and TikTok" />
+      <div className="p-6 space-y-5">
 
-      <div className="p-6 space-y-6">
+        {/* Overview Stats */}
+        {competitors.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: "Competitors", value: competitors.length.toString(), icon: <Users className="w-4 h-4" />, color: "#F59E0B" },
+              { label: "Total IG Followers", value: formatNum(totalIGFollowers), icon: <Instagram className="w-4 h-4" />, color: IG },
+              { label: "Total TT Followers", value: formatNum(totalTTFollowers), icon: <Zap className="w-4 h-4" />, color: TT2 },
+              { label: "Avg. IG Engagement", value: `${avgEngagement}%`, icon: <TrendingUp className="w-4 h-4" />, color: "#10B981" },
+            ].map(s => (
+              <div key={s.label} className="rounded-xl p-4" style={cardStyle}>
+                <div className="flex items-center gap-2 mb-1" style={{ color: s.color }}>{s.icon}<span className="text-xs">{s.label}</span></div>
+                <p className="text-xl font-bold" style={{ color: "#292524" }}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+        )}
 
-        {/* Disclaimer */}
-        <div className="rounded-xl px-4 py-3 flex items-start gap-3" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.3)" }}>
-          <span className="text-sm">📊</span>
-          <p className="text-xs" style={{ color: "#78614E" }}>
-            <b>Date publice</b> — Preturile si feature-urile sunt de pe site-urile oficiale, G2.com si Capterra.com (martie 2026).
-            Rating-urile G2/Capterra sunt publice si verificabile.
-          </p>
+        {/* Actions */}
+        <div className="flex items-center gap-3 flex-wrap">
+          <button
+            type="button"
+            onClick={() => { setShowForm(true); setError(""); }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
+            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+          >
+            <Plus className="w-4 h-4" />
+            Add Competitor
+          </button>
+          {competitors.length > 0 && (
+            <>
+              <button
+                type="button"
+                onClick={refreshAll}
+                disabled={refreshingId !== null}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
+                style={{ ...cardStyle, color: "#78614E" }}
+              >
+                <RefreshCw className={`w-4 h-4 ${refreshingId ? "animate-spin" : ""}`} />
+                Refresh All
+              </button>
+              <button
+                type="button"
+                onClick={() => setCompareMode(v => !v)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
+                style={compareMode
+                  ? { backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.3)" }
+                  : { ...cardStyle, color: "#78614E" }
+                }
+              >
+                <ArrowUpDown className="w-4 h-4" />
+                {compareMode ? "Close Comparison" : "Compare"}
+              </button>
+            </>
+          )}
         </div>
 
-        {/* Pricing Comparison Chart */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
-            <h3 className="font-semibold mb-1" style={{ color: "#292524" }}>Pret lunar (USD)</h3>
-            <p className="text-xs mb-4" style={{ color: "#A8967E" }}>Comparatie preturi de pornire — surse oficiale</p>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={pricingData} layout="vertical" margin={{ left: 40, right: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(245,215,160,0.3)" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 11, fill: "#C4AA8A" }} tickFormatter={(v) => "$" + v} />
-                <YAxis type="category" dataKey="name" tick={{ fontSize: 12, fill: "#5C4A35" }} width={110} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(v) => ["$" + (v ?? 0) + "/mo", "Pret"]} />
-                <Bar dataKey="price" radius={[0, 4, 4, 0]}>
-                  {pricingData.map((_, i) => (
-                    <Cell key={i} fill={COLORS[i % COLORS.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
-            <h3 className="font-semibold mb-1" style={{ color: "#292524" }}>Rating G2 / Capterra</h3>
-            <p className="text-xs mb-4" style={{ color: "#A8967E" }}>Scor public de review-uri (din 5)</p>
-            <div className="space-y-4 mt-6">
-              {competitors.map((c, i) => (
-                <div key={c.name} className="flex items-center gap-3">
-                  <span className="text-sm font-semibold w-28 truncate" style={{ color: c.name === "MarketHub Pro" ? "#F59E0B" : "#5C4A35" }}>
-                    {c.name} {c.name === "MarketHub Pro" && "⭐"}
-                  </span>
-                  <div className="flex-1">
-                    <div className="flex gap-2 items-center">
-                      <span className="text-xs w-8" style={{ color: "#A8967E" }}>G2</span>
-                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,215,160,0.2)" }}>
-                        <div className="h-full rounded-full" style={{ width: c.g2Rating ? (c.g2Rating / 5 * 100) + "%" : "0%", backgroundColor: "#F59E0B" }} />
-                      </div>
-                      <span className="text-xs font-bold w-6" style={{ color: "#5C4A35" }}>{c.g2Rating || "—"}</span>
-                    </div>
-                    <div className="flex gap-2 items-center mt-1">
-                      <span className="text-xs w-8" style={{ color: "#A8967E" }}>Cap</span>
-                      <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,215,160,0.2)" }}>
-                        <div className="h-full rounded-full" style={{ width: c.capterra ? (c.capterra / 5 * 100) + "%" : "0%", backgroundColor: "#D97706" }} />
-                      </div>
-                      <span className="text-xs font-bold w-6" style={{ color: "#5C4A35" }}>{c.capterra || "nou"}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+        {/* Add Form */}
+        {showForm && (
+          <div className="rounded-xl p-5" style={cardStyle}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold" style={{ color: "#292524" }}>Add New Competitor</h3>
+              <button type="button" onClick={() => setShowForm(false)} style={{ color: "#A8967E" }}><X className="w-4 h-4" /></button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Competitor Name *</label>
+                <input
+                  type="text"
+                  placeholder="Ex: Nike Romania"
+                  value={formName}
+                  onChange={e => setFormName(e.target.value)}
+                  className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
+                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }}
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-1 text-xs font-semibold mb-1" style={{ color: IG }}>
+                  <Instagram className="w-3 h-3" /> Username Instagram
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: nike"
+                  value={formIG}
+                  onChange={e => setFormIG(e.target.value)}
+                  className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
+                  style={{ border: `1px solid ${IG}30`, backgroundColor: "#FFF8F0", color: "#292524" }}
+                />
+              </div>
+              <div>
+                <label className="flex items-center gap-1 text-xs font-semibold mb-1" style={{ color: TT2 }}>
+                  <Zap className="w-3 h-3" /> Username TikTok
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: nike"
+                  value={formTT}
+                  onChange={e => setFormTT(e.target.value)}
+                  className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
+                  style={{ border: `1px solid ${TT2}30`, backgroundColor: "#FFF8F0", color: "#292524" }}
+                />
+              </div>
+            </div>
+            {error && <p className="text-xs mt-2 font-semibold" style={{ color: "#EF4444" }}>{error}</p>}
+            <div className="flex gap-3 mt-4">
+              <button
+                type="button"
+                onClick={addCompetitor}
+                disabled={adding || !formName.trim() || (!formIG.trim() && !formTT.trim())}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
+                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+              >
+                {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                {adding ? "Searching..." : "Search & Add"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowForm(false)}
+                className="px-5 py-2.5 rounded-xl text-sm font-semibold"
+                style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}
+              >
+                Cancel
+              </button>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Feature Comparison Table */}
-        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
-          <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-            <h3 className="font-semibold" style={{ color: "#292524" }}>Comparatie Functionalitati</h3>
-            <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Feature-uri si platforme suportate</p>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-xs uppercase tracking-wide" style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E" }}>
-                  <th className="text-left px-5 py-3">Tool</th>
-                  <th className="text-center px-3 py-3">Pret</th>
-                  <th className="text-center px-3 py-3">YouTube</th>
-                  <th className="text-center px-3 py-3">Instagram</th>
-                  <th className="text-center px-3 py-3">Facebook</th>
-                  <th className="text-center px-3 py-3">TikTok</th>
-                  <th className="text-center px-5 py-3">Punct forte</th>
-                </tr>
-              </thead>
-              <tbody>
-                {competitors.map((c, i) => {
-                  const hasYouTube = c.features.includes("YouTube");
-                  const hasInstagram = c.features.includes("Instagram");
-                  const hasFacebook = c.features.includes("Facebook");
-                  const hasTikTok = c.features.includes("TikTok");
-                  const isUs = c.name === "MarketHub Pro";
-
-                  return (
-                    <tr
-                      key={c.name}
-                      className="transition-colors"
-                      style={{ borderTop: "1px solid rgba(245,215,160,0.15)", backgroundColor: isUs ? "rgba(245,158,11,0.06)" : "transparent" }}
-                      onMouseEnter={e => { if (!isUs) e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.07)"; }}
-                      onMouseLeave={e => { if (!isUs) e.currentTarget.style.backgroundColor = "transparent"; }}
-                    >
-                      <td className="px-5 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                          <span className="font-semibold" style={{ color: isUs ? "#F59E0B" : "#3D2E1E" }}>
-                            {c.name} {isUs && "⭐"}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-3 py-3 text-center">
-                        <span className="text-xs font-medium px-2 py-0.5 rounded" style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
-                          {c.pricing}
-                        </span>
-                      </td>
-                      {[hasYouTube, hasInstagram, hasFacebook, hasTikTok].map((has, j) => (
-                        <td key={j} className="px-3 py-3 text-center">
-                          {has ? (
-                            <CheckCircle className="w-4 h-4 text-emerald-500 mx-auto" />
-                          ) : (
-                            <XCircle className="w-4 h-4 mx-auto" style={{ color: "rgba(245,215,160,0.5)" }} />
-                          )}
+        {/* Compare View */}
+        {compareMode && competitors.length >= 2 && (
+          <div className="rounded-xl overflow-hidden" style={cardStyle}>
+            <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
+              <h3 className="font-semibold" style={{ color: "#292524" }}>Competitor Comparison</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs uppercase tracking-wide" style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E" }}>
+                    <th className="text-left px-5 py-3">Competitor</th>
+                    <th className="text-center px-3 py-3">IG Followers</th>
+                    <th className="text-center px-3 py-3">IG Engagement</th>
+                    <th className="text-center px-3 py-3">IG Posts</th>
+                    <th className="text-center px-3 py-3">TT Followers</th>
+                    <th className="text-center px-3 py-3">TT Likes</th>
+                    <th className="text-center px-3 py-3">TT Videos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {sorted.map((comp, i) => {
+                    const isBest = maxEngagement?.id === comp.id;
+                    return (
+                      <tr key={comp.id} style={{ borderTop: "1px solid rgba(245,215,160,0.15)", backgroundColor: isBest ? "rgba(245,158,11,0.06)" : "transparent" }}>
+                        <td className="px-5 py-3">
+                          <div className="flex items-center gap-2">
+                            {comp.igData?.profile.avatar && (
+                              <img src={proxyImg(comp.igData.profile.avatar)} alt="" className="w-7 h-7 rounded-full object-cover" />
+                            )}
+                            <div>
+                              <p className="font-semibold" style={{ color: "#292524" }}>
+                                {comp.name} {isBest && <span style={{ color: "#F59E0B" }}>★</span>}
+                              </p>
+                              <div className="flex gap-2">
+                                {comp.igUsername && <span className="text-xs" style={{ color: IG }}>@{comp.igUsername}</span>}
+                                {comp.tiktokUsername && <span className="text-xs" style={{ color: TT2 }}>@{comp.tiktokUsername}</span>}
+                              </div>
+                            </div>
+                          </div>
                         </td>
-                      ))}
-                      <td className="px-5 py-3 text-center">
-                        <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
-                          {c.strength}
-                        </span>
-                      </td>
-                    </tr>
+                        <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>{formatNum(comp.igData?.profile.followers || 0)}</td>
+                        <td className="px-3 py-3 text-center">
+                          <span className="px-2 py-0.5 rounded-full text-xs font-bold"
+                            style={{
+                              backgroundColor: (comp.igData?.engagementRate || 0) > 3 ? "rgba(16,185,129,0.1)" : (comp.igData?.engagementRate || 0) > 1 ? "rgba(245,158,11,0.1)" : "rgba(239,68,68,0.1)",
+                              color: (comp.igData?.engagementRate || 0) > 3 ? "#10B981" : (comp.igData?.engagementRate || 0) > 1 ? "#F59E0B" : "#EF4444",
+                            }}>
+                            {comp.igData?.engagementRate || 0}%
+                          </span>
+                        </td>
+                        <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(comp.igData?.profile.postsCount || 0)}</td>
+                        <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>{formatNum(comp.tiktokData?.followers || 0)}</td>
+                        <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(comp.tiktokData?.likes || 0)}</td>
+                        <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(comp.tiktokData?.videos || 0)}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Engagement bar chart */}
+            <div className="px-5 py-4" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}>
+              <p className="text-xs font-semibold mb-3" style={{ color: "#A8967E" }}>Instagram Engagement Rate</p>
+              <div className="space-y-2">
+                {sorted.map(comp => {
+                  const rate = comp.igData?.engagementRate || 0;
+                  const maxRate = Math.max(...competitors.map(c => c.igData?.engagementRate || 0), 1);
+                  return (
+                    <div key={comp.id} className="flex items-center gap-3">
+                      <span className="text-xs font-medium w-28 truncate" style={{ color: "#292524" }}>{comp.name}</span>
+                      <div className="flex-1 h-5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,215,160,0.15)" }}>
+                        <div className="h-full rounded-full flex items-center px-2 transition-all"
+                          style={{ width: `${Math.max((rate / maxRate) * 100, 2)}%`, background: `linear-gradient(90deg, ${IG}, #833AB4)` }}>
+                          <span className="text-[10px] font-bold text-white whitespace-nowrap">{rate}%</span>
+                        </div>
+                      </div>
+                    </div>
                   );
                 })}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
-            <h4 className="font-semibold mb-3" style={{ color: "#292524" }}>Avantajele noastre</h4>
-            <ul className="space-y-2 text-sm" style={{ color: "#78614E" }}>
-              {["Cel mai mic pret de pe piata ($49/mo)", "Toate 4 platformele incluse", "PDF Rapoarte automate pe email", "Instagram Competitor Tracker"].map((a) => (
-                <li key={a} className="flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                  {a}
-                </li>
-              ))}
-            </ul>
+        {/* Competitor Cards */}
+        {competitors.length === 0 && !showForm && (
+          <div className="rounded-xl p-12 text-center" style={cardStyle}>
+            <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
+            <p className="text-sm font-semibold mb-1" style={{ color: "#292524" }}>No competitors added</p>
+            <p className="text-xs mb-4" style={{ color: "#A8967E" }}>Add your competitors to monitor their Instagram and TikTok accounts in real time</p>
+            <button
+              type="button"
+              onClick={() => setShowForm(true)}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold"
+              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            >
+              <Plus className="w-4 h-4 inline mr-1" />Add first competitor
+            </button>
           </div>
-          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
-            <h4 className="font-semibold mb-3" style={{ color: "#292524" }}>Ce le lipseste</h4>
-            <ul className="space-y-2 text-sm" style={{ color: "#78614E" }}>
-              {["Socialbakers: Fara YouTube/TikTok", "Brandwatch: Minim $1000/luna", "Hootsuite: Analytics limitat pe free", "Sprout Social: Pret ridicat pentru SMB"].map((a) => (
-                <li key={a} className="flex items-center gap-2">
-                  <XCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-                  {a}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-xl p-5 text-white" style={{ background: "linear-gradient(135deg, #F59E0B, #92400E)", boxShadow: "0 4px 12px rgba(245,158,11,0.25)" }}>
-            <h4 className="font-bold text-lg mb-2">MarketHub Pro</h4>
-            <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.8)" }}>
-              Cea mai accesibila platforma de analytics social media cu suport complet multi-platform.
-            </p>
-            <div className="text-3xl font-black">$49</div>
-            <div className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.7)" }}>per luna, toate platformele incluse</div>
-            <div className="mt-3 text-sm font-semibold" style={{ color: "rgba(255,255,200,1)" }}>5x mai ieftin decat media pietei</div>
-          </div>
+        )}
+
+        <div className="space-y-3">
+          {sorted.map(comp => {
+            const expanded = expandedId === comp.id;
+            const isRefreshing = refreshingId === comp.id;
+
+            return (
+              <div key={comp.id} className="rounded-xl overflow-hidden" style={cardStyle}>
+                {/* Header */}
+                <div
+                  className="flex items-center gap-3 px-5 py-4 cursor-pointer"
+                  onClick={() => setExpandedId(expanded ? null : comp.id)}
+                >
+                  {/* Avatar */}
+                  <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0" style={{ backgroundColor: `${IG}10` }}>
+                    {comp.igData?.profile.avatar ? (
+                      <img src={proxyImg(comp.igData.profile.avatar)} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Users className="w-5 h-5" style={{ color: IG }} />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-sm font-bold" style={{ color: "#292524" }}>{comp.name}</h3>
+                      {comp.igData?.profile.isVerified && <ShieldCheck className="w-4 h-4" style={{ color: "#3B82F6" }} />}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {comp.igUsername && (
+                        <a href={`https://instagram.com/${comp.igUsername}`} target="_blank" rel="noopener noreferrer"
+                          className="text-xs hover:underline" style={{ color: IG }}
+                          onClick={e => e.stopPropagation()}>
+                          <Instagram className="w-3 h-3 inline mr-0.5" />@{comp.igUsername}
+                        </a>
+                      )}
+                      {comp.tiktokUsername && (
+                        <a href={`https://tiktok.com/@${comp.tiktokUsername}`} target="_blank" rel="noopener noreferrer"
+                          className="text-xs hover:underline" style={{ color: TT2 }}
+                          onClick={e => e.stopPropagation()}>
+                          <Zap className="w-3 h-3 inline mr-0.5" />@{comp.tiktokUsername}
+                        </a>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quick stats */}
+                  <div className="hidden md:flex items-center gap-5">
+                    {comp.igData && (
+                      <>
+                        <div className="text-center">
+                          <p className="text-xs" style={{ color: "#A8967E" }}>IG Followers</p>
+                          <p className="text-sm font-bold" style={{ color: "#292524" }}>{formatNum(comp.igData.profile.followers)}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs" style={{ color: "#A8967E" }}>Engagement</p>
+                          <p className="text-sm font-bold" style={{ color: comp.igData.engagementRate > 3 ? "#10B981" : comp.igData.engagementRate > 1 ? "#F59E0B" : "#EF4444" }}>
+                            {comp.igData.engagementRate}%
+                          </p>
+                        </div>
+                      </>
+                    )}
+                    {comp.tiktokData && (
+                      <div className="text-center">
+                        <p className="text-xs" style={{ color: "#A8967E" }}>TT Followers</p>
+                        <p className="text-sm font-bold" style={{ color: "#292524" }}>{formatNum(comp.tiktokData.followers)}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <button
+                      type="button"
+                      onClick={e => { e.stopPropagation(); refreshCompetitor(comp.id); }}
+                      disabled={isRefreshing}
+                      className="p-1.5 rounded-lg"
+                      style={{ color: "#A8967E" }}
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={e => { e.stopPropagation(); deleteCompetitor(comp.id); }}
+                      className="p-1.5 rounded-lg"
+                      style={{ color: "#EF4444" }}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                    {expanded ? <ChevronUp className="w-4 h-4" style={{ color: "#A8967E" }} /> : <ChevronDown className="w-4 h-4" style={{ color: "#A8967E" }} />}
+                  </div>
+                </div>
+
+                {/* Updated timestamp */}
+                <div className="px-5 pb-2">
+                  <span className="text-[10px]" style={{ color: "#C4AA8A" }}>Updated {timeAgo(comp.lastUpdated)} ago</span>
+                </div>
+
+                {/* Expanded Details */}
+                {expanded && (
+                  <div className="px-5 pb-5 space-y-4" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}>
+
+                    {/* Platform stats */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 pt-3">
+                      {comp.igData && [
+                        { label: "IG Followers", value: formatNum(comp.igData.profile.followers), icon: <Users className="w-4 h-4" />, color: IG },
+                        { label: "IG Following", value: formatNum(comp.igData.profile.following), color: IG },
+                        { label: "IG Posts", value: formatNum(comp.igData.profile.postsCount), icon: <Image className="w-4 h-4" />, color: IG },
+                        { label: "IG Engagement", value: `${comp.igData.engagementRate}%`, icon: <TrendingUp className="w-4 h-4" />, color: "#10B981" },
+                      ].map(m => (
+                        <div key={m.label} className="rounded-lg p-3" style={{ backgroundColor: `${m.color}08`, border: `1px solid ${m.color}15` }}>
+                          <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
+                          <p className="text-lg font-bold mt-1" style={{ color: "#292524" }}>{m.value}</p>
+                        </div>
+                      ))}
+                      {comp.tiktokData && [
+                        { label: "TT Followers", value: formatNum(comp.tiktokData.followers), color: TT2 },
+                        { label: "TT Total Likes", value: formatNum(comp.tiktokData.likes), color: TT2 },
+                      ].map(m => (
+                        <div key={m.label} className="rounded-lg p-3" style={{ backgroundColor: `${m.color}08`, border: `1px solid ${m.color}15` }}>
+                          <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
+                          <p className="text-lg font-bold mt-1" style={{ color: "#292524" }}>{m.value}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Bio */}
+                    {comp.igData?.profile.biography && (
+                      <div className="rounded-lg p-3" style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
+                        <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#A8967E" }}>Bio Instagram</p>
+                        <p className="text-sm whitespace-pre-line" style={{ color: "#78614E" }}>{comp.igData.profile.biography}</p>
+                      </div>
+                    )}
+
+                    {/* Recent IG Posts */}
+                    {comp.igData && comp.igData.posts.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold mb-2" style={{ color: "#A8967E" }}>Recent Instagram Posts ({comp.igData.posts.length})</p>
+                        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                          {comp.igData.posts.map(post => (
+                            <a
+                              key={post.id}
+                              href={`https://instagram.com/p/${post.shortcode}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="relative aspect-square rounded-lg overflow-hidden group"
+                            >
+                              <img src={proxyImg(post.thumbnail)} alt="" className="w-full h-full object-cover" />
+                              {post.isVideo && (
+                                <div className="absolute top-1 right-1">
+                                  <Video className="w-3 h-3 text-white drop-shadow" />
+                                </div>
+                              )}
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                <span className="flex items-center gap-0.5 text-white text-xs font-semibold">
+                                  <Heart className="w-3 h-3" />{formatNum(post.likes)}
+                                </span>
+                                <span className="flex items-center gap-0.5 text-white text-xs font-semibold">
+                                  <MessageCircle className="w-3 h-3" />{formatNum(post.comments)}
+                                </span>
+                              </div>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

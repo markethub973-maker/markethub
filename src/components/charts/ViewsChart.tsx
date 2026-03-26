@@ -30,14 +30,14 @@ export default function ViewsChart() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="font-semibold" style={{ color: "#292524" }}>YouTube Trending RO — Views</h3>
-          <p className="text-xs" style={{ color: "#A8967E" }}>Top 10 videoclipuri trending acum (milioane)</p>
+          <p className="text-xs" style={{ color: "#A8967E" }}>Top 10 trending videos right now (millions)</p>
         </div>
         <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(255,0,0,0.08)", color: "#cc0000" }}>
           Live
         </span>
       </div>
       {loading ? (
-        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#C4AA8A" }}>Se încarcă...</div>
+        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#C4AA8A" }}>Loading...</div>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={data} layout="vertical" margin={{ top: 4, right: 20, bottom: 0, left: 8 }}>
@@ -46,7 +46,7 @@ export default function ViewsChart() {
             <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#5C4A35" }} width={160} />
             <Tooltip
               contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7", color: "#292524" }}
-              formatter={(v) => [`${v}M views`, "Vizualizări"]}
+              formatter={(v) => [`${v}M views`, "Views"]}
             />
             <Bar dataKey="views" radius={[0, 4, 4, 0]}>
               {data.map((_, i) => (

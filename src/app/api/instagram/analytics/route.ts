@@ -1,50 +1,37 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { resolveIGAuth } from "@/lib/adminPlatformToken";
 import { resolveIGToken } from "@/lib/igToken";
 
 export async function GET() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const auth = await resolveIGAuth();
 
-  if (!user) {
+  if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("instagram_access_token, instagram_user_id, instagram_username")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile?.instagram_access_token || !profile?.instagram_user_id) {
+  if (!auth.token || !auth.igId) {
     return NextResponse.json({ error: "Instagram not connected" }, { status: 400 });
   }
 
-  const { instagram_user_id: igId, instagram_username: username } = profile;
+  const { token: rawToken, igId, username } = auth;
 
   try {
-    // Resolve correct token (Page Token if User Token doesn't work)
-    const token = await resolveIGToken(profile.instagram_access_token, igId);
+    const token = await resolveIGToken(rawToken, igId);
 
-    // Get profile stats
     const profileRes = await fetch(
       `https://graph.facebook.com/v21.0/${igId}?fields=followers_count,media_count,profile_picture_url,name,biography,website&access_token=${token}`
     );
     const profileData = await profileRes.json();
 
     if (profileData.error) {
-      console.error("[IG Analytics] Profile error:", JSON.stringify(profileData.error));
-      console.error("[IG Analytics] igId:", igId, "token starts with:", token.substring(0, 20) + "...");
       return NextResponse.json({ error: profileData.error.message, code: profileData.error.code }, { status: 400 });
     }
 
-    // Get insights (reach, impressions - last 30 days)
     const insightsRes = await fetch(
       `https://graph.facebook.com/v21.0/${igId}/insights?metric=reach,impressions&period=day&since=${Math.floor(Date.now() / 1000) - 30 * 86400}&until=${Math.floor(Date.now() / 1000)}&access_token=${token}`
     );
     const insightsData = await insightsRes.json();
 
-    // Get recent media
     const mediaRes = await fetch(
       `https://graph.facebook.com/v21.0/${igId}/media?fields=id,caption,media_type,thumbnail_url,media_url,timestamp,like_count,comments_count,permalink&limit=12&access_token=${token}`
     );

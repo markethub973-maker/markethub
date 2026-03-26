@@ -21,26 +21,66 @@ import {
   Mail,
   UserSquare2,
   Sparkles,
+  CalendarDays,
+  Target,
+  Instagram,
+  Shield,
+  ChevronDown,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
-const navItems = [
-  { href: "/", label: "Overview", icon: LayoutDashboard },
-  { href: "/my-channel", label: "My Channel", icon: PlayCircle },
-  { href: "/videos", label: "Top Videos", icon: PlayCircle },
-  { href: "/channels", label: "Channels", icon: Users },
-  { href: "/trending", label: "Trending", icon: TrendingUp },
-  { href: "/competitors", label: "Competitors", icon: BarChart3 },
-  { href: "/alerts", label: "Alerts", icon: Bell },
-  { href: "/marketing", label: "Marketing", icon: Megaphone },
-  { href: "/ads-library", label: "Ads Library", icon: Library },
-  { href: "/email-reports", label: "Email Rapoarte", icon: Mail },
-  { href: "/clients", label: "Multi-Cont", icon: UserSquare2 },
-  { href: "/trends", label: "Google Trends", icon: LineChart },
-  { href: "/news", label: "News", icon: Newspaper },
-  { href: "/global", label: "Global Trending", icon: Map },
-  { href: "/ai-hub", label: "AI Hub", icon: Sparkles },
+const navGroups = [
+  {
+    label: "YouTube Analytics",
+    icon: PlayCircle,
+    items: [
+      { href: "/", label: "Overview", icon: LayoutDashboard },
+      { href: "/my-channel", label: "My Channel", icon: PlayCircle },
+      { href: "/videos", label: "Top Videos", icon: PlayCircle },
+      { href: "/global", label: "Global Trending", icon: Map },
+    ],
+  },
+  {
+    label: "Social Platforms",
+    icon: Users,
+    items: [
+      { href: "/channels", label: "Channels", icon: Users },
+      { href: "/instagram", label: "My Instagram", icon: Instagram },
+      { href: "/instagram-search", label: "IG Search", icon: Instagram },
+      { href: "/tiktok", label: "TikTok", icon: Zap },
+    ],
+  },
+  {
+    label: "Market Research",
+    icon: TrendingUp,
+    items: [
+      { href: "/trending", label: "Trending", icon: TrendingUp },
+      { href: "/competitors", label: "Competitors", icon: BarChart3 },
+      { href: "/trends", label: "Google Trends", icon: LineChart },
+      { href: "/news", label: "News", icon: Newspaper },
+    ],
+  },
+  {
+    label: "Content Tools",
+    icon: Library,
+    items: [
+      { href: "/ads-library", label: "Ads Library", icon: Library },
+      { href: "/calendar", label: "Calendar", icon: CalendarDays },
+      { href: "/captions", label: "AI Captions", icon: Sparkles },
+      { href: "/campaigns", label: "Campaigns", icon: Target },
+    ],
+  },
+  {
+    label: "Other",
+    icon: Bell,
+    items: [
+      { href: "/alerts", label: "Alerts", icon: Bell },
+      { href: "/marketing", label: "Marketing", icon: Megaphone },
+      { href: "/email-reports", label: "Email Rapoarte", icon: Mail },
+      { href: "/clients", label: "Multi-Cont", icon: UserSquare2 },
+      { href: "/ai-hub", label: "AI Hub", icon: Sparkles },
+    ],
+  },
 ];
 
 type Profile = {
@@ -52,6 +92,9 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
+    new Set(["YouTube Analytics"]) // Default: YouTube Analytics expanded
+  );
 
   useEffect(() => {
     const supabase = createClient();
@@ -65,6 +108,16 @@ export default function Sidebar() {
       if (data) setProfile(data);
     });
   }, []);
+
+  const toggleGroup = (groupLabel: string) => {
+    const newExpanded = new Set(expandedGroups);
+    if (newExpanded.has(groupLabel)) {
+      newExpanded.delete(groupLabel);
+    } else {
+      newExpanded.add(groupLabel);
+    }
+    setExpandedGroups(newExpanded);
+  };
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -88,45 +141,118 @@ export default function Sidebar() {
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 px-3 py-6 space-y-1">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href;
+      <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
+        {navGroups.map(({ label: groupLabel, icon: GroupIcon, items }) => {
+          const isExpanded = expandedGroups.has(groupLabel);
+          const hasActiveItem = items.some(item => pathname === item.href);
+
           return (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
+            <div key={groupLabel} className="mb-2">
+              {/* Group Button */}
+              <button
+                onClick={() => toggleGroup(groupLabel)}
+                className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+                style={hasActiveItem ? {
+                  backgroundColor: "rgba(245,158,11,0.15)",
+                  color: "#F59E0B",
+                  border: "1px solid rgba(245,158,11,0.3)"
+                } : {
+                  color: "#A8967E",
+                }}
+                onMouseEnter={(e) => {
+                  if (!hasActiveItem) {
+                    e.currentTarget.style.color = "#FFF8F0";
+                    e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!hasActiveItem) {
+                    e.currentTarget.style.color = "#A8967E";
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }
+                }}
+              >
+                <GroupIcon className="w-4 h-4" />
+                <span className="flex-1 text-left">{groupLabel}</span>
+                <ChevronDown
+                  className="w-4 h-4 transition-transform"
+                  style={{transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)"}}
+                />
+              </button>
+
+              {/* Group Items */}
+              {isExpanded && (
+                <div className="mt-1 ml-2 space-y-1 border-l border-amber-800/30 pl-2">
+                  {items.map(({ href, label, icon: Icon }) => {
+                    const active = pathname === href;
+                    return (
+                      <Link
+                        key={href}
+                        href={href}
+                        className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all"
+                        style={active ? {
+                          backgroundColor: "rgba(245,158,11,0.2)",
+                          color: "#F59E0B",
+                        } : {
+                          color: "#A8967E",
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!active) {
+                            e.currentTarget.style.color = "#FFF8F0";
+                            e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!active) {
+                            e.currentTarget.style.color = "#A8967E";
+                            e.currentTarget.style.backgroundColor = "transparent";
+                          }
+                        }}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {label}
+                      </Link>
+                    );
+                  })}
+                </div>
               )}
-              style={active ? {
-                backgroundColor: "rgba(245,158,11,0.15)",
-                color: "#F59E0B",
-                border: "1px solid rgba(245,158,11,0.3)"
-              } : {
-                color: "#A8967E",
-              }}
-              onMouseEnter={(e) => {
-                if (!active) {
-                  e.currentTarget.style.color = "#FFF8F0";
-                  e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!active) {
-                  e.currentTarget.style.color = "#A8967E";
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }
-              }}
-            >
-              <Icon className="w-4 h-4" />
-              {label}
-            </Link>
+            </div>
           );
         })}
       </nav>
 
       {/* Bottom */}
       <div className="px-3 py-4" style={{ borderTop: "1px solid rgba(245,215,160,0.1)" }}>
+        {/* Admin Link — only for admins */}
+        {profile?.is_admin && (
+          <Link
+            href="/dashboard/admin"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all mb-2"
+            style={pathname === "/dashboard/admin" ? {
+              backgroundColor: "rgba(245,158,11,0.15)",
+              color: "#F59E0B",
+              border: "1px solid rgba(245,158,11,0.3)",
+            } : {
+              color: "#A8967E",
+            }}
+            onMouseEnter={(e) => {
+              if (pathname !== "/dashboard/admin") {
+                e.currentTarget.style.color = "#FFF8F0";
+                e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (pathname !== "/dashboard/admin") {
+                e.currentTarget.style.color = "#A8967E";
+                e.currentTarget.style.backgroundColor = "transparent";
+              }
+            }}
+          >
+            <Shield className="w-4 h-4" />
+            Admin
+          </Link>
+        )}
+
         <Link
           href="/settings"
           className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"

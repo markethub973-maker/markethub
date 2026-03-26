@@ -52,8 +52,16 @@ create policy "Users can update own profile"
 -- Service role (webhook Stripe) poate actualiza orice profil
 -- Acest lucru este gestionat prin SUPABASE_SERVICE_ROLE_KEY in webhook
 
+-- 4. Coloane extra pentru Meta tokens
+-- User Token = pentru Ad Library API; Page Token = pentru Instagram/Facebook API
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS instagram_access_token text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS instagram_user_id text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS instagram_username text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS meta_user_token text;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS youtube_channel_id text;
+
 -- ============================================================
--- 4. (Optional) Seteaza contul tau de admin
+-- 5. (Optional) Seteaza contul tau de admin
 -- Inlocuieste EMAIL_TAU cu emailul tau real
 -- ============================================================
 -- update public.profiles

@@ -6,10 +6,10 @@ import { MessageCircle, X, Send, Bot, Download, ChevronDown } from "lucide-react
 type Message = { role: "user" | "assistant"; content: string };
 
 const SUGGESTIONS = [
-  "Sunt client nou, ce fac?",
-  "Unde gasesc Channel ID-ul?",
-  "Marketing Analytics ce arata?",
-  "Instagram e obligatoriu?",
+  "I'm a new user, where do I start?",
+  "Where do I find my Channel ID?",
+  "What does Marketing Analytics show?",
+  "Is Instagram required?",
 ];
 
 function Bubble({ msg }: { msg: Message }) {
@@ -35,7 +35,7 @@ function Bubble({ msg }: { msg: Message }) {
 export default function SetupAgent() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Salut! Sunt agentul MarketHub Pro 👋\n\nTe pot ajuta să configurezi orice API sau să înțelegi orice funcție a platformei.\n\nCu ce te pot ajuta?" },
+    { role: "assistant", content: "Hi! I'm the MarketHub Pro agent 👋\n\nI can help you configure any API or understand any platform feature.\n\nHow can I help you?" },
   ]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
@@ -94,8 +94,8 @@ export default function SetupAgent() {
       }
     } catch (err: any) {
       const msg = err?.message === "not_configured"
-        ? "Agentul AI nu este configurat încă.\n\nAdministratorul trebuie să adauge ANTHROPIC_API_KEY în setările serverului (Vercel → markethub → Environment Variables).\n\nPentru asistență directă: support@markethubpromo.com"
-        : "A apărut o eroare la conectarea cu agentul. Încearcă din nou sau contactează support@markethubpromo.com";
+        ? "The AI agent is not configured yet.\n\nThe administrator needs to add ANTHROPIC_API_KEY in the server settings (Vercel → markethub → Environment Variables).\n\nFor direct assistance: support@markethubpromo.com"
+        : "An error occurred connecting to the agent. Please try again or contact support@markethubpromo.com";
       setMessages(prev => {
         const updated = [...prev];
         updated[updated.length - 1] = { role: "assistant", content: msg };
@@ -136,7 +136,7 @@ export default function SetupAgent() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-white">Setup Agent MarketHub Pro</p>
               <p className="text-xs text-amber-200">
-                {streaming ? "Scrie..." : "Online · Răspunde în română"}
+                {streaming ? "Typing..." : "Online · Responds in English"}
               </p>
             </div>
             <a href="/api/pdf/welcome" target="_blank" rel="noopener noreferrer"
@@ -199,7 +199,7 @@ export default function SetupAgent() {
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && !e.shiftKey && send()}
-                    placeholder="Scrie o întrebare..."
+                    placeholder="Ask a question..."
                     disabled={streaming}
                     className="flex-1 px-3 py-2 text-sm rounded-xl focus:outline-none"
                     style={{ backgroundColor: "rgba(245,215,160,0.08)", color: "#FFF8F0", border: "1px solid rgba(245,215,160,0.15)", "::placeholder": { color: "#78614E" } } as any}

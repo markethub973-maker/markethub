@@ -6,10 +6,10 @@ export async function POST(req: Request) {
   const { name, email, password } = await req.json();
 
   if (!name || !email || !password) {
-    return NextResponse.json({ error: "Toate campurile sunt obligatorii." }, { status: 400 });
+    return NextResponse.json({ error: "All fields are required." }, { status: 400 });
   }
   if (password.length < 8) {
-    return NextResponse.json({ error: "Parola trebuie sa aiba minim 8 caractere." }, { status: 400 });
+    return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
   }
 
   const supabase = await createClient();
@@ -17,7 +17,10 @@ export async function POST(req: Request) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { name } },
+    options: {
+      data: { name },
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/callback`,
+    },
   });
 
   if (error) {
@@ -26,5 +29,5 @@ export async function POST(req: Request) {
 
   await sendWelcomeEmail(email, name).catch(() => {});
 
-  return NextResponse.json({ user: data.user, message: "Cont creat cu succes!" });
+  return NextResponse.json({ user: data.user, message: "Account created successfully! Check your email to confirm." });
 }

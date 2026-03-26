@@ -31,15 +31,15 @@ function getDemographics(channel: Channel) {
 
   const maleShare = cat.includes("tech") ? 78 : cat.includes("sport") ? 72 : cat.includes("dance") ? 38 : cat.includes("food") ? 45 : 52;
   const genderData = [
-    { name: "Masculin", value: maleShare, color: "#F59E0B" },
-    { name: "Feminin", value: 100 - maleShare, color: "#D97706" },
+    { name: "Male", value: maleShare, color: "#F59E0B" },
+    { name: "Female", value: 100 - maleShare, color: "#D97706" },
   ];
 
   const countriesBase = channel.platform === "youtube"
-    ? [{ country: "🇺🇸 SUA", pct: 28 }, { country: "🇮🇳 India", pct: 18 }, { country: "🇧🇷 Brazilia", pct: 9 }, { country: "🇬🇧 UK", pct: 7 }, { country: "🇷🇴 Romania", pct: 3 }]
+    ? [{ country: "🇺🇸 USA", pct: 28 }, { country: "🇮🇳 India", pct: 18 }, { country: "🇧🇷 Brazil", pct: 9 }, { country: "🇬🇧 UK", pct: 7 }, { country: "🇷🇴 Romania", pct: 3 }]
     : channel.platform === "tiktok"
-    ? [{ country: "🇺🇸 SUA", pct: 24 }, { country: "🇮🇩 Indonesia", pct: 14 }, { country: "🇧🇷 Brazilia", pct: 11 }, { country: "🇲🇽 Mexic", pct: 8 }, { country: "🇷🇴 Romania", pct: 2 }]
-    : [{ country: "🇺🇸 SUA", pct: 31 }, { country: "🇧🇷 Brazilia", pct: 12 }, { country: "🇬🇧 UK", pct: 8 }, { country: "🇫🇷 Franta", pct: 6 }, { country: "🇷🇴 Romania", pct: 4 }];
+    ? [{ country: "🇺🇸 USA", pct: 24 }, { country: "🇮🇩 Indonesia", pct: 14 }, { country: "🇧🇷 Brazil", pct: 11 }, { country: "🇲🇽 Mexico", pct: 8 }, { country: "🇷🇴 Romania", pct: 2 }]
+    : [{ country: "🇺🇸 USA", pct: 31 }, { country: "🇧🇷 Brazil", pct: 12 }, { country: "🇬🇧 UK", pct: 8 }, { country: "🇫🇷 France", pct: 6 }, { country: "🇷🇴 Romania", pct: 4 }];
 
   return { ageData, genderData, countriesBase };
 }
@@ -123,17 +123,17 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
           {/* Recent Videos Chart */}
           <div>
             <h3 className="font-semibold mb-1" style={{ color: "#292524" }}>
-              {recentVideos.length > 0 ? "Ultimele videoclipuri (date reale)" : "Performanta videoclipuri (estimata)"}
+              {recentVideos.length > 0 ? "Latest videos (real data)" : "Video performance (estimated)"}
             </h3>
-            <p className="text-xs mb-3" style={{ color: "#A8967E" }}>Vizualizari per video (milioane)</p>
+            <p className="text-xs mb-3" style={{ color: "#A8967E" }}>Views per video (millions)</p>
             {loadingVideos ? (
-              <div className="h-48 flex items-center justify-center" style={{ color: "#C4AA8A" }}>Se incarca...</div>
+              <div className="h-48 flex items-center justify-center" style={{ color: "#C4AA8A" }}>Loading...</div>
             ) : (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={chartData} margin={{ left: -20, right: 8 }}>
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#C4AA8A" }} />
                   <YAxis tick={{ fontSize: 10, fill: "#C4AA8A" }} />
-                  <Tooltip contentStyle={tooltipStyle} formatter={(v: any) => [v + "M vizualizari", ""]} />
+                  <Tooltip contentStyle={tooltipStyle} formatter={(v: any) => [v + "M views", ""]} />
                   <Bar dataKey="views" fill="#F59E0B" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
@@ -144,14 +144,14 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
           <div>
             <h3 className="font-semibold mb-4 flex items-center gap-2" style={{ color: "#292524" }}>
               <User2 className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              Audienta Demographics
-              <span className="text-xs font-normal px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>estimare statistica per categorie</span>
+              Audience Demographics
+              <span className="text-xs font-normal px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>statistical estimate by category</span>
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Age */}
               <div>
-                <p className="text-xs font-semibold mb-3" style={{ color: "#78614E" }}>Varsta</p>
+                <p className="text-xs font-semibold mb-3" style={{ color: "#78614E" }}>Age</p>
                 <div className="space-y-2">
                   {ageData.map(d => (
                     <div key={d.age} className="flex items-center gap-2">
@@ -167,7 +167,7 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
 
               {/* Gender */}
               <div>
-                <p className="text-xs font-semibold mb-3" style={{ color: "#78614E" }}>Gen</p>
+                <p className="text-xs font-semibold mb-3" style={{ color: "#78614E" }}>Gender</p>
                 <ResponsiveContainer width="100%" height={120}>
                   <PieChart>
                     <Pie data={genderData} cx="50%" cy="50%" innerRadius={30} outerRadius={50} dataKey="value" paddingAngle={3}>
@@ -189,7 +189,7 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
               {/* Countries */}
               <div>
                 <p className="text-xs font-semibold mb-3 flex items-center gap-1" style={{ color: "#78614E" }}>
-                  <Globe className="w-3 h-3" /> Top Tari
+                  <Globe className="w-3 h-3" /> Top Countries
                 </p>
                 <div className="space-y-2">
                   {countriesBase.map(c => (
@@ -209,8 +209,8 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
           {/* Growth */}
           <div className="rounded-xl p-4 flex items-center justify-between" style={{ backgroundColor: channel.growthPercent >= 0 ? "rgba(16,185,129,0.06)" : "rgba(239,68,68,0.06)", border: `1px solid ${channel.growthPercent >= 0 ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)"}` }}>
             <div>
-              <p className="text-sm font-semibold" style={{ color: "#292524" }}>Crestere lunara</p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Fata de luna precedenta</p>
+              <p className="text-sm font-semibold" style={{ color: "#292524" }}>Monthly Growth</p>
+              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>vs. previous month</p>
             </div>
             <span className={`text-2xl font-black ${channel.growthPercent >= 0 ? "text-emerald-600" : "text-red-500"}`}>
               {channel.growthPercent >= 0 ? "+" : ""}{channel.growthPercent}%

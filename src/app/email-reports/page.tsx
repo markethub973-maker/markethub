@@ -14,7 +14,7 @@ export default function EmailReportsPage() {
   const [error, setError] = useState("");
 
   const sendReport = async () => {
-    if (!email.trim()) { setError("Introdu o adresă de email"); return; }
+    if (!email.trim()) { setError("Enter an email address"); return; }
     setSending(true);
     setError("");
     setSuccess("");
@@ -26,12 +26,12 @@ export default function EmailReportsPage() {
     const data = await res.json();
     setSending(false);
     if (data.error) setError(data.error);
-    else setSuccess(`Raport trimis cu succes la ${data.sentTo}`);
+    else setSuccess(`Report successfully sent to ${data.sentTo}`);
   };
 
   return (
     <div>
-      <Header title="Rapoarte pe Email" subtitle="Trimite rapoarte de performanță Instagram direct pe email" />
+      <Header title="Email Reports" subtitle="Send Instagram performance reports directly to email" />
       <div className="p-6 space-y-5">
 
         {/* Send report card */}
@@ -41,8 +41,8 @@ export default function EmailReportsPage() {
               <Mail className="w-5 h-5" style={{ color: ACCENT }} />
             </div>
             <div>
-              <h2 className="font-bold" style={{ color: "#292524" }}>Trimite Raport Acum</h2>
-              <p className="text-xs" style={{ color: "#A8967E" }}>Raport complet cu date Instagram din ultimele 30 de zile</p>
+              <h2 className="font-bold" style={{ color: "#292524" }}>Send Report Now</h2>
+              <p className="text-xs" style={{ color: "#A8967E" }}>Complete report with Instagram data from the last 30 days</p>
             </div>
           </div>
 
@@ -59,7 +59,7 @@ export default function EmailReportsPage() {
               className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold"
               style={{ backgroundColor: ACCENT, color: "#1C1814", opacity: sending ? 0.7 : 1 }}>
               <Send className="w-4 h-4" />
-              {sending ? "Se trimite..." : "Trimite"}
+              {sending ? "Sending..." : "Send"}
             </button>
           </div>
 
@@ -81,16 +81,16 @@ export default function EmailReportsPage() {
         <div className="rounded-xl p-6" style={cardStyle}>
           <div className="flex items-center gap-2 mb-4">
             <FileText className="w-4 h-4" style={{ color: ACCENT }} />
-            <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>Ce conține raportul email</h3>
+            <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>What's in the email report</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              { label: "Urmăritori totali", desc: "Numărul curent de followers" },
-              { label: "Engagement Rate", desc: "Medie din ultimele 20 postări" },
-              { label: "Reach 30 zile", desc: "Persoane unice care au văzut conținut" },
-              { label: "Impresii 30 zile", desc: "Total afișări ale postărilor" },
-              { label: "Cea mai bună postare", desc: "Postarea cu cel mai mare engagement" },
-              { label: "Link raport complet", desc: "Acces direct la dashboard" },
+              { label: "Total Followers", desc: "Current number of followers" },
+              { label: "Engagement Rate", desc: "Average from last 20 posts" },
+              { label: "Reach 30 days", desc: "Unique people who saw content" },
+              { label: "Impressions 30 days", desc: "Total post views" },
+              { label: "Best Post", desc: "Post with highest engagement" },
+              { label: "Full Report Link", desc: "Direct dashboard access" },
             ].map(item => (
               <div key={item.label} className="flex items-start gap-2.5 p-3 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.08)" }}>
                 <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: ACCENT }} />
@@ -107,13 +107,13 @@ export default function EmailReportsPage() {
         <div className="rounded-xl p-6" style={{ ...cardStyle, opacity: 0.7 }}>
           <div className="flex items-center gap-3 mb-3">
             <Clock className="w-4 h-4" style={{ color: "#A8967E" }} />
-            <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>Rapoarte Automate (în curând)</h3>
+            <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>Automated Reports (Coming Soon)</h3>
             <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: ACCENT }}>
               Coming soon
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {["Săptămânal — în fiecare luni", "Lunar — prima zi din lună", "Personalizat — alege ziua și ora"].map(opt => (
+            {["Weekly — every Monday", "Monthly — first day of month", "Custom — choose day and time"].map(opt => (
               <div key={opt} className="p-3 rounded-lg text-center" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.15)" }}>
                 <p className="text-xs" style={{ color: "#A8967E" }}>{opt}</p>
               </div>
@@ -122,7 +122,7 @@ export default function EmailReportsPage() {
         </div>
 
         <p className="text-xs text-center" style={{ color: "#C4AA8A" }}>
-          Emailurile sunt trimise prin <strong>Resend</strong> — delivery garantat. Verifică folderul Spam dacă nu îl găsești în Inbox.
+          Emails are sent via <strong>Resend</strong> — guaranteed delivery. Check Spam folder if not in Inbox.
         </p>
       </div>
     </div>

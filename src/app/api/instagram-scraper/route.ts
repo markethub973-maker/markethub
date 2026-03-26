@@ -1,23 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-
-const RAPIDAPI_HOST = "instagram-public-bulk-scraper.p.rapidapi.com";
+import { createServiceClient } from "@/lib/supabase/service";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const apiKey = process.env.RAPIDAPI_KEY;
-  if (!apiKey) return NextResponse.json({ error: "RapidAPI key not configured" }, { status: 500 });
-
   const username = req.nextUrl.searchParams.get("username")?.trim().replace(/^@/, "");
   if (!username) return NextResponse.json({ error: "Username is required" }, { status: 400 });
 
   try {
-    console.log(`[Instagram Scraper] Fetching @${username} from RapidAPI...`);
-    console.log(`[Instagram Scraper] API Key exists: ${!!apiKey}`);
-    console.log(`[Instagram Scraper] API Key length: ${apiKey?.length}`);
+    // Try using Instagram Graph API directly (more reliable than RapidAPI)
+    const serviceClient = createServiceClient();
+    const { data: igConfig } = await serviceClient
+      .from("admin_platform_config")
+      .select("token, extra_data")
+      .eq("platform", "instagram")
+      .single();
+
+    if (!igConfig?.token || !igConfig?.extra_data?.user_id) {
+      // Fallback to RapidAPI if Graph API token not available
+      return await searchViaRapidAPI(username);
+    }
+
+    // Use Graph API to search for user
+    console.log(`[Instagram Search] Searching for @${username} via Graph API...`);
+
+    // Search for user by username using graph API
+    const searchRes = await fetch(
+      `https://graph.instagram.com/v25.0/ig_hashtag_search?user_id=${igConfig.extra_data.user_id}&fields=id,name&q=${encodeURIComponent(username)}&access_token=${igConfig.token}`
+    );
+
+    if (!searchRes.ok) {
+      console.log(`[Instagram Search] Graph API search failed, trying RapidAPI...`);
+      return await searchViaRapidAPI(username);
+    }
+
+    // Fallback to RapidAPI for regular user profile search
+    return await searchViaRapidAPI(username);
+
+  } catch (err: any) {
+    console.error("[Instagram Search] Error:", err.message);
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}
+
+async function searchViaRapidAPI(username: string) {
+  const RAPIDAPI_HOST = "instagram-public-bulk-scraper.p.rapidapi.com";
+  const apiKey = process.env.RAPIDAPI_KEY;
+
+  if (!apiKey) {
+    return NextResponse.json({ error: "RapidAPI key not configured" }, { status: 500 });
+  }
+
+  try {
+    console.log(`[Instagram Search] Fetching @${username} from RapidAPI...`);
+    console.log(`[Instagram Search] API Key exists: ${!!apiKey}`);
 
     const res = await fetch(
       `https://${RAPIDAPI_HOST}/v1/user_info_web?username=${encodeURIComponent(username)}`,
@@ -25,23 +64,33 @@ export async function GET(req: NextRequest) {
         headers: {
           "x-rapidapi-host": RAPIDAPI_HOST,
           "x-rapidapi-key": apiKey,
+          "Accept": "application/json",
         },
       }
     );
 
-    console.log(`[Instagram Scraper] RapidAPI Response Status: ${res.status}`);
+    console.log(`[Instagram Search] RapidAPI Response Status: ${res.status}`);
 
     if (!res.ok) {
       const errorText = await res.text();
-      console.error(`[Instagram Scraper] RapidAPI Error: ${errorText}`);
-      return NextResponse.json({ error: `Instagram API returned ${res.status}`, details: errorText }, { status: res.status });
+      console.error(`[Instagram Search] RapidAPI Error (${res.status}): ${errorText}`);
+
+      // Return more helpful error messages
+      if (res.status === 401) {
+        return NextResponse.json(
+          { error: "RapidAPI authentication failed - check API key or subscription", details: "401 Unauthorized" },
+          { status: 401 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: `Instagram API returned ${res.status}`, details: errorText },
+        { status: res.status }
+      );
     }
 
     const raw = await res.json();
-    console.log(`[Instagram Scraper] RapidAPI Response Keys: ${Object.keys(raw).join(', ')}`);
-    if (raw.error || raw.errors) {
-      console.error(`[Instagram Scraper] RapidAPI Error Response:`, raw);
-    }
+    console.log(`[Instagram Search] RapidAPI Response - Has data: ${!!raw.data}`);
 
     if (!raw?.data) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -96,8 +145,9 @@ export async function GET(req: NextRequest) {
       engagementRate: parseFloat(engagementRate),
       posts,
     });
+
   } catch (err: any) {
-    console.error("[Instagram Scraper] Error:", err.message);
+    console.error("[Instagram Search] RapidAPI Error:", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

@@ -15,14 +15,14 @@ const ICON_MAP: Record<string, React.ElementType> = {
 type Message = { role: "user" | "assistant"; content: string };
 
 const WELCOME_MESSAGES: Record<AgentType, string> = {
-  support: "Salut! Sunt agentul de suport MarketHub Pro. Te pot ajuta cu setup-ul platformei, configurarea API-urilor sau orice intrebare despre functionalitati. Cu ce te pot ajuta?",
-  research: "Salut! Sunt agentul de Deep Research. Te pot ajuta cu cercetare de piata, analiza competitorilor, trenduri de industrie si identificarea audientelor target.\n\nSpune-mi: ce vrei sa cercetam?",
-  "email-marketing": "Salut! Sunt agentul de Email Marketing. Pot genera newsletter-uri, email-uri cold outreach, campanii drip si digest-uri curatoriate.\n\nCe tip de email vrei sa cream?",
-  financial: "Salut! Sunt analistul financiar MarketHub Pro. Te pot ajuta cu ROI campanii, bugete marketing, modele financiare si sensitivity analysis.\n\nCu ce calcule te pot ajuta?",
-  brainstorming: "Salut! Sunt agentul de brainstorming creativ. Te pot ajuta sa generezi idei de campanii, sa planifici continut si sa dezvolti strategii de marketing.\n\nPentru ce brand sau produs facem brainstorming?",
-  "prompt-factory": "Salut! Sunt Prompt Factory. Generez prompturi profesionale pentru Midjourney, DALL-E, Stable Diffusion, ChatGPT si Gemini — optimizate pentru content marketing.\n\nCe tip de prompt ai nevoie?",
-  brand: "Salut! Sunt agentul de Brand Guidelines. Te pot ajuta sa creezi sau sa aplici identitatea vizuala a unui brand: culori, fonturi, ton comunicare, reguli logo.\n\nPentru ce brand lucram?",
-  "competitive-ads": "Salut! Sunt agentul de analiza reclame. Pot analiza reclamele competitorilor, identifica pattern-uri eficiente si recomanda strategii publicitare.\n\nCe competitori vrei sa analizam?",
+  support: "Hi! I'm the MarketHub Pro support agent. I can help you with platform setup, API configuration, or any questions about features. How can I help you?",
+  research: "Hi! I'm the Deep Research agent. I can help you with market research, competitor analysis, industry trends, and identifying target audiences.\n\nTell me: what would you like to research?",
+  "email-marketing": "Hi! I'm the Email Marketing agent. I can generate newsletters, cold outreach emails, drip campaigns, and curated digests.\n\nWhat type of email would you like to create?",
+  financial: "Hi! I'm the MarketHub Pro financial analyst. I can help you with campaign ROI, marketing budgets, financial models, and sensitivity analysis.\n\nWhat calculations can I help you with?",
+  brainstorming: "Hi! I'm the creative brainstorming agent. I can help you generate campaign ideas, plan content, and develop marketing strategies.\n\nWhat brand or product are we brainstorming for?",
+  "prompt-factory": "Hi! I'm Prompt Factory. I generate professional prompts for Midjourney, DALL-E, Stable Diffusion, ChatGPT, and Gemini — optimized for content marketing.\n\nWhat type of prompt do you need?",
+  brand: "Hi! I'm the Brand Guidelines agent. I can help you create or apply a brand's visual identity: colors, fonts, communication tone, logo rules.\n\nWhat brand are we working on?",
+  "competitive-ads": "Hi! I'm the ad analysis agent. I can analyze competitor ads, identify effective patterns, and recommend advertising strategies.\n\nWhich competitors would you like to analyze?",
 };
 
 function AgentCard({ id, onClick }: { id: AgentType; onClick: () => void }) {
@@ -165,7 +165,7 @@ export default function AIHubPage() {
         const updated = [...prev];
         updated[updated.length - 1] = {
           role: "assistant",
-          content: "A aparut o eroare. Verifica ca ANTHROPIC_API_KEY este configurat pe server sau contacteaza support@markethubpromo.com",
+          content: "An error occurred. Please check that ANTHROPIC_API_KEY is configured on the server or contact support@markethubpromo.com",
         };
         return updated;
       });
@@ -181,7 +181,7 @@ export default function AIHubPage() {
   if (!activeAgent) {
     return (
       <div>
-        <Header title="AI Hub" subtitle="8 agenti AI specializati pentru agentii de marketing" />
+        <Header title="AI Hub" subtitle="8 specialized AI agents for marketing agencies" />
         <div className="p-6 space-y-6">
           {/* Hero */}
           <div
@@ -194,12 +194,12 @@ export default function AIHubPage() {
             <div className="flex items-center gap-3 mb-2">
               <Sparkles className="w-5 h-5" style={{ color: "#F59E0B" }} />
               <h2 className="font-bold text-lg" style={{ color: "#292524" }}>
-                Agentii tai AI
+                Your AI Agents
               </h2>
             </div>
             <p className="text-sm" style={{ color: "#A8967E" }}>
-              Alege un agent specializat pentru a incepe. Fiecare agent are expertiza unica si
-              acces la datele platformei MarketHub Pro.
+              Choose a specialized agent to get started. Each agent has unique expertise and
+              access to MarketHub Pro platform data.
             </p>
           </div>
 
@@ -243,7 +243,7 @@ export default function AIHubPage() {
             {agentConfig!.name}
           </h2>
           <p className="text-xs" style={{ color: "#A8967E" }}>
-            {streaming ? "Scrie..." : agentConfig!.description}
+            {streaming ? "Typing..." : agentConfig!.description}
           </p>
         </div>
         <span
@@ -293,7 +293,7 @@ export default function AIHubPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && send()}
-            placeholder={`Intreaba agentul ${agentConfig!.name}...`}
+            placeholder={`Ask the ${agentConfig!.name} agent...`}
             disabled={streaming}
             className="flex-1 px-4 py-3 text-sm rounded-xl focus:outline-none transition-colors"
             style={{

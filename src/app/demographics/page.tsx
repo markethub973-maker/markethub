@@ -23,7 +23,7 @@ export default function DemographicsPage() {
         if (d.error) setError(d.error);
         else setData(d);
       })
-      .catch(() => setError("Eroare de rețea"))
+      .catch(() => setError("Network error"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -33,18 +33,18 @@ export default function DemographicsPage() {
     fetch("/api/instagram/demographics")
       .then(r => r.json())
       .then(d => { if (d.error) setError(d.error); else setData(d); })
-      .catch(() => setError("Eroare de rețea"))
+      .catch(() => setError("Network error"))
       .finally(() => setLoading(false));
   };
 
   if (loading) {
     return (
       <div>
-        <Header title="Demographics Audiență" subtitle="Analiză demografică a urmăritorilor tăi Instagram" />
+        <Header title="Demographics Audience" subtitle="Demographic analysis of your Instagram followers" />
         <div className="p-6">
           <div className="rounded-xl p-12 text-center" style={cardStyle}>
             <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-sm" style={{ color: "#A8967E" }}>Se încarcă datele demografice...</p>
+            <p className="text-sm" style={{ color: "#A8967E" }}>Loading demographic data...</p>
           </div>
         </div>
       </div>
@@ -54,19 +54,19 @@ export default function DemographicsPage() {
   if (error) {
     return (
       <div>
-        <Header title="Demographics Audiență" subtitle="Analiză demografică a urmăritorilor tăi Instagram" />
+        <Header title="Demographics Audience" subtitle="Demographic analysis of your Instagram followers" />
         <div className="p-6">
           <div className="rounded-xl p-5 flex items-start gap-3" style={cardStyle}>
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
             <div className="flex-1">
-              <p className="text-sm font-semibold mb-1" style={{ color: "#EF4444" }}>Nu s-au putut încărca datele</p>
+              <p className="text-sm font-semibold mb-1" style={{ color: "#EF4444" }}>Failed to load data</p>
               <p className="text-sm" style={{ color: "#A8967E" }}>{error}</p>
               <p className="text-xs mt-2" style={{ color: "#C4AA8A" }}>
-                Nota: Datele demografice necesită un cont Instagram Business cu minim 100 urmăritori.
+                Note: Demographic data requires an Instagram Business account with at least 100 followers.
               </p>
               <button onClick={reload} className="mt-3 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
                 style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.2)" }}>
-                <RefreshCw className="w-3 h-3" /> Reîncearcă
+                <RefreshCw className="w-3 h-3" /> Retry
               </button>
             </div>
           </div>
@@ -76,9 +76,9 @@ export default function DemographicsPage() {
   }
 
   const genderPie = [
-    { name: "Bărbați", value: data.genderSplit.male, color: MALE },
-    { name: "Femei", value: data.genderSplit.female, color: FEMALE },
-    ...(data.genderSplit.unknown > 0 ? [{ name: "Necunoscut", value: data.genderSplit.unknown, color: UNKNOWN }] : []),
+    { name: "Men", value: data.genderSplit.male, color: MALE },
+    { name: "Women", value: data.genderSplit.female, color: FEMALE },
+    ...(data.genderSplit.unknown > 0 ? [{ name: "Unknown", value: data.genderSplit.unknown, color: UNKNOWN }] : []),
   ];
 
   const topCountry = data.topCountries?.[0];
@@ -88,16 +88,16 @@ export default function DemographicsPage() {
 
   return (
     <div>
-      <Header title="Demographics Audiență" subtitle="Analiză demografică a urmăritorilor tăi Instagram" />
+      <Header title="Demographics Audience" subtitle="Demographic analysis of your Instagram followers" />
       <div className="p-6 space-y-5">
 
         {/* KPI row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Urmăritori", value: data.followers?.toLocaleString(), color: "#F59E0B", icon: <Users className="w-4 h-4" /> },
-            { label: "% Bărbați", value: `${data.genderSplit.male}%`, color: MALE, icon: null },
-            { label: "% Femei", value: `${data.genderSplit.female}%`, color: FEMALE, icon: null },
-            { label: "Top Țară", value: topCountry?.country || "—", color: "#10B981", icon: <Globe2 className="w-4 h-4" /> },
+            { label: "Total Followers", value: data.followers?.toLocaleString(), color: "#F59E0B", icon: <Users className="w-4 h-4" /> },
+            { label: "% Men", value: `${data.genderSplit.male}%`, color: MALE, icon: null },
+            { label: "% Women", value: `${data.genderSplit.female}%`, color: FEMALE, icon: null },
+            { label: "Top Country", value: topCountry?.country || "—", color: "#10B981", icon: <Globe2 className="w-4 h-4" /> },
           ].map(s => (
             <div key={s.label} className="rounded-xl p-4" style={cardStyle}>
               <div className="flex items-center gap-2 mb-1" style={{ color: s.color }}>
@@ -113,7 +113,7 @@ export default function DemographicsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Gender pie */}
           <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Distribuție gen</h3>
+            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Gender Distribution</h3>
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie data={genderPie} dataKey="value" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${name} ${value}%`} labelLine={false}>
@@ -127,14 +127,14 @@ export default function DemographicsPage() {
 
           {/* Age brackets */}
           <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Distribuție vârstă</h3>
+            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Age Distribution</h3>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={data.ageBrackets} margin={{ left: -20, right: 10 }}>
                 <XAxis dataKey="age" tick={{ fontSize: 11, fill: "#A8967E" }} />
                 <YAxis tick={{ fontSize: 11, fill: "#A8967E" }} />
                 <Tooltip
                   contentStyle={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)", borderRadius: 8 }}
-                  formatter={(v: any) => [`${v} persoane`]}
+                  formatter={(v: any) => [`${v} people`]}
                 />
                 <Bar dataKey="count" fill={AGE_COLOR} radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -145,14 +145,14 @@ export default function DemographicsPage() {
         {/* Gender x Age heatmap */}
         {data.genderAge && (
           <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Gen × Vârstă — detaliat</h3>
+            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Gender × Age - Detailed</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
                   <tr>
-                    <th className="text-left pb-2 pr-4" style={{ color: "#A8967E" }}>Vârstă</th>
-                    <th className="pb-2 px-3 text-center" style={{ color: MALE }}>Bărbați</th>
-                    <th className="pb-2 px-3 text-center" style={{ color: FEMALE }}>Femei</th>
+                    <th className="text-left pb-2 pr-4" style={{ color: "#A8967E" }}>Age</th>
+                    <th className="pb-2 px-3 text-center" style={{ color: MALE }}>Men</th>
+                    <th className="pb-2 px-3 text-center" style={{ color: FEMALE }}>Women</th>
                     <th className="pb-2 px-3 text-center" style={{ color: UNKNOWN }}>N/A</th>
                   </tr>
                 </thead>
@@ -182,7 +182,7 @@ export default function DemographicsPage() {
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center gap-2 mb-4">
               <MapPin className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <h3 className="text-sm font-semibold" style={{ color: "#292524" }}>Top Orașe</h3>
+              <h3 className="text-sm font-semibold" style={{ color: "#292524" }}>Top Cities</h3>
             </div>
             <div className="space-y-2.5">
               {data.topCities.map((c: any, i: number) => (
@@ -198,7 +198,7 @@ export default function DemographicsPage() {
                   </div>
                 </div>
               ))}
-              {data.topCities.length === 0 && <p className="text-xs" style={{ color: "#C4AA8A" }}>Date insuficiente</p>}
+              {data.topCities.length === 0 && <p className="text-xs" style={{ color: "#C4AA8A" }}>Insufficient data</p>}
             </div>
           </div>
 
@@ -206,7 +206,7 @@ export default function DemographicsPage() {
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center gap-2 mb-4">
               <Globe2 className="w-4 h-4" style={{ color: "#10B981" }} />
-              <h3 className="text-sm font-semibold" style={{ color: "#292524" }}>Top Țări</h3>
+              <h3 className="text-sm font-semibold" style={{ color: "#292524" }}>Top Countries</h3>
             </div>
             <div className="space-y-2.5">
               {data.topCountries.map((c: any, i: number) => (
@@ -222,13 +222,13 @@ export default function DemographicsPage() {
                   </div>
                 </div>
               ))}
-              {data.topCountries.length === 0 && <p className="text-xs" style={{ color: "#C4AA8A" }}>Date insuficiente</p>}
+              {data.topCountries.length === 0 && <p className="text-xs" style={{ color: "#C4AA8A" }}>Insufficient data</p>}
             </div>
           </div>
         </div>
 
         <p className="text-xs text-center" style={{ color: "#C4AA8A" }}>
-          Datele demografice sunt actualizate zilnic de Instagram Business. Necesită minim 100 urmăritori pentru a fi disponibile.
+          Demographic data is updated daily by Instagram Business. Requires at least 100 followers to be available.
         </p>
       </div>
     </div>

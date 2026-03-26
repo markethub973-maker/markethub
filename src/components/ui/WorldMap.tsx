@@ -107,11 +107,11 @@ export default function WorldMap({ selectedCode, countries, onSelect }: Props) {
       <div className="absolute bottom-2 right-3 flex items-center gap-3">
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: "#F59E0B" }} />
-          <span className="text-xs" style={{ color: "#A8967E" }}>Selectată</span>
+          <span className="text-xs" style={{ color: "#A8967E" }}>Selected</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: "rgba(245,158,11,0.25)" }} />
-          <span className="text-xs" style={{ color: "#A8967E" }}>Disponibilă</span>
+          <span className="text-xs" style={{ color: "#A8967E" }}>Available</span>
         </div>
       </div>
     </div>

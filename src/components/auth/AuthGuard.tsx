@@ -6,7 +6,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import SetupAgent from "@/components/ui/SetupAgent";
 import { createClient } from "@/lib/supabase/client";
 
-const PUBLIC_PATHS = ["/login", "/register"];
+const PUBLIC_PATHS = ["/login", "/register", "/markethub973"];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -16,7 +16,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user && !PUBLIC_PATHS.includes(pathname)) {
+      // Check if user is admin (via localStorage)
+      const isAdminAuthenticated =
+        typeof window !== "undefined" &&
+        localStorage.getItem("admin_authenticated") === "true";
+
+      if (!user && !isAdminAuthenticated && !PUBLIC_PATHS.includes(pathname)) {
         router.replace("/login");
       } else {
         setChecked(true);
@@ -31,7 +36,17 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // Dashboard: sidebar + main layout
+  // Admin dashboard: sidebar + main layout (no SetupAgent)
+  if (pathname.startsWith("/dashboard/admin")) {
+    return (
+      <>
+        <Sidebar />
+        <main className="ml-64 min-h-screen">{children}</main>
+      </>
+    );
+  }
+
+  // Regular dashboard: sidebar + main layout
   return (
     <>
       <Sidebar />

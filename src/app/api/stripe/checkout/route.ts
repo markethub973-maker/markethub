@@ -47,7 +47,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : "Eroare necunoscuta";
+    const message = err instanceof Error ? err.message : "Unknown error";
     console.error("[checkout] error:", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }

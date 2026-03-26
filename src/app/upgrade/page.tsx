@@ -9,37 +9,37 @@ const plans = [
     key: null,
     name: "Free",
     price: "$0",
-    period: "pentru totdeauna",
+    period: "forever",
     icon: <Zap className="w-5 h-5" />,
     current: true,
     color: "#A8967E",
     features: [
-      "10 canale urmarite",
+      "10 tracked channels",
       "YouTube Analytics",
-      "30 zile istoric",
+      "30 days history",
       "Export CSV",
-      "Alerte trending (5 keywords)",
+      "Trending alerts (5 keywords)",
     ],
-    missing: ["TikTok & Instagram", "Comparatii nelimitate", "API access", "Suport prioritar"],
+    missing: ["TikTok & Instagram", "Unlimited comparisons", "API access", "Priority support"],
   },
   {
     key: "pro",
     name: "Pro",
     price: "$29",
-    period: "/ luna",
+    period: "/ month",
     icon: <Star className="w-5 h-5" />,
     current: false,
     color: "#F59E0B",
     highlight: true,
     features: [
-      "Canale nelimitate",
+      "Unlimited channels",
       "YouTube + TikTok + Instagram",
-      "1 an istoric",
+      "1 year history",
       "Export CSV + PDF",
-      "Alerte trending nelimitate",
-      "Comparatii avansate",
-      "Demographics detaliate",
-      "Rapoarte saptamanale email",
+      "Unlimited trending alerts",
+      "Advanced comparisons",
+      "Detailed demographics",
+      "Weekly email reports",
     ],
     missing: [],
   },
@@ -47,18 +47,18 @@ const plans = [
     key: "enterprise",
     name: "Enterprise",
     price: "$99",
-    period: "/ luna",
+    period: "/ month",
     icon: <Building2 className="w-5 h-5" />,
     current: false,
     color: "#78614E",
     features: [
-      "Tot ce include Pro",
-      "API access complet",
+      "Everything in Pro",
+      "Full API access",
       "White-label dashboard",
-      "Multi-utilizatori (10 conturi)",
-      "Manager de cont dedicat",
-      "Integrare Slack/Webhook",
-      "Date in timp real (live)",
+      "Multi-user (10 accounts)",
+      "Dedicated account manager",
+      "Slack/Webhook integration",
+      "Real-time data (live)",
       "SLA 99.9% uptime",
     ],
     missing: [],
@@ -80,30 +80,30 @@ export default function UpgradePage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setCheckoutError(data.error || "A aparut o eroare. Incearca din nou.");
+        setCheckoutError(data.error || "An error occurred. Please try again.");
         setLoadingPlan(null);
         return;
       }
       window.location.href = data.url;
     } catch {
-      setCheckoutError("Eroare de retea. Incearca din nou.");
+      setCheckoutError("Network error. Please try again.");
       setLoadingPlan(null);
     }
   };
 
   return (
     <div>
-      <Header title="Upgrade Plan" subtitle="Alege planul potrivit pentru tine" />
+      <Header title="Upgrade Plan" subtitle="Choose the right plan for you" />
 
       <div className="p-6">
         {/* Hero */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-4" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
             <Zap className="w-3.5 h-3.5" />
-            Upgrade si obtine acces la toate platformele
+            Upgrade and get access to all platforms
           </div>
-          <h2 className="text-3xl font-black mb-2" style={{ color: "#292524" }}>Planuri simple si transparente</h2>
-          <p className="text-sm" style={{ color: "#A8967E" }}>Fara contracte. Anuleaza oricand.</p>
+          <h2 className="text-3xl font-black mb-2" style={{ color: "#292524" }}>Simple and transparent pricing</h2>
+          <p className="text-sm" style={{ color: "#A8967E" }}>No contracts. Cancel anytime.</p>
         </div>
 
         {/* Error banner */}
@@ -133,7 +133,7 @@ export default function UpgradePage() {
               <div className="flex items-center gap-2 mb-4" style={{ color: plan.highlight ? "white" : plan.color }}>
                 {plan.icon}
                 <span className="font-bold text-lg" style={{ color: plan.highlight ? "white" : "#292524" }}>{plan.name}</span>
-                {plan.current && <span className="text-xs px-2 py-0.5 rounded-full ml-auto" style={{ backgroundColor: "rgba(245,215,160,0.2)", color: "#A8967E" }}>Curent</span>}
+                {plan.current && <span className="text-xs px-2 py-0.5 rounded-full ml-auto" style={{ backgroundColor: "rgba(245,215,160,0.2)", color: "#A8967E" }}>Current</span>}
               </div>
 
               <div className="mb-6">
@@ -163,10 +163,10 @@ export default function UpgradePage() {
                 }
               >
                 {loadingPlan === plan.key
-                  ? "Se incarca..."
+                  ? "Loading..."
                   : plan.current
-                  ? "Plan curent"
-                  : "Alege " + plan.name}
+                  ? "Current plan"
+                  : "Choose " + plan.name}
               </button>
             </div>
           ))}
@@ -174,12 +174,12 @@ export default function UpgradePage() {
 
         {/* FAQ */}
         <div className="max-w-2xl mx-auto mt-12 space-y-4">
-          <h3 className="text-lg font-bold text-center mb-6" style={{ color: "#292524" }}>Intrebari frecvente</h3>
+          <h3 className="text-lg font-bold text-center mb-6" style={{ color: "#292524" }}>Frequently Asked Questions</h3>
           {[
-            { q: "Pot anula oricand?", a: "Da, poti anula abonamentul in orice moment fara penalitati." },
-            { q: "Ce platforme sunt suportate?", a: "Free: YouTube. Pro si Enterprise: YouTube, TikTok, Instagram, Facebook." },
-            { q: "Datele sunt reale sau estimate?", a: "YouTube este 100% real. TikTok si Instagram necesita aprobare API (in curs). Demographics sunt estimate bazate pe categoria canalului." },
-            { q: "Cum platesc?", a: "Acceptam card de credit/debit. Plata securizata prin Stripe." },
+            { q: "Can I cancel anytime?", a: "Yes, you can cancel your subscription at any time without penalties." },
+            { q: "What platforms are supported?", a: "Free: YouTube. Pro and Enterprise: YouTube, TikTok, Instagram, Facebook." },
+            { q: "Is the data real or estimated?", a: "YouTube is 100% real. TikTok and Instagram require API approval (in progress). Demographics are estimated based on channel category." },
+            { q: "How do I pay?", a: "We accept credit/debit cards. Secure payment through Stripe." },
           ].map(item => (
             <div key={item.q} className="rounded-xl p-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.2)" }}>
               <p className="font-semibold text-sm mb-1" style={{ color: "#292524" }}>{item.q}</p>

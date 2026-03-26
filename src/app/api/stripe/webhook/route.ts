@@ -24,6 +24,37 @@ export async function POST(req: Request) {
     const session = event.data.object as any;
     const userId = session.metadata?.user_id;
     const plan = session.metadata?.plan;
+    const sessionType = session.metadata?.type;
+
+    // ── AI credit pack purchase ──────────────────────────────────────────
+    if (sessionType === "ai_credits" && userId) {
+      const creditsUsd = parseFloat(session.metadata?.credits_usd ?? "0");
+      const currentMonth = new Date().toISOString().substring(0, 7);
+
+      // Upsert into ai_credits table (add to existing balance for this month)
+      const { data: existing } = await supabase
+        .from("ai_credits")
+        .select("id, credits_usd")
+        .eq("user_id", userId)
+        .eq("month_year", currentMonth)
+        .maybeSingle();
+
+      if (existing) {
+        await supabase
+          .from("ai_credits")
+          .update({ credits_usd: existing.credits_usd + creditsUsd })
+          .eq("id", existing.id);
+      } else {
+        await supabase.from("ai_credits").insert({
+          user_id: userId,
+          month_year: currentMonth,
+          credits_usd: creditsUsd,
+          purchased_at: new Date().toISOString(),
+        });
+      }
+    }
+
+    // ── Subscription plan purchase ───────────────────────────────────────
     if (userId && plan) {
       await supabase.from("profiles").update({
         plan,

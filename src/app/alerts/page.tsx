@@ -73,17 +73,17 @@ export default function AlertsPage() {
 
   return (
     <div>
-      <Header title="Trending Alerts" subtitle="Urmărește cuvinte cheie și primește alerte când devin virale" />
+      <Header title="Trending Alerts" subtitle="Track keywords and get alerted when they trend" />
 
       <div className="p-6 space-y-6">
         {/* Add Alert */}
         <div className="rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h3 className="font-semibold" style={{ color: "#292524" }}>Adaugă Alertă Nouă</h3>
+            <h3 className="font-semibold" style={{ color: "#292524" }}>Add New Alert</h3>
           </div>
           <p className="text-sm mb-4" style={{ color: "#A8967E" }}>
-            Introdu un keyword (ex: "AI", "fotbal", "gaming") și vei fi notificat când trendeaza pe YouTube.
+            Enter a keyword (ex: "AI", "football", "gaming") and you'll be notified when it trends on YouTube.
           </p>
           <div className="flex gap-2">
             <input
@@ -91,7 +91,7 @@ export default function AlertsPage() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === "Enter" && addAlert()}
-              placeholder="Ex: gaming, AI, beauty, fotbal..."
+              placeholder="Ex: gaming, AI, beauty, football..."
               className="flex-1 px-4 py-2.5 text-sm rounded-lg focus:outline-none"
               style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }}
               onFocus={e => (e.currentTarget.style.border = "1px solid #F59E0B")}
@@ -104,7 +104,7 @@ export default function AlertsPage() {
               style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
             >
               <Plus className="w-4 h-4" />
-              Adaugă
+              Add
             </button>
           </div>
         </div>
@@ -113,12 +113,12 @@ export default function AlertsPage() {
         {alerts.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={{ backgroundColor: "#FFFCF7", border: "1px dashed rgba(245,215,160,0.4)" }}>
             <Bell className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(245,215,160,0.5)" }} />
-            <p className="font-semibold" style={{ color: "#A8967E" }}>Nicio alertă activă</p>
-            <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>Adaugă un keyword mai sus pentru a începe monitorizarea</p>
+            <p className="font-semibold" style={{ color: "#A8967E" }}>No active alerts</p>
+            <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>Add a keyword above to start monitoring</p>
           </div>
         ) : (
           <div className="space-y-3">
-            <h3 className="font-semibold" style={{ color: "#292524" }}>Alerte active ({alerts.length})</h3>
+            <h3 className="font-semibold" style={{ color: "#292524" }}>Active alerts ({alerts.length})</h3>
             {matchedAlerts.map(({ alert, video }) => (
               <div
                 key={alert.id}
@@ -132,14 +132,14 @@ export default function AlertsPage() {
                     </div>
                     <div className="min-w-0">
                       <p className="font-semibold text-sm" style={{ color: "#292524" }}>#{alert.keyword}</p>
-                      <p className="text-xs" style={{ color: "#C4AA8A" }}>Adăugat {alert.createdAt}</p>
+                      <p className="text-xs" style={{ color: "#C4AA8A" }}>Added {alert.createdAt}</p>
                     </div>
                   </div>
 
                   {video ? (
                     <div className="flex items-center gap-4 flex-shrink-0">
                       <div className="text-right hidden sm:block">
-                        <p className="text-xs" style={{ color: "#A8967E" }}>Video găsit</p>
+                        <p className="text-xs" style={{ color: "#A8967E" }}>Video found</p>
                         <p className="text-xs font-semibold max-w-[140px] truncate" style={{ color: "#292524" }}>{video.title}</p>
                       </div>
                       <div className="text-right hidden sm:block">
@@ -155,7 +155,7 @@ export default function AlertsPage() {
                     </div>
                   ) : (
                     <span className="text-xs px-2.5 py-1 rounded-full flex-shrink-0" style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#A8967E" }}>
-                      Monitorizare activă
+                      Monitoring active
                     </span>
                   )}
 
@@ -178,7 +178,7 @@ export default function AlertsPage() {
         {/* Trending Now suggestions — real YouTube data */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <h3 className="font-semibold" style={{ color: "#292524" }}>Trending acum pe YouTube RO — adaugă rapid</h3>
+            <h3 className="font-semibold" style={{ color: "#292524" }}>Trending now on YouTube RO - add quickly</h3>
             <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(255,0,0,0.08)", color: "#cc0000" }}>Live</span>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -206,7 +206,7 @@ export default function AlertsPage() {
               );
             })}
             {trendingSuggestions.length === 0 && (
-              <p className="text-xs" style={{ color: "#C4AA8A" }}>Se încarcă...</p>
+              <p className="text-xs" style={{ color: "#C4AA8A" }}>Loading...</p>
             )}
           </div>
         </div>

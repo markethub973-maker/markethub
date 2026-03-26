@@ -23,7 +23,7 @@ export default function LoginPage() {
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (authError) {
-      setError("Email sau parola incorecta.");
+      setError("Incorrect email or password.");
       setLoading(false);
       return;
     }
@@ -56,8 +56,8 @@ export default function LoginPage() {
             boxShadow: "0 4px 24px rgba(120,97,78,0.12)",
           }}
         >
-          <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Bine ai revenit!</h2>
-          <p className="text-sm mb-6" style={{ color: "#A8967E" }}>Intra in contul tau</p>
+          <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Welcome back!</h2>
+          <p className="text-sm mb-6" style={{ color: "#A8967E" }}>Sign into your account</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
             {/* Email */}
@@ -71,7 +71,7 @@ export default function LoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@exemplu.com"
+                  placeholder="email@example.com"
                   required
                   className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none transition-all"
                   style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
@@ -84,7 +84,7 @@ export default function LoginPage() {
             {/* Password */}
             <div>
               <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>
-                Parola
+                Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
@@ -127,14 +127,14 @@ export default function LoginPage() {
               className="w-full py-3 rounded-lg text-sm font-bold transition-opacity"
               style={{ backgroundColor: "#F59E0B", color: "#1C1814", opacity: loading ? 0.7 : 1 }}
             >
-              {loading ? "Se incarca..." : "Intra in cont"}
+              {loading ? "Loading..." : "Sign in"}
             </button>
           </form>
 
           <p className="text-center text-xs mt-5" style={{ color: "#A8967E" }}>
-            Nu ai cont?{" "}
+            Don't have an account?{" "}
             <Link href="/register" style={{ color: "#F59E0B", fontWeight: 600 }}>
-              Inregistreaza-te gratuit
+              Sign up free
             </Link>
           </p>
         </div>
