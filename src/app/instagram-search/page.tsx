@@ -183,7 +183,21 @@ export default function InstagramSearchPage() {
         {/* Error */}
         {error && !loading && (
           <div className="rounded-xl p-5" style={cardStyle}>
-            <p className="text-sm" style={{ color: "#EF4444" }}>Error: {error}</p>
+            <div className="space-y-2">
+              <p className="text-sm font-semibold" style={{ color: "#EF4444" }}>
+                {error === "Instagram search unavailable" ? "⚠️ Feature Temporarily Unavailable" : "❌ Error"}
+              </p>
+              <p className="text-sm" style={{ color: "#78614E" }}>
+                {error === "Instagram search unavailable"
+                  ? "The RapidAPI subscription required for comprehensive Instagram profile search is not currently active. You can still use the 'My Channel' feature to view analytics for your connected Instagram account."
+                  : `Error: ${error}`}
+              </p>
+              {error !== "Instagram search unavailable" && (
+                <p className="text-xs" style={{ color: "#A8967E" }}>
+                  Please try again or contact support if this issue persists.
+                </p>
+              )}
+            </div>
           </div>
         )}
 

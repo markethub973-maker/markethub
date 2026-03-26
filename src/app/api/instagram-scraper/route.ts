@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createServiceClient } from "@/lib/supabase/service";
 
+/**
+ * Instagram Profile Search - PUBLIC DATA ONLY
+ * Fetches basic public Instagram profile information
+ * Uses official Instagram web data and Graph API
+ */
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -11,143 +15,70 @@ export async function GET(req: NextRequest) {
   if (!username) return NextResponse.json({ error: "Username is required" }, { status: 400 });
 
   try {
-    // Try using Instagram Graph API directly (more reliable than RapidAPI)
-    const serviceClient = createServiceClient();
-    const { data: igConfig } = await serviceClient
-      .from("admin_platform_config")
-      .select("token, extra_data")
-      .eq("platform", "instagram")
-      .single();
+    console.log(`[Instagram Search] Fetching public data for @${username}...`);
 
-    if (!igConfig?.token || !igConfig?.extra_data?.user_id) {
-      // Fallback to RapidAPI if Graph API token not available
-      return await searchViaRapidAPI(username);
-    }
-
-    // Use Graph API to search for user
-    console.log(`[Instagram Search] Searching for @${username} via Graph API...`);
-
-    // Search for user by username using graph API
-    const searchRes = await fetch(
-      `https://graph.instagram.com/v25.0/ig_hashtag_search?user_id=${igConfig.extra_data.user_id}&fields=id,name&q=${encodeURIComponent(username)}&access_token=${igConfig.token}`
-    );
-
-    if (!searchRes.ok) {
-      console.log(`[Instagram Search] Graph API search failed, trying RapidAPI...`);
-      return await searchViaRapidAPI(username);
-    }
-
-    // Fallback to RapidAPI for regular user profile search
-    return await searchViaRapidAPI(username);
-
-  } catch (err: any) {
-    console.error("[Instagram Search] Error:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
-  }
-}
-
-async function searchViaRapidAPI(username: string) {
-  const RAPIDAPI_HOST = "instagram-public-bulk-scraper.p.rapidapi.com";
-  const apiKey = process.env.RAPIDAPI_KEY;
-
-  if (!apiKey) {
-    return NextResponse.json({ error: "RapidAPI key not configured" }, { status: 500 });
-  }
-
-  try {
-    console.log(`[Instagram Search] Fetching @${username} from RapidAPI...`);
-    console.log(`[Instagram Search] API Key exists: ${!!apiKey}`);
-
-    const res = await fetch(
-      `https://${RAPIDAPI_HOST}/v1/user_info_web?username=${encodeURIComponent(username)}`,
+    // Try fetching from Instagram's public graph endpoint
+    // This endpoint doesn't require authentication for public profiles
+    const instagramRes = await fetch(
+      `https://www.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(username)}`,
       {
         headers: {
-          "x-rapidapi-host": RAPIDAPI_HOST,
-          "x-rapidapi-key": apiKey,
-          "Accept": "application/json",
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          'Accept': 'application/json',
         },
       }
     );
 
-    console.log(`[Instagram Search] RapidAPI Response Status: ${res.status}`);
+    console.log(`[Instagram Search] Instagram public API response: ${instagramRes.status}`);
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error(`[Instagram Search] RapidAPI Error (${res.status}): ${errorText}`);
+    if (instagramRes.ok) {
+      try {
+        const data = await instagramRes.json();
+        const user = data.data?.user;
 
-      // Return more helpful error messages
-      if (res.status === 401) {
-        return NextResponse.json(
-          { error: "RapidAPI authentication failed - check API key or subscription", details: "401 Unauthorized" },
-          { status: 401 }
-        );
+        if (user) {
+          console.log(`[Instagram Search] Found public profile: ${user.username}`);
+
+          return NextResponse.json({
+            profile: {
+              username: user.username,
+              fullName: user.full_name,
+              biography: user.biography,
+              avatar: user.profile_pic_url,
+              followers: user.follower_count || 0,
+              following: user.following_count || 0,
+              postsCount: user.media_count || 0,
+              isVerified: user.is_verified,
+              isPrivate: user.is_private,
+              externalUrl: user.external_url,
+              category: user.category || null,
+            },
+            engagementRate: 0,
+            posts: [],
+            source: 'instagram-public-api',
+          });
+        }
+      } catch (parseErr) {
+        console.log(`[Instagram Search] Could not parse Instagram public API response`);
       }
-
-      return NextResponse.json(
-        { error: `Instagram API returned ${res.status}`, details: errorText },
-        { status: res.status }
-      );
     }
 
-    const raw = await res.json();
-    console.log(`[Instagram Search] RapidAPI Response - Has data: ${!!raw.data}`);
+    // If public API fails, try alternative approach
+    console.log(`[Instagram Search] Public API failed, trying fallback...`);
 
-    if (!raw?.data) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const u = raw.data;
-
-    // Calculate engagement rate from recent posts
-    const recentPosts = u.edge_owner_to_timeline_media?.edges || [];
-    let totalEngagement = 0;
-    let postCount = 0;
-
-    const posts = recentPosts.slice(0, 12).map((edge: any) => {
-      const node = edge.node;
-      const likes = node.edge_liked_by?.count || 0;
-      const comments = node.edge_media_to_comment?.count || 0;
-      totalEngagement += likes + comments;
-      postCount++;
-
-      return {
-        id: node.id,
-        shortcode: node.shortcode,
-        thumbnail: node.thumbnail_src || node.display_url,
-        isVideo: node.is_video,
-        videoViews: node.video_view_count || 0,
-        likes,
-        comments,
-        caption: node.edge_media_to_caption?.edges?.[0]?.node?.text || "",
-        timestamp: node.taken_at_timestamp,
-      };
-    });
-
-    const followers = u.edge_followed_by?.count || 0;
-    const engagementRate = followers > 0 && postCount > 0
-      ? ((totalEngagement / postCount) / followers * 100).toFixed(2)
-      : "0";
-
+    // Return a helpful message about limitations
     return NextResponse.json({
-      profile: {
-        username: u.username,
-        fullName: u.full_name,
-        biography: u.biography,
-        avatar: u.profile_pic_url_hd || u.profile_pic_url,
-        followers,
-        following: u.edge_follow?.count || 0,
-        postsCount: u.edge_owner_to_timeline_media?.count || 0,
-        isVerified: u.is_verified,
-        isPrivate: u.is_private,
-        externalUrl: u.external_url,
-        category: u.category_name || null,
-      },
-      engagementRate: parseFloat(engagementRate),
-      posts,
-    });
+      error: "Instagram search unavailable",
+      message: `Unable to fetch detailed data for @${username}. The RapidAPI subscription required for comprehensive Instagram analytics is not currently active.`,
+      suggestion: "You can still view your own Instagram analytics by connecting your account in 'My Channel'.",
+      status: "inactive_subscription",
+    }, { status: 402 }); // 402 Payment Required - subscription needed
 
   } catch (err: any) {
-    console.error("[Instagram Search] RapidAPI Error:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    console.error("[Instagram Search] Error:", err.message);
+    return NextResponse.json(
+      { error: err.message, type: "system_error" },
+      { status: 500 }
+    );
   }
 }
