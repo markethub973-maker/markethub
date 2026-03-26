@@ -57,7 +57,7 @@ export default function PricingPage() {
       features: [
         { name: "Monthly Tokens", value: "50,000", included: true },
         { name: "Extra Tokens", value: "$0.90/1K", included: true },
-        { name: "Social Accounts", value: "Unlimited", included: true },
+        { name: "Social Accounts", value: "4", included: true },
         { name: "TikTok Access", included: true },
         { name: "Email Reports", included: true },
         { name: "Calendar", included: true },
