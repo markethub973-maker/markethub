@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+const RAPIDAPI_HOST = "instagram-public-bulk-scraper.p.rapidapi.com";
+
 /**
- * Instagram Profile Search - PUBLIC DATA ONLY
- * Fetches basic public Instagram profile information
- * Uses official Instagram web data and Graph API
+ * Instagram Profile Search via RapidAPI
+ * Uses Instagram Public Bulk Scraper API (BASIC plan)
  */
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
@@ -14,65 +15,120 @@ export async function GET(req: NextRequest) {
   const username = req.nextUrl.searchParams.get("username")?.trim().replace(/^@/, "");
   if (!username) return NextResponse.json({ error: "Username is required" }, { status: 400 });
 
-  try {
-    console.log(`[Instagram Search] Fetching public data for @${username}...`);
+  const apiKey = process.env.RAPIDAPI_KEY;
+  if (!apiKey) {
+    console.error("[Instagram Search] RAPIDAPI_KEY not set");
+    return NextResponse.json({ error: "API configuration error" }, { status: 500 });
+  }
 
-    // Try fetching from Instagram's public graph endpoint
-    // This endpoint doesn't require authentication for public profiles
-    const instagramRes = await fetch(
-      `https://www.instagram.com/api/v1/users/web_profile_info/?username=${encodeURIComponent(username)}`,
+  try {
+    console.log(`[Instagram Search] Fetching data for @${username} via RapidAPI...`);
+
+    const res = await fetch(
+      `https://${RAPIDAPI_HOST}/v1/user_info_web?username=${encodeURIComponent(username)}`,
       {
+        method: "GET",
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          'Accept': 'application/json',
+          "x-rapidapi-host": RAPIDAPI_HOST,
+          "x-rapidapi-key": apiKey,
+          "Accept": "application/json",
         },
       }
     );
 
-    console.log(`[Instagram Search] Instagram public API response: ${instagramRes.status}`);
+    console.log(`[Instagram Search] RapidAPI response status: ${res.status}`);
 
-    if (instagramRes.ok) {
-      try {
-        const data = await instagramRes.json();
-        const user = data.data?.user;
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`[Instagram Search] RapidAPI error: ${res.status} - ${errorText}`);
 
-        if (user) {
-          console.log(`[Instagram Search] Found public profile: ${user.username}`);
-
-          return NextResponse.json({
-            profile: {
-              username: user.username,
-              fullName: user.full_name,
-              biography: user.biography,
-              avatar: user.profile_pic_url,
-              followers: user.follower_count || 0,
-              following: user.following_count || 0,
-              postsCount: user.media_count || 0,
-              isVerified: user.is_verified,
-              isPrivate: user.is_private,
-              externalUrl: user.external_url,
-              category: user.category || null,
-            },
-            engagementRate: 0,
-            posts: [],
-            source: 'instagram-public-api',
-          });
-        }
-      } catch (parseErr) {
-        console.log(`[Instagram Search] Could not parse Instagram public API response`);
+      if (res.status === 403 || res.status === 401) {
+        return NextResponse.json({
+          error: "Instagram search unavailable",
+          message: "RapidAPI subscription issue. Please check your subscription status.",
+          status: "subscription_error",
+        }, { status: 402 });
       }
+
+      if (res.status === 429) {
+        return NextResponse.json({
+          error: "Rate limit exceeded",
+          message: "Too many requests. Please try again in a moment.",
+        }, { status: 429 });
+      }
+
+      return NextResponse.json({
+        error: "Failed to fetch Instagram data",
+        message: `API returned status ${res.status}`,
+      }, { status: 502 });
     }
 
-    // If public API fails, try alternative approach
-    console.log(`[Instagram Search] Public API failed, trying fallback...`);
+    const data = await res.json();
+    console.log(`[Instagram Search] RapidAPI response received, has data: ${!!data?.data}`);
 
-    // Return a helpful message about limitations
+    // Extract user data from RapidAPI response
+    const userData = data?.data?.user || data?.data || data?.user || data;
+
+    if (!userData || (!userData.username && !userData.full_name)) {
+      console.log(`[Instagram Search] No user data found in response`);
+      return NextResponse.json({
+        error: "User not found",
+        message: `Instagram profile @${username} was not found or is not available.`,
+      }, { status: 404 });
+    }
+
+    // Map RapidAPI response to our format
+    const profile = {
+      username: userData.username || username,
+      fullName: userData.full_name || "",
+      biography: userData.biography || "",
+      avatar: userData.profile_pic_url || userData.profile_pic_url_hd || "",
+      followers: userData.follower_count || userData.edge_followed_by?.count || 0,
+      following: userData.following_count || userData.edge_follow?.count || 0,
+      postsCount: userData.media_count || userData.edge_owner_to_timeline_media?.count || 0,
+      isVerified: userData.is_verified || false,
+      isPrivate: userData.is_private || false,
+      externalUrl: userData.external_url || null,
+      category: userData.category_name || userData.category || null,
+    };
+
+    // Calculate engagement rate if we have posts data
+    let engagementRate = 0;
+    const recentPosts = userData.edge_owner_to_timeline_media?.edges || [];
+    if (recentPosts.length > 0 && profile.followers > 0) {
+      const totalEngagement = recentPosts.reduce((sum: number, edge: any) => {
+        const node = edge.node || edge;
+        const likes = node.edge_liked_by?.count || node.like_count || 0;
+        const comments = node.edge_media_to_comment?.count || node.comment_count || 0;
+        return sum + likes + comments;
+      }, 0);
+      engagementRate = Number(((totalEngagement / recentPosts.length / profile.followers) * 100).toFixed(2));
+    }
+
+    // Extract recent posts
+    const posts = recentPosts.slice(0, 12).map((edge: any) => {
+      const node = edge.node || edge;
+      return {
+        id: node.id || node.pk,
+        shortcode: node.shortcode,
+        thumbnail: node.thumbnail_src || node.display_url || node.thumbnail_url,
+        caption: node.edge_media_to_caption?.edges?.[0]?.node?.text || node.caption?.text || "",
+        likes: node.edge_liked_by?.count || node.like_count || 0,
+        comments: node.edge_media_to_comment?.count || node.comment_count || 0,
+        timestamp: node.taken_at_timestamp || node.taken_at,
+        isVideo: node.is_video || false,
+        videoViews: node.video_view_count || 0,
+      };
+    });
+
+    console.log(`[Instagram Search] Success: @${profile.username} - ${profile.followers} followers, ${posts.length} posts`);
+
     return NextResponse.json({
-      error: "Instagram search unavailable",
-      message: `Unable to fetch detailed data for @${username}. The RapidAPI subscription required for comprehensive Instagram analytics is not currently active.`,
-      suggestion: "You can still view your own Instagram analytics by connecting your account in 'My Channel'.",
-      status: "inactive_subscription",
-    }, { status: 402 }); // 402 Payment Required - subscription needed
+      profile,
+      engagementRate,
+      posts,
+      source: "rapidapi",
+    });
 
   } catch (err: any) {
     console.error("[Instagram Search] Error:", err.message);
