@@ -75,7 +75,7 @@ export default function PricingPage() {
       features: [
         { name: "Monthly Tokens", value: "150,000", included: true },
         { name: "Extra Tokens", value: "$0.80/1K", included: true },
-        { name: "Social Accounts", value: "Unlimited", included: true },
+        { name: "Social Accounts", value: "8", included: true },
         { name: "Team Members", value: "2", included: true },
         { name: "Competitor Tracking", value: "15", included: true },
         { name: "Priority Support", included: true },
