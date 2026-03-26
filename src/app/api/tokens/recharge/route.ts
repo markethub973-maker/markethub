@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getRechargePacks } from "@/lib/token-plan-config";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+const getStripe = () => new Stripe(process.env.STRIPE_SECRET_KEY || "");
 
 /**
  * GET /api/tokens/recharge
@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
     let customerId = profile?.stripe_customer_id;
 
     if (!customerId) {
+      const stripe = getStripe();
       const customer = await stripe.customers.create({
         email: user.email,
         metadata: {
@@ -109,6 +110,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Create checkout session
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       mode: "payment",
