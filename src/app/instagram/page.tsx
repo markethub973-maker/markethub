@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
+import SentimentAnalysisCard from "@/components/ui/SentimentAnalysisCard";
+import ExportButtons from "@/components/ui/ExportButtons";
 import { Instagram, Users, Heart, MessageCircle, Image, ExternalLink, RefreshCw, TrendingUp, Eye, UserCheck } from "lucide-react";
 
 interface InstagramProfile {
@@ -279,6 +281,32 @@ export default function InstagramPage() {
                 </div>
               )}
             </div>
+
+            {/* AI Sentiment Analysis on post captions */}
+            {posts.length > 0 && (
+              <div className="mt-6">
+                <SentimentAnalysisCard
+                  comments={posts.filter(p => p.caption).map(p => p.caption as string)}
+                  platform="Instagram"
+                  contentTitle={profile?.username ? `@${profile.username}` : undefined}
+                />
+              </div>
+            )}
+
+            {/* Export */}
+            {posts.length > 0 && (
+              <div className="flex justify-end mt-4">
+                <ExportButtons
+                  filename={`instagram-${profile?.username || "analytics"}`}
+                  sheets={[{
+                    name: "Instagram Posts",
+                    headers: ["Caption", "Likes", "Comments", "Type", "Date"],
+                    rows: posts.map(p => [p.caption || "", p.like_count, p.comments_count, p.media_type, p.timestamp]),
+                  }]}
+                />
+              </div>
+            )}
+
           </>
         )}
       </main>

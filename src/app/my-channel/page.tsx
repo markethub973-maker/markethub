@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
+import ABTitlesGenerator from "@/components/ui/ABTitlesGenerator";
+import ExportButtons from "@/components/ui/ExportButtons";
 import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
 import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame, Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
@@ -304,6 +306,26 @@ export default function MyChannelPage() {
               </table>
             </div>
           )}
+
+          {/* A/B Title Generator */}
+          <div className="mt-6">
+            <ABTitlesGenerator platform="YouTube" defaultNiche="YouTube channel" />
+          </div>
+
+          {/* Export top videos */}
+          {sortedVideos.length > 0 && (
+            <div className="flex justify-end mt-4">
+              <ExportButtons
+                filename="my-channel-videos"
+                sheets={[{
+                  name: "Top Videos",
+                  headers: ["Title", "Views", "Likes", "Comments", "Published Date"],
+                  rows: sortedVideos.map((v: { title: string; views: number; likes: number; comments: number; publishedAt: string }) => [v.title, v.views, v.likes, v.comments, v.publishedAt]),
+                }]}
+              />
+            </div>
+          )}
+
         </div>
       </div>
     </div>

@@ -44,3 +44,22 @@ export function exportJSON(filename: string, data: unknown) {
   a.href = url; a.download = filename + ".json"; a.click();
   URL.revokeObjectURL(url);
 }
+
+export async function exportExcel(
+  filename: string,
+  sheets: Array<{ name: string; headers: string[]; rows: (string | number | null | undefined)[][] }>
+) {
+  const XLSX = await import("xlsx");
+  const wb = XLSX.utils.book_new();
+  for (const sheet of sheets) {
+    const data = [sheet.headers, ...sheet.rows];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    // Auto-width columns
+    const colWidths = sheet.headers.map((h, i) => ({
+      wch: Math.max(h.length, ...sheet.rows.map(r => String(r[i] ?? "").length), 10),
+    }));
+    ws["!cols"] = colWidths;
+    XLSX.utils.book_append_sheet(wb, ws, sheet.name.substring(0, 31));
+  }
+  XLSX.writeFile(wb, filename + ".xlsx");
+}

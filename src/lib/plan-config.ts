@@ -193,6 +193,10 @@ export const AI_ACTION_COSTS = {
   agent_message_sonnet: 0.035,   // Research/Email/Financial agents (Sonnet)
   pdf_report:           0.08,    // Full report generation
   ai_analysis:          0.02,    // Quick analysis
+  sentiment_analysis:   0.03,    // Comment sentiment analysis
+  ab_titles:            0.02,    // A/B title generator (10 variants)
+  monthly_report:       0.10,    // Full monthly AI report
+  weekly_digest:        0.04,    // Weekly digest email content
 } as const;
 
 export type AIAction = keyof typeof AI_ACTION_COSTS;

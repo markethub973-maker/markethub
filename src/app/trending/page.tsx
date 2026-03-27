@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import PlatformBadge from "@/components/ui/PlatformBadge";
+import MultiRegionalTrending from "@/components/ui/MultiRegionalTrending";
+import ExportButtons from "@/components/ui/ExportButtons";
 import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
 import { TrendingUp, Flame, Globe, ChevronDown, ChevronUp, Clock, Search, Download, ThumbsUp, MessageCircle } from "lucide-react";
 
@@ -566,6 +568,25 @@ export default function TrendingPage() {
             </div>
           )}
         </div>
+
+        {/* Multi-Regional Trending */}
+        <MultiRegionalTrending />
+
+        {/* Export */}
+        {processedVideos.length > 0 && (
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-[#C4AA8A]">{processedVideos.length} videos loaded</p>
+            <ExportButtons
+              filename={`trending-youtube-${region}`}
+              sheets={[{
+                name: "Trending Videos",
+                headers: ["Title", "Channel", "Views", "Likes", "Comments", "Published"],
+                rows: processedVideos.map(v => [v.title, v.channel, v.views, v.likes, v.comments, v.publishedAt]),
+              }]}
+            />
+          </div>
+        )}
+
       </div>
     </div>
   );
