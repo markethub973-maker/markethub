@@ -1,118 +1,108 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, CheckCircle } from "lucide-react";
-
-const ADMIN_PASSWORD = "Market@!hub2026";
 
 export default function AdminSecretLogin() {
-  const [status, setStatus] = useState<"checking" | "logging_in" | "success" | "error">("checking");
+  const [password, setPassword] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
   const router = useRouter();
 
+  // If already authenticated, go straight to admin
   useEffect(() => {
-    const autoLogin = async () => {
-      // If already authenticated in this browser, go straight in
-      if (typeof window !== "undefined" && localStorage.getItem("admin_authenticated") === "true") {
-        setStatus("success");
-        router.push("/dashboard/admin");
+    if (typeof window !== "undefined" && localStorage.getItem("admin_authenticated") === "true") {
+      router.replace("/dashboard/admin");
+    }
+  }, [router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!password.trim()) return;
+
+    setStatus("loading");
+    setError("");
+
+    try {
+      const res = await fetch("/api/admin-secret-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Wrong password");
+        setStatus("error");
+        setPassword("");
         return;
       }
 
-      // Auto-submit with stored credentials — no typing needed
-      setStatus("logging_in");
-      try {
-        const response = await fetch("/api/admin-secret-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ password: ADMIN_PASSWORD }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          setError(data.error || "Authentication failed");
-          setStatus("error");
-          return;
-        }
-
-        localStorage.setItem("admin_authenticated", "true");
-        setStatus("success");
-        setTimeout(() => router.push("/dashboard/admin"), 400);
-      } catch {
-        setError("Connection error. Please try again.");
-        setStatus("error");
-      }
-    };
-
-    autoLogin();
-  }, [router]);
+      localStorage.setItem("admin_authenticated", "true");
+      setStatus("success");
+      setTimeout(() => router.replace("/dashboard/admin"), 300);
+    } catch {
+      setError("Connection error. Try again.");
+      setStatus("error");
+    }
+  };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center p-4"
-      style={{ backgroundColor: "#1C1814" }}
-    >
-      <div
-        className="w-full max-w-sm rounded-2xl p-8 shadow-2xl text-center"
-        style={{ backgroundColor: "#FFFCF7" }}
-      >
-        {/* Icon */}
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: "#1C1814" }}>
+      <div className="w-full max-w-sm rounded-2xl p-8 shadow-2xl" style={{ backgroundColor: "#FFFCF7" }}>
+
+        {/* Logo */}
         <div className="flex justify-center mb-6">
-          <div
-            className="w-16 h-16 rounded-lg flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
-          >
-            {status === "success"
-              ? <CheckCircle className="w-8 h-8 text-white" />
-              : <Lock className="w-8 h-8 text-white" />
-            }
+          <div className="w-14 h-14 rounded-xl flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+            <span className="text-white text-2xl font-bold">M</span>
           </div>
         </div>
 
-        <h1 className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>
-          Admin Access
-        </h1>
+        <h1 className="text-xl font-bold text-center mb-1" style={{ color: "#292524" }}>Admin Access</h1>
+        <p className="text-center text-sm mb-6" style={{ color: "#A8967E" }}>MarketHub Pro</p>
 
-        {/* Status messages */}
-        {status === "checking" && (
-          <p className="text-sm" style={{ color: "#A8967E" }}>Checking session...</p>
-        )}
-
-        {status === "logging_in" && (
-          <div className="space-y-3">
-            <p className="text-sm font-medium" style={{ color: "#D97706" }}>Authenticating...</p>
-            <div className="flex justify-center gap-1.5">
-              {[0, 1, 2].map(i => (
-                <div key={i} className="w-2 h-2 rounded-full animate-bounce"
-                  style={{ backgroundColor: "#F59E0B", animationDelay: `${i * 0.15}s` }} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {status === "success" && (
-          <p className="text-sm font-medium" style={{ color: "#16a34a" }}>
-            ✅ Access granted — redirecting...
+        {status === "success" ? (
+          <p className="text-center text-sm font-semibold" style={{ color: "#16a34a" }}>
+            ✅ Access granted — entering...
           </p>
-        )}
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Admin password"
+                autoFocus
+                disabled={status === "loading"}
+                className="w-full px-4 py-3 rounded-xl text-sm font-medium focus:outline-none"
+                style={{
+                  border: error ? "1px solid #dc2626" : "1px solid #E8D9C5",
+                  backgroundColor: "#FFF8F0",
+                  color: "#292524",
+                }}
+                onKeyDown={e => e.key === "Enter" && handleSubmit(e as unknown as React.FormEvent)}
+              />
+              {error && (
+                <p className="text-xs mt-1.5" style={{ color: "#dc2626" }}>{error}</p>
+              )}
+            </div>
 
-        {status === "error" && (
-          <div className="space-y-4">
-            <p className="text-sm" style={{ color: "#dc2626" }}>{error}</p>
             <button
-              onClick={() => window.location.reload()}
-              className="w-full py-2.5 px-4 rounded-lg text-white font-semibold text-sm"
-              style={{ backgroundColor: "#F59E0B" }}
+              type="submit"
+              disabled={status === "loading" || !password.trim()}
+              className="w-full py-3 rounded-xl text-sm font-bold transition-opacity disabled:opacity-50"
+              style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
             >
-              Try Again
+              {status === "loading" ? "Verifying..." : "Enter"}
             </button>
-          </div>
+          </form>
         )}
 
-        <p className="text-xs mt-6" style={{ color: "#C4AA8A" }}>
-          🔒 Private Admin Panel · MarketHub Pro
+        <p className="text-center text-xs mt-6" style={{ color: "#C4AA8A" }}>
+          🔒 Private · MarketHub Pro
         </p>
       </div>
     </div>
