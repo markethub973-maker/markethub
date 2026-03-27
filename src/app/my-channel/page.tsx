@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import ABTitlesGenerator from "@/components/ui/ABTitlesGenerator";
+import SentimentAnalysisCard from "@/components/ui/SentimentAnalysisCard";
 import ExportButtons from "@/components/ui/ExportButtons";
 import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
 import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame, Download } from "lucide-react";
@@ -22,6 +23,7 @@ export default function MyChannelPage() {
   const [searchQ, setSearchQ] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [sortKey, setSortKey] = useState<string>("publishedAt");
+  const [expandedVideo, setExpandedVideo] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   const fetchData = useCallback((order: string, q?: string) => {
@@ -272,34 +274,57 @@ export default function MyChannelPage() {
                     <tr><td colSpan={6} className="px-5 py-8 text-center text-xs" style={{ color: "#C4AA8A" }}>No results</td></tr>
                   ) : sortedVideos.map((v: any) => {
                     const er = v._er.toFixed(1);
+                    const isExpanded = expandedVideo === v.id;
                     return (
-                      <tr key={v.id} className="transition-colors" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}
-                        onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.07)")}
-                        onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
-                        <td className="px-5 py-3">
-                          <div className="flex items-center gap-3">
-                            <a href={v.permalink} target="_blank" rel="noopener noreferrer"
-                              className="w-20 h-11 rounded-md overflow-hidden flex-shrink-0 block" style={{ backgroundColor: "#EDE0C8" }}>
-                              <img src={v.thumbnail} alt="" className="w-full h-full object-cover" />
-                            </a>
-                            <a href={v.permalink} target="_blank" rel="noopener noreferrer"
-                              className="font-medium text-xs leading-tight max-w-[280px] truncate block hover:underline" style={{ color: "#3D2E1E" }}>
-                              {v.title}
-                            </a>
-                          </div>
-                        </td>
-                        <td className="px-3 py-3 text-right font-medium text-xs" style={{ color: "#5C4A35" }}>{formatNumber(v.views)}</td>
-                        <td className="px-3 py-3 text-right text-xs" style={{ color: "#A8967E" }}>
-                          <div className="flex items-center justify-end gap-1"><ThumbsUp className="w-3 h-3" />{formatNumber(v.likes)}</div>
-                        </td>
-                        <td className="px-3 py-3 text-right text-xs" style={{ color: "#A8967E" }}>
-                          <div className="flex items-center justify-end gap-1"><MessageCircle className="w-3 h-3" />{formatNumber(v.comments)}</div>
-                        </td>
-                        <td className="px-3 py-3 text-right">
-                          <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>{er}%</span>
-                        </td>
-                        <td className="px-5 py-3 text-right text-xs" style={{ color: "#C4AA8A" }}>{formatDate(v.publishedAt)}</td>
-                      </tr>
+                      <>
+                        <tr key={v.id} className="transition-colors cursor-pointer" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}
+                          onClick={() => setExpandedVideo(isExpanded ? null : v.id)}
+                          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.07)")}
+                          onMouseLeave={e => (e.currentTarget.style.backgroundColor = isExpanded ? "rgba(245,215,160,0.10)" : "transparent")}>
+                          <td className="px-5 py-3">
+                            <div className="flex items-center gap-3">
+                              <div className="relative w-20 h-11 rounded-md overflow-hidden flex-shrink-0" style={{ backgroundColor: "#EDE0C8" }}>
+                                <img src={v.thumbnail} alt="" className="w-full h-full object-cover" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="font-medium text-xs leading-tight max-w-[260px] truncate" style={{ color: "#3D2E1E" }}>{v.title}</p>
+                                <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>Click to expand AI tools</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 text-right font-medium text-xs" style={{ color: "#5C4A35" }}>{formatNumber(v.views)}</td>
+                          <td className="px-3 py-3 text-right text-xs" style={{ color: "#A8967E" }}>
+                            <div className="flex items-center justify-end gap-1"><ThumbsUp className="w-3 h-3" />{formatNumber(v.likes)}</div>
+                          </td>
+                          <td className="px-3 py-3 text-right text-xs" style={{ color: "#A8967E" }}>
+                            <div className="flex items-center justify-end gap-1"><MessageCircle className="w-3 h-3" />{formatNumber(v.comments)}</div>
+                          </td>
+                          <td className="px-3 py-3 text-right">
+                            <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>{er}%</span>
+                          </td>
+                          <td className="px-5 py-3 text-right text-xs" style={{ color: "#C4AA8A" }}>{formatDate(v.publishedAt)}</td>
+                        </tr>
+                        {isExpanded && (
+                          <tr key={`${v.id}-expanded`} style={{ backgroundColor: "rgba(245,215,160,0.05)", borderTop: "1px solid rgba(245,215,160,0.15)" }}>
+                            <td colSpan={6} className="px-5 py-4">
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                                {/* Sentiment Analysis */}
+                                <SentimentAnalysisCard
+                                  youtubeVideoId={v.id}
+                                  platform="YouTube"
+                                  contentTitle={v.title}
+                                />
+                                {/* A/B Title Generator */}
+                                <ABTitlesGenerator
+                                  platform="YouTube"
+                                  defaultTitle={v.title}
+                                  defaultNiche="YouTube"
+                                />
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
                     );
                   })}
                 </tbody>

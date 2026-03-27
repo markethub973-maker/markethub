@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
+import WeeklyDigestPanel from "@/components/ui/WeeklyDigestPanel";
 import {
   Users, Plus, Trash2, Instagram, ChevronDown, ChevronUp,
   BarChart3, TrendingUp, Heart, MessageCircle, Eye, Video,
@@ -77,7 +78,7 @@ export default function ClientsPage() {
   const [refreshingId, setRefreshingId] = useState<string | null>(null);
   const [compareMode, setCompareMode] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState<"list" | "compare">("list");
+  const [activeTab, setActiveTab] = useState<"list" | "compare" | "digest">("list");
 
   useEffect(() => {
     saveClients(clients);
@@ -202,6 +203,7 @@ export default function ClientsPage() {
             {[
               { key: "list" as const, label: `Clients (${clients.length})`, icon: <Users className="w-3.5 h-3.5" /> },
               { key: "compare" as const, label: "Comparison", icon: <ArrowUpDown className="w-3.5 h-3.5" /> },
+              { key: "digest" as const, label: "Weekly Digest", icon: <Zap className="w-3.5 h-3.5" /> },
             ].map(tab => (
               <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold"
@@ -335,6 +337,11 @@ export default function ClientsPage() {
               </table>
             </div>
           </div>
+        )}
+
+        {/* Weekly Digest Tab */}
+        {activeTab === "digest" && (
+          <WeeklyDigestPanel clients={clients} />
         )}
 
         {/* Client List */}

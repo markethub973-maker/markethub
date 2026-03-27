@@ -12,8 +12,10 @@ interface SentimentResult {
   executive_summary: string;
 }
 
-interface SentimentAnalysisCardProps {
-  comments: string[];
+interface Props {
+  /** Pass comments directly, OR pass videoId to auto-fetch from YouTube */
+  comments?: string[];
+  youtubeVideoId?: string;
   platform: string;
   contentTitle?: string;
 }
@@ -30,16 +32,51 @@ const SENTIMENT_BG: Record<string, string> = {
   negative: "bg-red-50 border-red-200",
   mixed: "bg-amber-50 border-amber-200",
 };
+const EMOJI: Record<string, string> = {
+  positive: "😊",
+  neutral: "😐",
+  negative: "😠",
+  mixed: "🤔",
+};
 
-export default function SentimentAnalysisCard({ comments, platform, contentTitle }: SentimentAnalysisCardProps) {
+export default function SentimentAnalysisCard({ comments: propComments, youtubeVideoId, platform, contentTitle }: Props) {
   const [result, setResult] = useState<SentimentResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [commentCount, setCommentCount] = useState(propComments?.length ?? 0);
 
   const analyze = async () => {
-    if (!comments.length) return;
     setLoading(true);
     setError(null);
+    setResult(null);
+
+    let comments = propComments || [];
+
+    // If YouTube videoId provided — fetch comments first
+    if (youtubeVideoId && !propComments?.length) {
+      try {
+        const ytRes = await fetch(`/api/youtube/comments?videoId=${youtubeVideoId}&max=100`);
+        const ytData = await ytRes.json();
+        if (ytData.error && !ytData.comments?.length) {
+          setError(`Could not fetch comments: ${ytData.error}`);
+          setLoading(false);
+          return;
+        }
+        comments = ytData.comments || [];
+        setCommentCount(comments.length);
+      } catch {
+        setError("Failed to fetch YouTube comments");
+        setLoading(false);
+        return;
+      }
+    }
+
+    if (!comments.length) {
+      setError("No comments available to analyze.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/ai/sentiment", {
         method: "POST",
@@ -48,11 +85,7 @@ export default function SentimentAnalysisCard({ comments, platform, contentTitle
       });
       const data = await res.json();
       if (!res.ok) {
-        if (data.error === "ai_budget_exceeded") {
-          setError(data.message);
-        } else {
-          setError(data.error || "Analysis failed");
-        }
+        setError(data.message || data.error || "Analysis failed");
         return;
       }
       setResult(data);
@@ -63,21 +96,26 @@ export default function SentimentAnalysisCard({ comments, platform, contentTitle
     }
   };
 
+  const hasSource = (propComments?.length ?? 0) > 0 || !!youtubeVideoId;
+
   return (
     <div className="bg-white border border-[#E8D9C5] rounded-xl p-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <span className="text-lg">🧠</span>
           <h3 className="font-semibold text-[#292524] text-sm">AI Sentiment Analysis</h3>
-          {comments.length > 0 && (
+          {commentCount > 0 && (
             <span className="text-xs bg-[#F5D7A0]/40 text-[#78614E] px-2 py-0.5 rounded-full">
-              {comments.length} comments
+              {commentCount} comments
             </span>
+          )}
+          {youtubeVideoId && !propComments?.length && (
+            <span className="text-xs bg-red-50 text-red-500 px-2 py-0.5 rounded-full">YouTube</span>
           )}
         </div>
         <button
           onClick={analyze}
-          disabled={loading || !comments.length}
+          disabled={loading || !hasSource}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#F59E0B] text-white hover:bg-[#D97706] transition-colors disabled:opacity-50"
         >
           {loading ? (
@@ -86,9 +124,9 @@ export default function SentimentAnalysisCard({ comments, platform, contentTitle
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
-              Analyzing...
+              {youtubeVideoId && !propComments?.length ? "Fetching & Analyzing..." : "Analyzing..."}
             </>
-          ) : "Analyze"}
+          ) : "Analyze Comments"}
         </button>
       </div>
 
@@ -98,30 +136,37 @@ export default function SentimentAnalysisCard({ comments, platform, contentTitle
 
       {!result && !loading && !error && (
         <p className="text-xs text-[#C4AA8A]">
-          {comments.length === 0 ? "No comments to analyze." : "Click Analyze to get AI-powered sentiment insights."}
+          {!hasSource
+            ? "No comments available."
+            : youtubeVideoId
+            ? "Click to fetch YouTube comments and analyze sentiment with AI."
+            : "Click Analyze to get AI-powered sentiment insights."}
         </p>
       )}
 
       {result && (
         <div className="space-y-3">
-          {/* Overall */}
+          {/* Overall badge */}
           <div className={`flex items-center justify-between p-3 rounded-lg border ${SENTIMENT_BG[result.overall_sentiment]}`}>
-            <div>
-              <p className="text-xs text-[#78614E] mb-0.5">Overall Sentiment</p>
-              <p className={`text-sm font-bold capitalize ${SENTIMENT_COLOR[result.overall_sentiment]}`}>
-                {result.overall_sentiment} · Score: {result.sentiment_score.toFixed(2)}
-              </p>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{EMOJI[result.overall_sentiment]}</span>
+              <div>
+                <p className="text-xs text-[#78614E] mb-0.5">Overall Sentiment</p>
+                <p className={`text-sm font-bold capitalize ${SENTIMENT_COLOR[result.overall_sentiment]}`}>
+                  {result.overall_sentiment} · {result.sentiment_score.toFixed(2)}
+                </p>
+              </div>
             </div>
             <div className="text-right text-xs text-[#78614E] space-y-0.5">
-              <p>✅ {result.breakdown.positive_pct}%</p>
-              <p>➖ {result.breakdown.neutral_pct}%</p>
-              <p>❌ {result.breakdown.negative_pct}%</p>
+              <p>✅ {result.breakdown.positive_pct}% positive</p>
+              <p>➖ {result.breakdown.neutral_pct}% neutral</p>
+              <p>❌ {result.breakdown.negative_pct}% negative</p>
             </div>
           </div>
 
           {/* Summary */}
-          <p className="text-xs text-[#78614E] leading-relaxed bg-[#FFFCF7] p-3 rounded-lg border border-[#F5D7A0]/50">
-            {result.executive_summary}
+          <p className="text-xs text-[#78614E] leading-relaxed bg-[#FFFCF7] p-3 rounded-lg border border-[#F5D7A0]/50 italic">
+            "{result.executive_summary}"
           </p>
 
           {/* Themes */}
@@ -138,15 +183,22 @@ export default function SentimentAnalysisCard({ comments, platform, contentTitle
             </div>
           )}
 
-          {/* Actions */}
+          {/* Notable comments */}
+          {result.notable_comments?.most_insightful && (
+            <div className="bg-[#FFFCF7] border border-[#F5D7A0]/50 rounded-lg p-3">
+              <p className="text-xs font-semibold text-[#292524] mb-1">Most Insightful Comment</p>
+              <p className="text-xs text-[#78614E] italic">"{result.notable_comments.most_insightful}"</p>
+            </div>
+          )}
+
+          {/* Recommended actions */}
           {result.recommended_actions?.length > 0 && (
             <div>
               <p className="text-xs font-semibold text-[#292524] mb-1.5">Recommended Actions</p>
               <ul className="space-y-1">
                 {result.recommended_actions.map((a, i) => (
                   <li key={i} className="text-xs text-[#78614E] flex gap-1.5">
-                    <span className="text-[#F59E0B] mt-0.5">→</span>
-                    {a}
+                    <span className="text-[#F59E0B] shrink-0 mt-0.5">→</span>{a}
                   </li>
                 ))}
               </ul>

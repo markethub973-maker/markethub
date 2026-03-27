@@ -67,6 +67,7 @@ const navGroups = [
       { href: "/ads-library", label: "Ads Library", icon: Library },
       { href: "/calendar", label: "Calendar", icon: CalendarDays },
       { href: "/captions", label: "AI Captions", icon: Sparkles },
+      { href: "/monthly-report", label: "Monthly Report AI", icon: BarChart3 },
       { href: "/campaigns", label: "Campaigns", icon: Target },
     ],
   },
