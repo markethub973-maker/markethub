@@ -5,6 +5,9 @@ import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import ABTitlesGenerator from "@/components/ui/ABTitlesGenerator";
 import SentimentAnalysisCard from "@/components/ui/SentimentAnalysisCard";
+import CommentFAQCard from "@/components/ui/CommentFAQCard";
+import CategoryComparisonCard from "@/components/ui/CategoryComparisonCard";
+import PlaylistStrategyCard from "@/components/ui/PlaylistStrategyCard";
 import ExportButtons from "@/components/ui/ExportButtons";
 import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
 import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame, Download } from "lucide-react";
@@ -320,6 +323,13 @@ export default function MyChannelPage() {
                                   defaultTitle={v.title}
                                   defaultNiche="YouTube"
                                 />
+                                {/* Comment FAQ Extractor */}
+                                <div className="lg:col-span-2">
+                                  <CommentFAQCard
+                                    youtubeVideoId={v.id}
+                                    videoTitle={v.title}
+                                  />
+                                </div>
                               </div>
                             </td>
                           </tr>
@@ -352,6 +362,13 @@ export default function MyChannelPage() {
           )}
 
         </div>
+
+        {/* Category Comparison + Playlist Strategy */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <CategoryComparisonCard channelId={data?.id} niche="" />
+          <PlaylistStrategyCard channelId={data?.id} />
+        </div>
+
       </div>
     </div>
   );

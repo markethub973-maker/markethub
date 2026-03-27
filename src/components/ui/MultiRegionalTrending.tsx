@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { formatNumber } from "@/lib/utils";
+import { Search } from "lucide-react";
 
 interface Video {
   id: string;
@@ -35,36 +36,104 @@ const REGION_NAMES: Record<string, string> = {
   IT: "Italy",
 };
 
+// YouTube category IDs
+const CATEGORIES: Array<{ id: string; label: string }> = [
+  { id: "", label: "All" },
+  { id: "10", label: "Music" },
+  { id: "20", label: "Gaming" },
+  { id: "22", label: "People & Blogs" },
+  { id: "23", label: "Comedy" },
+  { id: "24", label: "Entertainment" },
+  { id: "25", label: "News & Politics" },
+  { id: "26", label: "How-to & Style" },
+  { id: "27", label: "Education" },
+  { id: "28", label: "Sci & Tech" },
+  { id: "17", label: "Sports" },
+];
+
 export default function MultiRegionalTrending() {
   const [data, setData] = useState<Record<string, RegionData>>({});
   const [loading, setLoading] = useState(true);
   const [activeRegion, setActiveRegion] = useState("RO");
   const [regions, setRegions] = useState<string[]>([]);
+  const [categoryId, setCategoryId] = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [keywordInput, setKeywordInput] = useState("");
 
-  useEffect(() => {
-    const load = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/youtube/multi-regional?regions=RO,US,GB,DE&max=10");
-        const json = await res.json();
-        setData(json.regions || {});
-        setRegions(json.requested_regions || []);
-        if (json.requested_regions?.[0]) setActiveRegion(json.requested_regions[0]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+  const load = useCallback(async (catId: string) => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ regions: "RO,US,GB,DE", max: "10" });
+      if (catId) params.set("categoryId", catId);
+      const res = await fetch(`/api/youtube/multi-regional?${params}`);
+      const json = await res.json();
+      setData(json.regions || {});
+      setRegions(json.requested_regions || []);
+      if (json.requested_regions?.[0]) setActiveRegion(json.requested_regions[0]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => { load(""); }, [load]);
 
   const current = data[activeRegion];
 
+  // Client-side keyword filter
+  const filteredVideos = keyword
+    ? (current?.videos || []).filter(v =>
+        v.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        v.channel.toLowerCase().includes(keyword.toLowerCase())
+      )
+    : current?.videos || [];
+
+  const handleCategoryChange = (catId: string) => {
+    setCategoryId(catId);
+    load(catId);
+  };
+
+  const applyKeyword = () => setKeyword(keywordInput);
+
   return (
     <div className="bg-white border border-[#E8D9C5] rounded-xl p-4">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-3">
         <span className="text-lg">🌍</span>
         <h3 className="font-semibold text-[#292524] text-sm">Trending by Country</h3>
         <span className="text-xs text-[#C4AA8A]">YouTube</span>
+      </div>
+
+      {/* Category filter */}
+      <div className="flex flex-wrap gap-1 mb-3">
+        {CATEGORIES.map(cat => (
+          <button key={cat.id} onClick={() => handleCategoryChange(cat.id)}
+            className={`text-xs px-2.5 py-1 rounded-lg border transition-colors ${categoryId === cat.id ? "bg-[#292524] text-white border-[#292524]" : "bg-white text-[#78614E] border-[#E8D9C5] hover:border-[#F59E0B]"}`}>
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Keyword filter */}
+      <div className="flex gap-2 mb-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#C4AA8A]" />
+          <input
+            value={keywordInput}
+            onChange={e => setKeywordInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && applyKeyword()}
+            placeholder="Filter by keyword..."
+            className="w-full text-sm pl-8 pr-3 py-1.5 border border-[#E8D9C5] rounded-lg focus:outline-none focus:border-[#F59E0B] bg-[#FFFCF7] text-[#292524] placeholder:text-[#C4AA8A]"
+          />
+        </div>
+        <button onClick={applyKeyword}
+          className="px-3 py-1.5 text-xs font-bold rounded-lg bg-[#F59E0B] text-white hover:bg-[#D97706] transition-colors">
+          Filter
+        </button>
+        {keyword && (
+          <button onClick={() => { setKeyword(""); setKeywordInput(""); }}
+            className="px-3 py-1.5 text-xs text-[#A8967E] hover:text-[#292524] transition-colors">
+            Clear
+          </button>
+        )}
       </div>
 
       {/* Region tabs */}
@@ -88,11 +157,11 @@ export default function MultiRegionalTrending() {
         </div>
       ) : current?.error ? (
         <p className="text-xs text-red-500">{current.error}</p>
-      ) : !current?.videos?.length ? (
-        <p className="text-xs text-[#C4AA8A]">No trending data available.</p>
+      ) : !filteredVideos.length ? (
+        <p className="text-xs text-[#C4AA8A]">{keyword ? `No results for "${keyword}"` : "No trending data available."}</p>
       ) : (
         <div className="space-y-2">
-          {current.videos.map((v, i) => (
+          {filteredVideos.map((v, i) => (
             <a
               key={v.id}
               href={v.url}

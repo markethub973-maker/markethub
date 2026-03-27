@@ -197,6 +197,9 @@ export const AI_ACTION_COSTS = {
   ab_titles:            0.02,    // A/B title generator (10 variants)
   monthly_report:       0.10,    // Full monthly AI report
   weekly_digest:        0.04,    // Weekly digest email content
+  comment_faq:          0.05,    // Comment FAQ extraction + content ideas
+  category_analysis:    0.03,    // Category performance AI analysis
+  playlist_strategy:    0.03,    // Playlist strategy AI analysis
 } as const;
 
 export type AIAction = keyof typeof AI_ACTION_COSTS;

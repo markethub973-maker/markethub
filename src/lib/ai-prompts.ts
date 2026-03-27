@@ -58,6 +58,96 @@ Return ONLY valid JSON (no markdown) with this exact structure:
 }`;
 }
 
+// ─── Comment FAQ Extractor ───────────────────────────────────────────────────
+
+export function buildCommentFAQPrompt(
+  comments: string[],
+  channelNiche?: string,
+  videoTitle?: string
+): string {
+  const sample = comments.slice(0, 100).join("\n---\n");
+  return `Analyze these YouTube comments and extract actionable intelligence for a content creator.
+
+Video${videoTitle ? `: "${videoTitle}"` : ""} | Niche: ${channelNiche || "general"} | Comments: ${comments.length} total
+
+---
+${sample}
+---
+
+Return ONLY valid JSON (no markdown):
+{
+  "top_questions": [
+    { "question": "string", "frequency": number, "answer_opportunity": "string" }
+  ],
+  "faq": [
+    { "q": "string", "a": "string", "why_it_matters": "string" }
+  ],
+  "content_ideas": [
+    { "title": "string", "type": "video|short|series", "reasoning": "string" }
+  ],
+  "audience_pain_points": ["string"],
+  "praise_themes": ["string"],
+  "criticism_themes": ["string"],
+  "cta_suggestions": ["string"],
+  "pinned_comment_suggestion": "string",
+  "reply_template": "string"
+}`;
+}
+
+// ─── Category Performance ─────────────────────────────────────────────────────
+
+export function buildCategoryAnalysisPrompt(categories: Array<{
+  name: string;
+  avgViews: number;
+  avgLikes: number;
+  avgComments: number;
+  videoCount: number;
+}>, niche: string): string {
+  return `Analyze YouTube category performance data for a creator in the "${niche}" niche.
+
+Category data:
+${categories.map(c => `- ${c.name}: ${c.videoCount} videos | avg ${c.avgViews.toLocaleString()} views | avg ${c.avgLikes.toLocaleString()} likes | avg ${c.avgComments.toLocaleString()} comments`).join("\n")}
+
+Return ONLY valid JSON (no markdown):
+{
+  "top_performing": "category name",
+  "worst_performing": "category name",
+  "recommendations": [
+    { "priority": 1, "action": "string", "expected_impact": "string" }
+  ],
+  "niche_fit": { "best_category": "string", "reason": "string" },
+  "gaps": ["content gap 1", "content gap 2"],
+  "executive_summary": "2-3 sentence business brief"
+}`;
+}
+
+// ─── Playlist Strategy ────────────────────────────────────────────────────────
+
+export function buildPlaylistStrategyPrompt(playlists: Array<{
+  title: string;
+  videoCount: number;
+  description?: string;
+}>): string {
+  return `Analyze this YouTube channel's playlist strategy and provide actionable recommendations.
+
+Playlists (${playlists.length} total):
+${playlists.map((p, i) => `${i + 1}. "${p.title}" — ${p.videoCount} videos${p.description ? ` | "${p.description.slice(0, 80)}"` : ""}`).join("\n")}
+
+Return ONLY valid JSON (no markdown):
+{
+  "strategy_type": "educational|entertainment|product|series|mixed|none",
+  "strengths": ["string"],
+  "weaknesses": ["string"],
+  "missing_playlists": ["string"],
+  "seo_score": number,
+  "recommendations": [
+    { "priority": 1, "action": "string", "example": "string" }
+  ],
+  "top_playlist": "playlist title",
+  "executive_summary": "string"
+}`;
+}
+
 // ─── A/B Title Generator ──────────────────────────────────────────────────────
 
 export function buildABTitlesPrompt(

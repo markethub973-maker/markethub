@@ -15,11 +15,13 @@ export async function GET(req: NextRequest) {
   const regionsParam = req.nextUrl.searchParams.get("regions") || DEFAULT_REGIONS.join(",");
   const regions = regionsParam.split(",").map(r => r.trim().toUpperCase()).slice(0, 6);
   const max = Math.min(parseInt(req.nextUrl.searchParams.get("max") || "10"), 20);
+  const categoryId = req.nextUrl.searchParams.get("categoryId") || "";
 
   const results = await Promise.allSettled(
     regions.map(async (region) => {
+      const categoryParam = categoryId ? `&videoCategoryId=${categoryId}` : "";
       const res = await fetch(
-        `${BASE}/videos?part=snippet,statistics&chart=mostPopular&maxResults=${max}&regionCode=${region}&key=${key}`,
+        `${BASE}/videos?part=snippet,statistics&chart=mostPopular&maxResults=${max}&regionCode=${region}${categoryParam}&key=${key}`,
         { next: { revalidate: 3600 } }
       );
       const data = await res.json();
