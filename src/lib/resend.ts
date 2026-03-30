@@ -193,6 +193,57 @@ export async function sendOnboarding5_ProTips(email: string, name: string) {
   });
 }
 
+// ─── Trial Lifecycle Emails ───────────────────────────────────────────────────
+
+export async function sendTrialExpiringSoonEmail(email: string, name: string) {
+  await getResend().emails.send({
+    from: FROM,
+    to: email,
+    subject: "Your free trial expires tomorrow — MarketHub Pro",
+    html: WRAP(`
+      <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Trial ending soon, ${name}</h2>
+      <p style="color:#78614E;line-height:1.6;margin-bottom:12px;">
+        Your 7-day free trial expires in <strong>24 hours</strong>.
+        After that, AI features and advanced analytics will be locked.
+      </p>
+      <p style="color:#78614E;line-height:1.6;margin-bottom:16px;">
+        Upgrade now to keep access — plans start at <strong>$9/month</strong>.
+      </p>
+      ${BTN("https://markethubpromo.com/pricing", "Upgrade before it expires")}
+      <p style="color:#C4AA8A;font-size:12px;text-align:center;margin-top:12px;">
+        Already decided? No action needed — your account will downgrade automatically.
+      </p>
+    `),
+  });
+}
+
+export async function sendTrialExpiredEmail(email: string, name: string) {
+  await getResend().emails.send({
+    from: FROM,
+    to: email,
+    subject: "Your free trial has ended — MarketHub Pro",
+    html: WRAP(`
+      <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Trial ended, ${name}</h2>
+      <p style="color:#78614E;line-height:1.6;margin-bottom:12px;">
+        Your 7-day free trial has ended. AI features and advanced analytics are now paused.
+      </p>
+      <p style="color:#78614E;line-height:1.6;margin-bottom:8px;">
+        <strong>What you'll get when you upgrade:</strong>
+      </p>
+      <ul style="padding-left:18px;margin-bottom:16px;">
+        ${li("Full AI access: sentiment, A/B titles, monthly reports, digests")}
+        ${li("Unlimited YouTube, Instagram & TikTok analytics")}
+        ${li("Competitor tracking & Ads Library")}
+        ${li("Export to Excel & PDF")}
+      </ul>
+      ${BTN("https://markethubpromo.com/pricing", "Choose a plan")}
+      <p style="color:#C4AA8A;font-size:12px;text-align:center;margin-top:12px;">
+        Plans start at $9/month. Cancel anytime.
+      </p>
+    `),
+  });
+}
+
 export async function sendSubscriptionCancelledEmail(email: string, name: string) {
   await getResend().emails.send({
     from: FROM,
