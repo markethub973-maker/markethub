@@ -58,7 +58,7 @@ export default function SubscriptionPage() {
 
   return (
     <div className="min-h-screen bg-[#FFF8F0]">
-      <Header />
+      <Header title="Subscription" />
       <main className="max-w-2xl mx-auto px-4 py-10">
         <h1 className="text-2xl font-bold text-stone-800 mb-1">Subscription</h1>
         <p className="text-stone-500 text-sm mb-8">Manage your plan and usage</p>
