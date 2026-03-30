@@ -6,7 +6,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import SetupAgent from "@/components/ui/SetupAgent";
 import { createClient } from "@/lib/supabase/client";
 
-const PUBLIC_PATHS = ["/login", "/register", "/markethub973"];
+const PUBLIC_PATHS = ["/login", "/register", "/markethub973", "/upgrade-required", "/pricing", "/auth"];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();

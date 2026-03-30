@@ -19,9 +19,12 @@ const PROTECTED_PREFIXES = [
 // Public routes — always accessible
 const PUBLIC_ROUTES = [
   "/",
+  "/login",
+  "/register",
   "/pricing",
   "/auth",
   "/upgrade-required",
+  "/markethub973",
   "/api/auth",
   "/api/stripe/webhook",
 ];
@@ -77,7 +80,7 @@ export async function middleware(req: NextRequest) {
 
   // Not authenticated → redirect to login
   if (!user) {
-    const loginUrl = new URL("/auth/login", req.url);
+    const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);
   }
