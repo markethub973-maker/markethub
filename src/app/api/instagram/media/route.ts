@@ -13,6 +13,9 @@ export async function GET() {
     const tokenRes = await fetch(
       `https://graph.facebook.com/oauth/access_token?client_id=${APP_ID}&client_secret=${APP_SECRET}&grant_type=client_credentials`
     );
+    if (!tokenRes.ok) {
+      return NextResponse.json({ error: "Failed to get Meta access token" }, { status: 502 });
+    }
     const tokenData = await tokenRes.json();
 
     if (tokenData.error) {

@@ -2,70 +2,126 @@
 
 import { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
-import { Check, Zap, Star, Building2, Settings } from "lucide-react";
+import { Check, X, Zap, Settings } from "lucide-react";
 import Link from "next/link";
+
+const FREE_PLANS = [null, "free_test", "expired"];
 
 const plans = [
   {
-    key: null,
-    name: "Free",
+    id: "free_test",
+    name: "Free Trial",
+    duration: "7 Days",
     price: "$0",
-    period: "forever",
-    icon: <Zap className="w-5 h-5" />,
-    color: "#A8967E",
+    tokens: "1,000",
+    description: "Test the platform for free",
+    cta: "Start Free Trial",
+    popular: false,
     features: [
-      "10 tracked channels",
-      "YouTube Analytics",
-      "30 days history",
-      "Export CSV",
-      "Trending alerts (5 keywords)",
+      { name: "Monthly Tokens", value: "1,000", included: true },
+      { name: "Social Accounts", value: "1", included: true },
+      { name: "Can Recharge", included: false },
+      { name: "API Access", included: false },
+      { name: "Priority Support", included: false },
+      { name: "White Label", included: false },
     ],
   },
   {
-    key: "pro",
+    id: "starter",
+    name: "Starter",
+    duration: "Monthly",
+    price: "$9",
+    tokens: "10,000",
+    description: "For creators & small teams",
+    cta: "Choose Starter",
+    popular: false,
+    features: [
+      { name: "Monthly Tokens", value: "10,000", included: true },
+      { name: "Extra Tokens", value: "$1.00/1K", included: true },
+      { name: "Social Accounts", value: "2", included: true },
+      { name: "TikTok Access", value: "10 videos/month", included: true },
+      { name: "API Access", included: false },
+      { name: "Priority Support", included: false },
+    ],
+  },
+  {
+    id: "lite",
+    name: "Lite",
+    duration: "Monthly",
+    price: "$19",
+    tokens: "50,000",
+    description: "For growing businesses",
+    cta: "Choose Lite",
+    popular: true,
+    features: [
+      { name: "Monthly Tokens", value: "50,000", included: true },
+      { name: "Extra Tokens", value: "$0.90/1K", included: true },
+      { name: "Social Accounts", value: "4", included: true },
+      { name: "TikTok Access", included: true },
+      { name: "Email Reports", included: true },
+      { name: "Calendar", included: true },
+    ],
+  },
+  {
+    id: "pro",
     name: "Pro",
-    price: "$29",
-    period: "/ month",
-    icon: <Star className="w-5 h-5" />,
-    color: "#F59E0B",
-    highlight: true,
+    duration: "Monthly",
+    price: "$39",
+    tokens: "150,000",
+    description: "For agencies & professionals",
+    cta: "Choose Pro",
+    popular: false,
     features: [
-      "Unlimited channels",
-      "YouTube + TikTok + Instagram",
-      "1 year history",
-      "Export CSV + PDF",
-      "Unlimited trending alerts",
-      "Advanced comparisons",
-      "Detailed demographics",
-      "Weekly email reports",
+      { name: "Monthly Tokens", value: "150,000", included: true },
+      { name: "Extra Tokens", value: "$0.80/1K", included: true },
+      { name: "Social Accounts", value: "8", included: true },
+      { name: "Team Members", value: "2", included: true },
+      { name: "Competitor Tracking", value: "15", included: true },
+      { name: "Priority Support", included: true },
     ],
   },
   {
-    key: "enterprise",
-    name: "Enterprise",
+    id: "business",
+    name: "Business",
+    duration: "Monthly",
     price: "$99",
-    period: "/ month",
-    icon: <Building2 className="w-5 h-5" />,
-    color: "#78614E",
+    tokens: "500,000",
+    description: "For digital marketing agencies",
+    cta: "Choose Business",
+    popular: false,
     features: [
-      "Everything in Pro",
-      "Full API access",
-      "White-label dashboard",
-      "Multi-user (10 accounts)",
-      "Dedicated account manager",
-      "Slack/Webhook integration",
-      "Real-time data (live)",
-      "SLA 99.9% uptime",
+      { name: "Monthly Tokens", value: "500,000", included: true },
+      { name: "Extra Tokens", value: "$0.70/1K", included: true },
+      { name: "Team Members", value: "5", included: true },
+      { name: "Client Accounts", value: "20", included: true },
+      { name: "API Access", included: true },
+      { name: "SLA Uptime", value: "99.5%", included: true },
+    ],
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    duration: "Monthly",
+    price: "$249",
+    tokens: "1.5M",
+    description: "For large-scale operations",
+    cta: "Contact Sales",
+    popular: false,
+    features: [
+      { name: "Monthly Tokens", value: "1,500,000", included: true },
+      { name: "Extra Tokens", value: "$0.60/1K", included: true },
+      { name: "Team Members", value: "Unlimited", included: true },
+      { name: "API Access", included: true },
+      { name: "White Label", included: true },
+      { name: "SLA Uptime", value: "99.9%", included: true },
     ],
   },
 ];
 
-const FREE_PLANS = [null, "free_test", "expired"];
-
 export default function UpgradePage() {
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [checkoutError, setCheckoutError] = useState("");
+  const [loading, setLoading] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState("");
 
   useEffect(() => {
     fetch("/api/billing")
@@ -74,51 +130,45 @@ export default function UpgradePage() {
       .catch(() => {});
   }, []);
 
-  const handleUpgrade = async (planKey: string) => {
+  const isPaid = currentPlan && !FREE_PLANS.includes(currentPlan);
+
+  const handleUpgrade = async (planId: string) => {
+    if (planId === "free_test") {
+      window.location.href = "/register";
+      return;
+    }
     setCheckoutError("");
-    setLoadingPlan(planKey);
+    setLoading(true);
     try {
       const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planKey }),
+        body: JSON.stringify({ plan: planId }),
       });
       const data = await res.json();
       if (!res.ok) {
         setCheckoutError(data.error || "An error occurred. Please try again.");
-        setLoadingPlan(null);
         return;
       }
-      window.location.href = data.url;
+      if (data.url) window.location.href = data.url;
     } catch {
       setCheckoutError("Network error. Please try again.");
-      setLoadingPlan(null);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const isPaid = currentPlan && !FREE_PLANS.includes(currentPlan);
-
   return (
     <div>
-      <Header title="Upgrade Plan" subtitle="Choose the right plan for you" />
+      <Header title="Upgrade Plan" subtitle="Token-based pricing — pay only for what you use" />
 
-      <div className="p-6">
-        {/* Hero */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-4" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
-            <Zap className="w-3.5 h-3.5" />
-            Upgrade and get access to all platforms
-          </div>
-          <h2 className="text-3xl font-black mb-2" style={{ color: "#292524" }}>Simple and transparent pricing</h2>
-          <p className="text-sm" style={{ color: "#A8967E" }}>No contracts. Cancel anytime.</p>
-        </div>
-
-        {/* Manage subscription banner for paid users */}
+      <div className="p-6 space-y-10">
+        {/* Manage subscription banner */}
         {isPaid && (
-          <div className="max-w-md mx-auto mb-8 flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm" style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)" }}>
+          <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm" style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)" }}>
             <Settings className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B" }} />
             <span style={{ color: "#78614E" }}>
-              You're on the <strong style={{ color: "#292524" }}>{currentPlan!.charAt(0).toUpperCase() + currentPlan!.slice(1)}</strong> plan.{" "}
+              You&apos;re on the <strong style={{ color: "#292524" }}>{currentPlan!.charAt(0).toUpperCase() + currentPlan!.slice(1)}</strong> plan.{" "}
               <Link href="/dashboard/billing" className="font-semibold underline" style={{ color: "#F59E0B" }}>
                 Manage subscription
               </Link>
@@ -126,104 +176,126 @@ export default function UpgradePage() {
           </div>
         )}
 
-        {/* Error banner */}
+        {/* How tokens work */}
+        <div className="rounded-xl p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200">
+          <div className="flex items-start gap-3">
+            <Zap className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+            <div>
+              <h3 className="font-semibold mb-2" style={{ color: "#1E40AF" }}>How Token Pricing Works</h3>
+              <p className="text-sm" style={{ color: "#1E3A8A" }}>
+                Each plan includes monthly tokens for AI features (captions, analysis, reports, agents). Need more? Buy additional tokens at discounted rates. Extra tokens carry over — no unused credits lost!
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
+                {[
+                  ["1 Caption", "~800 tokens"],
+                  ["1 Analysis", "~2,000 tokens"],
+                  ["1 PDF Report", "~5,000 tokens"],
+                  ["Agent Chat", "~10,000 tokens"],
+                ].map(([label, val]) => (
+                  <div key={label}>
+                    <span style={{ color: "#1E40AF" }} className="font-semibold">{label}:</span>
+                    <span style={{ color: "#1E3A8A" }}> {val}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Error */}
         {checkoutError && (
-          <div className="max-w-md mx-auto mb-6 text-sm px-4 py-3 rounded-xl text-center" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#dc2626", border: "1px solid rgba(239,68,68,0.2)" }}>
+          <div className="text-sm px-4 py-3 rounded-xl text-center" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#dc2626", border: "1px solid rgba(239,68,68,0.2)" }}>
             {checkoutError}
           </div>
         )}
 
         {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => {
-            const isCurrent =
-              plan.key === currentPlan ||
-              (plan.key === null && FREE_PLANS.includes(currentPlan));
+            const isCurrent = plan.id === currentPlan || (plan.id === "free_test" && FREE_PLANS.includes(currentPlan));
 
             return (
               <div
-                key={plan.name}
-                className="rounded-2xl p-6 flex flex-col"
-                style={plan.highlight
-                  ? { background: "linear-gradient(135deg, #F59E0B, #D97706)", boxShadow: "0 8px 32px rgba(245,158,11,0.35)", color: "white" }
-                  : { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
-                }
+                key={plan.id}
+                className={`rounded-2xl p-8 transition-all ${
+                  plan.popular && !isCurrent
+                    ? "ring-2 ring-amber-400 lg:scale-105"
+                    : isCurrent
+                    ? "ring-2 ring-green-400"
+                    : "border border-amber-200"
+                }`}
+                style={{
+                  backgroundColor: "#FFFCF7",
+                  boxShadow: plan.popular ? "0 10px 30px rgba(245,158,11,0.2)" : "0 1px 3px rgba(120,97,78,0.08)",
+                }}
               >
-                {plan.highlight && !isCurrent && (
-                  <div className="text-xs font-bold text-center mb-3 py-1 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
-                    POPULAR
+                {isCurrent ? (
+                  <div className="mb-4">
+                    <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(34,197,94,0.12)", color: "#16a34a" }}>
+                      Current Plan
+                    </span>
                   </div>
-                )}
-                {isCurrent && (
-                  <div
-                    className="text-xs font-bold text-center mb-3 py-1 rounded-full"
-                    style={plan.highlight
-                      ? { backgroundColor: "rgba(255,255,255,0.2)", color: "white" }
-                      : { backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }
-                    }
-                  >
-                    CURRENT PLAN
+                ) : plan.popular ? (
+                  <div className="mb-4">
+                    <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#F59E0B" }}>
+                      Most Popular
+                    </span>
                   </div>
+                ) : (
+                  <div className="mb-4 h-6" />
                 )}
 
-                <div className="flex items-center gap-2 mb-4" style={{ color: plan.highlight ? "white" : plan.color }}>
-                  {plan.icon}
-                  <span className="font-bold text-lg" style={{ color: plan.highlight ? "white" : "#292524" }}>{plan.name}</span>
-                </div>
+                <h3 className="text-2xl font-bold mb-1" style={{ color: "#292524" }}>{plan.name}</h3>
+                <p className="text-sm mb-4" style={{ color: "#A8967E" }}>{plan.duration}</p>
 
                 <div className="mb-6">
-                  <span className="text-4xl font-black" style={{ color: plan.highlight ? "white" : "#292524" }}>{plan.price}</span>
-                  <span className="text-sm ml-1" style={{ color: plan.highlight ? "rgba(255,255,255,0.7)" : "#A8967E" }}>{plan.period}</span>
+                  <p className="text-4xl font-bold mb-1" style={{ color: "#F59E0B" }}>{plan.price}</p>
+                  <div className="flex items-center gap-1.5">
+                    <Zap className="w-4 h-4 text-blue-600" />
+                    <p className="text-sm font-semibold" style={{ color: "#1E40AF" }}>{plan.tokens} tokens/month</p>
+                  </div>
                 </div>
 
-                <ul className="space-y-2 flex-1 mb-6">
-                  {plan.features.map(f => (
-                    <li key={f} className="flex items-start gap-2 text-sm">
-                      <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : "#16a34a" }} />
-                      <span style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : "#5C4A35" }}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="text-sm mb-6" style={{ color: "#78614E" }}>{plan.description}</p>
 
                 <button
                   type="button"
-                  disabled={isCurrent || loadingPlan === plan.key}
-                  onClick={() => plan.key && !isCurrent && handleUpgrade(plan.key)}
-                  className="w-full py-3 rounded-xl text-sm font-bold transition-all"
-                  style={isCurrent
-                    ? { backgroundColor: "rgba(245,215,160,0.15)", color: "#A8967E", cursor: "default" }
-                    : plan.highlight
-                    ? { backgroundColor: "rgba(255,255,255,0.95)", color: "#D97706", opacity: loadingPlan === plan.key ? 0.7 : 1 }
-                    : { backgroundColor: "#F59E0B", color: "#1C1814", opacity: loadingPlan === plan.key ? 0.7 : 1 }
-                  }
+                  onClick={() => !isCurrent && handleUpgrade(plan.id)}
+                  disabled={loading || isCurrent}
+                  className="w-full py-3 rounded-lg font-semibold text-sm mb-8 transition-all"
+                  style={isCurrent ? {
+                    backgroundColor: "rgba(34,197,94,0.1)",
+                    color: "#16a34a",
+                    cursor: "default",
+                  } : {
+                    backgroundColor: plan.popular ? "#F59E0B" : "rgba(245,158,11,0.1)",
+                    color: plan.popular ? "#1C1814" : "#F59E0B",
+                    opacity: loading ? 0.7 : 1,
+                  }}
                 >
-                  {loadingPlan === plan.key
-                    ? "Loading..."
-                    : isCurrent
-                    ? "Current Plan"
-                    : isPaid
-                    ? "Switch to " + plan.name
-                    : "Choose " + plan.name}
+                  {isCurrent ? "Current Plan" : loading ? "Processing..." : isPaid ? "Switch to " + plan.name : plan.cta}
                 </button>
+
+                <div className="space-y-3">
+                  {plan.features.map((feature) => (
+                    <div key={feature.name} className="flex items-start gap-3">
+                      {feature.included ? (
+                        <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#10B981" }} />
+                      ) : (
+                        <X className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-300" />
+                      )}
+                      <p className="text-sm" style={{ color: feature.included ? "#292524" : "#C4AA8A" }}>
+                        {feature.name}
+                        {typeof (feature as any).value === "string" && (
+                          <span className="font-semibold ml-2">{(feature as any).value}</span>
+                        )}
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
             );
           })}
-        </div>
-
-        {/* FAQ */}
-        <div className="max-w-2xl mx-auto mt-12 space-y-4">
-          <h3 className="text-lg font-bold text-center mb-6" style={{ color: "#292524" }}>Frequently Asked Questions</h3>
-          {[
-            { q: "Can I cancel anytime?", a: "Yes, you can cancel your subscription at any time without penalties." },
-            { q: "What platforms are supported?", a: "Free: YouTube. Pro and Enterprise: YouTube, TikTok, Instagram, Facebook." },
-            { q: "Is the data real or estimated?", a: "YouTube is 100% real. TikTok and Instagram require API approval (in progress). Demographics are estimated based on channel category." },
-            { q: "How do I pay?", a: "We accept credit/debit cards. Secure payment through Stripe." },
-          ].map(item => (
-            <div key={item.q} className="rounded-xl p-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.2)" }}>
-              <p className="font-semibold text-sm mb-1" style={{ color: "#292524" }}>{item.q}</p>
-              <p className="text-sm" style={{ color: "#A8967E" }}>{item.a}</p>
-            </div>
-          ))}
         </div>
       </div>
     </div>

@@ -37,6 +37,10 @@ export async function GET(req: NextRequest) {
       ),
     ]);
 
+    if (!profileRes.ok) {
+      return NextResponse.json({ error: `Instagram API error for ${client.client_name}` }, { status: 502 });
+    }
+
     const [profileData, insightsData, mediaData] = await Promise.all([
       profileRes.json(),
       insightsRes.json(),
