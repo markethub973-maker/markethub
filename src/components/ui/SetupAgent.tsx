@@ -141,7 +141,7 @@ export default function SetupAgent() {
             </div>
             <a href="/api/pdf/welcome" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-white/15 text-white hover:bg-white/25 transition-colors"
-              title="Descarca ghidul PDF">
+              title="Download setup guide PDF">
               <Download className="w-3 h-3" />PDF
             </a>
             <button type="button" onClick={() => setMinimized(!minimized)} className="text-white/70 hover:text-white transition-colors">
