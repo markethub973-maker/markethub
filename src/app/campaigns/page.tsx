@@ -209,10 +209,10 @@ export default function CampaignsPage() {
   const fmt = (n: number) => {
     if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
     if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
-    return n.toLocaleString("ro-RO");
+    return n.toLocaleString("en-US");
   };
 
-  const fmtCurrency = (n: number) => n.toLocaleString("ro-RO", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + " RON";
+  const fmtCurrency = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + " RON";
 
   const hasSocialLinks = campaigns.some(c => c.igUsername || c.tiktokUsername);
 

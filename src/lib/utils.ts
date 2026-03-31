@@ -17,7 +17,7 @@ export function formatPercent(num: number): string {
 }
 
 export function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("ro-RO", {
+  return new Date(dateStr).toLocaleDateString("en-US", {
     day: "2-digit",
     month: "short",
     year: "numeric",

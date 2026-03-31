@@ -440,7 +440,7 @@ export default function CaptionsPage() {
                       </span>
                       <span className="text-xs" style={{ color: "#A8967E" }}>{s.topic}</span>
                       <span className="text-xs" style={{ color: "#6B5E50" }}>
-                        {new Date(s.savedAt).toLocaleDateString("ro-RO")}
+                        {new Date(s.savedAt).toLocaleDateString("en-US")}
                       </span>
                     </div>
                     <div className="flex gap-1">

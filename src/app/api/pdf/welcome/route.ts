@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
     const name = profile?.name || req.nextUrl.searchParams.get("name") || user.email?.split("@")[0] || "Client";
     const plan = profile?.plan ? plan_label(profile.plan) : "Pro";
-    const date = new Date().toLocaleDateString("ro-RO", { day: "2-digit", month: "long", year: "numeric" });
+    const date = new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" });
 
     const element = createElement(WelcomePDF, { name, email: user.email || "", plan, date });
     const buffer = await renderToBuffer(element as any);

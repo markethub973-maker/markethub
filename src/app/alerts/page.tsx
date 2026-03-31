@@ -43,7 +43,7 @@ export default function AlertsPage() {
   const addAlert = () => {
     const kw = input.trim();
     if (!kw || alerts.find(a => a.keyword.toLowerCase() === kw.toLowerCase())) return;
-    saveAlerts([...alerts, { id: Date.now().toString(), keyword: kw, createdAt: new Date().toLocaleDateString("ro-RO") }]);
+    saveAlerts([...alerts, { id: Date.now().toString(), keyword: kw, createdAt: new Date().toLocaleDateString("en-US") }]);
     setInput("");
   };
 
@@ -191,7 +191,7 @@ export default function AlertsPage() {
                   disabled={alreadyAdded}
                   title={s.video.title}
                   onClick={() => {
-                    if (!alreadyAdded) saveAlerts([...alerts, { id: Date.now().toString(), keyword: s.keyword, createdAt: new Date().toLocaleDateString("ro-RO") }]);
+                    if (!alreadyAdded) saveAlerts([...alerts, { id: Date.now().toString(), keyword: s.keyword, createdAt: new Date().toLocaleDateString("en-US") }]);
                   }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors"
                   style={alreadyAdded

@@ -27,7 +27,7 @@ const COUNTRIES: Record<string, { name: string; flag: string; hl: string; gl: st
   fr: { name: "France", flag: "🇫🇷", hl: "fr", gl: "FR", ceid: "FR:fr" },
   es: { name: "España", flag: "🇪🇸", hl: "es", gl: "ES", ceid: "ES:es" },
   it: { name: "Italia", flag: "🇮🇹", hl: "it", gl: "IT", ceid: "IT:it" },
-  ro: { name: "România", flag: "🇷🇴", hl: "ro", gl: "RO", ceid: "RO:ro" },
+  ro: { name: "Romania", flag: "🇷🇴", hl: "ro", gl: "RO", ceid: "RO:ro" },
   pl: { name: "Polska", flag: "🇵🇱", hl: "pl", gl: "PL", ceid: "PL:pl" },
   nl: { name: "Nederland", flag: "🇳🇱", hl: "nl", gl: "NL", ceid: "NL:nl" },
   be: { name: "Belgique", flag: "🇧🇪", hl: "fr", gl: "BE", ceid: "BE:fr" },
