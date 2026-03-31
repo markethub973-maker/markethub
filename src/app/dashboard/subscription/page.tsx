@@ -144,14 +144,26 @@ export default function SubscriptionPage() {
                 </div>
               )}
 
-              <Link
-                href="/upgrade"
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-                style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
-              >
-                <Zap className="w-4 h-4" />
-                {isExpired ? "Reactivate Plan" : isTrial ? "Upgrade Now" : "Change Plan"}
-              </Link>
+              <div className="flex items-center gap-3 flex-wrap">
+                <Link
+                  href="/upgrade"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+                  style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+                >
+                  <Zap className="w-4 h-4" />
+                  {isExpired ? "Reactivate Plan" : isTrial ? "Upgrade Now" : "Change Plan"}
+                </Link>
+                {!isTrial && !isExpired && (
+                  <Link
+                    href="/dashboard/billing"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80"
+                    style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}
+                  >
+                    <CreditCard className="w-4 h-4" />
+                    Billing & Invoices
+                  </Link>
+                )}
+              </div>
             </div>
 
             {/* Usage Card */}
