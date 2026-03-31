@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createServerClient } from "@supabase/ssr";
-import { sendPaymentConfirmationEmail, sendSubscriptionCancelledEmail } from "@/lib/resend";
+import { sendPaymentConfirmationEmail, sendSubscriptionCancelledEmail, sendPaymentFailedEmail } from "@/lib/resend";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -57,7 +57,9 @@ export async function POST(req: Request) {
     // ── Subscription plan purchase ───────────────────────────────────────
     if (userId && plan) {
       await supabase.from("profiles").update({
-        plan,
+        subscription_plan: plan,
+        subscription_status: "active",
+        trial_expires_at: null,
         stripe_subscription_id: session.subscription,
       }).eq("id", userId);
 
@@ -81,11 +83,26 @@ export async function POST(req: Request) {
       .single();
 
     await supabase.from("profiles")
-      .update({ plan: "free", stripe_subscription_id: null })
+      .update({ subscription_plan: "expired", subscription_status: "expired", stripe_subscription_id: null })
       .eq("stripe_subscription_id", sub.id);
 
     if (profile?.email) {
       await sendSubscriptionCancelledEmail(profile.email, profile.name ?? "").catch(() => {});
+    }
+  }
+
+  if (event.type === "invoice.payment_failed") {
+    const invoice = event.data.object as any;
+    const customerId = invoice.customer as string;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id, email, name")
+      .eq("stripe_customer_id", customerId)
+      .single();
+
+    if (profile?.email) {
+      await sendPaymentFailedEmail(profile.email, profile.name ?? "").catch(() => {});
     }
   }
 

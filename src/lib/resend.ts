@@ -225,3 +225,119 @@ export async function sendSubscriptionCancelledEmail(email: string, name: string
     `,
   });
 }
+
+// ─── Trial Notifications ──────────────────────────────────────────────────────
+
+export async function sendTrialExpiringSoonEmail(email: string, name: string, daysLeft: number) {
+  await getResend().emails.send({
+    from: FROM,
+    to: email,
+    subject: `Trialul tau expira in ${daysLeft} ${daysLeft === 1 ? "zi" : "zile"} — MarketHub Pro`,
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#F59E0B,#D97706);">
+            <span style="color:white;font-size:22px;font-weight:bold;">M</span>
+          </div>
+          <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
+        </div>
+        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:center;">
+          <span style="font-size:13px;font-weight:700;color:#D97706;">⏳ ${daysLeft} ${daysLeft === 1 ? "zi" : "zile"} ramase din trial</span>
+        </div>
+        <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Salut, ${name}!</h2>
+        <p style="color:#78614E;line-height:1.6;margin-bottom:20px;">
+          Trialul tau gratuit de 7 zile expira curand. Nu iti pierde accesul la analytics, AI tools si toate datele conectate.
+        </p>
+        <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
+          Alege un plan si continua fara intreruperi — fara sa pierzi nimic din ce ai configurat.
+        </p>
+        <div style="text-align:center;margin-bottom:24px;">
+          <a href="https://markethubpromo.com/upgrade" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
+            Alege un plan acum
+          </a>
+        </div>
+        <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
+          © 2026 MarketHub Pro · <a href="https://markethubpromo.com/privacy" style="color:#F59E0B;">Privacy</a> · <a href="https://markethubpromo.com/terms" style="color:#F59E0B;">Terms</a>
+        </p>
+      </div>
+    `,
+  });
+}
+
+export async function sendTrialExpiredEmail(email: string, name: string) {
+  await getResend().emails.send({
+    from: FROM,
+    to: email,
+    subject: "Trialul tau a expirat — MarketHub Pro",
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#F59E0B,#D97706);">
+            <span style="color:white;font-size:22px;font-weight:bold;">M</span>
+          </div>
+          <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
+        </div>
+        <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:center;">
+          <span style="font-size:13px;font-weight:700;color:#dc2626;">Trial expirat</span>
+        </div>
+        <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Salut, ${name},</h2>
+        <p style="color:#78614E;line-height:1.6;margin-bottom:20px;">
+          Cei 7 zile de trial gratuit au expirat. Accesul la analytics si AI tools este momentan restrictionat.
+        </p>
+        <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
+          Activeaza un plan platit pentru a recapata accesul complet la toate datele si functiile tale.
+        </p>
+        <div style="text-align:center;margin-bottom:24px;">
+          <a href="https://markethubpromo.com/upgrade-required" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
+            Reactiveaza contul
+          </a>
+        </div>
+        <p style="color:#A8967E;font-size:12px;text-align:center;margin-bottom:8px;">
+          Ai intrebari? Scrie-ne la <a href="mailto:support@markethubpromo.com" style="color:#F59E0B;">support@markethubpromo.com</a>
+        </p>
+        <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
+          © 2026 MarketHub Pro · <a href="https://markethubpromo.com/privacy" style="color:#F59E0B;">Privacy</a> · <a href="https://markethubpromo.com/terms" style="color:#F59E0B;">Terms</a>
+        </p>
+      </div>
+    `,
+  });
+}
+
+export async function sendPaymentFailedEmail(email: string, name: string) {
+  await new Resend(process.env.RESEND_API_KEY).emails.send({
+    from: "MarketHub Pro <noreply@markethubpromo.com>",
+    to: email,
+    subject: "Plata a eșuat — MarketHub Pro",
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
+        <div style="text-align:center;margin-bottom:24px;">
+          <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#F59E0B,#D97706);">
+            <span style="color:white;font-size:22px;font-weight:bold;">M</span>
+          </div>
+          <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
+        </div>
+        <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:center;">
+          <span style="font-size:13px;font-weight:700;color:#dc2626;">⚠️ Plata nu a putut fi procesată</span>
+        </div>
+        <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Salut, ${name},</h2>
+        <p style="color:#78614E;line-height:1.6;margin-bottom:20px;">
+          Am încercat să procesăm plata pentru abonamentul tău MarketHub Pro, dar tranzacția a eșuat.
+        </p>
+        <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
+          Verifică datele cardului tău și actualizează metoda de plată pentru a evita întreruperea accesului.
+        </p>
+        <div style="text-align:center;margin-bottom:24px;">
+          <a href="https://markethubpromo.com/settings" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
+            Actualizează metoda de plată
+          </a>
+        </div>
+        <p style="color:#A8967E;font-size:12px;text-align:center;margin-bottom:8px;">
+          Ai nevoie de ajutor? Scrie-ne la <a href="mailto:support@markethubpromo.com" style="color:#F59E0B;">support@markethubpromo.com</a>
+        </p>
+        <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
+          © 2026 MarketHub Pro · <a href="https://markethubpromo.com/privacy" style="color:#F59E0B;">Privacy</a> · <a href="https://markethubpromo.com/terms" style="color:#F59E0B;">Terms</a>
+        </p>
+      </div>
+    `,
+  });
+}
