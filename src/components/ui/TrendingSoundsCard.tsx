@@ -1,6 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { formatNumber } from "@/lib/utils";
+import { Globe, ChevronDown } from "lucide-react";
 
 interface Sound {
   id: string;
@@ -21,20 +22,93 @@ interface SoundsResponse {
   source?: "native" | "search_fallback";
 }
 
-const REGIONS = [
-  { code: "US", label: "🇺🇸 US" },
-  { code: "GB", label: "🇬🇧 UK" },
-  { code: "RO", label: "🇷🇴 RO" },
-  { code: "DE", label: "🇩🇪 DE" },
-  { code: "FR", label: "🇫🇷 FR" },
+const ALL_COUNTRIES = [
+  { code: "US", label: "🇺🇸 United States" },
+  { code: "GB", label: "🇬🇧 United Kingdom" },
+  { code: "RO", label: "🇷🇴 Romania" },
+  { code: "DE", label: "🇩🇪 Germany" },
+  { code: "FR", label: "🇫🇷 France" },
+  { code: "IT", label: "🇮🇹 Italy" },
+  { code: "ES", label: "🇪🇸 Spain" },
+  { code: "BR", label: "🇧🇷 Brazil" },
+  { code: "MX", label: "🇲🇽 Mexico" },
+  { code: "AR", label: "🇦🇷 Argentina" },
+  { code: "CO", label: "🇨🇴 Colombia" },
+  { code: "PT", label: "🇵🇹 Portugal" },
+  { code: "NL", label: "🇳🇱 Netherlands" },
+  { code: "PL", label: "🇵🇱 Poland" },
+  { code: "SE", label: "🇸🇪 Sweden" },
+  { code: "NO", label: "🇳🇴 Norway" },
+  { code: "DK", label: "🇩🇰 Denmark" },
+  { code: "FI", label: "🇫🇮 Finland" },
+  { code: "TR", label: "🇹🇷 Turkey" },
+  { code: "SA", label: "🇸🇦 Saudi Arabia" },
+  { code: "AE", label: "🇦🇪 UAE" },
+  { code: "EG", label: "🇪🇬 Egypt" },
+  { code: "IN", label: "🇮🇳 India" },
+  { code: "JP", label: "🇯🇵 Japan" },
+  { code: "KR", label: "🇰🇷 South Korea" },
+  { code: "PH", label: "🇵🇭 Philippines" },
+  { code: "ID", label: "🇮🇩 Indonesia" },
+  { code: "TH", label: "🇹🇭 Thailand" },
+  { code: "SG", label: "🇸🇬 Singapore" },
+  { code: "MY", label: "🇲🇾 Malaysia" },
+  { code: "VN", label: "🇻🇳 Vietnam" },
+  { code: "TW", label: "🇹🇼 Taiwan" },
+  { code: "AU", label: "🇦🇺 Australia" },
+  { code: "CA", label: "🇨🇦 Canada" },
+  { code: "ZA", label: "🇿🇦 South Africa" },
+  { code: "NG", label: "🇳🇬 Nigeria" },
+  { code: "KE", label: "🇰🇪 Kenya" },
+  { code: "GH", label: "🇬🇭 Ghana" },
+  { code: "RU", label: "🇷🇺 Russia" },
+  { code: "UA", label: "🇺🇦 Ukraine" },
+  { code: "CZ", label: "🇨🇿 Czech Republic" },
+  { code: "HU", label: "🇭🇺 Hungary" },
+  { code: "GR", label: "🇬🇷 Greece" },
+  { code: "AT", label: "🇦🇹 Austria" },
+  { code: "CH", label: "🇨🇭 Switzerland" },
+  { code: "BE", label: "🇧🇪 Belgium" },
+  { code: "SK", label: "🇸🇰 Slovakia" },
+  { code: "BG", label: "🇧🇬 Bulgaria" },
+  { code: "HR", label: "🇭🇷 Croatia" },
+  { code: "RS", label: "🇷🇸 Serbia" },
 ];
 
 export default function TrendingSoundsCard() {
   const [sounds, setSounds] = useState<Sound[]>([]);
   const [loading, setLoading] = useState(true);
   const [region, setRegion] = useState("US");
+  const [isGlobal, setIsGlobal] = useState(true);
+  const [selectedCountry, setSelectedCountry] = useState<{ code: string; label: string } | null>(null);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [source, setSource] = useState<"native" | "search_fallback" | undefined>(undefined);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleGlobal = () => {
+    setIsGlobal(true);
+    setSelectedCountry(null);
+    setRegion("US");
+    setDropdownOpen(false);
+  };
+
+  const handleSelectCountry = (c: { code: string; label: string }) => {
+    setSelectedCountry(c);
+    setIsGlobal(false);
+    setRegion(c.code);
+    setDropdownOpen(false);
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -55,29 +129,71 @@ export default function TrendingSoundsCard() {
     load();
   }, [region]);
 
+  const title = source === "search_fallback" ? "Trending Music Videos" : "Trending Sounds";
+
   return (
     <div className="bg-white border border-[#E8D9C5] rounded-xl p-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
+      {/* Header */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <div className="flex items-center gap-2 mr-1">
           <span className="text-lg">🎵</span>
-          <h3 className="font-semibold text-[#292524] text-sm">
-            {source === "search_fallback" ? "Trending Music Videos" : "Trending Sounds"}
-          </h3>
+          <h3 className="font-semibold text-[#292524] text-sm">{title}</h3>
           <span className="text-xs text-[#C4AA8A]">TikTok</span>
         </div>
-        <div className="flex gap-1">
-          {REGIONS.map(r => (
-            <button
-              key={r.code}
-              onClick={() => setRegion(r.code)}
-              className={`text-xs px-2 py-1 rounded-lg transition-colors ${region === r.code ? "bg-[#F59E0B] text-white" : "bg-[#F5D7A0]/30 text-[#78614E] hover:bg-[#F5D7A0]/60"}`}
+
+        {/* Global button */}
+        <button
+          type="button"
+          onClick={handleGlobal}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all"
+          style={isGlobal
+            ? { backgroundColor: "#F59E0B", color: "#1C1814", border: "1px solid #F59E0B" }
+            : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+        >
+          <Globe className="w-3 h-3" /> Global
+        </button>
+
+        {/* International dropdown */}
+        <div className="relative" ref={dropdownRef}>
+          <button
+            type="button"
+            onClick={() => setDropdownOpen(prev => !prev)}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all"
+            style={!isGlobal
+              ? { backgroundColor: "#F59E0B", color: "#1C1814", border: "1px solid #F59E0B" }
+              : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+          >
+            {!isGlobal ? selectedCountry?.label : "🗺️ International"}
+            <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+          </button>
+          {dropdownOpen && (
+            <div
+              className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
+              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
             >
-              {r.label}
-            </button>
-          ))}
+              {ALL_COUNTRIES.map(c => (
+                <button
+                  key={c.code}
+                  type="button"
+                  onClick={() => handleSelectCountry(c)}
+                  className="w-full text-left px-4 py-2.5 text-xs transition-colors"
+                  style={{
+                    color: selectedCountry?.code === c.code ? "#D97706" : "#5C4A35",
+                    backgroundColor: selectedCountry?.code === c.code ? "rgba(245,158,11,0.08)" : "transparent",
+                    fontWeight: selectedCountry?.code === c.code ? "600" : "400",
+                  }}
+                  onMouseEnter={e => { if (selectedCountry?.code !== c.code) e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.2)"; }}
+                  onMouseLeave={e => { if (selectedCountry?.code !== c.code) e.currentTarget.style.backgroundColor = "transparent"; }}
+                >
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
+      {/* Fallback info */}
       {source === "search_fallback" && sounds.length > 0 && (
         <p className="text-xs text-blue-600 bg-blue-50 border border-blue-200 rounded-lg p-2 mb-3">
           Showing trending music videos — native sounds data requires a higher RapidAPI plan.
@@ -86,10 +202,11 @@ export default function TrendingSoundsCard() {
 
       {error && sounds.length === 0 && (
         <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-2 mb-3">
-          {error} — TikTok trending sounds may not be available on your RapidAPI plan.
+          {error}
         </p>
       )}
 
+      {/* List */}
       {loading ? (
         <div className="space-y-2">
           {[...Array(6)].map((_, i) => (
@@ -97,7 +214,7 @@ export default function TrendingSoundsCard() {
           ))}
         </div>
       ) : sounds.length === 0 ? (
-        <p className="text-xs text-[#C4AA8A] text-center py-6">No trending sounds available for {region}.</p>
+        <p className="text-xs text-[#C4AA8A] text-center py-6">No trending sounds available for {selectedCountry?.label.split(" ").slice(1).join(" ") || "this region"}.</p>
       ) : (
         <div className="space-y-1.5">
           {sounds.slice(0, 15).map((s, i) => (
