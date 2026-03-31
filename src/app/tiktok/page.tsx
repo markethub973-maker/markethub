@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import TrendingSoundsCard from "@/components/ui/TrendingSoundsCard";
+import GlobalTrendingPanel from "@/components/ui/GlobalTrendingPanel";
 import {
   Search, ExternalLink, Clock, TrendingUp, Heart, MessageCircle, Share2,
   Play, Eye, User, Hash, Loader2, Bookmark, BookmarkCheck, X
@@ -378,6 +379,9 @@ export default function TikTokPage() {
 
         {/* Trending Sounds */}
         <TrendingSoundsCard />
+
+        {/* Global Trending — YouTube + Google Trends by country */}
+        <GlobalTrendingPanel />
 
       </div>
     </div>
