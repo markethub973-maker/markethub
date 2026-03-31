@@ -73,21 +73,32 @@ export async function middleware(request: NextRequest) {
   const isUpgradePath = UPGRADE_PATHS.some((p) => pathname.startsWith(p));
   if (isUpgradePath) return response;
 
-  // Check subscription plan (lazy — avoids extra DB call for most requests)
-  const { data: profile } = await supabase
+  // Check subscription plan
+  // Selects both old (plan) and new (subscription_plan) columns — handles pre/post migration
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
-    .select("subscription_plan, subscription_status, trial_expires_at")
+    .select("plan, subscription_plan, subscription_status, trial_expires_at")
     .eq("id", user.id)
     .single();
 
-  if (profile) {
-    const plan = profile.subscription_plan;
+  // If query fails (e.g. new columns not yet added via migration), fall back to old schema
+  const profileOld = profileError
+    ? (await supabase.from("profiles").select("plan").eq("id", user.id).single()).data
+    : null;
+
+  const resolvedProfile = profile ?? profileOld;
+
+  if (resolvedProfile) {
+    const activePlan = (resolvedProfile as any).subscription_plan ?? (resolvedProfile as any).plan;
+    const status = (resolvedProfile as any).subscription_status;
+    const trialExpiresAt = (resolvedProfile as any).trial_expires_at;
+
     const isExpired =
-      plan === "expired" ||
-      profile.subscription_status === "expired" ||
-      (plan === "free_test" &&
-        profile.trial_expires_at &&
-        new Date(profile.trial_expires_at) < new Date());
+      activePlan === "expired" ||
+      status === "expired" ||
+      (activePlan === "free_test" &&
+        trialExpiresAt &&
+        new Date(trialExpiresAt) < new Date());
 
     if (isExpired) {
       // Skip for API routes — they handle their own 429 response
