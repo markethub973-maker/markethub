@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
-import { Check, Zap, Star, Building2 } from "lucide-react";
+import { Check, Zap, Star, Building2, Settings } from "lucide-react";
+import Link from "next/link";
 
 const plans = [
   {
@@ -11,7 +12,6 @@ const plans = [
     price: "$0",
     period: "forever",
     icon: <Zap className="w-5 h-5" />,
-    current: true,
     color: "#A8967E",
     features: [
       "10 tracked channels",
@@ -20,7 +20,6 @@ const plans = [
       "Export CSV",
       "Trending alerts (5 keywords)",
     ],
-    missing: ["TikTok & Instagram", "Unlimited comparisons", "API access", "Priority support"],
   },
   {
     key: "pro",
@@ -28,7 +27,6 @@ const plans = [
     price: "$29",
     period: "/ month",
     icon: <Star className="w-5 h-5" />,
-    current: false,
     color: "#F59E0B",
     highlight: true,
     features: [
@@ -41,7 +39,6 @@ const plans = [
       "Detailed demographics",
       "Weekly email reports",
     ],
-    missing: [],
   },
   {
     key: "enterprise",
@@ -49,7 +46,6 @@ const plans = [
     price: "$99",
     period: "/ month",
     icon: <Building2 className="w-5 h-5" />,
-    current: false,
     color: "#78614E",
     features: [
       "Everything in Pro",
@@ -61,13 +57,22 @@ const plans = [
       "Real-time data (live)",
       "SLA 99.9% uptime",
     ],
-    missing: [],
   },
 ];
+
+const FREE_PLANS = [null, "free_test", "expired"];
 
 export default function UpgradePage() {
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState("");
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/billing")
+      .then((r) => r.json())
+      .then((d) => setCurrentPlan(d.plan ?? null))
+      .catch(() => {});
+  }, []);
 
   const handleUpgrade = async (planKey: string) => {
     setCheckoutError("");
@@ -91,6 +96,8 @@ export default function UpgradePage() {
     }
   };
 
+  const isPaid = currentPlan && !FREE_PLANS.includes(currentPlan);
+
   return (
     <div>
       <Header title="Upgrade Plan" subtitle="Choose the right plan for you" />
@@ -106,6 +113,19 @@ export default function UpgradePage() {
           <p className="text-sm" style={{ color: "#A8967E" }}>No contracts. Cancel anytime.</p>
         </div>
 
+        {/* Manage subscription banner for paid users */}
+        {isPaid && (
+          <div className="max-w-md mx-auto mb-8 flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm" style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)" }}>
+            <Settings className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B" }} />
+            <span style={{ color: "#78614E" }}>
+              You're on the <strong style={{ color: "#292524" }}>{currentPlan!.charAt(0).toUpperCase() + currentPlan!.slice(1)}</strong> plan.{" "}
+              <Link href="/dashboard/billing" className="font-semibold underline" style={{ color: "#F59E0B" }}>
+                Manage subscription
+              </Link>
+            </span>
+          </div>
+        )}
+
         {/* Error banner */}
         {checkoutError && (
           <div className="max-w-md mx-auto mb-6 text-sm px-4 py-3 rounded-xl text-center" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#dc2626", border: "1px solid rgba(239,68,68,0.2)" }}>
@@ -115,61 +135,79 @@ export default function UpgradePage() {
 
         {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className="rounded-2xl p-6 flex flex-col"
-              style={plan.highlight
-                ? { background: "linear-gradient(135deg, #F59E0B, #D97706)", boxShadow: "0 8px 32px rgba(245,158,11,0.35)", color: "white" }
-                : { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
-              }
-            >
-              {plan.highlight && (
-                <div className="text-xs font-bold text-center mb-3 py-1 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
-                  POPULAR
-                </div>
-              )}
+          {plans.map((plan) => {
+            const isCurrent =
+              plan.key === currentPlan ||
+              (plan.key === null && FREE_PLANS.includes(currentPlan));
 
-              <div className="flex items-center gap-2 mb-4" style={{ color: plan.highlight ? "white" : plan.color }}>
-                {plan.icon}
-                <span className="font-bold text-lg" style={{ color: plan.highlight ? "white" : "#292524" }}>{plan.name}</span>
-                {plan.current && <span className="text-xs px-2 py-0.5 rounded-full ml-auto" style={{ backgroundColor: "rgba(245,215,160,0.2)", color: "#A8967E" }}>Current</span>}
-              </div>
-
-              <div className="mb-6">
-                <span className="text-4xl font-black" style={{ color: plan.highlight ? "white" : "#292524" }}>{plan.price}</span>
-                <span className="text-sm ml-1" style={{ color: plan.highlight ? "rgba(255,255,255,0.7)" : "#A8967E" }}>{plan.period}</span>
-              </div>
-
-              <ul className="space-y-2 flex-1 mb-6">
-                {plan.features.map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : "#16a34a" }} />
-                    <span style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : "#5C4A35" }}>{f}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <button
-                type="button"
-                disabled={plan.current || loadingPlan === plan.key}
-                onClick={() => plan.key && handleUpgrade(plan.key)}
-                className="w-full py-3 rounded-xl text-sm font-bold transition-all"
+            return (
+              <div
+                key={plan.name}
+                className="rounded-2xl p-6 flex flex-col"
                 style={plan.highlight
-                  ? { backgroundColor: "rgba(255,255,255,0.95)", color: "#D97706", opacity: loadingPlan === plan.key ? 0.7 : 1 }
-                  : plan.current
-                  ? { backgroundColor: "rgba(245,215,160,0.15)", color: "#A8967E", cursor: "default" }
-                  : { backgroundColor: "#F59E0B", color: "#1C1814", opacity: loadingPlan === plan.key ? 0.7 : 1 }
+                  ? { background: "linear-gradient(135deg, #F59E0B, #D97706)", boxShadow: "0 8px 32px rgba(245,158,11,0.35)", color: "white" }
+                  : { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
                 }
               >
-                {loadingPlan === plan.key
-                  ? "Loading..."
-                  : plan.current
-                  ? "Current plan"
-                  : "Choose " + plan.name}
-              </button>
-            </div>
-          ))}
+                {plan.highlight && !isCurrent && (
+                  <div className="text-xs font-bold text-center mb-3 py-1 rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
+                    POPULAR
+                  </div>
+                )}
+                {isCurrent && (
+                  <div
+                    className="text-xs font-bold text-center mb-3 py-1 rounded-full"
+                    style={plan.highlight
+                      ? { backgroundColor: "rgba(255,255,255,0.2)", color: "white" }
+                      : { backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }
+                    }
+                  >
+                    CURRENT PLAN
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 mb-4" style={{ color: plan.highlight ? "white" : plan.color }}>
+                  {plan.icon}
+                  <span className="font-bold text-lg" style={{ color: plan.highlight ? "white" : "#292524" }}>{plan.name}</span>
+                </div>
+
+                <div className="mb-6">
+                  <span className="text-4xl font-black" style={{ color: plan.highlight ? "white" : "#292524" }}>{plan.price}</span>
+                  <span className="text-sm ml-1" style={{ color: plan.highlight ? "rgba(255,255,255,0.7)" : "#A8967E" }}>{plan.period}</span>
+                </div>
+
+                <ul className="space-y-2 flex-1 mb-6">
+                  {plan.features.map(f => (
+                    <li key={f} className="flex items-start gap-2 text-sm">
+                      <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : "#16a34a" }} />
+                      <span style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : "#5C4A35" }}>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  type="button"
+                  disabled={isCurrent || loadingPlan === plan.key}
+                  onClick={() => plan.key && !isCurrent && handleUpgrade(plan.key)}
+                  className="w-full py-3 rounded-xl text-sm font-bold transition-all"
+                  style={isCurrent
+                    ? { backgroundColor: "rgba(245,215,160,0.15)", color: "#A8967E", cursor: "default" }
+                    : plan.highlight
+                    ? { backgroundColor: "rgba(255,255,255,0.95)", color: "#D97706", opacity: loadingPlan === plan.key ? 0.7 : 1 }
+                    : { backgroundColor: "#F59E0B", color: "#1C1814", opacity: loadingPlan === plan.key ? 0.7 : 1 }
+                  }
+                >
+                  {loadingPlan === plan.key
+                    ? "Loading..."
+                    : isCurrent
+                    ? "Current Plan"
+                    : isPaid
+                    ? "Switch to " + plan.name
+                    : "Choose " + plan.name}
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         {/* FAQ */}

@@ -1,12 +1,23 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
-import { Check, X, Zap } from "lucide-react";
+import { Check, X, Zap, Settings } from "lucide-react";
+import Link from "next/link";
 import { TOKEN_PLANS } from "@/lib/token-plan-config";
+
+const FREE_PLANS = ["free_test", "expired"];
 
 export default function PricingPage() {
   const [loading, setLoading] = useState(false);
+  const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/billing")
+      .then((r) => r.json())
+      .then((d) => setCurrentPlan(d.plan ?? null))
+      .catch(() => {});
+  }, []);
 
   const plans = [
     {
@@ -119,9 +130,10 @@ export default function PricingPage() {
     },
   ];
 
+  const isPaid = currentPlan && !FREE_PLANS.includes(currentPlan);
+
   const handleUpgrade = async (planId: string) => {
     if (planId === "free_test") {
-      // Redirect to signup
       window.location.href = "/register";
       return;
     }
@@ -149,6 +161,19 @@ export default function PricingPage() {
     <div>
       <Header title="Pricing Plans" subtitle="Token-based pricing: Pay only for what you use" />
       <div className="p-6 space-y-12">
+
+        {/* Manage subscription banner for paid users */}
+        {isPaid && (
+          <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm" style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)" }}>
+            <Settings className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B" }} />
+            <span style={{ color: "#78614E" }}>
+              You're on the <strong style={{ color: "#292524" }}>{currentPlan!.charAt(0).toUpperCase() + currentPlan!.slice(1)}</strong> plan.{" "}
+              <Link href="/dashboard/billing" className="font-semibold underline" style={{ color: "#F59E0B" }}>
+                Manage subscription
+              </Link>
+            </span>
+          </div>
+        )}
 
         {/* Info Section */}
         <div className="rounded-xl p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200">
@@ -186,12 +211,16 @@ export default function PricingPage() {
 
         {/* Plans Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {plans.map((plan) => (
+          {plans.map((plan) => {
+            const isCurrent = plan.id === currentPlan;
+            return (
             <div
               key={plan.id}
               className={`rounded-2xl p-8 transition-all ${
-                plan.popular
+                plan.popular && !isCurrent
                   ? "ring-2 ring-amber-400 transform lg:scale-105"
+                  : isCurrent
+                  ? "ring-2 ring-green-400"
                   : "border border-amber-200"
               }`}
               style={{
@@ -199,7 +228,16 @@ export default function PricingPage() {
                 boxShadow: plan.popular ? "0 10px 30px rgba(245,158,11,0.2)" : "0 1px 3px rgba(120,97,78,0.08)",
               }}
             >
-              {plan.popular && (
+              {isCurrent ? (
+                <div className="mb-4">
+                  <span
+                    className="text-xs font-bold px-3 py-1 rounded-full"
+                    style={{ backgroundColor: "rgba(34,197,94,0.12)", color: "#16a34a" }}
+                  >
+                    Current Plan
+                  </span>
+                </div>
+              ) : plan.popular && (
                 <div className="mb-4">
                   <span
                     className="text-xs font-bold px-3 py-1 rounded-full"
@@ -234,16 +272,21 @@ export default function PricingPage() {
               </p>
 
               <button
-                onClick={() => handleUpgrade(plan.id)}
-                disabled={loading}
+                type="button"
+                onClick={() => !isCurrent && handleUpgrade(plan.id)}
+                disabled={loading || isCurrent}
                 className="w-full py-3 rounded-lg font-semibold text-sm mb-8 transition-all"
-                style={{
+                style={isCurrent ? {
+                  backgroundColor: "rgba(34,197,94,0.1)",
+                  color: "#16a34a",
+                  cursor: "default",
+                } : {
                   backgroundColor: plan.popular ? "#F59E0B" : "rgba(245,158,11,0.1)",
                   color: plan.popular ? "#1C1814" : "#F59E0B",
                   opacity: loading ? 0.7 : 1,
                 }}
               >
-                {loading ? "Processing..." : plan.cta}
+                {isCurrent ? "Current Plan" : loading ? "Processing..." : isPaid ? "Switch to " + plan.name : plan.cta}
               </button>
 
               <div className="space-y-3">
@@ -266,7 +309,8 @@ export default function PricingPage() {
                 ))}
               </div>
             </div>
-          ))}
+          );
+          })}
         </div>
 
         {/* Token Recharge Section */}
