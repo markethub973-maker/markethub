@@ -11,6 +11,12 @@ const PUBLIC_PATHS = [
   "/api/auth",
   "/api/stripe/webhook",
   "/api/subscription/check-trial",
+  // Admin uses its own password-based auth — bypass Supabase middleware
+  "/markethub973",
+  "/dashboard/admin",
+  "/api/admin",
+  "/api/admin-auth",
+  "/api/admin-secret-login",
 ];
 
 // Routes that expired users CAN access (to upgrade)
