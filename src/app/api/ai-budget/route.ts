@@ -11,13 +11,13 @@ async function getUserPlanAndSpend(supabase: Awaited<ReturnType<typeof createCli
   const currentMonth = new Date().toISOString().substring(0, 7);
 
   const [profileRes, spendRes, extraRes] = await Promise.all([
-    supabase.from("profiles").select("plan").eq("id", userId).single(),
+    supabase.from("profiles").select("subscription_plan").eq("id", userId).single(),
     supabase.from("usage_tracking").select("cost_usd").eq("user_id", userId).eq("month_year", currentMonth),
     // extra credits — table may not exist yet, handle gracefully
     Promise.resolve(supabase.from("ai_credits").select("credits_usd").eq("user_id", userId).eq("month_year", currentMonth).maybeSingle()).catch(() => ({ data: null })),
   ]);
 
-  const plan = profileRes.data?.plan ?? "free_test";
+  const plan = profileRes.data?.subscription_plan ?? "free_test";
   const config = getPlanConfig(plan);
   const spent = (spendRes.data ?? []).reduce((s: number, r: any) => s + (r.cost_usd ?? 0), 0);
   const extraUsd = extraRes.data?.credits_usd ?? 0;

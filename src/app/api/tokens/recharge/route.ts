@@ -20,11 +20,11 @@ export async function GET(req: NextRequest) {
   try {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("plan")
+            .select("subscription_plan")
       .eq("id", user.id)
       .single();
 
-    const planId = profile?.plan || "free_test";
+    const planId = profile?.subscription_plan || "free_test";
     const packs = getRechargePacks(planId);
 
     return NextResponse.json({
@@ -75,11 +75,11 @@ export async function POST(req: NextRequest) {
     // Get user's plan and available packs
     const { data: profile } = await supabase
       .from("profiles")
-      .select("plan, stripe_customer_id")
+      .select("subscription_plan, stripe_customer_id")
       .eq("id", user.id)
       .single();
 
-    const packs = getRechargePacks(profile?.plan);
+    const packs = getRechargePacks(profile?.subscription_plan);
     const selectedPack = packs.find(p => p.id === pack_id);
 
     if (!selectedPack) {

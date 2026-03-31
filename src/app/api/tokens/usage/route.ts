@@ -18,11 +18,11 @@ export async function GET(req: NextRequest) {
     // Get user's plan
     const { data: profile } = await supabase
       .from("profiles")
-      .select("plan")
+            .select("subscription_plan")
       .eq("id", user.id)
       .single();
 
-    const planId = profile?.plan || "free_test";
+    const planId = profile?.subscription_plan || "free_test";
     const plan = getTokenPlan(planId);
 
     // Get current month tokens used
@@ -143,9 +143,9 @@ export async function POST(req: NextRequest) {
     // Get updated usage
     const plan = getTokenPlan((await supabase
       .from("profiles")
-      .select("plan")
+            .select("subscription_plan")
       .eq("id", user.id)
-      .single()).data?.plan);
+      .single()).data?.subscription_plan);
 
     const remaining = getRemainingTokens(plan.included_tokens_month, data.tokens_used);
 

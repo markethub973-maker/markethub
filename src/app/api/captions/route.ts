@@ -19,8 +19,8 @@ export async function POST(req: NextRequest) {
 
   // ── Pre-check AI budget before calling Claude ────────────────────────────
   const currentMonth = new Date().toISOString().substring(0, 7);
-  const { data: profileData } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
-  const planConfig = getPlanConfig(profileData?.plan);
+  const { data: profileData } = await supabase.from("profiles").select("subscription_plan").eq("id", user.id).single();
+  const planConfig = getPlanConfig(profileData?.subscription_plan);
   const { data: spendData } = await supabase.from("usage_tracking").select("cost_usd").eq("user_id", user.id).eq("month_year", currentMonth);
   const extraResult = await Promise.resolve(
     supabase.from("ai_credits").select("credits_usd").eq("user_id", user.id).eq("month_year", currentMonth).maybeSingle()
