@@ -8,6 +8,7 @@ import SentimentAnalysisCard from "@/components/ui/SentimentAnalysisCard";
 import CommentFAQCard from "@/components/ui/CommentFAQCard";
 import CategoryComparisonCard from "@/components/ui/CategoryComparisonCard";
 import PlaylistStrategyCard from "@/components/ui/PlaylistStrategyCard";
+import YoutubeAnalyticsCard from "@/components/ui/YoutubeAnalyticsCard";
 import ExportButtons from "@/components/ui/ExportButtons";
 import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
 import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame, Download } from "lucide-react";
@@ -361,6 +362,14 @@ export default function MyChannelPage() {
             </div>
           )}
 
+        </div>
+
+        {/* YouTube Analytics */}
+        <div
+          className="rounded-xl p-5"
+          style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
+        >
+          <YoutubeAnalyticsCard />
         </div>
 
         {/* Category Comparison + Playlist Strategy */}

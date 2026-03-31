@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import PlatformBadge from "@/components/ui/PlatformBadge";
+import MultiRegionalTrending from "@/components/ui/MultiRegionalTrending";
 import { formatNumber, formatDate } from "@/lib/utils";
-import { MessageCircle, ThumbsUp, Eye, Search, Loader2, TrendingUp, Globe, ChevronDown } from "lucide-react";
+import { MessageCircle, ThumbsUp, Eye, Search, Loader2, TrendingUp, Globe, ChevronDown, LayoutGrid } from "lucide-react";
 import type { YTVideo } from "@/lib/youtube";
 
 const ALL_COUNTRIES = [
@@ -484,6 +485,23 @@ export default function VideosPage() {
             <p>No results found.</p>
           </div>
         )}
+      </div>
+
+      {/* Multi-Regional Trending Section */}
+      <div className="px-6 pb-8 space-y-3">
+        <div className="flex items-center gap-2 pt-2">
+          <LayoutGrid className="w-4 h-4" style={{ color: "#F59E0B" }} />
+          <h2 className="font-bold text-sm" style={{ color: "#292524" }}>Compare Trends Across Regions</h2>
+          <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+            RO · US · GB · DE
+          </span>
+        </div>
+        <div
+          className="rounded-xl p-4"
+          style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
+        >
+          <MultiRegionalTrending />
+        </div>
       </div>
     </div>
   );
