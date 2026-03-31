@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
-import { stripe, PLANS } from "@/lib/stripe";
+import { getStripe, PLANS } from "@/lib/stripe";
+
+const stripe = getStripe();
 import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
@@ -14,7 +16,7 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (!user) {
-      return NextResponse.json({ error: "Trebuie sa fii autentificat." }, { status: 401 });
+      return NextResponse.json({ error: "You must be authenticated." }, { status: 401 });
     }
 
     const { data: profile } = await supabase

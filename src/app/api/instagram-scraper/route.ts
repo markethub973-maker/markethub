@@ -22,8 +22,6 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    console.log(`[Instagram Search] Fetching data for @${username} via RapidAPI...`);
-
     const res = await fetch(
       `https://${RAPIDAPI_HOST}/v1/user_info_web?username=${encodeURIComponent(username)}`,
       {
@@ -35,8 +33,6 @@ export async function GET(req: NextRequest) {
         },
       }
     );
-
-    console.log(`[Instagram Search] RapidAPI response status: ${res.status}`);
 
     if (!res.ok) {
       const errorText = await res.text();
@@ -64,13 +60,11 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await res.json();
-    console.log(`[Instagram Search] RapidAPI response received, has data: ${!!data?.data}`);
 
     // Extract user data from RapidAPI response
     const userData = data?.data?.user || data?.data || data?.user || data;
 
     if (!userData || (!userData.username && !userData.full_name)) {
-      console.log(`[Instagram Search] No user data found in response`);
       return NextResponse.json({
         error: "User not found",
         message: `Instagram profile @${username} was not found or is not available.`,
@@ -120,8 +114,6 @@ export async function GET(req: NextRequest) {
         videoViews: node.video_view_count || 0,
       };
     });
-
-    console.log(`[Instagram Search] Success: @${profile.username} - ${profile.followers} followers, ${posts.length} posts`);
 
     return NextResponse.json({
       profile,

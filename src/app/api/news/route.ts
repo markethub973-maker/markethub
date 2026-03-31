@@ -165,7 +165,7 @@ async function fetchCreatorEconomyNews(maxItems = 8): Promise<NewsItem[]> {
 }
 
 export async function GET(req: NextRequest) {
-  const country = req.nextUrl.searchParams.get("country") || "ro";
+  const country = req.nextUrl.searchParams.get("country") || "us";
 
   try {
     const [countryNews, socialNews] = await Promise.all([

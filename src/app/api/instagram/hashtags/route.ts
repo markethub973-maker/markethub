@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
 
     const hashtagId = searchData.data?.[0]?.id;
     if (!hashtagId) {
-      return NextResponse.json({ error: `Hashtag-ul #${hashtag} nu a fost găsit.` }, { status: 404 });
+      return NextResponse.json({ error: `Hashtag #${hashtag} not found.` }, { status: 404 });
     }
 
     // Step 2: Fetch top + recent media for hashtag in parallel

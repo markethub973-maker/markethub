@@ -12,8 +12,10 @@ export async function POST(request: Request) {
       );
     }
 
-    // Get admin password from environment (hardcoded as fallback)
-    const adminPassword = process.env.ADMIN_PASSWORD || "Market@!hub2026";
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) {
+      return NextResponse.json({ error: "Admin not configured" }, { status: 500 });
+    }
 
     // Check password
     if (password !== adminPassword) {

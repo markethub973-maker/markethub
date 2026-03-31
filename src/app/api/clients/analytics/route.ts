@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 
     if (profileData.error) {
       return NextResponse.json({
-        error: `Token invalid pentru ${client.client_name}: ${profileData.error.message}`,
+        error: `Invalid token for ${client.client_name}: ${profileData.error.message}`,
       }, { status: 400 });
     }
 
