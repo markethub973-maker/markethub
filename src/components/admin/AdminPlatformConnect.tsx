@@ -44,11 +44,11 @@ const PLATFORMS: Platform[] = [
     color: "#E1306C",
     bg: "rgba(225,48,108,0.06)",
     fields: [
-      { key: "access_token", label: "Long-lived Access Token", placeholder: "EAAxxxxxxxx...", secret: true, hint: "Meta Graph API Explorer → Get Token → User Token (60 zile, poate fi refresh-uit)" },
+      { key: "access_token", label: "Long-lived Access Token", placeholder: "EAAxxxxxxxx...", secret: true, hint: "Meta Graph API Explorer → Get Token → User Token (60 days, refreshable)" },
       { key: "instagram_id", label: "Instagram Business Account ID", placeholder: "17841xxxxxxxxxx", hint: "Graph API: GET /me/accounts → instagram_business_account.id" },
-      { key: "username", label: "Instagram Username", placeholder: "@username", hint: "Numele contului tău de business Instagram" },
+      { key: "username", label: "Instagram Username", placeholder: "@username", hint: "Your Instagram business account username" },
     ],
-    guide: "Meta Graph API Explorer → selectează app-ul → Get User Access Token → exchange for Long-lived Token",
+    guide: "Meta Graph API Explorer → select app → Get User Access Token → exchange for Long-lived Token",
     guideUrl: "https://developers.facebook.com/tools/explorer/",
   },
   {
@@ -61,7 +61,7 @@ const PLATFORMS: Platform[] = [
       { key: "access_token", label: "Access Token", placeholder: "act.xxxxxxxx...", secret: true, hint: "TikTok Developer Portal → My Apps → OAuth → Generate Token" },
       { key: "open_id", label: "TikTok Open ID", placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", hint: "Returnat la OAuth callback: open_id" },
     ],
-    guide: "developers.tiktok.com → My Apps → selectează app → OAuth 2.0 → obține token",
+    guide: "developers.tiktok.com → My Apps → select app → OAuth 2.0 → generate token",
     guideUrl: "https://developers.tiktok.com/apps/",
   },
   {
@@ -71,11 +71,11 @@ const PLATFORMS: Platform[] = [
     color: "#1877F2",
     bg: "rgba(24,119,242,0.06)",
     fields: [
-      { key: "page_token", label: "Page Access Token", placeholder: "EAAxxxxxxxx...", secret: true, hint: "Meta Graph API Explorer → GET /me/accounts → access_token al paginii tale" },
-      { key: "page_id", label: "Facebook Page ID", placeholder: "1234567890", hint: "GET /me/accounts → id al paginii" },
-      { key: "page_name", label: "Nume Pagină", placeholder: "MarketHub Pro", hint: "Numele paginii de Facebook" },
+      { key: "page_token", label: "Page Access Token", placeholder: "EAAxxxxxxxx...", secret: true, hint: "Meta Graph API Explorer → GET /me/accounts → access_token for your page" },
+      { key: "page_id", label: "Facebook Page ID", placeholder: "1234567890", hint: "GET /me/accounts → id of your page" },
+      { key: "page_name", label: "Page Name", placeholder: "MarketHub Pro", hint: "Your Facebook page name" },
     ],
-    guide: "Meta Graph API Explorer → GET /me/accounts → copiază page access_token și id",
+    guide: "Meta Graph API Explorer → GET /me/accounts → copy page access_token and id",
     guideUrl: "https://developers.facebook.com/tools/explorer/",
   },
 ];

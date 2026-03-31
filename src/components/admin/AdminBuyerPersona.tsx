@@ -107,10 +107,10 @@ export default function AdminBuyerPersona() {
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
   const loadingSteps = [
-    "Se scrapeaza profilul Instagram...",
-    "Se analizează hashtag-urile și conținutul...",
-    "Claude AI generează persona...",
-    "Se finalizează raportul...",
+    "Scraping Instagram profile...",
+    "Analyzing hashtags and content...",
+    "Claude AI generating persona...",
+    "Finalizing report...",
   ];
 
   const generate = async () => {
@@ -163,7 +163,7 @@ export default function AdminBuyerPersona() {
           </div>
           <div>
             <h2 className="text-lg font-bold" style={{ color: "#292524" }}>Buyer Persona Builder</h2>
-            <p className="text-xs" style={{ color: "#A8967E" }}>Analizează orice cont Instagram public și generează un profil detaliat al cumpărătorului ideal</p>
+            <p className="text-xs" style={{ color: "#A8967E" }}>Analyze any public Instagram account and generate a detailed ideal buyer profile</p>
           </div>
           <span className="ml-auto text-xs px-2.5 py-1 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#d97706", border: "1px solid rgba(245,158,11,0.2)" }}>
             👑 Admin · Beta
@@ -181,7 +181,7 @@ export default function AdminBuyerPersona() {
               value={username}
               onChange={e => setUsername(e.target.value)}
               onKeyDown={e => e.key === "Enter" && generate()}
-              placeholder="username instagram (ex: georgetudormusic)"
+              placeholder="instagram username (e.g. natgeo)"
               className="w-full pl-7 pr-4 py-2.5 rounded-xl text-sm border outline-none"
               style={{ backgroundColor: "rgba(245,215,160,0.1)", borderColor: "rgba(245,215,160,0.4)", color: "#292524" }}
             />
@@ -192,7 +192,7 @@ export default function AdminBuyerPersona() {
             className="px-3 py-2.5 rounded-xl text-sm border outline-none"
             style={{ backgroundColor: "rgba(245,215,160,0.1)", borderColor: "rgba(245,215,160,0.4)", color: niche ? "#292524" : "#A8967E", minWidth: 160 }}
           >
-            <option value="">Nișă (opțional)</option>
+            <option value="">Niche (optional)</option>
             {NICHE_OPTIONS.map(n => <option key={n} value={n}>{n}</option>)}
           </select>
           <button
@@ -206,7 +206,7 @@ export default function AdminBuyerPersona() {
             ) : (
               <Sparkles size={15} />
             )}
-            {loading ? "Generez..." : "Generează Persona"}
+            {loading ? "Generating..." : "Generate Persona"}
           </button>
         </div>
 

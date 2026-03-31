@@ -26,9 +26,9 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const { client_name, instagram_username, instagram_user_id, instagram_access_token, notes } = body;
 
-  if (!client_name?.trim()) return NextResponse.json({ error: "Numele clientului este obligatoriu" }, { status: 400 });
-  if (!instagram_access_token?.trim()) return NextResponse.json({ error: "Token-ul Instagram este obligatoriu" }, { status: 400 });
-  if (!instagram_user_id?.trim()) return NextResponse.json({ error: "Instagram User ID este obligatoriu" }, { status: 400 });
+  if (!client_name?.trim()) return NextResponse.json({ error: "Client name is required" }, { status: 400 });
+  if (!instagram_access_token?.trim()) return NextResponse.json({ error: "Instagram token is required" }, { status: 400 });
+  if (!instagram_user_id?.trim()) return NextResponse.json({ error: "Instagram User ID is required" }, { status: 400 });
 
   // Validate token by fetching basic profile
   const verifyRes = await fetch(
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     if (error.code === "42P01") {
       // Table doesn't exist yet — return helpful message
       return NextResponse.json({
-        error: "Tabelul 'client_accounts' nu există în baza de date. Rulează migrarea SQL.",
+        error: "Table 'client_accounts' does not exist. Run the SQL migration.",
         migration: `CREATE TABLE IF NOT EXISTS client_accounts (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
@@ -81,7 +81,7 @@ export async function DELETE(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const id = req.nextUrl.searchParams.get("id");
-  if (!id) return NextResponse.json({ error: "ID lipsă" }, { status: 400 });
+  if (!id) return NextResponse.json({ error: "ID missing" }, { status: 400 });
 
   const { error } = await supabase
     .from("client_accounts")

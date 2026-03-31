@@ -40,13 +40,13 @@ function htmlEmail(data: {
               <span style="color:white;font-size:20px;font-weight:bold;">⚡</span>
             </div>
             <h1 style="color:#FFF8F0;margin:0 0 8px;font-size:24px;">MarketHub Pro</h1>
-            <p style="color:#A8967E;margin:0;font-size:14px;">Raportul tău lunar Instagram este atașat la acest email</p>
+            <p style="color:#A8967E;margin:0;font-size:14px;">Your monthly Instagram report is attached to this email</p>
           </td>
         </tr>
         <tr>
           <td style="padding:24px 40px 0;text-align:center;">
-            <p style="margin:0;font-size:13px;color:#A8967E;">Perioadă: <strong style="color:#292524;">${data.period}</strong></p>
-            <p style="margin:4px 0 0;font-size:13px;color:#A8967E;">Cont: <strong style="color:#E1306C;">@${data.username}</strong></p>
+            <p style="margin:0;font-size:13px;color:#A8967E;">Period: <strong style="color:#292524;">${data.period}</strong></p>
+            <p style="margin:4px 0 0;font-size:13px;color:#A8967E;">Account: <strong style="color:#E1306C;">@${data.username}</strong></p>
           </td>
         </tr>
         <tr>
@@ -55,7 +55,7 @@ function htmlEmail(data: {
               <tr>
                 <td width="25%" style="padding:4px;">
                   <div style="background:#F59E0B10;border:1px solid #F59E0B20;border-radius:12px;padding:16px;text-align:center;">
-                    <p style="margin:0 0 4px;font-size:11px;color:#A8967E;">Urmăritori</p>
+                    <p style="margin:0 0 4px;font-size:11px;color:#A8967E;">Followers</p>
                     <p style="margin:0;font-size:22px;font-weight:bold;color:#F59E0B;">${fmtNum(data.followers)}</p>
                   </div>
                 </td>
@@ -67,13 +67,13 @@ function htmlEmail(data: {
                 </td>
                 <td width="25%" style="padding:4px;">
                   <div style="background:#1877F210;border:1px solid #1877F220;border-radius:12px;padding:16px;text-align:center;">
-                    <p style="margin:0 0 4px;font-size:11px;color:#A8967E;">Reach 30z</p>
+                    <p style="margin:0 0 4px;font-size:11px;color:#A8967E;">Reach 30d</p>
                     <p style="margin:0;font-size:22px;font-weight:bold;color:#1877F2;">${fmtNum(data.reach30)}</p>
                   </div>
                 </td>
                 <td width="25%" style="padding:4px;">
                   <div style="background:#6366F110;border:1px solid #6366F120;border-radius:12px;padding:16px;text-align:center;">
-                    <p style="margin:0 0 4px;font-size:11px;color:#A8967E;">Impresii 30z</p>
+                    <p style="margin:0 0 4px;font-size:11px;color:#A8967E;">Impressions 30d</p>
                     <p style="margin:0;font-size:22px;font-weight:bold;color:#6366F1;">${fmtNum(data.impressions30)}</p>
                   </div>
                 </td>
@@ -84,8 +84,8 @@ function htmlEmail(data: {
         <tr>
           <td style="padding:0 40px 32px;text-align:center;">
             <div style="background:#F5F0E8;border-radius:12px;padding:16px;">
-              <p style="margin:0;font-size:13px;color:#78614E;">📎 Raportul complet PDF este atașat la acest email.</p>
-              <p style="margin:8px 0 0;font-size:12px;color:#A8967E;">Conține top postări, cele mai bune zile de postare, mix conținut și recomandări strategice.</p>
+              <p style="margin:0;font-size:13px;color:#78614E;">📎 The full PDF report is attached to this email.</p>
+              <p style="margin:8px 0 0;font-size:12px;color:#A8967E;">Includes top posts, best posting days, content mix and strategic recommendations.</p>
             </div>
           </td>
         </tr>
@@ -118,7 +118,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({}));
   const recipientEmail = body.email || user.email;
-  if (!recipientEmail) return NextResponse.json({ error: "Email destinatar lipsă" }, { status: 400 });
+  if (!recipientEmail) return NextResponse.json({ error: "Recipient email missing" }, { status: 400 });
 
   const igId = profile.instagram_user_id;
   const clientName = profile.name || profile.instagram_username || "Client";
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
       ...p,
       engagement: (p.like_count || 0) + (p.comments_count || 0),
       engRate: followers > 0 ? (((p.like_count || 0) + (p.comments_count || 0)) / followers) * 100 : 0,
-      dayOfWeek: new Date(p.timestamp).toLocaleDateString("ro-RO", { weekday: "short" }),
+      dayOfWeek: new Date(p.timestamp).toLocaleDateString("en-US", { weekday: "short" }),
     }));
 
     const topPosts = [...postsWithEng].sort((a, b) => b.engagement - a.engagement).slice(0, 8);
@@ -196,39 +196,39 @@ export async function POST(req: NextRequest) {
     }));
 
     const fbPage = fbAccounts.data?.[0];
-    const period = `${new Date(Date.now() - 30 * 86400 * 1000).toLocaleDateString("ro-RO", { day: "2-digit", month: "long" })} — ${new Date().toLocaleDateString("ro-RO", { day: "2-digit", month: "long", year: "numeric" })}`;
+    const period = `${new Date(Date.now() - 30 * 86400 * 1000).toLocaleDateString("en-US", { day: "2-digit", month: "long" })} — ${new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" })}`;
 
     const recommendations = [
       {
-        title: "Frecvență de postare",
+        title: "Posting frequency",
         text: igProfile.media_count < 30
-          ? `Ai ${igProfile.media_count} postări totale. Recomandăm minim 4-5 postări/săptămână.`
-          : `Frecvența curentă este bună. Menține consistența și experimentează cu ore diferite.`,
+          ? `${igProfile.media_count} total posts. We recommend at least 4-5 posts/week to grow organic reach.`
+          : `Current frequency is solid. Keep the consistency and experiment with different posting times.`,
       },
       {
         title: "Engagement Rate",
         text: avgEngRate >= 3
-          ? `Engagement rate de ${avgEngRate.toFixed(1)}% este excelent. Ideal pentru campanii cu influenceri.`
-          : `Engagement rate de ${avgEngRate.toFixed(1)}% este sub media de 3%. Încearcă polls în stories și conținut interactiv.`,
+          ? `Engagement rate of ${avgEngRate.toFixed(1)}% is excellent. Ideal for influencer campaigns.`
+          : `Engagement rate of ${avgEngRate.toFixed(1)}% is below the 3% benchmark. Try polls in Stories and interactive content.`,
       },
       {
-        title: "Tip de conținut",
+        title: "Content type",
         text: contentMix.find(c => c.name === "Video")
-          ? `Ai ${contentMix.find(c => c.name === "Video")?.value} video-uri. Reels-urile au reach cu 30-50% mai mare.`
-          : `Adaugă Reels (15-30 sec) pentru boost algoritm. Mix recomandat: 60% video, 30% carusel, 10% foto.`,
+          ? `${contentMix.find(c => c.name === "Video")?.value} videos detected. Reels generate 30-50% higher reach.`
+          : `Add Reels (15-30 sec) for algorithm boost. Recommended mix: 60% video, 30% carousel, 10% photo.`,
       },
       {
-        title: "Strategie reach",
+        title: "Reach strategy",
         text: totalReach > 0
-          ? `Reach de ${fmtNum(totalReach)} în 30 zile = ${((totalReach / (followers || 1)) * 100).toFixed(0)}% din followers. Postează în orele de vârf 18:00-21:00.`
-          : `Activează Instagram Business Insights pentru a monitoriza reach-ul.`,
+          ? `Reach of ${fmtNum(totalReach)} in 30 days = ${((totalReach / (followers || 1)) * 100).toFixed(0)}% of followers. Post during peak hours 6PM-9PM.`
+          : `Enable Instagram Business Insights to track your reach.`,
       },
     ];
 
     const reportData: MarketingReportData = {
       clientName,
       period,
-      generatedAt: new Date().toLocaleDateString("ro-RO", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+      generatedAt: new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
       instagram: {
         username: igProfile.username || profile.instagram_username || "",
         followers,
@@ -247,7 +247,7 @@ export async function POST(req: NextRequest) {
         comments: p.comments_count || 0,
         engRate: p.engRate,
         mediaType: p.media_type,
-        date: new Date(p.timestamp).toLocaleDateString("ro-RO", { day: "2-digit", month: "2-digit", year: "2-digit" }),
+        date: new Date(p.timestamp).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "2-digit" }),
         permalink: p.permalink,
       })),
       bestDays,
@@ -258,14 +258,14 @@ export async function POST(req: NextRequest) {
     // Generate PDF
     const element = createElement(MarketingReportPDF, { data: reportData });
     const pdfBuffer = await renderToBuffer(element as any);
-    const pdfFilename = `MarketHub-Raport-${clientName.replace(/\s+/g, "-")}-${new Date().toLocaleDateString("ro-RO", { month: "2-digit", year: "numeric" }).replace("/", "-")}.pdf`;
+    const pdfFilename = `MarketHub-Report-${clientName.replace(/\s+/g, "-")}-${new Date().toLocaleDateString("en-US", { month: "2-digit", year: "numeric" }).replace("/", "-")}.pdf`;
 
     // Send email with PDF attachment
     const resend = new Resend(process.env.RESEND_API_KEY);
     const result = await resend.emails.send({
       from: "MarketHub Pro <rapoarte@markethubpromo.com>",
       to: [recipientEmail],
-      subject: `Raport Instagram ${new Date().toLocaleDateString("ro-RO", { month: "long", year: "numeric" })} — @${igProfile.username || profile.instagram_username}`,
+      subject: `Instagram Report ${new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })} — @${igProfile.username || profile.instagram_username}`,
       html: htmlEmail({
         clientName,
         username: igProfile.username || profile.instagram_username || "",

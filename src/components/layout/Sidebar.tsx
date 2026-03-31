@@ -77,8 +77,8 @@ const navGroups = [
     items: [
       { href: "/alerts", label: "Alerts", icon: Bell },
       { href: "/marketing", label: "Marketing", icon: Megaphone },
-      { href: "/email-reports", label: "Email Rapoarte", icon: Mail },
-      { href: "/clients", label: "Multi-Cont", icon: UserSquare2 },
+      { href: "/email-reports", label: "Email Reports", icon: Mail },
+      { href: "/clients", label: "Multi-Account", icon: UserSquare2 },
       { href: "/ai-hub", label: "AI Hub", icon: Sparkles },
     ],
   },
@@ -279,7 +279,10 @@ export default function Sidebar() {
             <div className="mt-2 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(255,248,240,0.1)" }}>
               <div className="h-full w-[30%] rounded-full" style={{ background: "linear-gradient(90deg, #F59E0B, #D97706)" }} />
             </div>
-            <Link href="/upgrade" className="mt-2.5 block w-full py-1.5 rounded-md text-xs font-bold text-center transition-colors" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+            <Link href="/dashboard/subscription" className="mt-2 block w-full py-1.5 rounded-md text-xs font-medium text-center transition-colors" style={{ color: "#A8967E" }}>
+              Manage Plan
+            </Link>
+            <Link href="/upgrade" className="mt-1 block w-full py-1.5 rounded-md text-xs font-bold text-center transition-colors" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
               Upgrade
             </Link>
           </div>

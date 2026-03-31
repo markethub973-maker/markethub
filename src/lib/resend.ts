@@ -303,40 +303,33 @@ export async function sendTrialExpiredEmail(email: string, name: string) {
   });
 }
 
-export async function sendPaymentFailedEmail(email: string, name: string) {
+interface PaymentFailedAlertParams {
+  customerEmail: string;
+  customerName: string;
+  plan: string;
+  invoiceId: string;
+  amount: string;
+}
+
+export async function sendAdminPaymentFailedAlert(params: PaymentFailedAlertParams) {
+  const adminEmail = process.env.ADMIN_EMAIL!;
+  const { customerEmail, customerName, plan, invoiceId, amount } = params;
   await new Resend(process.env.RESEND_API_KEY).emails.send({
-    from: "MarketHub Pro <noreply@markethubpromo.com>",
-    to: email,
-    subject: "Plata a eșuat — MarketHub Pro",
+    from: "MarketHub Pro Alerts <noreply@markethubpromo.com>",
+    to: adminEmail,
+    subject: `[Action Required] Payment failed — ${customerEmail}`,
     html: `
-      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
-        <div style="text-align:center;margin-bottom:24px;">
-          <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#F59E0B,#D97706);">
-            <span style="color:white;font-size:22px;font-weight:bold;">M</span>
-          </div>
-          <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
-        </div>
-        <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:center;">
-          <span style="font-size:13px;font-weight:700;color:#dc2626;">⚠️ Plata nu a putut fi procesată</span>
-        </div>
-        <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Salut, ${name},</h2>
-        <p style="color:#78614E;line-height:1.6;margin-bottom:20px;">
-          Am încercat să procesăm plata pentru abonamentul tău MarketHub Pro, dar tranzacția a eșuat.
-        </p>
-        <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
-          Verifică datele cardului tău și actualizează metoda de plată pentru a evita întreruperea accesului.
-        </p>
-        <div style="text-align:center;margin-bottom:24px;">
-          <a href="https://markethubpromo.com/settings" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
-            Actualizează metoda de plată
-          </a>
-        </div>
-        <p style="color:#A8967E;font-size:12px;text-align:center;margin-bottom:8px;">
-          Ai nevoie de ajutor? Scrie-ne la <a href="mailto:support@markethubpromo.com" style="color:#F59E0B;">support@markethubpromo.com</a>
-        </p>
-        <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
-          © 2026 MarketHub Pro · <a href="https://markethubpromo.com/privacy" style="color:#F59E0B;">Privacy</a> · <a href="https://markethubpromo.com/terms" style="color:#F59E0B;">Terms</a>
-        </p>
+      <div style="font-family:monospace;max-width:520px;margin:0 auto;padding:24px;background:#1a1a1a;color:#e5e5e5;border-radius:8px;">
+        <h2 style="color:#ef4444;margin:0 0 16px;">⚠️ Payment Failed</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:13px;">
+          <tr><td style="padding:6px 0;color:#888;">Customer</td><td style="padding:6px 0;color:#fff;">${customerName}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Email</td><td style="padding:6px 0;color:#fff;">${customerEmail}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Plan</td><td style="padding:6px 0;color:#fff;">${plan}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Amount</td><td style="padding:6px 0;color:#ef4444;font-weight:bold;">$${amount}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Invoice ID</td><td style="padding:6px 0;color:#aaa;">${invoiceId}</td></tr>
+          <tr><td style="padding:6px 0;color:#888;">Time</td><td style="padding:6px 0;color:#aaa;">${new Date().toISOString()}</td></tr>
+        </table>
+        <p style="margin-top:20px;font-size:12px;color:#555;">MarketHub Pro internal alert — do not reply</p>
       </div>
     `,
   });

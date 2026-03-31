@@ -29,7 +29,7 @@ const API_KEYS = [
     name: "Anthropic Claude AI",
     icon: "🤖",
     status: "active",
-    statusLabel: "Activ — credite plătite",
+    statusLabel: "Active — paid credits",
     color: "#7C3AED",
     colorLight: "rgba(124,58,237,0.08)",
     colorBorder: "rgba(124,58,237,0.25)",
@@ -37,18 +37,18 @@ const API_KEYS = [
     docsUrl: "https://docs.anthropic.com",
     env: ["ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY_APP"],
     using: [
-      "Generare captions AI (3 variante / set)",
-      "Agent Marketing — strategie conținut",
-      "Agent Email — copywriting campanii",
-      "Agent Financial — analiză costuri",
-      "Agent Support — asistență clienți",
-      "Agent Competitor — analiză competitori",
+      "AI caption generation (3 variants / set)",
+      "Marketing Agent — content strategy",
+      "Email Agent — campaign copywriting",
+      "Financial Agent — cost analysis",
+      "Support Agent — customer assistance",
+      "Competitor Agent — competitor analysis",
     ],
     untapped: [
-      { label: "Rapoarte PDF narative", desc: "Generare automată raport lunar cu analiză narativă completă" },
-      { label: "Rezumate trend săptămânale", desc: "Email automat către clienți cu top 5 trenduri ale săptămânii" },
-      { label: "Generator titluri A/B", desc: "10 variante titlu/thumbnail pentru același video — test rapid" },
-      { label: "Analiză sentiment comentarii", desc: "Procesează comentariile YouTube/IG și extrage sentimentul dominant" },
+      { label: "Narrative PDF Reports", desc: "Auto-generate monthly report with full narrative analysis" },
+      { label: "Weekly trend summaries", desc: "Auto email to clients with top 5 trends of the week" },
+      { label: "A/B Title Generator", desc: "10 title/thumbnail variants for the same video — quick test" },
+      { label: "Comment sentiment analysis", desc: "Process YouTube/IG comments and extract dominant sentiment" },
     ],
     cost: "Pay-per-token (~$0.003/1K tokens Sonnet)",
   },
@@ -57,7 +57,7 @@ const API_KEYS = [
     name: "YouTube Data API v3",
     icon: "▶️",
     status: "active",
-    statusLabel: "Activ — free tier (10K cereri/zi)",
+    statusLabel: "Active — free tier (10K requests/day)",
     color: "#FF0000",
     colorLight: "rgba(255,0,0,0.06)",
     colorBorder: "rgba(255,0,0,0.2)",
@@ -65,28 +65,28 @@ const API_KEYS = [
     docsUrl: "https://developers.google.com/youtube/v3/docs",
     env: ["YOUTUBE_API_KEY"],
     using: [
-      "Statistici canal propriu (abonați, views, videos)",
-      "Top videos cu engagement rate",
-      "Trending videos pe țară + categorie",
+      "Own channel stats (subscribers, views, videos)",
+      "Top videos with engagement rate",
+      "Trending videos by country + category",
       "Global trending (worldwide)",
-      "Căutare canale competitori",
-      "Analiză videos canal competitor",
+      "Competitor channel search",
+      "Competitor channel video analysis",
     ],
     untapped: [
-      { label: "Analiză comentarii video", desc: "commentThreads API — întrebări frecvente, sentiment, FAQ extragere" },
-      { label: "Comparare categorii", desc: "Ce categorii de content performează cel mai bine în nișa ta" },
-      { label: "Playlist strategy analysis", desc: "Cum organizează competitorii playlist-urile — structură conținut" },
-      { label: "YouTube Analytics API", desc: "Retenție vizionare, demografii detaliate, surse trafic (necesită OAuth)" },
-      { label: "Trending regional multi-țară", desc: "Aceeași nișă comparat în RO/DE/UK/US simultan" },
+      { label: "Video comment analysis", desc: "commentThreads API — frequent questions, sentiment, FAQ extraction" },
+      { label: "Category comparison", desc: "Which content categories perform best in your niche" },
+      { label: "Playlist strategy analysis", desc: "How competitors organize playlists — content structure" },
+      { label: "YouTube Analytics API", desc: "Watch retention, detailed demographics, traffic sources (requires OAuth)" },
+      { label: "Multi-country regional trending", desc: "Same niche compared across RO/DE/UK/US simultaneously" },
     ],
-    cost: "GRATUIT — 10.000 unități/zi (quota)",
+    cost: "FREE — 10,000 units/day (quota)",
   },
   {
     id: "meta",
     name: "Meta Graph API",
     icon: "📘",
     status: "active",
-    statusLabel: "Activ — Instagram + Facebook + Ads Library",
+    statusLabel: "Active — Instagram + Facebook + Ads Library",
     color: "#1877F2",
     colorLight: "rgba(24,119,242,0.06)",
     colorBorder: "rgba(24,119,242,0.2)",
@@ -95,27 +95,27 @@ const API_KEYS = [
     env: ["META_APP_ID", "META_APP_SECRET", "INSTAGRAM_APP_ID"],
     using: [
       "Instagram analytics (reach, impressions, engagement)",
-      "Media posts + metrici detaliate",
+      "Media posts + detailed metrics",
       "Hashtag performance (#trending)",
-      "Demografii audiență (vârstă, gen, țară)",
-      "Facebook Ads Library — analiza reclamelor",
+      "Audience demographics (age, gender, country)",
+      "Facebook Ads Library — ad analysis",
       "Facebook Page Insights",
     ],
     untapped: [
-      { label: "Instagram Stories Analytics", desc: "Vizualizări story, exit rate, reply rate, reach unic (necesită permisiune instagram_content_publish)" },
-      { label: "Instagram Reels Insights", desc: "Plays, reach, shares pentru Reels — format cu cea mai mare creștere" },
-      { label: "Facebook Ad Account Insights", desc: "CPM, CPC, CTR, ROAS pentru conturile de ads ale clienților (necesită ads_read)" },
-      { label: "Cross-platform content comparison", desc: "Același post pe FB vs IG — care performat mai bine și de ce" },
-      { label: "Audience Overlap analysis", desc: "Câți % din audiența IG se suprapune cu FB — evitare duplicare bugete ads" },
+      { label: "Instagram Stories Analytics", desc: "Story views, exit rate, reply rate, unique reach (requires instagram_content_publish)" },
+      { label: "Instagram Reels Insights", desc: "Plays, reach, shares for Reels — fastest-growing format" },
+      { label: "Facebook Ad Account Insights", desc: "CPM, CPC, CTR, ROAS for client ad accounts (requires ads_read)" },
+      { label: "Cross-platform content comparison", desc: "Same post on FB vs IG — which performed better and why" },
+      { label: "Audience Overlap analysis", desc: "What % of IG audience overlaps with FB — avoid duplicate ad budgets" },
     ],
-    cost: "GRATUIT — rate limits: 200 req/oră/user",
+    cost: "FREE — rate limits: 200 req/hour/user",
   },
   {
     id: "rapidapi",
     name: "RapidAPI — 2 servicii active",
     icon: "⚡",
     status: "active",
-    statusLabel: "Activ — TikTok Trends + Instagram Scraper",
+    statusLabel: "Active — TikTok Trends + Instagram Scraper",
     color: "#0E6AC7",
     colorLight: "rgba(14,106,199,0.06)",
     colorBorder: "rgba(14,106,199,0.2)",
@@ -123,26 +123,26 @@ const API_KEYS = [
     docsUrl: "https://rapidapi.com/hub",
     env: ["RAPIDAPI_KEY"],
     using: [
-      "🎵 TikTok Trend Analysis API — căutare videos, useri, hashtag-uri",
-      "📸 Instagram Public Bulk Scraper — profil public + ultimele 12 posts competitor",
-      "Calcul engagement rate competitor Instagram",
-      "Date TikTok: plays, likes, comments, shares",
+      "🎵 TikTok Trend Analysis API — search videos, users, hashtags",
+      "📸 Instagram Public Bulk Scraper — public profile + last 12 competitor posts",
+      "Competitor Instagram engagement rate calculation",
+      "TikTok data: plays, likes, comments, shares",
     ],
     untapped: [
-      { label: "TikTok Trending Sounds", desc: "Ce sunete/melodii sunt virale acum — esențial pentru Reels și TikTok organic" },
-      { label: "TikTok Category Trends", desc: "Trenduri pe categorii (beauty, food, business) — găsești nișa înainte să explodeze" },
-      { label: "Instagram Batch Scraping", desc: "Analizează 10-20 competitori simultan în loc de unul câte unul" },
-      { label: "Twitter/X Trending Topics", desc: "Adaugă serviciu RapidAPI pentru Twitter — trending topics pentru context campanii" },
-      { label: "Reddit Sentiment API", desc: "Ce vorbește comunitatea despre brandul/nișa clientului — research organic" },
+      { label: "TikTok Trending Sounds", desc: "What sounds/music are viral now — essential for Reels and organic TikTok" },
+      { label: "TikTok Category Trends", desc: "Trends by category (beauty, food, business) — find the niche before it blows up" },
+      { label: "Instagram Batch Scraping", desc: "Analyze 10-20 competitors simultaneously instead of one by one" },
+      { label: "Twitter/X Trending Topics", desc: "Add RapidAPI Twitter service — trending topics for campaign context" },
+      { label: "Reddit Sentiment API", desc: "What the community says about the client's brand/niche — organic research" },
     ],
-    cost: "Plătit — verifică planul în dashboard RapidAPI",
+    cost: "Paid — check plan in RapidAPI dashboard",
   },
   {
     id: "resend",
     name: "Resend — Email API",
     icon: "✉️",
     status: "active",
-    statusLabel: "Activ — trimitere rapoarte email",
+    statusLabel: "Active — email report delivery",
     color: "#000000",
     colorLight: "rgba(0,0,0,0.04)",
     colorBorder: "rgba(0,0,0,0.12)",
@@ -150,16 +150,16 @@ const API_KEYS = [
     docsUrl: "https://resend.com/docs",
     env: ["RESEND_API_KEY"],
     using: [
-      "Trimitere rapoarte marketing PDF pe email",
-      "Email-uri transacționale (confirmare cont, etc.)",
+      "Send marketing PDF reports via email",
+      "Transactional emails (account confirmation, etc.)",
     ],
     untapped: [
-      { label: "Weekly digest automat", desc: "Email automat săptămânal către clienți cu top 3 metrici canal lor" },
-      { label: "Alert-uri engagement", desc: "Notificare când engagement rate scade sub pragul setat de client" },
-      { label: "Email campanii onboarding", desc: "Secvență automată 5 emailuri pentru useri noi care explică platforma" },
-      { label: "Raport lunar automat", desc: "PDF generat AI + trimis automat în ziua 1 a lunii fiecărui client" },
+      { label: "Auto weekly digest", desc: "Automated weekly email to clients with their top 3 channel metrics" },
+      { label: "Engagement alerts", desc: "Notification when engagement rate drops below client's set threshold" },
+      { label: "Onboarding email campaigns", desc: "Auto 5-email sequence for new users explaining the platform" },
+      { label: "Auto monthly report", desc: "AI-generated PDF + auto-sent on day 1 of each month to every client" },
     ],
-    cost: "GRATUIT — 3.000 emailuri/lună (free tier)",
+    cost: "FREE — 3,000 emails/month (free tier)",
   },
 ];
 
@@ -281,7 +281,7 @@ export default function SettingsPage() {
     { id: "profile",      label: "Profile",       icon: <User size={15} /> },
     { id: "integrations", label: "Integrations",  icon: <Plug size={15} /> },
     ...(!isAdmin ? [{ id: "credits" as Tab, label: "AI Credits", icon: <Zap size={15} /> }] : []),
-    ...(isAdmin  ? [{ id: "api-keys" as Tab, label: "API Keys & Oportunități", icon: <Key size={15} />, adminOnly: true }] : []),
+    ...(isAdmin  ? [{ id: "api-keys" as Tab, label: "API Keys & Opportunities", icon: <Key size={15} />, adminOnly: true }] : []),
   ];
 
   return (
@@ -621,13 +621,13 @@ export default function SettingsPage() {
             {/* Footer note */}
             <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.2)" }}>
               <p style={{ color: "#78614E" }}>
-                <strong style={{ color: "#292524" }}>📌 Notă:</strong>{" "}
-                Soldul real al contului Anthropic se vede doar la{" "}
+                <strong style={{ color: "#292524" }}>📌 Note:</strong>{" "}
+                Your actual Anthropic account balance is only visible at{" "}
                 <a href="https://console.anthropic.com/settings/billing" target="_blank" rel="noopener noreferrer"
                   className="underline font-medium" style={{ color: "#7C3AED" }}>
                   console.anthropic.com/settings/billing
                 </a>.
-                {" "}Platforma nu poate citi soldul din API — Anthropic nu oferă un endpoint pentru asta.
+                {" "}The platform cannot read the balance from the API — Anthropic does not expose an endpoint for that.
               </p>
             </div>
           </div>

@@ -1,7 +1,18 @@
 {
-	"telemetry": {
-		"notifiedAt": "1773902448990",
-		"anonymousId": "a2ee0fbfc33abe135a4210cf614e2043a0b2fd4d155e9640040fc8fdab7af795",
-		"salt": "fb2dabc827f05afe994c7deb016ad092"
-	}
+  "models": [
+    {
+      "title": "BytePlus Coding Plan",
+      "provider": "openai",
+      "model": "ark-code-latest",
+      "apiKey": "aa1b7782-ea0b-4654-8e36-3999908cf64d",
+      "apiBase": "https://ark.ap-southeast.bytepluses.com"
+    }
+  ],
+  "tabAutocompleteModel": {
+    "title": "BytePlus Autocomplete",
+    "provider": "openai",
+    "model": "ark-code-latest",
+    "apiKey": "aa1b7782-ea0b-4654-8e36-3999908cf64d",
+    "apiBase": "https://ark.ap-southeast.bytepluses.com"
+  }
 }

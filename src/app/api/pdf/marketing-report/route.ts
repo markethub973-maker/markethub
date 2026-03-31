@@ -50,7 +50,7 @@ export async function GET() {
       ...p,
       engagement: (p.like_count || 0) + (p.comments_count || 0),
       engRate: followers > 0 ? (((p.like_count || 0) + (p.comments_count || 0)) / followers) * 100 : 0,
-      dayOfWeek: new Date(p.timestamp).toLocaleDateString("ro-RO", { weekday: "short" }),
+      dayOfWeek: new Date(p.timestamp).toLocaleDateString("en-US", { weekday: "short" }),
     }));
 
     const topPosts = [...postsWithEng].sort((a, b) => b.engagement - a.engagement).slice(0, 8);
@@ -75,44 +75,44 @@ export async function GET() {
     const typeCount: Record<string, number> = {};
     postsWithEng.forEach(p => { typeCount[p.media_type] = (typeCount[p.media_type] || 0) + 1; });
     const contentMix = Object.entries(typeCount).map(([name, value]) => ({
-      name: name === "VIDEO" ? "Video" : name === "CAROUSEL_ALBUM" ? "Carusel" : "Foto",
+      name: name === "VIDEO" ? "Video" : name === "CAROUSEL_ALBUM" ? "Carousel" : "Photo",
       value,
     }));
 
     const fbPage = fbAccounts.data?.[0];
-    const period = `${new Date(Date.now() - 30 * 86400 * 1000).toLocaleDateString("ro-RO", { day: "2-digit", month: "long" })} — ${new Date().toLocaleDateString("ro-RO", { day: "2-digit", month: "long", year: "numeric" })}`;
+    const period = `${new Date(Date.now() - 30 * 86400 * 1000).toLocaleDateString("en-US", { day: "2-digit", month: "long" })} — ${new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" })}`;
 
     const recommendations = [
       {
-        title: "Frecvență de postare",
+        title: "Posting frequency",
         text: igProfile.media_count < 30
-          ? `Ai ${igProfile.media_count} postări totale. Recomandăm minim 4-5 postări/săptămână pentru a crește reach-ul organic și a menține audiența engajată.`
-          : `Frecvența curentă de postare este bună. Menține consistența și experimentează cu ore diferite de publicare pentru optimizare.`,
+          ? `${igProfile.media_count} total posts. We recommend at least 4-5 posts/week to grow organic reach and keep your audience engaged.`
+          : `Current posting frequency is solid. Keep the consistency and experiment with different publishing times for optimization.`,
       },
       {
         title: "Engagement Rate",
         text: avgEngRate >= 3
-          ? `Engagement rate de ${avgEngRate.toFixed(1)}% este excelent (media industriei: 1-3%). Contul tău este activ și audiența răspunde bine la conținut. Ideal pentru campanii cu influenceri — poți solicita rate mai mari.`
-          : `Engagement rate de ${avgEngRate.toFixed(1)}% este sub media de 3%. Recomandăm: postări mai interactive (polls în stories, întrebări în caption), conținut de tip behind-the-scenes și colaborări cu micro-influenceri.`,
+          ? `Engagement rate of ${avgEngRate.toFixed(1)}% is excellent (industry average: 1-3%). Your account is active and the audience responds well to content. Ideal for influencer campaigns — you can command higher rates.`
+          : `Engagement rate of ${avgEngRate.toFixed(1)}% is below the 3% benchmark. Recommendations: more interactive posts (polls in stories, questions in captions), behind-the-scenes content, and micro-influencer collaborations.`,
       },
       {
-        title: "Tip de conținut recomandat",
+        title: "Recommended content type",
         text: contentMix.find(c => c.name === "Video")
-          ? `Ai deja ${contentMix.find(c => c.name === "Video")?.value} video-uri — continuă! Reels-urile au reach cu 30-50% mai mare față de foto. Recomandăm să crești ponderea video la 60% din total postări.`
-          : `Contul tău folosește predominant foto. Adaugă Reels (15-30 sec) pentru a profita de boost-ul algoritmului Instagram pentru video. Un mix recomandat: 60% video, 30% carusel, 10% foto.`,
+          ? `You already have ${contentMix.find(c => c.name === "Video")?.value} videos — keep going! Reels generate 30-50% higher reach than photos. We recommend increasing video to 60% of total posts.`
+          : `Your account uses mainly photos. Add Reels (15-30 sec) to benefit from Instagram's video algorithm boost. Recommended mix: 60% video, 30% carousel, 10% photo.`,
       },
       {
-        title: "Strategie reach organic",
+        title: "Organic reach strategy",
         text: totalReach > 0
-          ? `Reach-ul de ${fmtNum(totalReach)} în 30 zile reprezintă ${((totalReach / followers) * 100).toFixed(0)}% din followers. ${totalReach / followers > 2 ? "Algoritmul te promovează activ — menține calitatea conținutului." : "Folosește 5-10 hashtag-uri relevante per postare, postează în orele de vârf (18:00-21:00) și răspunde la comentarii în prima oră după publicare."}`
-          : `Activează Instagram Business Insights din aplicație pentru a monitoriza reach-ul și a optimiza strategia de conținut.`,
+          ? `Reach of ${fmtNum(totalReach)} in 30 days = ${((totalReach / followers) * 100).toFixed(0)}% of followers. ${totalReach / followers > 2 ? "The algorithm is actively promoting you — maintain content quality." : "Use 5-10 relevant hashtags per post, publish during peak hours (6PM-9PM), and respond to comments within the first hour."}`
+          : `Enable Instagram Business Insights from the app to monitor reach and optimize your content strategy.`,
       },
     ];
 
     const reportData: MarketingReportData = {
       clientName,
       period,
-      generatedAt: new Date().toLocaleDateString("ro-RO", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
+      generatedAt: new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }),
       instagram: {
         username: igProfile.username || profile.instagram_username || "",
         followers,
@@ -131,7 +131,7 @@ export async function GET() {
         comments: p.comments_count || 0,
         engRate: p.engRate,
         mediaType: p.media_type,
-        date: new Date(p.timestamp).toLocaleDateString("ro-RO", { day: "2-digit", month: "2-digit", year: "2-digit" }),
+        date: new Date(p.timestamp).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "2-digit" }),
         permalink: p.permalink,
       })),
       bestDays,
@@ -141,7 +141,7 @@ export async function GET() {
 
     const element = createElement(MarketingReportPDF, { data: reportData });
     const buffer = await renderToBuffer(element as any);
-    const filename = `MarketHub-Raport-${clientName.replace(/\s+/g, "-")}-${new Date().toLocaleDateString("ro-RO", { month: "2-digit", year: "numeric" }).replace("/", "-")}.pdf`;
+    const filename = `MarketHub-Report-${clientName.replace(/\s+/g, "-")}-${new Date().toLocaleDateString("en-US", { month: "2-digit", year: "numeric" }).replace("/", "-")}.pdf`;
 
     return new NextResponse(buffer as unknown as BodyInit, {
       headers: {

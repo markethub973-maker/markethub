@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createServerClient } from "@supabase/ssr";
-import { sendPaymentConfirmationEmail, sendSubscriptionCancelledEmail, sendPaymentFailedEmail } from "@/lib/resend";
+import { sendPaymentConfirmationEmail, sendSubscriptionCancelledEmail, sendAdminPaymentFailedAlert } from "@/lib/resend";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -97,13 +97,18 @@ export async function POST(req: Request) {
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("id, email, name")
+      .select("id, email, name, subscription_plan")
       .eq("stripe_customer_id", customerId)
       .single();
 
-    if (profile?.email) {
-      await sendPaymentFailedEmail(profile.email, profile.name ?? "").catch(() => {});
-    }
+    // Alert admin only — do not expose payment details to customer
+    await sendAdminPaymentFailedAlert({
+      customerEmail: profile?.email ?? "unknown",
+      customerName: profile?.name ?? "unknown",
+      plan: profile?.subscription_plan ?? "unknown",
+      invoiceId: invoice.id,
+      amount: (invoice.amount_due / 100).toFixed(2),
+    }).catch(() => {});
   }
 
   return NextResponse.json({ received: true });

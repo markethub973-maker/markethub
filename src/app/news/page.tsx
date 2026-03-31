@@ -27,7 +27,7 @@ const ALL_NEWS_COUNTRIES = [
   { code: "fr", flag: "🇫🇷", name: "France" },
   { code: "es", flag: "🇪🇸", name: "España" },
   { code: "it", flag: "🇮🇹", name: "Italia" },
-  { code: "ro", flag: "🇷🇴", name: "România" },
+  { code: "ro", flag: "🇷🇴", name: "Romania" },
   { code: "pl", flag: "🇵🇱", name: "Polska" },
   { code: "nl", flag: "🇳🇱", name: "Nederland" },
   { code: "be", flag: "🇧🇪", name: "Belgique" },
