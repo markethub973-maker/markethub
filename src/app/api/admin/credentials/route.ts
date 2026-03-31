@@ -35,9 +35,14 @@ export async function GET() {
     },
     anthropic: {
       apiKey: {
-        label: "Anthropic API Key",
+        label: "Anthropic API Key (dev)",
         masked: mask(process.env.ANTHROPIC_API_KEY, 7),
         configured: !!process.env.ANTHROPIC_API_KEY,
+      },
+      apiKeyApp: {
+        label: "Anthropic API Key (app)",
+        masked: mask(process.env.ANTHROPIC_API_KEY_APP, 7),
+        configured: !!process.env.ANTHROPIC_API_KEY_APP,
       },
     },
     stripe: {
@@ -62,6 +67,28 @@ export async function GET() {
         label: "Supabase Anon Key",
         masked: mask(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, 8),
         configured: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      },
+      serviceRoleKey: {
+        label: "Supabase Service Role Key",
+        masked: mask(process.env.SUPABASE_SERVICE_ROLE_KEY, 8),
+        configured: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      },
+    },
+    other: {
+      rapidApi: {
+        label: "RapidAPI Key",
+        masked: mask(process.env.RAPIDAPI_KEY, 8),
+        configured: !!process.env.RAPIDAPI_KEY,
+      },
+      newsApi: {
+        label: "News API Key",
+        masked: mask(process.env.NEWS_API_KEY, 6),
+        configured: !!process.env.NEWS_API_KEY,
+      },
+      resend: {
+        label: "Resend API Key",
+        masked: mask(process.env.RESEND_API_KEY, 6),
+        configured: !!process.env.RESEND_API_KEY,
       },
     },
   };

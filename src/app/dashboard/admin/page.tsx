@@ -68,13 +68,14 @@ export default function AdminPage() {
       const analyticsData = await analyticsRes.json();
       if (analyticsData.success) {
         setAnalyticsData(analyticsData);
+        const subs = analyticsData.summary.active_subscriptions;
         setStats({
           totalUsers: analyticsData.summary.total_users,
           totalRevenue: analyticsData.summary.total_revenue,
           activeSubscriptions:
-            analyticsData.summary.active_subscriptions.lite +
-            analyticsData.summary.active_subscriptions.pro,
-          freeTrials: analyticsData.summary.active_subscriptions.free_test,
+            (subs.starter || 0) + (subs.lite || 0) + (subs.pro || 0) +
+            (subs.business || 0) + (subs.enterprise || 0),
+          freeTrials: subs.free_test || 0,
         });
       }
 

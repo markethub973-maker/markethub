@@ -8,9 +8,10 @@ type CredField = { label: string; masked: string; configured: boolean };
 type Credentials = {
   youtube: { apiKey: CredField };
   instagram: { appId: CredField; appSecret: CredField; redirectUri: CredField };
-  anthropic: { apiKey: CredField };
+  anthropic: { apiKey: CredField; apiKeyApp: CredField };
   stripe: { secretKey: CredField; webhookSecret: CredField };
-  supabase: { url: CredField; anonKey: CredField };
+  supabase: { url: CredField; anonKey: CredField; serviceRoleKey: CredField };
+  other: { rapidApi: CredField; newsApi: CredField; resend: CredField };
 };
 
 const cardStyle = {
@@ -40,6 +41,13 @@ const sections = [
     icon: <Bot className="w-4 h-4" style={{ color: "#D97706" }} />,
     color: "#D97706",
     bg: "rgba(245,158,11,0.08)",
+  },
+  {
+    key: "other",
+    label: "Other APIs",
+    icon: <Key className="w-4 h-4" style={{ color: "#6366F1" }} />,
+    color: "#6366F1",
+    bg: "rgba(99,102,241,0.07)",
   },
   {
     key: "stripe",
