@@ -41,29 +41,16 @@ export async function POST(req: NextRequest) {
   const client = new Anthropic({ apiKey: appApiKey });
   const encoder = new TextEncoder();
 
-  // Start stream — catch errors gracefully
-  let stream: ReturnType<typeof client.messages.stream>;
-  try {
-    stream = client.messages.stream({
-      model: agent.model,
-      max_tokens: agent.maxTokens,
-      system: systemPrompt,
-      messages,
-    });
-    // Trigger first chunk to surface auth/billing errors early
-    await stream.initialMessage();
-  } catch (err: any) {
-    console.error("[Agent API] Stream init error:", err?.status, err?.error?.type, err?.message);
-    const { error } = getAnthropicErrorResponse(err);
-    return new Response(JSON.stringify({ error }), {
-      status: 503,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
   const readable = new ReadableStream({
     async start(controller) {
       try {
+        const stream = client.messages.stream({
+          model: agent.model,
+          max_tokens: agent.maxTokens,
+          system: systemPrompt,
+          messages,
+        });
+
         for await (const chunk of stream) {
           if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
             controller.enqueue(encoder.encode(chunk.delta.text));
@@ -72,7 +59,6 @@ export async function POST(req: NextRequest) {
       } catch (err: any) {
         console.error("[Agent API] Stream error:", err?.status, err?.error?.type, err?.message);
         const { error } = getAnthropicErrorResponse(err);
-        // Send friendly error message into the stream so the UI can display it
         controller.enqueue(encoder.encode(`\n\n${error}`));
       } finally {
         controller.close();
