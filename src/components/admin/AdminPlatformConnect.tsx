@@ -58,10 +58,10 @@ const PLATFORMS: Platform[] = [
     color: "#010101",
     bg: "rgba(0,0,0,0.04)",
     fields: [
-      { key: "access_token", label: "Access Token", placeholder: "act.xxxxxxxx...", secret: true, hint: "TikTok Developer Portal → My Apps → OAuth → Generate Token" },
+      { key: "access_token", label: "Access Token", placeholder: "act.xxxxxxxx...", secret: true, hint: "TikTok Developer Portal → My Apps → OAuth → Generate Token (necesită app aprobată)" },
       { key: "open_id", label: "TikTok Open ID", placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", hint: "Returnat la OAuth callback: open_id" },
     ],
-    guide: "developers.tiktok.com → My Apps → select app → OAuth 2.0 → generate token",
+    guide: "⚠ TikTok trending & search funcționează via RapidAPI (deja configurat). Acest token este necesar doar pentru analytics cont propriu — necesită aplicație aprobată în TikTok Developer Portal (proces de review 2-4 săptămâni).",
     guideUrl: "https://developers.tiktok.com/apps/",
   },
   {
