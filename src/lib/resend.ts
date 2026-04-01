@@ -334,3 +334,49 @@ export async function sendAdminPaymentFailedAlert(params: PaymentFailedAlertPara
     `,
   });
 }
+
+export async function sendEngagementAlertEmail(
+  email: string,
+  name: string,
+  username: string,
+  engRate: number,
+  threshold: number,
+  topPost: { caption?: string; engRate: number } | null,
+) {
+  const color = engRate < 1 ? "#DC2626" : "#D97706";
+  const bg = engRate < 1 ? "rgba(239,68,68,0.06)" : "rgba(245,158,11,0.06)";
+  const border = engRate < 1 ? "rgba(239,68,68,0.2)" : "rgba(245,158,11,0.2)";
+  await getResend().emails.send({
+    from: FROM,
+    to: email,
+    subject: `⚠️ Engagement alert — @${username} dropped to ${engRate.toFixed(1)}%`,
+    html: WRAP(`
+      <div style="background:${bg};border:1px solid ${border};border-radius:10px;padding:12px 16px;margin-bottom:20px;text-align:center;">
+        <span style="color:${color};font-size:13px;font-weight:700;">⚠️ Engagement Rate: ${engRate.toFixed(1)}% (below ${threshold}% threshold)</span>
+      </div>
+      <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Hi ${name},</h2>
+      <p style="color:#78614E;line-height:1.6;margin-bottom:12px;">
+        The engagement rate for <strong>@${username}</strong> has dropped below your alert threshold of <strong>${threshold}%</strong>.
+      </p>
+      <div style="background:#FFF8ED;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;padding:12px 16px;margin-bottom:16px;">
+        <p style="margin:0 0 4px;color:#A8967E;font-size:11px;text-transform:uppercase;font-weight:600;">CURRENT AVERAGE ER (last 10 posts)</p>
+        <p style="margin:0;color:${color};font-size:24px;font-weight:800;">${engRate.toFixed(2)}%</p>
+      </div>
+      ${topPost ? `
+      <p style="color:#78614E;font-size:13px;margin-bottom:6px;"><strong>Best recent post:</strong></p>
+      <div style="background:#FFFCF7;border:1px solid rgba(245,215,160,0.3);border-radius:8px;padding:10px 14px;margin-bottom:16px;">
+        <p style="margin:0 0 4px;color:#292524;font-size:12px;">${topPost.caption ? topPost.caption.slice(0, 120) + (topPost.caption.length > 120 ? "…" : "") : "No caption"}</p>
+        <p style="margin:0;color:#F59E0B;font-size:12px;font-weight:600;">ER: ${topPost.engRate.toFixed(2)}%</p>
+      </div>
+      ` : ""}
+      <p style="color:#78614E;line-height:1.6;margin-bottom:4px;"><strong>Quick fixes to boost engagement:</strong></p>
+      <ul style="padding-left:18px;margin-bottom:16px;">
+        <li style="color:#78614E;margin-bottom:4px;">Post at peak hours (6PM–9PM in your audience's timezone)</li>
+        <li style="color:#78614E;margin-bottom:4px;">Add a clear CTA: "Save this", "Tag someone", "Drop a 🔥"</li>
+        <li style="color:#78614E;margin-bottom:4px;">Use Reels (30% higher reach than static posts)</li>
+        <li style="color:#78614E;margin-bottom:4px;">Reply to all comments within the first hour</li>
+      </ul>
+      ${BTN("https://markethubpromo.com/instagram", "View Instagram Analytics")}
+    `),
+  });
+}
