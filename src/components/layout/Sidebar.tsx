@@ -47,6 +47,7 @@ const navGroups = [
       { href: "/channels", label: "Channels", icon: Users },
       { href: "/instagram", label: "My Instagram", icon: Instagram },
       { href: "/instagram-search", label: "IG Search", icon: Instagram },
+      { href: "/meta-insights", label: "Meta Insights", icon: BarChart3 },
       { href: "/tiktok", label: "TikTok", icon: Zap },
     ],
   },
