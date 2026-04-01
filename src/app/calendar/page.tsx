@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
-  Edit3, Trash2, Check, CalendarDays, LayoutGrid, List
+  Edit3, Trash2, Check, CalendarDays, LayoutGrid, List, Loader2, RefreshCw,
 } from "lucide-react";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -28,8 +28,8 @@ type Post = {
   caption: string;
   platform: string;
   status: string;
-  date: string; // YYYY-MM-DD
-  time: string; // HH:MM
+  date: string;
+  time: string;
   client: string;
   hashtags: string;
 };
@@ -37,14 +37,15 @@ type Post = {
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
-
 function getFirstDayOfWeek(year: number, month: number) {
   const day = new Date(year, month, 1).getDay();
-  return day === 0 ? 6 : day - 1; // Monday = 0
+  return day === 0 ? 6 : day - 1;
 }
 
-const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+const EMPTY_FORM = { title: "", caption: "", platform: "instagram", status: "draft", date: "", time: "12:00", client: "", hashtags: "" };
 
 export default function CalendarPage() {
   const searchParams = useSearchParams();
@@ -52,65 +53,120 @@ export default function CalendarPage() {
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
   const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [view, setView] = useState<"month" | "list">("month");
-  const [filterPlatform, setFilterPlatform] = useState<string>("all");
+  const [filterPlatform, setFilterPlatform] = useState("all");
   const [calSearch, setCalSearch] = useState("");
+  const [form, setForm] = useState(EMPTY_FORM);
 
-  // Handle ?q= from header search → switch to list view and filter
   useEffect(() => {
     const q = searchParams.get("q");
     if (q) { setCalSearch(q.toLowerCase()); setView("list"); }
     else setCalSearch("");
   }, [searchParams]);
 
-  const [form, setForm] = useState<Omit<Post, "id">>({
-    title: "", caption: "", platform: "instagram", status: "draft",
-    date: "", time: "12:00", client: "", hashtags: "",
-  });
+  const monthKey = `${year}-${String(month + 1).padStart(2, "0")}`;
 
-  useEffect(() => {
-    const saved = localStorage.getItem("mh_calendar_posts");
-    if (saved) setPosts(JSON.parse(saved));
-  }, []);
+  const fetchPosts = useCallback(async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/calendar?month=${monthKey}`);
+      if (res.status === 401) { setError("Please log in to view your calendar."); setLoading(false); return; }
+      const data = await res.json();
+      if (data.error) { setError(data.error); } else { setPosts(data.posts || []); }
+    } catch {
+      setError("Failed to load posts");
+    }
+    setLoading(false);
+  }, [monthKey]);
 
-  const savePosts = (p: Post[]) => {
-    setPosts(p);
-    localStorage.setItem("mh_calendar_posts", JSON.stringify(p));
-  };
+  useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
   const openNew = (date?: string) => {
     setEditingPost(null);
     setForm({
-      title: "", caption: "", platform: "instagram", status: "draft",
+      ...EMPTY_FORM,
       date: date || `${year}-${String(month + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`,
-      time: "12:00", client: "", hashtags: "",
     });
     setShowForm(true);
+    setError("");
   };
 
   const openEdit = (post: Post) => {
     setEditingPost(post);
     setForm({ title: post.title, caption: post.caption, platform: post.platform, status: post.status, date: post.date, time: post.time, client: post.client, hashtags: post.hashtags });
     setShowForm(true);
+    setError("");
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.title.trim() || !form.date) return;
-    if (editingPost) {
-      savePosts(posts.map(p => p.id === editingPost.id ? { ...editingPost, ...form } : p));
-    } else {
-      savePosts([...posts, { id: Date.now().toString(), ...form }]);
+    setSaving(true);
+    setError("");
+    try {
+      if (editingPost) {
+        const res = await fetch(`/api/calendar/${editingPost.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        const data = await res.json();
+        if (data.error) { setError(data.error); setSaving(false); return; }
+        setPosts(prev => prev.map(p => p.id === editingPost.id ? data.post : p));
+      } else {
+        const res = await fetch("/api/calendar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        const data = await res.json();
+        if (data.error) { setError(data.error); setSaving(false); return; }
+        // Only add to current list if same month
+        if (form.date.startsWith(monthKey)) {
+          setPosts(prev => [...prev, data.post]);
+        }
+      }
+      setShowForm(false);
+      setEditingPost(null);
+    } catch {
+      setError("Failed to save post");
     }
-    setShowForm(false);
-    setEditingPost(null);
+    setSaving(false);
   };
 
-  const handleDelete = (id: string) => {
-    savePosts(posts.filter(p => p.id !== id));
-    setShowForm(false);
+  const handleDelete = async (id: string) => {
+    setSaving(true);
+    try {
+      const res = await fetch(`/api/calendar/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.error) { setError(data.error); setSaving(false); return; }
+      setPosts(prev => prev.filter(p => p.id !== id));
+      setShowForm(false);
+      setEditingPost(null);
+    } catch {
+      setError("Failed to delete post");
+    }
+    setSaving(false);
+  };
+
+  // Quick status change without opening form
+  const cycleStatus = async (post: Post, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const order: Post["status"][] = ["draft", "scheduled", "published"];
+    const next = order[(order.indexOf(post.status) + 1) % order.length];
+    const res = await fetch(`/api/calendar/${post.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status: next }),
+    });
+    const data = await res.json();
+    if (!data.error) setPosts(prev => prev.map(p => p.id === post.id ? { ...p, status: next } : p));
   };
 
   const prevMonth = () => { if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1); };
@@ -120,14 +176,13 @@ export default function CalendarPage() {
   const firstDay = getFirstDayOfWeek(year, month);
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  const getPostsForDate = (date: string) => {
-    return posts.filter(p => p.date === date && (filterPlatform === "all" || p.platform === filterPlatform));
-  };
+  const getPostsForDate = (date: string) =>
+    posts.filter(p => p.date === date && (filterPlatform === "all" || p.platform === filterPlatform));
 
   const filteredPosts = filterPlatform === "all" ? posts : posts.filter(p => p.platform === filterPlatform);
-  const monthPosts = filteredPosts
-    .filter(p => p.date.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`))
-    .filter(p => !calSearch || p.title.toLowerCase().includes(calSearch) || p.caption.toLowerCase().includes(calSearch));
+  const monthPosts = filteredPosts.filter(p =>
+    !calSearch || p.title.toLowerCase().includes(calSearch) || p.caption.toLowerCase().includes(calSearch)
+  );
 
   const stats = {
     total: monthPosts.length,
@@ -143,7 +198,7 @@ export default function CalendarPage() {
 
         {/* Stats + Actions */}
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {[
               { label: `${stats.total} posts`, color: "#292524" },
               { label: `${stats.draft} draft`, color: "#A8967E" },
@@ -156,20 +211,20 @@ export default function CalendarPage() {
               </span>
             ))}
           </div>
-          <div className="ml-auto flex gap-2">
-            {/* Platform filter */}
+          <div className="ml-auto flex gap-2 items-center">
+            <button type="button" onClick={fetchPosts} disabled={loading}
+              className="p-1.5 rounded-lg" style={{ color: "#A8967E" }} title="Refresh">
+              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            </button>
             <select value={filterPlatform} onChange={e => setFilterPlatform(e.target.value)}
+              aria-label="Filter by platform"
               className="px-2 py-1.5 text-xs rounded-lg focus:outline-none"
               style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }}>
               <option value="all">All platforms</option>
               {PLATFORMS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
             </select>
-            {/* View toggle */}
             <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid rgba(245,215,160,0.3)" }}>
-              {[
-                { key: "month" as const, icon: <LayoutGrid className="w-3.5 h-3.5" /> },
-                { key: "list" as const, icon: <List className="w-3.5 h-3.5" /> },
-              ].map(v => (
+              {([{ key: "month", icon: <LayoutGrid className="w-3.5 h-3.5" /> }, { key: "list", icon: <List className="w-3.5 h-3.5" /> }] as const).map(v => (
                 <button key={v.key} type="button" onClick={() => setView(v.key)}
                   className="px-2.5 py-1.5"
                   style={{ backgroundColor: view === v.key ? "rgba(245,158,11,0.15)" : "#FFF8F0", color: view === v.key ? "#D97706" : "#A8967E" }}>
@@ -185,10 +240,23 @@ export default function CalendarPage() {
           </div>
         </div>
 
+        {/* Error / auth notice */}
+        {error && !showForm && (
+          <div className="rounded-xl px-4 py-3 text-sm" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#DC2626", border: "1px solid rgba(239,68,68,0.2)" }}>
+            {error}
+          </div>
+        )}
+
+        {/* Loading skeleton */}
+        {loading && (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} />
+          </div>
+        )}
+
         {/* Month View */}
-        {view === "month" && (
+        {!loading && view === "month" && (
           <div className="rounded-xl overflow-hidden" style={cardStyle}>
-            {/* Month header */}
             <div className="flex items-center justify-between px-5 py-3" style={{ borderBottom: "1px solid rgba(245,215,160,0.15)" }}>
               <button type="button" onClick={prevMonth} className="p-1 rounded-lg" style={{ color: "#78614E" }}>
                 <ChevronLeft className="w-5 h-5" />
@@ -198,18 +266,16 @@ export default function CalendarPage() {
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
-            {/* Day headers */}
             <div className="grid grid-cols-7">
               {DAYS.map(d => (
-                <div key={d} className="px-2 py-2 text-center text-xs font-semibold" style={{ color: "#A8967E", borderBottom: "1px solid rgba(245,215,160,0.1)" }}>
-                  {d}
-                </div>
+                <div key={d} className="px-2 py-2 text-center text-xs font-semibold"
+                  style={{ color: "#A8967E", borderBottom: "1px solid rgba(245,215,160,0.1)" }}>{d}</div>
               ))}
             </div>
-            {/* Days grid */}
             <div className="grid grid-cols-7">
               {Array.from({ length: firstDay }).map((_, i) => (
-                <div key={`empty-${i}`} className="min-h-24 p-1" style={{ borderBottom: "1px solid rgba(245,215,160,0.06)", borderRight: "1px solid rgba(245,215,160,0.06)" }} />
+                <div key={`e-${i}`} className="min-h-24 p-1"
+                  style={{ borderBottom: "1px solid rgba(245,215,160,0.06)", borderRight: "1px solid rgba(245,215,160,0.06)" }} />
               ))}
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
@@ -217,10 +283,8 @@ export default function CalendarPage() {
                 const dayPosts = getPostsForDate(dateStr);
                 const isToday = dateStr === today;
                 const isSelected = dateStr === selectedDate;
-
                 return (
-                  <div key={day}
-                    className="min-h-24 p-1 cursor-pointer transition-colors"
+                  <div key={day} className="min-h-24 p-1 cursor-pointer transition-colors"
                     style={{
                       borderBottom: "1px solid rgba(245,215,160,0.06)",
                       borderRight: "1px solid rgba(245,215,160,0.06)",
@@ -228,16 +292,15 @@ export default function CalendarPage() {
                     }}
                     onClick={() => setSelectedDate(dateStr)}>
                     <div className="flex items-center justify-between mb-1">
-                      <span className={`text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full ${isToday ? "text-white" : ""}`}
+                      <span className="text-xs font-semibold w-6 h-6 flex items-center justify-center rounded-full"
                         style={{ backgroundColor: isToday ? "#F59E0B" : "transparent", color: isToday ? "white" : "#292524" }}>
                         {day}
                       </span>
-                      {dayPosts.length === 0 && (
-                        <button type="button" onClick={e => { e.stopPropagation(); openNew(dateStr); }}
-                          className="opacity-0 hover:opacity-100 p-0.5 rounded" style={{ color: "#C4AA8A" }}>
-                          <Plus className="w-3 h-3" />
-                        </button>
-                      )}
+                      <button type="button" onClick={e => { e.stopPropagation(); openNew(dateStr); }}
+                        className="opacity-0 hover:opacity-100 p-0.5 rounded" style={{ color: "#C4AA8A" }}
+                        title="Add post">
+                        <Plus className="w-3 h-3" />
+                      </button>
                     </div>
                     <div className="space-y-0.5">
                       {dayPosts.slice(0, 3).map(post => {
@@ -264,7 +327,7 @@ export default function CalendarPage() {
         )}
 
         {/* List View */}
-        {view === "list" && (
+        {!loading && view === "list" && (
           <div className="space-y-2">
             {monthPosts.length === 0 ? (
               <div className="rounded-xl p-8 text-center" style={cardStyle}>
@@ -276,7 +339,7 @@ export default function CalendarPage() {
                 </button>
               </div>
             ) : (
-              monthPosts
+              [...monthPosts]
                 .sort((a, b) => a.date.localeCompare(b.date) || a.time.localeCompare(b.time))
                 .map(post => {
                   const plat = PLATFORMS.find(p => p.id === post.platform);
@@ -290,14 +353,20 @@ export default function CalendarPage() {
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="text-xs" style={{ color: plat?.color }}>{plat?.label}</span>
                           <span className="text-xs" style={{ color: "#C4AA8A" }}>{post.date}</span>
-                          <span className="text-xs flex items-center gap-0.5" style={{ color: "#A8967E" }}><Clock className="w-3 h-3" />{post.time}</span>
+                          <span className="text-xs flex items-center gap-0.5" style={{ color: "#A8967E" }}>
+                            <Clock className="w-3 h-3" />{post.time}
+                          </span>
                           {post.client && <span className="text-xs" style={{ color: "#A8967E" }}>| {post.client}</span>}
                         </div>
                       </div>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                      {/* Click badge to cycle status */}
+                      <button type="button" onClick={e => cycleStatus(post, e)}
+                        title="Click to change status"
+                        className="text-xs font-semibold px-2 py-0.5 rounded-full transition-opacity hover:opacity-70"
                         style={{ backgroundColor: `${status?.color}15`, color: status?.color }}>
                         {status?.label}
-                      </span>
+                      </button>
+                      <Edit3 className="w-3.5 h-3.5 shrink-0" style={{ color: "#C4AA8A" }} />
                     </div>
                   );
                 })
@@ -307,13 +376,22 @@ export default function CalendarPage() {
 
         {/* Post Form Modal */}
         {showForm && (
-          <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setShowForm(false)}>
-            <div className="w-full max-w-lg rounded-xl p-6 space-y-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}
+          <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
+            onClick={() => { setShowForm(false); setError(""); }}>
+            <div className="w-full max-w-lg rounded-xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
                 <h3 className="font-bold" style={{ color: "#292524" }}>{editingPost ? "Edit post" : "New post"}</h3>
-                <button type="button" onClick={() => setShowForm(false)} style={{ color: "#A8967E" }}><X className="w-5 h-5" /></button>
+                <button type="button" onClick={() => { setShowForm(false); setError(""); }} style={{ color: "#A8967E" }}>
+                  <X className="w-5 h-5" />
+                </button>
               </div>
+
+              {error && (
+                <p className="text-xs font-semibold px-3 py-2 rounded-lg"
+                  style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#DC2626" }}>{error}</p>
+              )}
 
               <div className="space-y-3">
                 <div>
@@ -341,6 +419,7 @@ export default function CalendarPage() {
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Platform</label>
                     <select value={form.platform} onChange={e => setForm(f => ({ ...f, platform: e.target.value }))}
+                      aria-label="Platform"
                       className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
                       style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }}>
                       {PLATFORMS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
@@ -349,6 +428,7 @@ export default function CalendarPage() {
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Status</label>
                     <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                      aria-label="Status"
                       className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
                       style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }}>
                       {STATUSES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
@@ -366,8 +446,7 @@ export default function CalendarPage() {
                   <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Caption</label>
                   <textarea placeholder="Post text..." value={form.caption}
                     onChange={e => setForm(f => ({ ...f, caption: e.target.value }))}
-                    className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none"
-                    rows={3}
+                    className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none" rows={3}
                     style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
                 </div>
                 <div>
@@ -381,23 +460,51 @@ export default function CalendarPage() {
 
               <div className="flex items-center gap-3 pt-2">
                 <button type="button" onClick={handleSave}
-                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-bold"
+                  disabled={saving || !form.title.trim() || !form.date}
+                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-bold disabled:opacity-50"
                   style={{ backgroundColor: "#F59E0B", color: "white" }}>
-                  <Check className="w-4 h-4" />{editingPost ? "Save" : "Add"}
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  {editingPost ? "Save" : "Add"}
                 </button>
                 {editingPost && (
-                  <button type="button" onClick={() => handleDelete(editingPost.id)}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold"
+                  <button type="button" onClick={() => handleDelete(editingPost.id)} disabled={saving}
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50"
                     style={{ color: "#EF4444", backgroundColor: "rgba(239,68,68,0.08)" }}>
                     <Trash2 className="w-4 h-4" />Delete
                   </button>
                 )}
-                <button type="button" onClick={() => setShowForm(false)}
+                <button type="button" onClick={() => { setShowForm(false); setError(""); }}
                   className="px-4 py-2.5 rounded-lg text-sm font-semibold" style={{ color: "#A8967E" }}>
                   Cancel
                 </button>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* SQL migration notice for first-time setup */}
+        {!loading && !error && posts.length === 0 && (
+          <div className="rounded-xl px-4 py-3 text-xs" style={{ backgroundColor: "rgba(99,102,241,0.06)", color: "#6366F1", border: "1px solid rgba(99,102,241,0.15)" }}>
+            <strong>First time?</strong> Run this SQL in Supabase to create the posts table:
+            <code className="block mt-1 text-[11px] bg-white/50 rounded p-2 font-mono" style={{ color: "#292524" }}>
+              {`CREATE TABLE IF NOT EXISTS scheduled_posts (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  title text NOT NULL,
+  caption text DEFAULT '',
+  platform text DEFAULT 'instagram',
+  status text DEFAULT 'draft',
+  date date NOT NULL,
+  time time DEFAULT '12:00',
+  client text DEFAULT '',
+  hashtags text DEFAULT '',
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+ALTER TABLE scheduled_posts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users manage own posts" ON scheduled_posts
+  FOR ALL USING (auth.uid() = user_id);`}
+            </code>
           </div>
         )}
       </div>
