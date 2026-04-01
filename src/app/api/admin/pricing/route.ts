@@ -13,24 +13,21 @@ async function requireAdmin() {
   return data?.is_admin ? user : null;
 }
 
+async function getPrices(): Promise<Record<string, number>> {
+  const supabase = createServiceClient();
+  const { data } = await supabase
+    .from("admin_platform_config")
+    .select("extra_data")
+    .eq("platform", "plan_prices")
+    .single();
+  return (data?.extra_data as Record<string, number>) ?? {};
+}
+
 export async function GET() {
   const user = await requireAdmin();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const supabase = createServiceClient();
-
-  // Read saved prices from Supabase
-  const { data, error } = await supabase
-    .from("admin_plan_config")
-    .select("plan_id, price");
-
-  const tableExists = !error || !error.message?.includes("does not exist");
-  const saved: Record<string, number> = {};
-  if (!error && data) {
-    for (const row of data) {
-      if (row.price !== null && row.price !== undefined) saved[row.plan_id] = row.price;
-    }
-  }
+  const saved = await getPrices();
 
   const plans = PLAN_IDS.map(id => ({
     id,
@@ -39,7 +36,7 @@ export async function GET() {
     period: id === "free_test" ? "7_days" : "monthly",
   }));
 
-  return NextResponse.json({ success: true, plans, db_connected: tableExists });
+  return NextResponse.json({ success: true, plans, db_connected: true });
 }
 
 export async function POST(request: Request) {
@@ -57,13 +54,15 @@ export async function POST(request: Request) {
   if (price < 0)
     return NextResponse.json({ error: "Price cannot be negative" }, { status: 400 });
 
+  // Read current prices, merge update, write back
+  const current = await getPrices();
+  const updated = { ...current, [plan]: price };
+
   const supabase = createServiceClient();
   const { error } = await supabase
-    .from("admin_plan_config")
-    .upsert(
-      { plan_id: plan, price, updated_at: new Date().toISOString() },
-      { onConflict: "plan_id" }
-    );
+    .from("admin_platform_config")
+    .update({ extra_data: updated, updated_at: new Date().toISOString() })
+    .eq("platform", "plan_prices");
 
   if (error) return NextResponse.json({ error: error.message, db_error: true }, { status: 400 });
 
