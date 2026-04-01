@@ -12,6 +12,7 @@ import AdminBuyerPersona from "@/components/admin/AdminBuyerPersona";
 import AdminFeatureProgress from "@/components/admin/AdminFeatureProgress";
 import AdminCredentials from "@/components/admin/AdminCredentials";
 import AdminPlatformConnect from "@/components/admin/AdminPlatformConnect";
+import AdminAnthropicUsage from "@/components/admin/AdminAnthropicUsage";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -186,6 +187,9 @@ export default function AdminPage() {
             icon="🎁"
           />
         </div>
+
+        {/* Anthropic API Usage */}
+        <AdminAnthropicUsage />
 
         {/* Analytics Section */}
         <div
