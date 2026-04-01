@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { resolveIGAuth } from "@/lib/adminPlatformToken";
 
 /**
  * Facebook Ad Account Insights via Meta Graph API
@@ -10,13 +11,14 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+  const auth = await resolveIGAuth();
   const { data: profile } = await supabase
     .from("profiles")
     .select("instagram_access_token")
     .eq("id", user.id)
     .single();
 
-  const token = profile?.instagram_access_token || process.env.META_ACCESS_TOKEN;
+  const token = auth?.token || profile?.instagram_access_token || process.env.META_ACCESS_TOKEN;
   if (!token) return NextResponse.json({ error: "Meta not connected" }, { status: 401 });
 
   const preset = req.nextUrl.searchParams.get("preset") || "last_30d";

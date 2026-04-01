@@ -3,9 +3,10 @@ import { resolveIGAuth } from "@/lib/adminPlatformToken";
 
 export async function GET() {
   const auth = await resolveIGAuth();
-  if (!auth) return NextResponse.json({ error: "Instagram not connected" }, { status: 401 });
+  const token = auth?.token || process.env.INSTAGRAM_ACCESS_TOKEN;
+  const igId = auth?.igId || process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID || process.env.INSTAGRAM_ACCOUNT_ID;
 
-  const { token, igId } = auth;
+  if (!token || !igId) return NextResponse.json({ error: "Instagram not connected" }, { status: 401 });
 
   try {
     // Fetch active stories

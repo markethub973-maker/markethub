@@ -1,24 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { resolveIGAuth } from "@/lib/adminPlatformToken";
 
 /**
  * Instagram Reels Insights via Meta Graph API
  * Returns plays, reach, shares, saves, comments for user's Reels
  */
 export async function GET(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await resolveIGAuth();
 
-  // Get user's stored Instagram access token from DB
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("instagram_access_token, instagram_account_id")
-    .eq("id", user.id)
-    .single();
-
-  const accessToken = profile?.instagram_access_token || process.env.INSTAGRAM_ACCESS_TOKEN;
-  const accountId = profile?.instagram_account_id || process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
+  const accessToken = auth?.token || process.env.INSTAGRAM_ACCESS_TOKEN;
+  const accountId = auth?.igId || process.env.INSTAGRAM_BUSINESS_ACCOUNT_ID;
 
   if (!accessToken || !accountId) {
     return NextResponse.json({
