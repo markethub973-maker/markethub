@@ -38,18 +38,20 @@ export async function GET() {
     }
     const media = await mediaRes.json();
 
-    const insightsRes = await fetch(
-      `https://graph.facebook.com/v25.0/${igId}/insights?metric=impressions,reach,profile_views,follower_count&period=day&access_token=${token}`
-    );
-    if (!insightsRes.ok) {
-      return NextResponse.json({ error: "Failed to fetch Instagram insights" }, { status: 502 });
-    }
-    const insights = await insightsRes.json();
+    // Try insights — failures are non-fatal (token may lack permission or metric unavailable)
+    let insightsData: unknown[] = [];
+    try {
+      const insightsRes = await fetch(
+        `https://graph.facebook.com/v25.0/${igId}/insights?metric=impressions,reach,profile_views&period=day&access_token=${token}`
+      );
+      const insights = await insightsRes.json();
+      if (!insights.error) insightsData = insights.data || [];
+    } catch { /* ignore */ }
 
     return NextResponse.json({
       profile,
       media: media.data || [],
-      insights: insights.data || [],
+      insights: insightsData,
     });
   } catch (error) {
     console.error("Instagram API error:", error);
