@@ -113,7 +113,137 @@ export default function MonthlyReportPage() {
     ]);
   };
 
-  const printReport = () => window.print();
+  const printReport = async () => {
+    if (!result) return;
+    const { pdf, Document, Page, Text, View, StyleSheet } = await import("@react-pdf/renderer");
+    const React = (await import("react")).default;
+
+    const verdict = VERDICT_STYLE[result.performance_verdict] ?? VERDICT_STYLE.average;
+    const verdictColors: Record<string, string> = {
+      excellent: "#16A34A", good: "#059669", average: "#D97706", below_average: "#EA580C", poor: "#DC2626",
+    };
+    const verdictColor = verdictColors[result.performance_verdict] ?? "#D97706";
+
+    const styles = StyleSheet.create({
+      page: { padding: 40, fontFamily: "Helvetica", backgroundColor: "#FFFCF7" },
+      header: { backgroundColor: "#292524", borderRadius: 8, padding: 20, marginBottom: 16 },
+      headerTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "bold", marginBottom: 4 },
+      headerSub: { color: "#C4AA8A", fontSize: 10 },
+      sectionTitle: { fontSize: 11, fontWeight: "bold", color: "#292524", marginBottom: 6 },
+      card: { backgroundColor: "#FFFFFF", borderRadius: 6, padding: 12, marginBottom: 10, border: "1 solid #E8D9C5" },
+      verdict: { borderRadius: 6, padding: 12, marginBottom: 10 },
+      label: { fontSize: 8, color: "#78614E", marginBottom: 2, textTransform: "uppercase" },
+      body: { fontSize: 10, color: "#292524", lineHeight: 1.5 },
+      small: { fontSize: 9, color: "#78614E", lineHeight: 1.5 },
+      kpiRow: { flexDirection: "row", alignItems: "flex-start", padding: 6, backgroundColor: "#FFFCF7", borderRadius: 4, marginBottom: 4 },
+      kpiTrend: { fontSize: 12, fontWeight: "bold", width: 14, marginRight: 8 },
+      kpiMeta: { fontSize: 8, color: "#78614E", marginTop: 1 },
+      bullet: { flexDirection: "row", marginBottom: 3 },
+      bulletDot: { fontSize: 10, marginRight: 5 },
+      recRow: { flexDirection: "row", marginBottom: 8, padding: 8, backgroundColor: "#FFFCF7", borderRadius: 4, border: "1 solid #F5D7A0" },
+      badge: { width: 20, height: 20, borderRadius: 10, backgroundColor: "#F59E0B", alignItems: "center", justifyContent: "center", marginRight: 8 },
+      badgeText: { color: "#FFFFFF", fontSize: 9, fontWeight: "bold" },
+      forecast: { backgroundColor: "#292524", borderRadius: 6, padding: 14 },
+      forecastTitle: { color: "#F5D7A0", fontSize: 11, fontWeight: "bold", marginBottom: 4 },
+      forecastBody: { color: "#C4AA8A", fontSize: 10, lineHeight: 1.5 },
+      footer: { marginTop: 16, borderTop: "1 solid #E8D9C5", paddingTop: 8 },
+      footerText: { fontSize: 8, color: "#C4AA8A", textAlign: "right" },
+    });
+
+    const trendColor: Record<string, string> = { up: "#16A34A", down: "#DC2626", stable: "#78614E" };
+
+    const doc = React.createElement(Document, null,
+      React.createElement(Page, { size: "A4", style: styles.page },
+        // Header
+        React.createElement(View, { style: styles.header },
+          React.createElement(Text, { style: styles.headerTitle }, `${metrics.platform} · ${metrics.period}`),
+          React.createElement(Text, { style: styles.headerSub }, "Monthly Performance Report · MarketHub Pro")
+        ),
+        // Verdict
+        React.createElement(View, { style: { ...styles.verdict, backgroundColor: "#FFFCF7", border: `1 solid ${verdictColor}40` } },
+          React.createElement(Text, { style: { fontSize: 11, fontWeight: "bold", color: verdictColor, marginBottom: 4 } },
+            `${verdict.label} Performance`
+          ),
+          React.createElement(Text, { style: styles.body }, result.executive_summary)
+        ),
+        // KPIs
+        result.kpi_analysis?.length > 0 && React.createElement(View, { style: styles.card },
+          React.createElement(Text, { style: styles.sectionTitle }, "KPI Analysis"),
+          ...result.kpi_analysis.map((kpi, i) =>
+            React.createElement(View, { key: i, style: styles.kpiRow },
+              React.createElement(Text, { style: { ...styles.kpiTrend, color: trendColor[kpi.trend] ?? "#78614E" } },
+                kpi.trend === "up" ? "↑" : kpi.trend === "down" ? "↓" : "→"
+              ),
+              React.createElement(View, { style: { flex: 1 } },
+                React.createElement(View, { style: { flexDirection: "row", gap: 8 } },
+                  React.createElement(Text, { style: { fontSize: 9, fontWeight: "bold", color: "#292524" } }, kpi.metric),
+                  React.createElement(Text, { style: { fontSize: 9, color: "#F59E0B", fontWeight: "bold" } }, kpi.value)
+                ),
+                React.createElement(Text, { style: styles.kpiMeta }, kpi.interpretation)
+              )
+            )
+          )
+        ),
+        // Wins & Concerns
+        React.createElement(View, { style: { flexDirection: "row", gap: 8, marginBottom: 10 } },
+          result.wins?.length > 0 && React.createElement(View, { style: { ...styles.card, flex: 1, marginBottom: 0 } },
+            React.createElement(Text, { style: { ...styles.sectionTitle, color: "#16A34A" } }, "Wins"),
+            ...result.wins.map((w, i) =>
+              React.createElement(View, { key: i, style: styles.bullet },
+                React.createElement(Text, { style: { ...styles.bulletDot, color: "#16A34A" } }, "•"),
+                React.createElement(Text, { style: styles.small }, w)
+              )
+            )
+          ),
+          result.concerns?.length > 0 && React.createElement(View, { style: { ...styles.card, flex: 1, marginBottom: 0 } },
+            React.createElement(Text, { style: { ...styles.sectionTitle, color: "#DC2626" } }, "Concerns"),
+            ...result.concerns.map((c, i) =>
+              React.createElement(View, { key: i, style: styles.bullet },
+                React.createElement(Text, { style: { ...styles.bulletDot, color: "#DC2626" } }, "•"),
+                React.createElement(Text, { style: styles.small }, c)
+              )
+            )
+          )
+        ),
+        // Recommendations
+        result.recommendations?.length > 0 && React.createElement(View, { style: styles.card },
+          React.createElement(Text, { style: styles.sectionTitle }, "Strategic Recommendations"),
+          ...result.recommendations.map((r, i) =>
+            React.createElement(View, { key: i, style: styles.recRow },
+              React.createElement(View, { style: styles.badge },
+                React.createElement(Text, { style: styles.badgeText }, String(r.priority))
+              ),
+              React.createElement(View, { style: { flex: 1 } },
+                React.createElement(Text, { style: { fontSize: 10, fontWeight: "bold", color: "#292524", marginBottom: 2 } }, r.action),
+                React.createElement(Text, { style: { fontSize: 8, color: "#78614E" } },
+                  `Impact: ${r.expected_impact} · Timeline: ${r.timeframe}`
+                )
+              )
+            )
+          )
+        ),
+        // Forecast
+        result.next_month_forecast && React.createElement(View, { style: styles.forecast },
+          React.createElement(Text, { style: styles.forecastTitle }, "Next Month Forecast"),
+          React.createElement(Text, { style: styles.forecastBody }, result.next_month_forecast)
+        ),
+        // Footer
+        React.createElement(View, { style: styles.footer },
+          React.createElement(Text, { style: styles.footerText },
+            `Generated: ${new Date(result.generated_at).toLocaleString()} · MarketHub Pro`
+          )
+        )
+      )
+    );
+
+    const blob = await pdf(doc).toBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `monthly-report-${metrics.platform}-${metrics.period.replace(/\s/g, "-")}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div>

@@ -7,6 +7,7 @@ interface Client {
   igUsername: string;
   tiktokUsername: string;
   notes: string;
+  email?: string;
 }
 
 interface DigestResult {
@@ -87,22 +88,40 @@ export default function WeeklyDigestPanel({ clients }: Props) {
 
   const sendDigest = async () => {
     if (!digest) return;
-    const recipients = [
-      ...selectedClients.map(id => clients.find(c => c.id === id)?.name).filter(Boolean),
-      ...(customEmail ? [customEmail] : []),
-    ];
+    // Collect email addresses: from clients with email field + manual customEmail (comma-separated)
+    const clientEmails = selectedClients
+      .map(id => clients.find(c => c.id === id)?.email)
+      .filter((e): e is string => !!e && e.includes("@"));
+    const manualEmails = customEmail
+      .split(",")
+      .map(e => e.trim())
+      .filter(e => e.includes("@"));
+    const recipients = [...new Set([...clientEmails, ...manualEmails])];
+
     if (!recipients.length) {
-      setError("Select at least one client or enter an email address");
+      setError("Enter at least one valid email address to send the digest");
       return;
     }
     setSending(true);
     setError(null);
-    // In production: call /api/email/send-digest with recipients + digest content
-    // For now: simulate send
-    await new Promise(r => setTimeout(r, 1200));
-    setSending(false);
-    setSent(true);
-    setTimeout(() => setSent(false), 3000);
+    try {
+      const res = await fetch("/api/email/send-digest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ recipients, digest, weekLabel: week }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Send failed");
+        return;
+      }
+      setSent(true);
+      setTimeout(() => setSent(false), 5000);
+    } catch {
+      setError("Failed to send — check your connection");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
