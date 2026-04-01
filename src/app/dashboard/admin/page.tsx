@@ -14,6 +14,9 @@ import AdminCredentials from "@/components/admin/AdminCredentials";
 import AdminPlatformConnect from "@/components/admin/AdminPlatformConnect";
 import AdminAnthropicUsage from "@/components/admin/AdminAnthropicUsage";
 import AdminTokenStatus from "@/components/admin/AdminTokenStatus";
+import AdminTokensPanel from "@/components/admin/AdminTokensPanel";
+import AdminFeatureFlagsPanel from "@/components/admin/AdminFeatureFlagsPanel";
+import AdminDiscountCodesPanel from "@/components/admin/AdminDiscountCodesPanel";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -243,6 +246,15 @@ export default function AdminPage() {
 
         {/* Pricing Management */}
         <AdminPricingPanel />
+
+        {/* Token Allocation per Plan */}
+        <AdminTokensPanel />
+
+        {/* Feature Flags per Plan */}
+        <AdminFeatureFlagsPanel />
+
+        {/* Discount Codes */}
+        <AdminDiscountCodesPanel />
       </div>
     </div>
   );
