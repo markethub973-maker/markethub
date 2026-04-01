@@ -649,6 +649,183 @@ const TABS = [
 
 export default function MetaInsightsPage() {
   const [tab, setTab] = useState("stories");
+  const [exporting, setExporting] = useState(false);
+
+  const exportPDF = async () => {
+    setExporting(true);
+    try {
+      const [storiesRes, reelsRes, crossRes] = await Promise.allSettled([
+        fetch("/api/instagram/stories").then(r => r.json()),
+        fetch("/api/instagram/reels-insights").then(r => r.json()),
+        fetch("/api/meta/cross-platform").then(r => r.json()),
+      ]);
+
+      const stories = storiesRes.status === "fulfilled" ? storiesRes.value : null;
+      const reels = reelsRes.status === "fulfilled" ? reelsRes.value : null;
+      const cross = crossRes.status === "fulfilled" ? crossRes.value : null;
+
+      const { pdf, Document, Page, Text, View, StyleSheet } = await import("@react-pdf/renderer");
+      const React = (await import("react")).default;
+
+      const S = StyleSheet.create({
+        page: { padding: 36, fontFamily: "Helvetica", backgroundColor: "#FFFCF7", fontSize: 10 },
+        header: { backgroundColor: "#292524", borderRadius: 8, padding: 18, marginBottom: 14 },
+        headerTitle: { color: "#FFFFFF", fontSize: 16, fontWeight: "bold", marginBottom: 3 },
+        headerSub: { color: "#C4AA8A", fontSize: 9 },
+        section: { marginBottom: 12 },
+        sectionTitle: { fontSize: 11, fontWeight: "bold", color: "#292524", marginBottom: 6, paddingBottom: 4, borderBottom: "1 solid #E8D9C5" },
+        card: { backgroundColor: "#FFFFFF", borderRadius: 6, padding: 10, marginBottom: 6, border: "1 solid #E8D9C5" },
+        row: { flexDirection: "row", gap: 8, marginBottom: 6 },
+        statBox: { flex: 1, backgroundColor: "#FFFCF7", borderRadius: 4, padding: 8, border: "1 solid #E8D9C5", alignItems: "center" },
+        statValue: { fontSize: 14, fontWeight: "bold", color: "#F59E0B", marginBottom: 2 },
+        statLabel: { fontSize: 7, color: "#78614E", textAlign: "center" },
+        label: { fontSize: 8, color: "#78614E", marginBottom: 1 },
+        body: { fontSize: 9, color: "#292524", lineHeight: 1.5 },
+        small: { fontSize: 8, color: "#78614E", lineHeight: 1.4 },
+        tag: { backgroundColor: "#F5E8D4", borderRadius: 3, paddingHorizontal: 5, paddingVertical: 1 },
+        footer: { marginTop: 16, borderTop: "1 solid #E8D9C5", paddingTop: 8 },
+        footerText: { fontSize: 8, color: "#C4AA8A", textAlign: "right" },
+      });
+
+      const fmtN = (n: number) => {
+        if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+        if (n >= 1_000) return (n / 1_000).toFixed(1) + "K";
+        return String(n);
+      };
+
+      const now = new Date();
+      const dateLabel = now.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+
+      const doc = React.createElement(Document, null,
+        React.createElement(Page, { size: "A4", style: S.page },
+          // Header
+          React.createElement(View, { style: S.header },
+            React.createElement(Text, { style: S.headerTitle }, "Meta Insights Report"),
+            React.createElement(Text, { style: S.headerSub }, `Instagram & Facebook Analytics · Generated ${dateLabel} · MarketHub Pro`)
+          ),
+
+          // Stories section
+          React.createElement(View, { style: S.section },
+            React.createElement(Text, { style: S.sectionTitle }, "Stories Analytics"),
+            stories?.summary ? React.createElement(View, { style: S.row },
+              React.createElement(View, { style: S.statBox },
+                React.createElement(Text, { style: S.statValue }, String(stories.summary.total)),
+                React.createElement(Text, { style: S.statLabel }, "Active Stories")
+              ),
+              React.createElement(View, { style: S.statBox },
+                React.createElement(Text, { style: S.statValue }, fmtN(stories.summary.total_reach)),
+                React.createElement(Text, { style: S.statLabel }, "Total Reach")
+              ),
+              React.createElement(View, { style: S.statBox },
+                React.createElement(Text, { style: { ...S.statValue, color: "#DC2626" } }, `${stories.summary.avg_exit_rate}%`),
+                React.createElement(Text, { style: S.statLabel }, "Avg Exit Rate")
+              ),
+              React.createElement(View, { style: S.statBox },
+                React.createElement(Text, { style: { ...S.statValue, color: "#16A34A" } }, `${stories.summary.avg_reply_rate}%`),
+                React.createElement(Text, { style: S.statLabel }, "Avg Reply Rate")
+              ),
+              React.createElement(View, { style: S.statBox },
+                React.createElement(Text, { style: { ...S.statValue, color: "#8B5CF6" } }, fmtN(stories.summary.total_replies)),
+                React.createElement(Text, { style: S.statLabel }, "Total Replies")
+              )
+            ) : React.createElement(Text, { style: S.small }, stories?.message || "No active stories data available.")
+          ),
+
+          // Reels section
+          React.createElement(View, { style: S.section },
+            React.createElement(Text, { style: S.sectionTitle }, "Reels Insights"),
+            reels?.reels?.length > 0 ? React.createElement(View, null,
+              React.createElement(View, { style: S.row },
+                React.createElement(View, { style: S.statBox },
+                  React.createElement(Text, { style: S.statValue }, String(reels.total || reels.reels.length)),
+                  React.createElement(Text, { style: S.statLabel }, "Total Reels")
+                ),
+                React.createElement(View, { style: S.statBox },
+                  React.createElement(Text, { style: { ...S.statValue, color: "#8B5CF6" } }, fmtN(reels.avg_plays || 0)),
+                  React.createElement(Text, { style: S.statLabel }, "Avg Plays")
+                ),
+                React.createElement(View, { style: S.statBox },
+                  React.createElement(Text, { style: { ...S.statValue, color: "#3B82F6" } }, fmtN(reels.avg_reach || 0)),
+                  React.createElement(Text, { style: S.statLabel }, "Avg Reach")
+                ),
+                React.createElement(View, { style: S.statBox },
+                  React.createElement(Text, { style: { ...S.statValue, color: "#16A34A" } },
+                    fmtN(reels.reels.reduce((s: number, r: { shares: number }) => s + r.shares, 0))
+                  ),
+                  React.createElement(Text, { style: S.statLabel }, "Total Shares")
+                )
+              ),
+              // Top 3 reels
+              React.createElement(Text, { style: { ...S.label, marginBottom: 4 } }, "TOP REELS"),
+              ...reels.reels.slice(0, 3).map((r: { caption: string; plays: number; reach: number; engagement_rate: number }, i: number) =>
+                React.createElement(View, { key: i, style: { ...S.card, flexDirection: "row", gap: 8, alignItems: "flex-start" } },
+                  React.createElement(Text, { style: { fontSize: 9, fontWeight: "bold", color: "#C4AA8A", width: 14 } }, `#${i + 1}`),
+                  React.createElement(View, { style: { flex: 1 } },
+                    React.createElement(Text, { style: { fontSize: 9, color: "#292524", marginBottom: 3 } },
+                      r.caption ? r.caption.substring(0, 80) + (r.caption.length > 80 ? "..." : "") : "No caption"
+                    ),
+                    React.createElement(View, { style: { flexDirection: "row", gap: 12 } },
+                      React.createElement(Text, { style: { fontSize: 8, color: "#8B5CF6", fontWeight: "bold" } }, `${fmtN(r.plays)} plays`),
+                      React.createElement(Text, { style: { fontSize: 8, color: "#3B82F6" } }, `${fmtN(r.reach)} reach`),
+                      React.createElement(Text, { style: { fontSize: 8, color: "#F59E0B" } }, `${r.engagement_rate}% eng`)
+                    )
+                  )
+                )
+              )
+            ) : React.createElement(Text, { style: S.small }, reels?.message || "No Reels data available.")
+          ),
+
+          // Cross-platform section
+          React.createElement(View, { style: S.section },
+            React.createElement(Text, { style: S.sectionTitle }, "Cross-Platform Comparison"),
+            cross?.winner ? React.createElement(View, null,
+              React.createElement(View, { style: { backgroundColor: "#292524", borderRadius: 6, padding: 10, marginBottom: 8 } },
+                React.createElement(Text, { style: { color: "#F5D7A0", fontSize: 10, fontWeight: "bold", marginBottom: 2 } },
+                  `Winner: ${cross.winner === "instagram" ? "Instagram" : "Facebook"}`
+                ),
+                React.createElement(Text, { style: { color: "#C4AA8A", fontSize: 8 } }, cross.summary || "")
+              ),
+              React.createElement(View, { style: S.row },
+                React.createElement(View, { style: { ...S.card, flex: 1, marginBottom: 0 } },
+                  React.createElement(Text, { style: { ...S.label, color: "#E1306C", marginBottom: 4 } }, "INSTAGRAM"),
+                  React.createElement(Text, { style: S.body }, `${cross.instagram?.total_posts || 0} posts`),
+                  React.createElement(Text, { style: S.small }, `Avg likes: ${fmtN(cross.instagram?.avg_likes || 0)}`),
+                  React.createElement(Text, { style: S.small }, `Avg comments: ${fmtN(cross.instagram?.avg_comments || 0)}`),
+                  React.createElement(Text, { style: S.small }, `Eng rate: ${cross.instagram?.avg_engagement_rate || 0}%`)
+                ),
+                React.createElement(View, { style: { ...S.card, flex: 1, marginBottom: 0 } },
+                  React.createElement(Text, { style: { ...S.label, color: "#1877F2", marginBottom: 4 } }, "FACEBOOK"),
+                  React.createElement(Text, { style: S.body }, `${cross.facebook?.total_posts || 0} posts`),
+                  React.createElement(Text, { style: S.small }, `Avg likes: ${fmtN(cross.facebook?.avg_likes || 0)}`),
+                  React.createElement(Text, { style: S.small }, `Avg comments: ${fmtN(cross.facebook?.avg_comments || 0)}`),
+                  React.createElement(Text, { style: S.small }, `Eng rate: ${cross.facebook?.avg_engagement_rate || 0}%`)
+                )
+              )
+            ) : React.createElement(Text, { style: S.small }, cross?.error || "Cross-platform data not available.")
+          ),
+
+          // Footer
+          React.createElement(View, { style: S.footer },
+            React.createElement(Text, { style: S.footerText },
+              `Generated: ${now.toLocaleString("en-GB")} · MarketHub Pro · markethubpromo.com`
+            )
+          )
+        )
+      );
+
+      const blob = await pdf(doc).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `meta-insights-${now.toISOString().slice(0, 10)}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("PDF export error:", err);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <div>
@@ -657,14 +834,25 @@ export default function MetaInsightsPage() {
 
         <PermissionsBanner />
 
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-2 bg-white border border-[#E8D9C5] rounded-xl p-2">
-          {TABS.map(t => (
-            <button key={t.id} onClick={() => setTab(t.id)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.id ? "bg-[#F59E0B] text-white" : "text-[#78614E] hover:bg-[#F5E8D4]"}`}>
-              <span>{t.icon}</span>{t.label}
-            </button>
-          ))}
+        {/* Tabs + Export button */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap gap-2 bg-white border border-[#E8D9C5] rounded-xl p-2 flex-1">
+            {TABS.map(t => (
+              <button type="button" key={t.id} onClick={() => setTab(t.id)}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.id ? "bg-[#F59E0B] text-white" : "text-[#78614E] hover:bg-[#F5E8D4]"}`}>
+                <span>{t.icon}</span>{t.label}
+              </button>
+            ))}
+          </div>
+          <button type="button" onClick={exportPDF} disabled={exporting}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-opacity hover:opacity-80 shrink-0 bg-[#292524] text-[#F5D7A0] ${exporting ? "opacity-60" : ""}`}>
+            {exporting ? (
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
+              </svg>
+            ) : "⬇"} Export PDF
+          </button>
         </div>
 
         {/* Content */}
