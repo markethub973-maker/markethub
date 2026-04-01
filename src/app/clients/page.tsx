@@ -79,6 +79,44 @@ export default function ClientsPage() {
   const [compareMode, setCompareMode] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"list" | "compare" | "digest">("list");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const copyShareLink = (client: Client) => {
+    const payload = {
+      v: 1,
+      n: client.name,
+      ig: client.igUsername || "",
+      tt: client.tiktokUsername || "",
+      notes: client.notes || "",
+      f: client.igData?.profile.followers || 0,
+      fw: client.igData?.profile.following || 0,
+      p: client.igData?.profile.postsCount || 0,
+      e: client.igData?.engagementRate || 0,
+      bio: client.igData?.profile.biography?.substring(0, 120) || "",
+      av: client.igData?.profile.avatar || "",
+      ver: client.igData?.profile.isVerified || false,
+      tf: client.tiktokData?.followers || 0,
+      tl: client.tiktokData?.likes || 0,
+      tv: client.tiktokData?.videos || 0,
+      posts: (client.igData?.posts || []).slice(0, 6).map(post => ({
+        s: post.shortcode,
+        l: post.likes,
+        c: post.comments,
+        v: post.isVideo ? 1 : 0,
+        vv: post.videoViews || 0,
+        t: post.timestamp,
+        th: post.thumbnail || "",
+      })),
+      ts: client.lastUpdated,
+    };
+    const token = btoa(unescape(encodeURIComponent(JSON.stringify(payload))))
+      .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    const url = `${window.location.origin}/report/${token}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopiedId(client.id);
+      setTimeout(() => setCopiedId(null), 2500);
+    });
+  };
 
   useEffect(() => {
     saveClients(clients);
@@ -412,6 +450,17 @@ export default function ClientsPage() {
                       </div>
 
                       <div className="flex items-center gap-1 flex-shrink-0">
+                        <button type="button"
+                          onClick={e => { e.stopPropagation(); copyShareLink(client); }}
+                          className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                          style={copiedId === client.id
+                            ? { backgroundColor: "rgba(16,185,129,0.12)", color: "#10B981" }
+                            : { backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }
+                          }
+                          title="Copy share link">
+                          <ExternalLink className="w-3 h-3" />
+                          <span className="hidden sm:inline">{copiedId === client.id ? "Copied!" : "Share"}</span>
+                        </button>
                         <button type="button" onClick={e => { e.stopPropagation(); refreshClient(client.id); }}
                           disabled={isRefreshing} className="p-1.5 rounded-lg" style={{ color: "#A8967E" }}>
                           <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
