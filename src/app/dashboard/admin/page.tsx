@@ -13,6 +13,7 @@ import AdminFeatureProgress from "@/components/admin/AdminFeatureProgress";
 import AdminCredentials from "@/components/admin/AdminCredentials";
 import AdminPlatformConnect from "@/components/admin/AdminPlatformConnect";
 import AdminAnthropicUsage from "@/components/admin/AdminAnthropicUsage";
+import AdminTokenStatus from "@/components/admin/AdminTokenStatus";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -190,6 +191,9 @@ export default function AdminPage() {
 
         {/* Anthropic API Usage */}
         <AdminAnthropicUsage />
+
+        {/* Token & API Key Status */}
+        <AdminTokenStatus />
 
         {/* Analytics Section */}
         <div
