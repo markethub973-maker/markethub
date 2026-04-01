@@ -58,6 +58,13 @@ export default function MarketingPage() {
   const [trends, setTrends] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"overview" | "youtube" | "insights">("overview");
+  const [sortCol, setSortCol] = useState<"views" | "likes" | "comments" | "er" | "publishedAt">("views");
+  const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
+
+  const toggleSort = (col: typeof sortCol) => {
+    if (sortCol === col) setSortDir(d => d === "desc" ? "asc" : "desc");
+    else { setSortCol(col); setSortDir("desc"); }
+  };
 
   const load = () => {
     setLoading(true);
@@ -79,7 +86,19 @@ export default function MarketingPage() {
   useEffect(() => { load(); }, []);
 
   // YouTube metrics
-  const ytVideos = ytChannel?.videos || [];
+  const ytVideosRaw = ytChannel?.videos || [];
+  const ytVideos = [...ytVideosRaw].sort((a: any, b: any) => {
+    let av: number, bv: number;
+    if (sortCol === "er") {
+      av = a.views > 0 ? (a.likes + a.comments) / a.views * 100 : 0;
+      bv = b.views > 0 ? (b.likes + b.comments) / b.views * 100 : 0;
+    } else if (sortCol === "publishedAt") {
+      av = new Date(a.publishedAt).getTime(); bv = new Date(b.publishedAt).getTime();
+    } else {
+      av = a[sortCol]; bv = b[sortCol];
+    }
+    return sortDir === "desc" ? bv - av : av - bv;
+  });
   const ytTotalViews = ytVideos.reduce((s: number, v: any) => s + v.views, 0);
   const ytTotalLikes = ytVideos.reduce((s: number, v: any) => s + v.likes, 0);
   const ytTotalComments = ytVideos.reduce((s: number, v: any) => s + v.comments, 0);
@@ -431,8 +450,23 @@ export default function MarketingPage() {
                   <table className="w-full text-xs">
                     <thead>
                       <tr style={{ borderBottom: "1px solid rgba(245,215,160,0.15)" }}>
-                        {["#", "Video", "Views", "Likes", "Comments", "ER%", "Date"].map(h => (
-                          <th key={h} className="px-4 py-3 text-left font-semibold" style={{ color: "#A8967E" }}>{h}</th>
+                        <th className="px-4 py-3 text-left font-semibold" style={{ color: "#A8967E" }}>#</th>
+                        <th className="px-4 py-3 text-left font-semibold" style={{ color: "#A8967E" }}>Video</th>
+                        {([
+                          { key: "views", label: "Views" },
+                          { key: "likes", label: "Likes" },
+                          { key: "comments", label: "Comments" },
+                          { key: "er", label: "ER%" },
+                          { key: "publishedAt", label: "Date" },
+                        ] as { key: typeof sortCol; label: string }[]).map(({ key, label }) => (
+                          <th key={key} className="px-4 py-3 text-left">
+                            <button type="button" onClick={() => toggleSort(key)}
+                              className="flex items-center gap-1 font-semibold hover:opacity-80 transition-opacity"
+                              style={{ color: sortCol === key ? "#F59E0B" : "#A8967E" }}>
+                              {label}
+                              <span className="text-xs">{sortCol === key ? (sortDir === "desc" ? "↓" : "↑") : "↕"}</span>
+                            </button>
+                          </th>
                         ))}
                       </tr>
                     </thead>
