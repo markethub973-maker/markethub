@@ -33,7 +33,19 @@ const tones = [
 ];
 
 const languages = [
+  // Europe
   "Romanian", "English", "Spanish", "French", "German", "Italian", "Portuguese",
+  "Dutch", "Polish", "Swedish", "Norwegian", "Danish", "Finnish", "Czech",
+  "Slovak", "Hungarian", "Greek", "Bulgarian", "Croatian", "Serbian",
+  "Ukrainian", "Russian", "Turkish", "Catalan", "Basque", "Galician",
+  // Middle East & Africa
+  "Arabic", "Hebrew", "Persian", "Swahili", "Afrikaans", "Amharic",
+  // Asia
+  "Hindi", "Bengali", "Urdu", "Japanese", "Korean", "Chinese (Simplified)",
+  "Chinese (Traditional)", "Cantonese", "Thai", "Vietnamese", "Indonesian",
+  "Malay", "Filipino", "Tamil", "Telugu", "Marathi", "Punjabi", "Gujarati",
+  // Americas
+  "Mexican Spanish", "Brazilian Portuguese",
 ];
 
 type Caption = {
