@@ -107,8 +107,8 @@ const CATEGORIES: Array<{ id: string; label: string }> = [
   { id: "17", label: "⚽ Sports" },
 ];
 
-const MAX_REGIONS = 5;
-const DEFAULT_REGIONS = ["US", "GB", "RO", "DE"];
+const MAX_REGIONS = 10;
+const DEFAULT_REGIONS = ["US", "GB", "RO", "DE", "FR", "BR", "IN", "JP"];
 
 export default function MultiRegionalTrending() {
   const [selectedRegions, setSelectedRegions] = useState<string[]>(DEFAULT_REGIONS);
@@ -205,7 +205,7 @@ export default function MultiRegionalTrending() {
         </h3>
 
         <span className="text-xs text-[#C4AA8A]">
-          {selectedRegions.length}/{MAX_REGIONS} countries
+          {selectedRegions.length}/{MAX_REGIONS} countries · {ALL_COUNTRIES.length} available
         </span>
 
         {/* Add country dropdown */}
