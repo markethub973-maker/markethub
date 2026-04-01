@@ -30,6 +30,27 @@ export default function DashboardPage() {
   const [fbData, setFbData] = useState<any>(null);
   const [fbError, setFbError] = useState<string | null>(null);
   const [ytVideos, setYtVideos] = useState<any[]>([]);
+  const [sortCol, setSortCol] = useState<"views" | "likes" | "er" | "publishedAt">("views");
+  const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
+
+  const toggleSort = (col: "views" | "likes" | "er" | "publishedAt") => {
+    if (sortCol === col) setSortDir(d => d === "desc" ? "asc" : "desc");
+    else { setSortCol(col); setSortDir("desc"); }
+  };
+
+  const sortedVideos = [...ytVideos].sort((a, b) => {
+    let av: number, bv: number;
+    if (sortCol === "er") {
+      av = a.views > 0 ? ((a.likes + a.comments) / a.views) * 100 : 0;
+      bv = b.views > 0 ? ((b.likes + b.comments) / b.views) * 100 : 0;
+    } else if (sortCol === "publishedAt") {
+      av = new Date(a.publishedAt).getTime();
+      bv = new Date(b.publishedAt).getTime();
+    } else {
+      av = a[sortCol]; bv = b[sortCol];
+    }
+    return sortDir === "desc" ? bv - av : av - bv;
+  });
 
   useEffect(() => {
     fetch("/api/instagram/analytics")
@@ -323,14 +344,20 @@ export default function DashboardPage() {
                 <tr className="text-xs uppercase tracking-wide" style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E" }}>
                   <th className="text-left px-5 py-3">Video</th>
                   <th className="text-left px-3 py-3">Platform</th>
-                  <th className="text-right px-3 py-3">Views</th>
-                  <th className="text-right px-3 py-3">Likes</th>
-                  <th className="text-right px-3 py-3">ER</th>
-                  <th className="text-right px-5 py-3">Published</th>
+                  {(["views", "likes", "er", "publishedAt"] as const).map(col => (
+                    <th key={col} className="text-right px-3 py-3 last:px-5">
+                      <button type="button" onClick={() => toggleSort(col)}
+                        className="inline-flex items-center gap-1 hover:text-[#F59E0B] transition-colors cursor-pointer"
+                        style={{ color: sortCol === col ? "#F59E0B" : "#A8967E", fontWeight: sortCol === col ? 700 : 500 }}>
+                        {col === "publishedAt" ? "Published" : col === "er" ? "ER" : col.charAt(0).toUpperCase() + col.slice(1)}
+                        <span className="text-xs">{sortCol === col ? (sortDir === "desc" ? "↓" : "↑") : "↕"}</span>
+                      </button>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-                {ytVideos.slice(0, 8).map((v) => {
+                {sortedVideos.slice(0, 8).map((v) => {
                   const er = v.views > 0 ? (((v.likes + v.comments) / v.views) * 100).toFixed(2) : "0.00";
                   return (
                     <tr key={v.id} className="transition-colors" style={{ borderTop: "1px solid rgba(245,215,160,0.15)" }}
