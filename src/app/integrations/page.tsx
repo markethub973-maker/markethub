@@ -226,7 +226,7 @@ export default function IntegrationsPage() {
               {/* Service cards */}
               <div style={{ display: "grid", gridTemplateColumns: cat.services.length === 1 ? "1fr" : "repeat(auto-fill, minmax(440px, 1fr))", gap: 14 }}>
                 {cat.services.map(svc => (
-                  <div key={svc.name} style={{ borderRadius: 14, padding: "18px 20px", backgroundColor: svc.bg, border: `1px solid ${cat.border}` }}>
+                  <div key={svc.name} style={{ borderRadius: 14, padding: "18px 20px", backgroundColor: cat.bg, border: `1px solid ${cat.border}` }}>
                     {/* Service header */}
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                       <span style={{ fontSize: 22 }}>{svc.logo}</span>

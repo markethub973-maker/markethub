@@ -177,7 +177,7 @@ export async function GET(req: Request) {
           engRate: p.engRate,
           mediaType: p.media_type,
           date: new Date(p.timestamp).toLocaleDateString("en-US", { day: "2-digit", month: "2-digit", year: "2-digit" }),
-          permalink: p.permalink,
+          permalink: p.permalink ?? "",
         })),
         bestDays,
         contentMix,
