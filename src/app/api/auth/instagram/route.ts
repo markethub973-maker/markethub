@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const instagramAuthUrl = new URL("https://www.facebook.com/dialog/oauth");
     instagramAuthUrl.searchParams.append("client_id", appId);
     instagramAuthUrl.searchParams.append("redirect_uri", redirectUri);
-    instagramAuthUrl.searchParams.append("scope", "instagram_basic,instagram_manage_insights,pages_show_list,instagram_manage_comments");
+    instagramAuthUrl.searchParams.append("scope", "instagram_basic,instagram_manage_insights,pages_show_list,instagram_manage_comments,ads_read,ads_management");
     instagramAuthUrl.searchParams.append("response_type", "code");
     instagramAuthUrl.searchParams.append("state", state);
 

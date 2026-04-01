@@ -589,6 +589,55 @@ function EmptyBox({ icon, title, sub }: { icon: string; title: string; sub: stri
   );
 }
 
+// ── Permissions Banner ───────────────────────────────────────────────────────
+function PermissionsBanner() {
+  const [data, setData] = useState<{
+    granted: string[]; missing: string[]; needs_reconnect: boolean; error?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/meta/permissions")
+      .then(r => r.json())
+      .then(setData)
+      .catch(() => null);
+  }, []);
+
+  if (!data || data.error || !data.needs_reconnect) return null;
+
+  const LABELS: Record<string, string> = {
+    ads_read: "Ads Read",
+    ads_management: "Ads Management",
+    instagram_manage_insights: "IG Insights",
+    instagram_basic: "IG Basic",
+    pages_show_list: "Pages List",
+    instagram_manage_comments: "IG Comments",
+  };
+
+  return (
+    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex flex-wrap items-start gap-3">
+      <span className="text-xl shrink-0">⚠️</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-amber-800 mb-1">
+          Missing permissions — some features may not work
+        </p>
+        <div className="flex flex-wrap gap-1.5 mb-2">
+          {data.granted.map(p => (
+            <span key={p} className="text-xs bg-green-100 text-green-700 border border-green-200 px-2 py-0.5 rounded-full">
+              ✓ {LABELS[p] || p}
+            </span>
+          ))}
+          {data.missing.map(p => (
+            <span key={p} className="text-xs bg-red-100 text-red-600 border border-red-200 px-2 py-0.5 rounded-full">
+              ✗ {LABELS[p] || p}
+            </span>
+          ))}
+        </div>
+        <p className="text-xs text-amber-700">Reconnect your Meta account from <strong>Settings → Integrations</strong> to grant the missing permissions.</p>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Page ────────────────────────────────────────────────────────────────
 const TABS = [
   { id: "stories", label: "Stories Analytics", icon: "📖" },
@@ -605,6 +654,8 @@ export default function MetaInsightsPage() {
     <div>
       <Header title="Meta Insights" subtitle="Instagram & Facebook advanced analytics" />
       <div className="p-6 max-w-6xl mx-auto space-y-4">
+
+        <PermissionsBanner />
 
         {/* Tabs */}
         <div className="flex flex-wrap gap-2 bg-white border border-[#E8D9C5] rounded-xl p-2">
