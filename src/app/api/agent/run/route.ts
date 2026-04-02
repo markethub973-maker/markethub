@@ -4,11 +4,17 @@ import { createClient } from "@/lib/supabase/server";
 type StepActor =
   | "google_search"
   | "google_maps"
+  | "google_maps_reviews"
   | "instagram_profile"
   | "instagram_hashtag"
   | "tiktok_profile"
   | "tiktok_hashtag"
-  | "facebook_page";
+  | "facebook_page"
+  | "youtube_channel"
+  | "youtube_search"
+  | "reddit_search"
+  | "reddit_subreddit"
+  | "website_crawler";
 
 interface Step {
   actor: StepActor;
@@ -102,6 +108,66 @@ export async function POST(req: NextRequest) {
           method: "POST",
           headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
           body: JSON.stringify({ page: step.params.page, limit: step.params.limit || 10 }),
+        });
+        result = await r.json();
+        break;
+      }
+
+      case "youtube_channel": {
+        const r = await fetch(`${base}/api/research/youtube`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
+          body: JSON.stringify({ channel: step.params.channel, limit: step.params.limit || 15 }),
+        });
+        result = await r.json();
+        break;
+      }
+
+      case "youtube_search": {
+        const r = await fetch(`${base}/api/research/youtube`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
+          body: JSON.stringify({ keyword: step.params.keyword, limit: step.params.limit || 15 }),
+        });
+        result = await r.json();
+        break;
+      }
+
+      case "reddit_search": {
+        const r = await fetch(`${base}/api/research/reddit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
+          body: JSON.stringify({ query: step.params.query, limit: step.params.limit || 20 }),
+        });
+        result = await r.json();
+        break;
+      }
+
+      case "reddit_subreddit": {
+        const r = await fetch(`${base}/api/research/reddit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
+          body: JSON.stringify({ subreddit: step.params.subreddit, query: step.params.query, limit: step.params.limit || 20 }),
+        });
+        result = await r.json();
+        break;
+      }
+
+      case "google_maps_reviews": {
+        const r = await fetch(`${base}/api/research/maps-reviews`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
+          body: JSON.stringify({ placeName: step.params.placeName, placeUrl: step.params.placeUrl, maxReviews: step.params.maxReviews || 30 }),
+        });
+        result = await r.json();
+        break;
+      }
+
+      case "website_crawler": {
+        const r = await fetch(`${base}/api/research/website`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
+          body: JSON.stringify({ url: step.params.url, maxPages: step.params.maxPages || 5 }),
         });
         result = await r.json();
         break;
