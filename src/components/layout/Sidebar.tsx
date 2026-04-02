@@ -28,6 +28,7 @@ import {
   ChevronDown,
   Puzzle,
   Search,
+  Database,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -58,6 +59,8 @@ const navGroups = [
     icon: TrendingUp,
     items: [
       { href: "/research", label: "Research Hub", icon: Search },
+      { href: "/marketing", label: "Marketing Agent", icon: Megaphone },
+      { href: "/leads", label: "Leads Database", icon: Database },
       { href: "/trending", label: "Trending", icon: TrendingUp },
       { href: "/competitors", label: "Competitors", icon: BarChart3 },
       { href: "/trends", label: "Google Trends", icon: LineChart },
