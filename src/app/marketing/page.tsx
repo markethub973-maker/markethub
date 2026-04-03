@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { useUserRegion } from "@/lib/useUserRegion";
+import { getLocalMarket } from "@/lib/localMarketConfig";
 import Header from "@/components/layout/Header";
 import {
   Sparkles, Search, Map, Instagram, Facebook, Play,
@@ -300,6 +302,9 @@ export default function MarketingAgentPage() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
+  const { preferred_region, local_market_enabled } = useUserRegion();
+  const localMarket = local_market_enabled ? getLocalMarket(preferred_region) : null;
+
   const handleStart = async () => {
     if (!goal.trim()) return;
     setPhase("planning");
@@ -313,7 +318,10 @@ export default function MarketingAgentPage() {
       const res = await fetch("/api/agent/plan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ goal }),
+        body: JSON.stringify({
+          goal,
+          ...(localMarket ? { region: localMarket.region, hints: localMarket.agentHints, language: localMarket.language } : {}),
+        }),
       });
       const data = await res.json();
       if (!res.ok || !data.plan) {
@@ -418,6 +426,14 @@ export default function MarketingAgentPage() {
                 </p>
               </div>
             </div>
+
+            {localMarket && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold"
+                style={{ backgroundColor: `${localMarket.color}10`, border: `1px solid ${localMarket.color}30`, color: localMarket.color }}>
+                <span>{localMarket.flag}</span>
+                <span>Piața locală activă: {localMarket.label} — agentul folosește unelte și cuvinte-cheie specifice {localMarket.label}</span>
+              </div>
+            )}
 
             <textarea
               value={goal}

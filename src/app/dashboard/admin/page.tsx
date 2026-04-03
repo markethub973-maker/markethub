@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { LogOut } from "lucide-react";
 import Header from "@/components/layout/Header";
 import AdminStatsCard from "@/components/admin/AdminStatsCard";
@@ -164,6 +165,21 @@ export default function AdminPage() {
         </button>
       </div>
       <div className="p-6 space-y-8">
+
+        {/* ── Preview Features ──────────────────────────────────────────── */}
+        <div className="rounded-2xl p-4 flex items-center gap-4 flex-wrap"
+          style={{ backgroundColor: "rgba(124,58,237,0.05)", border: "1px solid rgba(124,58,237,0.15)" }}>
+          <div className="flex items-center gap-2">
+            <span className="text-base">🧪</span>
+            <p className="text-sm font-bold" style={{ color: "#7C3AED" }}>Preview Admin — Features în testare</p>
+          </div>
+          <Link href="/dashboard/admin/lead-wizard"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all"
+            style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.25)" }}>
+            🎯 Lead Generation Wizard
+          </Link>
+        </div>
+
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <AdminStatsCard

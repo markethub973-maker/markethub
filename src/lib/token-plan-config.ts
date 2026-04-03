@@ -231,6 +231,9 @@ export const TOKEN_COSTS = {
   email_campaign: 8_000,           // Email campaign generation
   hashtag_analysis: 3_000,         // Hashtag research & recommendations
   trend_analysis: 6_000,           // Trend analysis report
+  lead_wizard_analyze: 2_000,      // AI source + keyword suggestions (step 3)
+  lead_wizard_score: 4_000,        // AI batch scoring of prospects (step 4)
+  lead_wizard_message: 1_500,      // AI outreach message generation (step 5)
 } as const;
 
 export type TokenAction = keyof typeof TOKEN_COSTS;

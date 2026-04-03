@@ -7,8 +7,10 @@ import {
   ExternalLink, ThumbsUp, MessageCircle, Share2,
   Eye, Play, Hash, User, TrendingUp, AlertCircle,
   Youtube, MessageSquare, Star, MapPin, ChevronDown,
-  ChevronUp, Phone, FileText,
+  ChevronUp, Phone, FileText, ShoppingBag,
 } from "lucide-react";
+import { useUserRegion } from "@/lib/useUserRegion";
+import { getLocalMarket } from "@/lib/localMarketConfig";
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const AMBER = "#F59E0B";
@@ -19,7 +21,7 @@ const YT = "#FF0000";
 const RD = "#FF4500";
 const GREEN = "#1DB954";
 
-type Tab = "google" | "instagram" | "tiktok" | "facebook" | "youtube" | "reddit" | "website" | "reviews";
+type Tab = string;
 
 function fmtNum(n: number) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
@@ -58,7 +60,19 @@ export default function ResearchPage() {
 
   const toggleSection = (key: string) => setExpandedSections(s => ({ ...s, [key]: !s[key] }));
 
-  const tabColor = TABS.find(t => t.id === tab)?.color || AMBER;
+  const { preferred_region, local_market_enabled } = useUserRegion();
+  const localMarket = local_market_enabled ? getLocalMarket(preferred_region) : null;
+  const localActorTabs = localMarket?.actors.map(a => ({
+    id: a.id,
+    label: a.label,
+    icon: ShoppingBag as React.ElementType,
+    color: localMarket.color,
+    group: "Market",
+  })) ?? [];
+  const allTabs = [...TABS, ...localActorTabs];
+  const groups = localMarket ? ["Search", "Social", "Local", "Market"] : ["Search", "Social", "Local"];
+
+  const tabColor = allTabs.find(t => t.id === tab)?.color || AMBER;
 
   const getPlaceholder = () => {
     switch (tab) {
@@ -70,7 +84,10 @@ export default function ResearchPage() {
       case "facebook": return "Pagina (ex: DJManiaBucuresti)";
       case "reddit": return mode === "subreddit" ? "subreddit (ex: Romania)" : "Keyword (ex: wedding DJ Romania)";
       case "reviews": return "Nume loc sau URL Google Maps";
-      default: return "Search...";
+      default: {
+        const actor = localMarket?.actors.find(a => a.id === tab);
+        return actor?.placeholder || "Search...";
+      }
     }
   };
 
@@ -149,6 +166,14 @@ export default function ResearchPage() {
             ? { placeUrl: query.trim(), maxReviews: 50 }
             : { placeName: query.trim(), maxReviews: 50 };
           break;
+        default: {
+          const actor = localMarket?.actors.find(a => a.id === tab);
+          if (actor) {
+            endpoint = actor.endpoint;
+            body = actor.bodyBuilder(query.trim());
+          }
+          break;
+        }
       }
 
       const res = await fetch(endpoint, {
@@ -166,9 +191,7 @@ export default function ResearchPage() {
   };
 
   const modes = getModes();
-  const currentTab = TABS.find(t => t.id === tab)!;
-
-  const groups = ["Search", "Social", "Local"];
+  const currentTab = allTabs.find(t => t.id === tab) ?? allTabs[0];
 
   return (
     <div>
@@ -179,7 +202,7 @@ export default function ResearchPage() {
         <div className="rounded-2xl p-5 space-y-4" style={card}>
           <div className="space-y-2">
             {groups.map(group => {
-              const groupTabs = TABS.filter(t => t.group === group);
+              const groupTabs = allTabs.filter(t => t.group === group);
               return (
                 <div key={group} className="flex items-center gap-2 flex-wrap">
                   <span className="text-xs font-bold w-12 flex-shrink-0" style={{ color: "#C4AA8A" }}>{group}</span>
@@ -242,6 +265,7 @@ export default function ResearchPage() {
             {tab === "reddit" && "Caută discuții, feedback și opinii reale despre orice subiect."}
             {tab === "reviews" && "Analizează recenziile Google Maps — sentiment pozitiv/negativ, tendințe."}
             {(tab === "google" || tab === "instagram" || tab === "tiktok" || tab === "facebook") && "Powered by Apify — date publice. 15–45s."}
+            {localMarket?.actors.some(a => a.id === tab) && `${localMarket!.flag} ${localMarket!.actors.find(a => a.id === tab)?.description}`}
           </p>
         </div>
 
@@ -640,13 +664,49 @@ export default function ResearchPage() {
           </div>
         )}
 
+        {/* ── LOCAL MARKET GENERIC RENDERER ── */}
+        {!loading && results && localMarket?.actors.some(a => a.id === tab) && (
+          <div className="space-y-3">
+            {(() => {
+              const actor = localMarket!.actors.find(a => a.id === tab)!;
+              const items: any[] = Array.isArray(results) ? results : results.results || results.items || [];
+              return (
+                <>
+                  <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>
+                    {localMarket!.flag} {actor.label} — {items.length} rezultate
+                  </p>
+                  {items.length === 0 && (
+                    <div className="rounded-xl p-8 text-center" style={card}>
+                      <p className="text-sm" style={{ color: "#A8967E" }}>Niciun rezultat găsit</p>
+                    </div>
+                  )}
+                  {items.map((item: any, i: number) => (
+                    <div key={i} className="rounded-xl p-4 space-y-1.5" style={card}>
+                      {item.title && <p className="font-semibold text-sm" style={{ color: "#292524" }}>{item.title}</p>}
+                      {item.name && <p className="font-semibold text-sm" style={{ color: "#292524" }}>{item.name}</p>}
+                      {item.price && <p className="text-sm font-bold" style={{ color: localMarket!.color }}>{item.price} {localMarket!.currency}</p>}
+                      {item.address && <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}><MapPin className="w-3 h-3" />{item.address}</p>}
+                      {item.phone && <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}><Phone className="w-3 h-3" />{item.phone}</p>}
+                      {item.url && <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs flex items-center gap-1" style={{ color: localMarket!.color }}><ExternalLink className="w-3 h-3" />Deschide</a>}
+                      {item.description && <p className="text-xs" style={{ color: "#A8967E" }}>{item.description.slice(0, 200)}{item.description.length > 200 ? "…" : ""}</p>}
+                    </div>
+                  ))}
+                </>
+              );
+            })()}
+          </div>
+        )}
+
         {/* Empty state */}
         {!loading && !results && !error && (
           <div className="rounded-2xl p-10 text-center" style={card}>
             <Search className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(196,170,138,0.4)" }} />
-            <p className="font-semibold" style={{ color: "#78614E" }}>8 surse de date disponibile</p>
+            <p className="font-semibold" style={{ color: "#78614E" }}>
+              {localMarket ? `${localMarket.flag} ${8 + localMarket.actors.length} surse disponibile` : "8 surse de date disponibile"}
+            </p>
             <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>
               Google · YouTube · Website · Instagram · TikTok · Facebook · Reddit · Reviews
+              {localMarket && ` · ${localMarket.actors.map(a => a.label).join(" · ")}`}
             </p>
           </div>
         )}

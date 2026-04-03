@@ -1,0 +1,67 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+const SYSTEM = `You are an expert copywriter for outreach messages. Write SHORT, NATURAL, non-salesy messages.
+
+Rules:
+- Max 3 sentences
+- Start with something specific about them (not generic)
+- No "I hope this message finds you well"
+- No "I'd like to offer you..."
+- Sound like a person, not a company
+- Match the platform tone (Reddit = casual, Email = slightly more formal, LinkedIn = professional)
+- Include a soft call-to-action (question, not a pitch)
+
+Return JSON:
+{
+  "messages": {
+    "reddit": "message for Reddit DM",
+    "email": "message for email (with subject line)",
+    "facebook": "message for Facebook",
+    "generic": "generic message"
+  },
+  "subject_line": "email subject line",
+  "best_platform": "which platform is best for this specific lead"
+}`;
+
+export async function POST(req: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { lead, offer_summary, outreach_hook } = await req.json();
+  if (!lead || !offer_summary) return NextResponse.json({ error: "lead and offer_summary required" }, { status: 400 });
+
+  const prompt = `
+Lead info:
+- Name/Handle: ${lead.contact_hint || lead.title || "unknown"}
+- Platform: ${lead.platform}
+- What they posted/searched: ${(lead.description || lead.text || "").slice(0, 300)}
+- Intent signals: ${(lead.signals || []).join(", ")}
+- Score: ${lead.score}/10
+
+Offer: ${offer_summary}
+Suggested opening hook: ${outreach_hook || ""}
+
+Write personalized outreach messages for this specific lead.`;
+
+  try {
+    const msg = await anthropic.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 800,
+      system: SYSTEM,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const text = msg.content[0].type === "text" ? msg.content[0].text : "";
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
+
+    return NextResponse.json(JSON.parse(jsonMatch[0]));
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
+  }
+}

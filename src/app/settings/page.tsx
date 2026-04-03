@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import InstagramConnect from "@/components/settings/InstagramConnect";
+import RegionSettings from "@/components/settings/RegionSettings";
 import { createClient } from "@/lib/supabase/client";
 import {
   Zap, User, Plug, CreditCard, CheckCircle, XCircle,
@@ -314,19 +315,25 @@ export default function SettingsPage() {
 
         {/* ══ Profile Tab ════════════════════════════════════════════════════ */}
         {activeTab === "profile" && (
-          <div className="rounded-xl border p-6" style={{ backgroundColor: "#FFFCF7", borderColor: "rgba(245,215,160,0.25)" }}>
-            <h2 className="text-lg font-bold mb-5" style={{ color: "#292524" }}>Profile Information</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-              {[
-                { label: "Name",  value: profile?.name || "Not set" },
-                { label: "Email", value: profile?.email || "—" },
-                { label: "Plan",  value: profile?.plan || "Free" },
-              ].map(({ label, value }) => (
-                <div key={label} className="rounded-lg p-4" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
-                  <p className="text-xs font-medium mb-1" style={{ color: "#78614E" }}>{label}</p>
-                  <p className="font-semibold" style={{ color: "#292524" }}>{value}</p>
-                </div>
-              ))}
+          <div className="space-y-4">
+            <div className="rounded-xl border p-6" style={{ backgroundColor: "#FFFCF7", borderColor: "rgba(245,215,160,0.25)" }}>
+              <h2 className="text-lg font-bold mb-5" style={{ color: "#292524" }}>Profile Information</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                {[
+                  { label: "Name",  value: profile?.name || "Not set" },
+                  { label: "Email", value: profile?.email || "—" },
+                  { label: "Plan",  value: profile?.plan || "Free" },
+                ].map(({ label, value }) => (
+                  <div key={label} className="rounded-lg p-4" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
+                    <p className="text-xs font-medium mb-1" style={{ color: "#78614E" }}>{label}</p>
+                    <p className="font-semibold" style={{ color: "#292524" }}>{value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-xl border p-6" style={{ backgroundColor: "#FFFCF7", borderColor: "rgba(245,215,160,0.25)" }}>
+              <h2 className="text-lg font-bold mb-5" style={{ color: "#292524" }}>Local Market Preferences</h2>
+              <RegionSettings />
             </div>
           </div>
         )}

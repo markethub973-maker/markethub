@@ -6,6 +6,7 @@ import {
   Phone, Globe, Star, MapPin, Instagram, Facebook, Play,
   Search, Trash2, Download, RefreshCw, Loader2, AlertCircle,
   Users, Map, Hash, ExternalLink, Filter, Copy, Check,
+  CheckCircle2, Circle, StickyNote, X,
 } from "lucide-react";
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -125,6 +126,30 @@ export default function LeadsPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [copied, setCopied] = useState(false);
   const [showSQL, setShowSQL] = useState(false);
+  const [editingNote, setEditingNote] = useState<string | null>(null); // lead id
+  const [noteText, setNoteText] = useState("");
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+
+  const handleToggleContacted = async (lead: Lead) => {
+    setTogglingId(lead.id);
+    await fetch("/api/leads", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: lead.id, contacted: !lead.contacted }),
+    });
+    setLeads(ls => ls.map(l => l.id === lead.id ? { ...l, contacted: !l.contacted } : l));
+    setTogglingId(null);
+  };
+
+  const handleSaveNote = async (id: string) => {
+    await fetch("/api/leads", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, notes: noteText }),
+    });
+    setLeads(ls => ls.map(l => l.id === id ? { ...l, notes: noteText } : l));
+    setEditingNote(null);
+  };
 
   const fetchLeads = async () => {
     setLoading(true);
@@ -396,8 +421,8 @@ export default function LeadsPage() {
                 const isSelected = selected.has(lead.id);
 
                 return (
-                  <div key={lead.id}
-                    className="px-4 py-3 flex items-start gap-3 transition-colors"
+                  <div key={lead.id}>
+                  <div className="px-4 py-3 flex items-start gap-3 transition-colors"
                     style={{ backgroundColor: isSelected ? "rgba(245,158,11,0.04)" : "transparent" }}>
                     <input type="checkbox" checked={isSelected}
                       onChange={() => toggleSelect(lead.id)}
@@ -469,9 +494,70 @@ export default function LeadsPage() {
                       )}
                     </div>
 
-                    <p className="text-xs flex-shrink-0" style={{ color: "#C4AA8A" }}>
-                      {new Date(lead.created_at).toLocaleDateString("ro", { day: "2-digit", month: "short" })}
-                    </p>
+                    <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                      <p className="text-xs" style={{ color: "#C4AA8A" }}>
+                        {new Date(lead.created_at).toLocaleDateString("ro", { day: "2-digit", month: "short" })}
+                      </p>
+                      {/* Contacted toggle */}
+                      <button type="button"
+                        onClick={() => handleToggleContacted(lead)}
+                        disabled={togglingId === lead.id}
+                        className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg transition-all"
+                        style={{
+                          backgroundColor: lead.contacted ? "rgba(29,185,84,0.1)" : "rgba(245,215,160,0.1)",
+                          color: lead.contacted ? GREEN : "#A8967E",
+                        }}>
+                        {togglingId === lead.id
+                          ? <Loader2 className="w-3 h-3 animate-spin" />
+                          : lead.contacted
+                          ? <CheckCircle2 className="w-3 h-3" />
+                          : <Circle className="w-3 h-3" />}
+                        {lead.contacted ? "Contactat" : "Marchează"}
+                      </button>
+                      {/* Notes */}
+                      <button type="button"
+                        onClick={() => { setEditingNote(lead.id); setNoteText(lead.notes || ""); }}
+                        className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
+                        style={{ color: lead.notes ? AMBER : "#C4AA8A", backgroundColor: lead.notes ? `${AMBER}10` : "transparent" }}>
+                        <StickyNote className="w-3 h-3" />
+                        {lead.notes ? "Notă" : "+ Notă"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Inline note editor */}
+                  {editingNote === lead.id && (
+                    <div className="mx-4 mb-3 flex gap-2">
+                      <textarea
+                        value={noteText}
+                        onChange={e => setNoteText(e.target.value)}
+                        autoFocus rows={2}
+                        placeholder="Adaugă o notă despre acest lead..."
+                        className="flex-1 text-xs px-3 py-2 rounded-xl resize-none focus:outline-none"
+                        style={{ border: `1px solid ${AMBER}40`, backgroundColor: "#FFFDF9", color: "#292524" }}
+                      />
+                      <div className="flex flex-col gap-1">
+                        <button type="button" onClick={() => handleSaveNote(lead.id)}
+                          className="px-2 py-1.5 rounded-lg text-xs font-bold"
+                          style={{ backgroundColor: `${AMBER}15`, color: AMBER }}>
+                          <Check className="w-3 h-3" />
+                        </button>
+                        <button type="button" onClick={() => setEditingNote(null)}
+                          className="px-2 py-1.5 rounded-lg text-xs"
+                          style={{ color: "#A8967E" }}>
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Show existing note */}
+                  {lead.notes && editingNote !== lead.id && (
+                    <div className="mx-4 mb-3 px-3 py-2 rounded-xl text-xs"
+                      style={{ backgroundColor: `${AMBER}08`, borderLeft: `2px solid ${AMBER}50`, color: "#78614E" }}>
+                      {lead.notes}
+                    </div>
+                  )}
                   </div>
                 );
               })}

@@ -74,14 +74,18 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { goal } = await req.json();
+  const { goal, region, hints, language } = await req.json();
   if (!goal?.trim()) return NextResponse.json({ error: "Goal required" }, { status: 400 });
+
+  const localContext = region && hints?.length
+    ? `\n\nLOCAL MARKET OVERRIDE:\n- Target region: ${region}\n- Language for keywords: ${language || "auto"}\n- Market-specific hints:\n${(hints as string[]).map((h: string) => `  • ${h}`).join("\n")}`
+    : "";
 
   try {
     const msg = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2000,
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + localContext,
       messages: [{ role: "user", content: `Business goal: ${goal}` }],
     });
 
