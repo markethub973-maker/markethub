@@ -95,6 +95,30 @@ export async function GET(req: NextRequest) {
         configured: !!process.env.RESEND_API_KEY,
       },
     },
+    security: {
+      encryptionKey: {
+        label: "DB Encryption Key (AES-256-GCM)",
+        masked: mask(process.env.ENCRYPTION_KEY, 8),
+        configured: !!process.env.ENCRYPTION_KEY,
+        note: "Encrypts sensitive DB fields (tokens, credentials). Generate: openssl rand -hex 32",
+      },
+      adminPassword: {
+        label: "Admin Password",
+        masked: mask(process.env.ADMIN_PASSWORD, 0).replace(/./g, "•").slice(0, 20),
+        configured: !!process.env.ADMIN_PASSWORD,
+      },
+      cronSecret: {
+        label: "Cron Secret",
+        masked: mask(process.env.CRON_SECRET, 6),
+        configured: !!process.env.CRON_SECRET,
+      },
+      adminTunnelSecret: {
+        label: "Admin Tunnel Secret (private access)",
+        masked: mask(process.env.ADMIN_TUNNEL_SECRET, 6),
+        configured: !!process.env.ADMIN_TUNNEL_SECRET,
+        note: "Add ?t=<secret> to /markethub973 URL for private access. Set in Vercel env vars.",
+      },
+    },
   };
 
   return NextResponse.json({ success: true, credentials });

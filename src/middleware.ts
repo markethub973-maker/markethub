@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { canAccessRoute } from "@/lib/plan-features";
+import crypto from "crypto";
 
 // ── Security headers applied to every response ─────────────────────────────
 const SECURITY_HEADERS: Record<string, string> = {
@@ -126,6 +127,36 @@ const AUTH_PATHS = ["/api/auth/", "/login", "/register"];
 const AUTH_RATE_LIMIT = { limit: 10, windowMs: 60_000 }; // 10/min per IP
 const API_RATE_LIMIT  = { limit: 120, windowMs: 60_000 }; // 120/min per IP
 
+// ── Admin tunnel verification ────────────────────────────────────────────────
+// If ADMIN_TUNNEL_SECRET is set, admin routes require either:
+//   1. A valid admin_session_token cookie (already logged in), OR
+//   2. The ?t=<secret> query param in the URL (initial access)
+// Without either, admin routes return 404 (not even a login page is shown).
+function checkAdminTunnel(request: NextRequest): boolean {
+  const tunnelSecret = process.env.ADMIN_TUNNEL_SECRET;
+  if (!tunnelSecret) return true; // tunnel not configured — open (backward compat)
+
+  // Already have a valid session cookie → allow
+  const sessionCookie = request.cookies.get("admin_session_token")?.value ?? "";
+  if (sessionCookie) return true; // let isAdminAuthorized handle the actual check
+
+  // Check ?t=<secret> query param
+  const t = request.nextUrl.searchParams.get("t") ?? "";
+  if (!t) return false;
+
+  // Constant-time comparison
+  try {
+    const a = Buffer.from(t.padEnd(tunnelSecret.length, "\0"));
+    const b = Buffer.from(tunnelSecret.padEnd(t.length, "\0"));
+    const maxLen = Math.max(t.length, tunnelSecret.length);
+    return t.length === tunnelSecret.length &&
+      crypto.timingSafeEqual(
+        Buffer.from(t.padEnd(maxLen)),
+        Buffer.from(tunnelSecret.padEnd(maxLen))
+      );
+  } catch { return false; }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -143,6 +174,19 @@ export async function middleware(request: NextRequest) {
     const preflightRes = new NextResponse(null, { status: 204 });
     applySecurityHeaders(corsResponse(request, preflightRes));
     return preflightRes;
+  }
+
+  // ── Admin tunnel check ──────────────────────────────────────────────────
+  const isAdminPath =
+    pathname.startsWith("/markethub973") ||
+    pathname.startsWith("/dashboard/admin") ||
+    pathname.startsWith("/api/admin");
+
+  if (isAdminPath && !checkAdminTunnel(request)) {
+    // Return 404 — don't reveal that an admin panel exists
+    const res = new NextResponse(null, { status: 404 });
+    applySecurityHeaders(res);
+    return res;
   }
 
   const ip = getClientIp(request);
