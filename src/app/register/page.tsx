@@ -1,62 +1,83 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Zap, Eye, EyeOff, Lock, Mail, User, Check, X } from "lucide-react";
+import {
+  Zap, Eye, EyeOff, Lock, Mail, User, Check, X, Loader2,
+  Instagram, Clock, Users, Briefcase, BarChart2, Bot, Shield, Star,
+} from "lucide-react";
 
-const plans = [
-  {
-    id: "free_test",
-    name: "Free Test",
-    duration: "7 Days",
-    badge: "Try First",
-    description: "Perfect to test the platform",
-    features: [
-      { name: "AI Calls/Day", value: "5", included: true },
-      { name: "Social Accounts", value: "2", included: true },
-      { name: "Email Reports", included: false },
-      { name: "Webhook Integration", included: false },
-      { name: "Custom Dashboard", included: false },
-      { name: "Priority Support", included: false },
-    ],
-  },
-  {
-    id: "lite",
-    name: "Lite Plan",
-    duration: "Monthly",
-    badge: "Popular",
-    description: "For growing businesses",
-    features: [
-      { name: "AI Calls/Day", value: "50", included: true },
-      { name: "Social Accounts", value: "Unlimited", included: true },
-      { name: "Email Reports", included: true },
-      { name: "Webhook Integration", included: false },
-      { name: "Custom Dashboard", included: false },
-      { name: "Priority Support", included: false },
-    ],
-    note: "Max $20/month API cost",
-  },
-  {
-    id: "pro",
-    name: "Pro Plan",
-    duration: "Monthly",
-    badge: "Best Value",
-    description: "For enterprises",
-    features: [
-      { name: "AI Calls/Day", value: "Unlimited", included: true },
-      { name: "Social Accounts", value: "Unlimited", included: true },
-      { name: "Email Reports", included: true },
-      { name: "Webhook Integration", included: true },
-      { name: "Custom Dashboard", included: true },
-      { name: "Priority Support", included: true },
-    ],
-    note: "Max $40/month API cost",
-  },
-];
+interface Plan {
+  id: string;
+  name: string;
+  price: number;
+  period: string;
+  tokens: number;
+  extra_token_cost: number;
+  max_monthly_tokens: number;
+  tracked_channels: number;
+  instagram_accounts: number;
+  tiktok_accounts: number;
+  competitor_brands: number;
+  team_members: number;
+  client_accounts: number;
+  history_days: number;
+  has_calendar: boolean;
+  has_tiktok: boolean;
+  has_api_access: boolean;
+  has_white_label: boolean;
+  has_priority_support: boolean;
+  sla_uptime: number | null;
+}
+
+const BADGES: Record<string, { label: string; color: string }> = {
+  free_test:  { label: "Try Free",   color: "#78614E" },
+  starter:    { label: "Start Here", color: "#3B82F6" },
+  lite:       { label: "Popular",    color: "#F59E0B" },
+  pro:        { label: "Best Value", color: "#8B5CF6" },
+  business:   { label: "Agency",     color: "#E1306C" },
+  enterprise: { label: "Enterprise", color: "#16A34A" },
+};
+
+function fmtTokens(n: number) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+  if (n >= 1_000) return (n / 1_000).toFixed(0) + "K";
+  return String(n);
+}
+
+function fmtVal(n: number, suffix = "") {
+  if (n === -1) return "Unlimited";
+  return String(n) + suffix;
+}
+
+function fmtDays(n: number) {
+  if (n === -1) return "Unlimited";
+  if (n >= 365) return `${Math.round(n / 365)}yr`;
+  return `${n}d`;
+}
+
+function Row({ icon, label, value, ok }: { icon: React.ReactNode; label: string; value?: string; ok?: boolean }) {
+  const isCheck = ok !== undefined;
+  return (
+    <div className="flex items-center gap-2 py-1.5 border-b" style={{ borderColor: "rgba(245,215,160,0.15)" }}>
+      <span style={{ color: "#C4AA8A" }} className="flex-shrink-0">{icon}</span>
+      <span className="text-xs flex-1" style={{ color: "#78614E" }}>{label}</span>
+      {isCheck ? (
+        ok
+          ? <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#16A34A" }} />
+          : <X className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#D1C4B0" }} />
+      ) : (
+        <span className="text-xs font-bold" style={{ color: "#292524" }}>{value}</span>
+      )}
+    </div>
+  );
+}
 
 export default function RegisterPage() {
   const router = useRouter();
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [loadingPlans, setLoadingPlans] = useState(true);
   const [step, setStep] = useState<"plan" | "form">("plan");
   const [selectedPlan, setSelectedPlan] = useState("free_test");
   const [name, setName] = useState("");
@@ -66,6 +87,13 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/pricing")
+      .then(r => r.json())
+      .then(d => { if (d.plans) setPlans(d.plans); })
+      .finally(() => setLoadingPlans(false));
+  }, []);
 
   const handleSelectPlan = (planId: string) => {
     setSelectedPlan(planId);
@@ -77,7 +105,6 @@ export default function RegisterPage() {
     setError("");
     setSuccess("");
     setLoading(true);
-
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",
@@ -85,11 +112,7 @@ export default function RegisterPage() {
         body: JSON.stringify({ name, email, password, plan: selectedPlan }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "An error occurred.");
-        setLoading(false);
-        return;
-      }
+      if (!res.ok) { setError(data.error || "An error occurred."); setLoading(false); return; }
       setSuccess("Account created! Check your email for confirmation, then sign in.");
       setTimeout(() => router.push("/login"), 3000);
     } catch {
@@ -98,348 +121,233 @@ export default function RegisterPage() {
     }
   };
 
-  const currentPlan = plans.find((p) => p.id === selectedPlan);
+  const currentPlan = plans.find(p => p.id === selectedPlan);
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FFF8F0" }}>
-      <div className="w-full max-w-6xl px-6 py-12">
+    <div className="min-h-screen" style={{ backgroundColor: "#FFF8F0" }}>
+      <div className="max-w-7xl mx-auto px-4 py-10">
+
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-4">
-            <div
-              className="w-14 h-14 rounded-xl flex items-center justify-center mb-3"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
-            >
-              <Zap className="w-7 h-7 text-white" />
-            </div>
+        <div className="text-center mb-10">
+          <div className="inline-flex w-14 h-14 rounded-xl items-center justify-center mb-4"
+            style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}>
+            <Zap className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-3xl font-bold mb-2" style={{ color: "#292524" }}>
-            MarketHub Pro
-          </h1>
-          <p className="text-sm" style={{ color: "#A8967E" }}>
-            Choose your plan and start today
-          </p>
+          <h1 className="text-3xl font-bold mb-1" style={{ color: "#292524" }}>MarketHub Pro</h1>
+          <p className="text-sm" style={{ color: "#A8967E" }}>Choose your plan and start today</p>
         </div>
 
         {step === "plan" ? (
-          /* Plan Selection Step */
-          <div>
-            <div className="mb-8 text-center">
-              <h2 className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>
-                Select Your Plan
-              </h2>
-              <p className="text-sm" style={{ color: "#A8967E" }}>
-                Start free with our 7-day trial, or jump straight to Lite/Pro
-              </p>
+          <>
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-1" style={{ color: "#292524" }}>Select Your Plan</h2>
+              <p className="text-sm" style={{ color: "#A8967E" }}>Start free for 7 days, no credit card required</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className="rounded-2xl p-8 cursor-pointer transition-all transform hover:scale-105"
-                  onClick={() => handleSelectPlan(plan.id)}
-                  style={{
-                    backgroundColor: "#FFFCF7",
-                    border:
-                      selectedPlan === plan.id
-                        ? "2px solid #F59E0B"
-                        : "1px solid rgba(245,215,160,0.25)",
-                    boxShadow:
-                      selectedPlan === plan.id
-                        ? "0 10px 30px rgba(245,158,11,0.2)"
-                        : "0 1px 3px rgba(120,97,78,0.08)",
-                  }}
-                >
-                  {/* Badge */}
-                  <div className="mb-4">
-                    <span
-                      className="text-xs font-bold px-3 py-1 rounded-full"
-                      style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#F59E0B" }}
-                    >
-                      {plan.badge}
-                    </span>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="text-2xl font-bold mb-1" style={{ color: "#292524" }}>
-                    {plan.name}
-                  </h3>
-                  <p className="text-sm mb-4" style={{ color: "#A8967E" }}>
-                    {plan.duration}
-                  </p>
-
-                  {/* Description */}
-                  <p className="text-sm mb-6" style={{ color: "#78614E" }}>
-                    {plan.description}
-                  </p>
-
-                  {/* Note */}
-                  {plan.note && (
-                    <div
-                      className="mb-6 p-2 rounded text-xs font-semibold"
-                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B" }}
-                    >
-                      {plan.note}
-                    </div>
-                  )}
-
-                  {/* Features */}
-                  <div className="space-y-3 mb-6">
-                    {plan.features.map((feature) => (
-                      <div key={feature.name} className="flex items-center gap-2">
-                        {feature.included ? (
-                          <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#10B981" }} />
-                        ) : (
-                          <X className="w-4 h-4 flex-shrink-0 text-gray-300" />
-                        )}
-                        <span
-                          className="text-sm"
-                          style={{ color: feature.included ? "#292524" : "#C4AA8A" }}
-                        >
-                          {feature.name}
-                          {feature.value && <span className="font-semibold ml-2">{feature.value}</span>}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* CTA Button */}
-                  <button
-                    className="w-full py-3 rounded-lg font-semibold text-sm transition-all"
-                    style={{
-                      backgroundColor: selectedPlan === plan.id ? "#F59E0B" : "rgba(245,158,11,0.1)",
-                      color: selectedPlan === plan.id ? "#1C1814" : "#F59E0B",
-                    }}
-                  >
-                    {selectedPlan === plan.id ? "Selected ✓" : "Choose Plan"}
-                  </button>
-                </div>
-              ))}
-            </div>
-
-            {/* Restrictions Info */}
-            <div
-              className="rounded-xl p-6 mb-8"
-              style={{ backgroundColor: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.2)" }}
-            >
-              <h4 className="font-semibold mb-3" style={{ color: "#292524" }}>
-                📋 Plan Restrictions & Limits
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-                <div>
-                  <p className="font-semibold mb-2" style={{ color: "#F59E0B" }}>
-                    Free Test (7 days)
-                  </p>
-                  <ul className="space-y-1" style={{ color: "#78614E" }}>
-                    <li>• Max 5 AI calls per day</li>
-                    <li>• Only 2 social media accounts</li>
-                    <li>• No email reports</li>
-                    <li>• Auto-expires after 7 days</li>
-                    <li>• Must upgrade to continue</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold mb-2" style={{ color: "#F59E0B" }}>
-                    Lite Plan ($20/month)
-                  </p>
-                  <ul className="space-y-1" style={{ color: "#78614E" }}>
-                    <li>• 50 AI calls per day</li>
-                    <li>• Unlimited social accounts</li>
-                    <li>• Email reports included</li>
-                    <li>• Max $20 API cost/month</li>
-                    <li>• Auto-throttled at limit</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold mb-2" style={{ color: "#F59E0B" }}>
-                    Pro Plan ($40/month)
-                  </p>
-                  <ul className="space-y-1" style={{ color: "#78614E" }}>
-                    <li>• Unlimited AI calls</li>
-                    <li>• Unlimited accounts</li>
-                    <li>• All features included</li>
-                    <li>• Max $40 API cost/month</li>
-                    <li>• Priority support 24/7</li>
-                  </ul>
-                </div>
+            {loadingPlans ? (
+              <div className="flex justify-center py-20">
+                <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
               </div>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+                {plans.map(plan => {
+                  const badge = BADGES[plan.id] ?? { label: "Plan", color: "#F59E0B" };
+                  const isFree = plan.id === "free_test";
+                  const isSelected = selectedPlan === plan.id;
 
-            <p className="text-center text-xs" style={{ color: "#A8967E" }}>
+                  return (
+                    <div key={plan.id}
+                      onClick={() => handleSelectPlan(plan.id)}
+                      className="rounded-2xl p-6 cursor-pointer transition-all hover:scale-[1.02] flex flex-col"
+                      style={{
+                        backgroundColor: "#FFFCF7",
+                        border: isSelected ? `2px solid ${badge.color}` : "1px solid rgba(245,215,160,0.25)",
+                        boxShadow: isSelected ? `0 8px 24px ${badge.color}25` : "0 1px 3px rgba(120,97,78,0.08)",
+                      }}>
+
+                      {/* Badge */}
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-full mb-4 inline-block self-start"
+                        style={{ backgroundColor: `${badge.color}18`, color: badge.color }}>
+                        {badge.label}
+                      </span>
+
+                      {/* Name + Price */}
+                      <h3 className="text-xl font-bold mb-0.5" style={{ color: "#292524" }}>{plan.name}</h3>
+                      <div className="flex items-end gap-1 mb-1">
+                        {isFree ? (
+                          <span className="text-3xl font-bold" style={{ color: badge.color }}>Free</span>
+                        ) : (
+                          <>
+                            <span className="text-3xl font-bold" style={{ color: badge.color }}>${plan.price}</span>
+                            <span className="text-sm mb-1" style={{ color: "#A8967E" }}>/month</span>
+                          </>
+                        )}
+                      </div>
+                      <p className="text-xs mb-5 font-semibold" style={{ color: "#A8967E" }}>
+                        {isFree ? "7-day trial · No card required" : `${fmtTokens(plan.tokens)} AI tokens/month included`}
+                      </p>
+
+                      {/* ── AI & Usage ── */}
+                      <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: badge.color }}>AI & Usage</p>
+                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="AI tokens/month" value={fmtTokens(plan.tokens)} />
+                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="Extra tokens (per 1K)" value={`$${plan.extra_token_cost.toFixed(4)}`} />
+                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="Token cap" value={plan.max_monthly_tokens === -1 ? "Unlimited" : fmtTokens(plan.max_monthly_tokens)} />
+
+                      {/* ── Accounts & Channels ── */}
+                      <p className="text-xs font-bold uppercase tracking-wide mt-4 mb-1" style={{ color: badge.color }}>Accounts & Channels</p>
+                      <Row icon={<Instagram className="w-3.5 h-3.5" />} label="Instagram accounts" value={fmtVal(plan.instagram_accounts)} />
+                      <Row icon={<BarChart2 className="w-3.5 h-3.5" />} label="TikTok accounts" value={fmtVal(plan.tiktok_accounts)} />
+                      <Row icon={<BarChart2 className="w-3.5 h-3.5" />} label="Tracked channels" value={fmtVal(plan.tracked_channels)} />
+                      <Row icon={<BarChart2 className="w-3.5 h-3.5" />} label="Competitor brands" value={fmtVal(plan.competitor_brands)} />
+
+                      {/* ── Team & Clients ── */}
+                      <p className="text-xs font-bold uppercase tracking-wide mt-4 mb-1" style={{ color: badge.color }}>Team & Clients</p>
+                      <Row icon={<Users className="w-3.5 h-3.5" />} label="Team members" value={fmtVal(plan.team_members)} />
+                      <Row icon={<Briefcase className="w-3.5 h-3.5" />} label="Client accounts" value={fmtVal(plan.client_accounts)} />
+
+                      {/* ── Data & History ── */}
+                      <p className="text-xs font-bold uppercase tracking-wide mt-4 mb-1" style={{ color: badge.color }}>Data & History</p>
+                      <Row icon={<Clock className="w-3.5 h-3.5" />} label="Analytics history" value={fmtDays(plan.history_days)} />
+
+                      {/* ── Features ── */}
+                      <p className="text-xs font-bold uppercase tracking-wide mt-4 mb-1" style={{ color: badge.color }}>Features</p>
+                      <Row icon={<Check className="w-3.5 h-3.5" />} label="Post scheduler (calendar)" ok={plan.has_calendar} />
+                      <Row icon={<Check className="w-3.5 h-3.5" />} label="TikTok analytics" ok={plan.has_tiktok} />
+                      <Row icon={<Check className="w-3.5 h-3.5" />} label="API access" ok={plan.has_api_access} />
+                      <Row icon={<Check className="w-3.5 h-3.5" />} label="White label reports" ok={plan.has_white_label} />
+                      <Row icon={<Star className="w-3.5 h-3.5" />} label="Priority support" ok={plan.has_priority_support} />
+                      {plan.sla_uptime !== null && (
+                        <Row icon={<Shield className="w-3.5 h-3.5" />} label="SLA uptime" value={`${plan.sla_uptime}%`} />
+                      )}
+
+                      {/* CTA */}
+                      <button className="w-full py-2.5 rounded-lg text-sm font-bold transition-all mt-5"
+                        style={{
+                          backgroundColor: isSelected ? badge.color : `${badge.color}15`,
+                          color: isSelected ? "white" : badge.color,
+                        }}>
+                        {isSelected ? "Selected ✓" : isFree ? "Start Free Trial" : `Choose ${plan.name}`}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <p className="text-center text-sm" style={{ color: "#A8967E" }}>
               Already have an account?{" "}
-              <Link href="/login" style={{ color: "#F59E0B", fontWeight: 600 }}>
-                Sign in
-              </Link>
+              <Link href="/login" className="font-semibold" style={{ color: "#F59E0B" }}>Sign in</Link>
             </p>
-          </div>
+          </>
         ) : (
-          /* Registration Form Step */
+          /* Registration Form */
           <div className="max-w-md mx-auto">
-            {/* Back Button */}
-            <button
-              onClick={() => setStep("plan")}
-              className="text-sm font-semibold mb-6 flex items-center gap-2"
-              style={{ color: "#F59E0B" }}
-            >
+            <button onClick={() => setStep("plan")}
+              className="text-sm font-semibold mb-6 flex items-center gap-1.5"
+              style={{ color: "#F59E0B" }}>
               ← Back to plans
             </button>
 
-            {/* Selected Plan Summary */}
-            <div
-              className="rounded-xl p-4 mb-6"
-              style={{ backgroundColor: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.2)" }}
-            >
-              <p className="text-sm" style={{ color: "#292524" }}>
-                <span className="font-semibold">You selected:</span>{" "}
-                <span style={{ color: "#F59E0B" }}>{currentPlan?.name}</span>
-              </p>
-              {currentPlan?.note && (
-                <p className="text-xs mt-2" style={{ color: "#A8967E" }}>
-                  {currentPlan.note}
-                </p>
-              )}
-            </div>
+            {/* Selected plan summary */}
+            {currentPlan && (
+              <div className="rounded-xl p-4 mb-6"
+                style={{ backgroundColor: `${(BADGES[currentPlan.id]?.color ?? "#F59E0B")}10`, border: `1px solid ${(BADGES[currentPlan.id]?.color ?? "#F59E0B")}30` }}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>Selected plan</p>
+                    <p className="text-lg font-bold" style={{ color: "#292524" }}>{currentPlan.name}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
+                      {fmtTokens(currentPlan.tokens)} tokens · {fmtVal(currentPlan.instagram_accounts)} Instagram · {fmtDays(currentPlan.history_days)} history
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold" style={{ color: BADGES[currentPlan.id]?.color ?? "#F59E0B" }}>
+                      {currentPlan.price === 0 ? "Free" : `$${currentPlan.price}/mo`}
+                    </p>
+                    <p className="text-xs" style={{ color: "#A8967E" }}>{currentPlan.period}</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
-            {/* Form Card */}
-            <div
-              className="rounded-2xl p-8"
-              style={{
-                backgroundColor: "#FFFCF7",
-                border: "1px solid rgba(245,215,160,0.35)",
-                boxShadow: "0 4px 24px rgba(120,97,78,0.12)",
-              }}
-            >
-              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>
-                Create Account
-              </h2>
-              <p className="text-sm mb-6" style={{ color: "#A8967E" }}>
-                Start free, no card required
-              </p>
+            {/* Form */}
+            <div className="rounded-2xl p-8"
+              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 4px 24px rgba(120,97,78,0.12)" }}>
+              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Create Account</h2>
+              <p className="text-sm mb-6" style={{ color: "#A8967E" }}>Start free, no card required</p>
 
               <form onSubmit={handleRegister} className="space-y-4">
-                {/* Full name */}
                 <div>
-                  <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>
-                    Full name
-                  </label>
+                  <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>Full name</label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Your name"
-                      required
-                      className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none transition-all"
-                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
-                      onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
-                      onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.4)")}
-                    />
+                    <input type="text" value={name} onChange={e => setName(e.target.value)}
+                      placeholder="Your name" required
+                      className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none"
+                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
                   </div>
                 </div>
 
-                {/* Email */}
                 <div>
-                  <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>
-                    Email
-                  </label>
+                  <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>Email</label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="email@example.com"
-                      required
-                      className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none transition-all"
-                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
-                      onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
-                      onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.4)")}
-                    />
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                      placeholder="email@example.com" required
+                      className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none"
+                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
                   </div>
                 </div>
 
-                {/* Password */}
                 <div>
-                  <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>
-                    Password
-                  </label>
+                  <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>Password</label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="At least 8 characters"
-                      required
-                      minLength={8}
-                      className="w-full pl-10 pr-10 py-3 text-sm rounded-lg focus:outline-none transition-all"
-                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
-                      onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
-                      onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.4)")}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2"
-                      style={{ color: "#C4AA8A" }}
-                    >
+                    <input type={showPassword ? "text" : "password"} value={password}
+                      onChange={e => setPassword(e.target.value)}
+                      placeholder="At least 8 characters" required minLength={8}
+                      className="w-full pl-10 pr-10 py-3 text-sm rounded-lg focus:outline-none"
+                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: "#C4AA8A" }}>
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
 
-                {/* Error */}
                 {error && (
-                  <div
-                    className="text-sm px-3 py-2 rounded-lg"
-                    style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#dc2626", border: "1px solid rgba(239,68,68,0.2)" }}
-                  >
+                  <div className="text-sm px-3 py-2 rounded-lg"
+                    style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#dc2626", border: "1px solid rgba(239,68,68,0.2)" }}>
                     {error}
                   </div>
                 )}
-
-                {/* Success */}
                 {success && (
-                  <div
-                    className="text-sm px-3 py-2 rounded-lg"
-                    style={{ backgroundColor: "rgba(22,163,74,0.08)", color: "#16a34a", border: "1px solid rgba(22,163,74,0.2)" }}
-                  >
+                  <div className="text-sm px-3 py-2 rounded-lg"
+                    style={{ backgroundColor: "rgba(22,163,74,0.08)", color: "#16a34a", border: "1px solid rgba(22,163,74,0.2)" }}>
                     {success}
                   </div>
                 )}
 
-                {/* Submit */}
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full py-3 rounded-lg text-sm font-bold transition-opacity"
-                  style={{ backgroundColor: "#F59E0B", color: "#1C1814", opacity: loading ? 0.7 : 1 }}
-                >
+                <button type="submit" disabled={loading}
+                  className="w-full py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2"
+                  style={{ backgroundColor: "#F59E0B", color: "#1C1814", opacity: loading ? 0.7 : 1 }}>
+                  {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                   {loading ? "Creating account..." : "Create free account"}
                 </button>
               </form>
 
               <p className="text-center text-xs mt-5" style={{ color: "#A8967E" }}>
                 Already have an account?{" "}
-                <Link href="/login" style={{ color: "#F59E0B", fontWeight: 600 }}>
-                  Sign in
-                </Link>
+                <Link href="/login" className="font-semibold" style={{ color: "#F59E0B" }}>Sign in</Link>
               </p>
             </div>
           </div>
         )}
 
-        <p className="text-center text-xs mt-6" style={{ color: "#C4AA8A" }}>
+        <p className="text-center text-xs mt-8" style={{ color: "#C4AA8A" }}>
           © 2026 MarketHub Pro ·{" "}
-          <a href="/privacy" style={{ color: "#F59E0B" }}>
-            Privacy
-          </a>
-          {" "}·{" "}
-          <a href="/terms" style={{ color: "#F59E0B" }}>
-            Terms
-          </a>
+          <a href="/privacy" style={{ color: "#F59E0B" }}>Privacy</a>{" "}·{" "}
+          <a href="/terms" style={{ color: "#F59E0B" }}>Terms</a>
         </p>
       </div>
     </div>
