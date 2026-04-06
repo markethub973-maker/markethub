@@ -19,10 +19,13 @@ export async function POST(request: Request) {
     }
 
     // Constant-time password comparison to prevent timing attacks
-    const passwordMatch = crypto.timingSafeEqual(
-      Buffer.from(password),
-      Buffer.from(adminPassword)
-    );
+    // timingSafeEqual requires same-length buffers — pad to equal length first
+    const a = Buffer.from(password);
+    const b = Buffer.from(adminPassword);
+    const maxLen = Math.max(a.length, b.length);
+    const aPad = Buffer.concat([a, Buffer.alloc(maxLen - a.length)]);
+    const bPad = Buffer.concat([b, Buffer.alloc(maxLen - b.length)]);
+    const passwordMatch = a.length === b.length && crypto.timingSafeEqual(aPad, bPad);
     if (!passwordMatch) {
       return NextResponse.json(
         { error: "Invalid password" },
