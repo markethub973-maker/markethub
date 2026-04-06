@@ -173,16 +173,19 @@ export async function POST(req: NextRequest) {
       return { ok: true, data: r.data, warnings: validateTikTok(r.data || []) };
     }),
 
-    // TEST 5: Apify — Reddit
-    runTest("Reddit Search (Apify)", "apify", async () => {
-      const r = await safeApify<any[]>("trudax~reddit-scraper-lite", {
-        startUrls: [{ url: "https://www.reddit.com/r/marketing/hot/" }],
-        maxPostCount: 3,
-        maxComments: 0,
-        scrollTimeout: 20,
-      }, { timeoutSec: 90, retries: 0 });
+    // TEST 5: Reddit JSON API (no Apify — public endpoint)
+    runTest("Reddit API (public)", "reddit", async () => {
+      const r = await safeFetch<any>(
+        "https://www.reddit.com/r/marketing/hot.json?limit=5",
+        { timeoutMs: 10000, headers: { "User-Agent": "MarketHubPro/1.0" } }
+      );
       if (!r.ok) return r;
-      return { ok: true, data: r.data, warnings: validateReddit(r.data || []) };
+      const posts = r.data?.data?.children?.map((c: any) => c.data) || [];
+      const warnings: string[] = [];
+      if (posts.length === 0) warnings.push("No posts returned");
+      if (!posts[0]?.title) warnings.push("Missing field: title");
+      if (!posts[0]?.url && !posts[0]?.permalink) warnings.push("Missing field: url/permalink");
+      return { ok: true, data: posts, warnings };
     }),
 
     // TEST 6: Apify — Local Market
@@ -272,7 +275,7 @@ export async function POST(req: NextRequest) {
         const tables = ["research_leads", "agent_runs", "cron_logs", "discount_codes"];
         const missing: string[] = [];
         for (const t of tables) {
-          const { error } = await supa.from(t as any).select("id").limit(0);
+          const { error } = await supa.from(t as any).select("*").limit(0);
           if (error) missing.push(t);
         }
         return {

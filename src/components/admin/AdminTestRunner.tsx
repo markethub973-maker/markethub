@@ -30,6 +30,7 @@ const SERVICE_ICONS: Record<string, React.ReactNode> = {
   supabase: <Database size={15} />,
   resend: <Mail size={15} />,
   youtube: <Youtube size={15} />,
+  reddit: <MessageSquare size={15} />,
 };
 
 const TEST_ICONS: Record<string, React.ReactNode> = {
