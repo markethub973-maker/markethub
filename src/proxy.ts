@@ -152,7 +152,7 @@ function checkAdminTunnel(request: NextRequest): boolean {
   return diff === 0;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip static files and Next internals
