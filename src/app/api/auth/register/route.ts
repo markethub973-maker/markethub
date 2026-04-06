@@ -116,7 +116,11 @@ export async function POST(req: NextRequest) {
   });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    // Don't expose internal Supabase error details
+    const msg = error.message?.includes("already registered")
+      ? "An account with this email already exists."
+      : "Registration failed. Please try again.";
+    return NextResponse.json({ error: msg }, { status: 400 });
   }
 
   // ── Update profile with anti-abuse fields + subscription ─────────────────

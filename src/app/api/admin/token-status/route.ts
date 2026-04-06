@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 interface TokenInfo {
   platform: string;
@@ -31,7 +32,10 @@ function statusFromDays(days: number | null): "ok" | "warning" | "expired" | "un
   return "ok";
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!isAdminAuthorized(req)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
   const supabase = createServiceClient();
 
   const { data: platforms } = await supabase

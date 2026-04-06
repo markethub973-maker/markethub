@@ -18,11 +18,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Admin not configured" }, { status: 500 });
     }
 
-    // Constant-time comparison
-    const passwordMatch = crypto.timingSafeEqual(
-      Buffer.from(password),
-      Buffer.from(adminPassword)
-    );
+    // Constant-time comparison — pad to equal length to avoid length-based timing leak
+    const a = Buffer.from(password);
+    const b = Buffer.from(adminPassword);
+    const maxLen = Math.max(a.length, b.length);
+    const aPad = Buffer.concat([a, Buffer.alloc(maxLen - a.length)]);
+    const bPad = Buffer.concat([b, Buffer.alloc(maxLen - b.length)]);
+    const passwordMatch = a.length === b.length && crypto.timingSafeEqual(aPad, bPad);
     if (!passwordMatch) {
       return NextResponse.json(
         { error: "Invalid password" },
@@ -44,8 +46,8 @@ export async function POST(request: Request) {
       value: sessionToken,
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      sameSite: "strict",
+      maxAge: 8 * 60 * 60, // 8 hours
       path: "/",
     });
 

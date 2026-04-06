@@ -34,7 +34,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .select()
     .single();
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  if (error) return NextResponse.json({ error: "Bad request" }, { status: 400 });
   return NextResponse.json({ post: data });
 }
 
@@ -52,6 +52,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     .eq("id", id)
     .eq("user_id", user.id);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  if (error) return NextResponse.json({ error: "Bad request" }, { status: 400 });
   return NextResponse.json({ success: true });
 }

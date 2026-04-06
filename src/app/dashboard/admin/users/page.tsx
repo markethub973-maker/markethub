@@ -151,12 +151,8 @@ export default function AdminUsersPage() {
     loadData();
   }, []);
 
-  const getAdminHeaders = () => {
-    const token = typeof window !== "undefined"
-      ? localStorage.getItem("admin_token") ?? ""
-      : "";
-    return { "Content-Type": "application/json", "x-admin-secret": token };
-  };
+  // Auth is handled via httpOnly admin_session_token cookie set at login
+  const getAdminHeaders = () => ({ "Content-Type": "application/json" });
 
   const loadData = useCallback(async () => {
     setLoading(true);

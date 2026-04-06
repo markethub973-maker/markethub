@@ -83,7 +83,7 @@ function corsResponse(req: NextRequest, res: NextResponse): NextResponse {
   if (ALLOWED_ORIGINS.includes(origin)) {
     res.headers.set("Access-Control-Allow-Origin", origin);
     res.headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-cron-secret, x-admin-secret");
+    res.headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, x-cron-secret");
     res.headers.set("Access-Control-Max-Age", "86400");
     res.headers.set("Vary", "Origin");
   }

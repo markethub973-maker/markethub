@@ -46,12 +46,10 @@ export default function AdminPage() {
   // Auto-run migration on every admin load (idempotent — only applies missing steps)
   const runMigrationSilently = async () => {
     try {
-      const token = typeof window !== "undefined"
-        ? localStorage.getItem("admin_token") ?? ""
-        : "";
+      // Auth via httpOnly admin_session_token cookie — no token in headers needed
       await fetch("/api/admin/run-migration", {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-secret": token },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({}),
       });
     } catch { /* silent */ }
