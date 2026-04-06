@@ -201,7 +201,10 @@ export async function proxy(request: NextRequest) {
   const isAdminPath =
     pathname.startsWith("/markethub973") ||
     pathname.startsWith("/dashboard/admin") ||
-    pathname.startsWith("/api/admin");
+    pathname.startsWith("/api/admin/") ||   // /api/admin/* routes (with slash)
+    pathname === "/api/admin";
+  // NOTE: /api/admin-secret-login and /api/admin-auth are excluded intentionally
+  // — they are the login endpoints and must remain reachable without tunnel token
 
   if (isAdminPath && !checkAdminTunnel(request)) {
     // Return 404 — don't reveal that an admin panel exists
