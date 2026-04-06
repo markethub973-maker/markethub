@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { safeAnthropic } from "@/lib/serviceGuard";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -81,20 +82,24 @@ export async function POST(req: NextRequest) {
     ? `\n\nLOCAL MARKET OVERRIDE:\n- Target region: ${region}\n- Language for keywords: ${language || "auto"}\n- Market-specific hints:\n${(hints as string[]).map((h: string) => `  • ${h}`).join("\n")}`
     : "";
 
-  try {
-    const msg = await anthropic.messages.create({
+  const result = await safeAnthropic(() =>
+    anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2000,
       system: SYSTEM_PROMPT + localContext,
       messages: [{ role: "user", content: `Business goal: ${goal}` }],
-    });
+    })
+  );
 
-    const text = msg.content[0].type === "text" ? msg.content[0].text : "";
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error, service: "anthropic", degraded: true }, { status: 503 });
+  }
+
+  try {
+    const text = result.data.content[0].type === "text" ? result.data.content[0].text : "";
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return NextResponse.json({ error: "Could not parse AI response" }, { status: 500 });
-
-    const plan = JSON.parse(jsonMatch[0]);
-    return NextResponse.json({ plan });
+    return NextResponse.json({ plan: JSON.parse(jsonMatch[0]) });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

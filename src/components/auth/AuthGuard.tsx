@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "@/components/layout/Sidebar";
 import SetupAgent from "@/components/ui/SetupAgent";
+import { ModuleBoundary } from "@/components/ModuleBoundary";
 import { createClient } from "@/lib/supabase/client";
 
 const PUBLIC_PATHS = ["/login", "/register", "/markethub973"];
@@ -41,7 +42,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return (
       <>
         <Sidebar />
-        <main className="ml-64 min-h-screen">{children}</main>
+        <main className="ml-64 min-h-screen">
+          <ModuleBoundary name="Admin Dashboard">
+            {children}
+          </ModuleBoundary>
+        </main>
       </>
     );
   }
@@ -50,7 +55,11 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Sidebar />
-      <main className="ml-64 min-h-screen">{children}</main>
+      <main className="ml-64 min-h-screen">
+        <ModuleBoundary name="Page">
+          {children}
+        </ModuleBoundary>
+      </main>
       {pathname !== "/ai-hub" && <SetupAgent />}
     </>
   );
