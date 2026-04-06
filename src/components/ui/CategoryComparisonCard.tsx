@@ -26,7 +26,69 @@ interface Props {
   niche?: string;
 }
 
-const REGION_OPTIONS = ["US", "RO", "GB", "DE", "FR", "IN"];
+const REGION_OPTIONS = [
+  // Americas
+  { code: "US", name: "🇺🇸 USA" },
+  { code: "CA", name: "🇨🇦 Canada" },
+  { code: "BR", name: "🇧🇷 Brazil" },
+  { code: "MX", name: "🇲🇽 Mexico" },
+  { code: "AR", name: "🇦🇷 Argentina" },
+  { code: "CO", name: "🇨🇴 Colombia" },
+  { code: "CL", name: "🇨🇱 Chile" },
+  { code: "PE", name: "🇵🇪 Peru" },
+  // Europe
+  { code: "RO", name: "🇷🇴 Romania" },
+  { code: "GB", name: "🇬🇧 UK" },
+  { code: "DE", name: "🇩🇪 Germany" },
+  { code: "FR", name: "🇫🇷 France" },
+  { code: "IT", name: "🇮🇹 Italy" },
+  { code: "ES", name: "🇪🇸 Spain" },
+  { code: "NL", name: "🇳🇱 Netherlands" },
+  { code: "PL", name: "🇵🇱 Poland" },
+  { code: "SE", name: "🇸🇪 Sweden" },
+  { code: "PT", name: "🇵🇹 Portugal" },
+  { code: "GR", name: "🇬🇷 Greece" },
+  { code: "AT", name: "🇦🇹 Austria" },
+  { code: "BE", name: "🇧🇪 Belgium" },
+  { code: "CH", name: "🇨🇭 Switzerland" },
+  { code: "HU", name: "🇭🇺 Hungary" },
+  { code: "CZ", name: "🇨🇿 Czech Republic" },
+  { code: "BG", name: "🇧🇬 Bulgaria" },
+  { code: "HR", name: "🇭🇷 Croatia" },
+  { code: "UA", name: "🇺🇦 Ukraine" },
+  // Asia & Pacific
+  { code: "JP", name: "🇯🇵 Japan" },
+  { code: "KR", name: "🇰🇷 South Korea" },
+  { code: "IN", name: "🇮🇳 India" },
+  { code: "PH", name: "🇵🇭 Philippines" },
+  { code: "TH", name: "🇹🇭 Thailand" },
+  { code: "SG", name: "🇸🇬 Singapore" },
+  { code: "ID", name: "🇮🇩 Indonesia" },
+  { code: "MY", name: "🇲🇾 Malaysia" },
+  { code: "VN", name: "🇻🇳 Vietnam" },
+  { code: "AU", name: "🇦🇺 Australia" },
+  { code: "NZ", name: "🇳🇿 New Zealand" },
+  // Middle East
+  { code: "SA", name: "🇸🇦 Saudi Arabia" },
+  { code: "AE", name: "🇦🇪 UAE" },
+  { code: "EG", name: "🇪🇬 Egypt" },
+  { code: "TR", name: "🇹🇷 Turkey" },
+  { code: "IL", name: "🇮🇱 Israel" },
+  { code: "KW", name: "🇰🇼 Kuwait" },
+  { code: "QA", name: "🇶🇦 Qatar" },
+  { code: "MA", name: "🇲🇦 Morocco" },
+  { code: "DZ", name: "🇩🇿 Algeria" },
+  // Africa
+  { code: "NG", name: "🇳🇬 Nigeria" },
+  { code: "ZA", name: "🇿🇦 South Africa" },
+  { code: "GH", name: "🇬🇭 Ghana" },
+  { code: "KE", name: "🇰🇪 Kenya" },
+  // CIS
+  { code: "RU", name: "🇷🇺 Russia" },
+  { code: "KZ", name: "🇰🇿 Kazakhstan" },
+  { code: "BY", name: "🇧🇾 Belarus" },
+  { code: "UZ", name: "🇺🇿 Uzbekistan" },
+];
 
 export default function CategoryComparisonCard({ channelId, niche }: Props) {
   const [categories, setCategories] = useState<CategoryData[]>([]);
@@ -90,7 +152,7 @@ export default function CategoryComparisonCard({ channelId, niche }: Props) {
           <label className="text-xs text-[#78614E] block mb-1">Region</label>
           <select value={region} onChange={e => setRegion(e.target.value)}
             className="text-sm px-3 py-1.5 border border-[#E8D9C5] rounded-lg focus:outline-none focus:border-[#F59E0B] bg-[#FFFCF7] text-[#292524]">
-            {REGION_OPTIONS.map(r => <option key={r}>{r}</option>)}
+            {REGION_OPTIONS.map(r => <option key={r.code} value={r.code}>{r.name}</option>)}
           </select>
         </div>
         <div className="flex-1 min-w-[140px]">
