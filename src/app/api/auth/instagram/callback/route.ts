@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/client";
+import { encryptField } from "@/lib/fieldCrypto";
+import { logAudit } from "@/lib/auditLog";
 
 export async function GET(request: Request) {
   try {
@@ -77,7 +79,7 @@ export async function GET(request: Request) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Save Instagram connection to database
+    // Save Instagram connection to database (token stored encrypted)
     const { error } = await supabase
       .from("instagram_connections")
       .upsert(
@@ -86,7 +88,8 @@ export async function GET(request: Request) {
           instagram_id: userData.id,
           instagram_username: userData.username,
           instagram_name: userData.name,
-          access_token: tokenData.access_token,
+          access_token:     tokenData.access_token,          // plaintext (backward-compat)
+          enc_access_token: encryptField(tokenData.access_token), // encrypted shadow
           token_type: tokenData.token_type || "bearer",
           connected_at: new Date(),
         },
@@ -97,6 +100,12 @@ export async function GET(request: Request) {
       console.error("Database error:", error);
       return NextResponse.redirect(new URL("/settings?error=db_failed", request.url));
     }
+
+    await logAudit({
+      action: "token_refreshed",
+      actor_id: user.user.id,
+      entity_type: "instagram_oauth",
+    });
 
     // Success - redirect to settings with success message
     return NextResponse.redirect(new URL("/settings?instagram=connected", request.url));

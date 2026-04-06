@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { isAdminAuthorized } from "@/lib/adminAuth";
+import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 
 // Run raw SQL via Supabase pg-meta API (no custom RPC function needed)
 async function runSQL(sql: string): Promise<{ ok: boolean; error?: string }> {
@@ -262,6 +263,52 @@ export async function POST(req: NextRequest) {
     `);
     results["abuse_flags_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }
+
+  // ── 13. audit_logs table ─────────────────────────────────────────────────
+  if (await tableExists(supa, "audit_logs")) {
+    results["audit_logs_table"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS audit_logs (
+        id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        action      TEXT NOT NULL,
+        actor_id    TEXT,
+        target_id   TEXT,
+        entity_type TEXT,
+        details     JSONB,
+        ip          TEXT,
+        user_agent  TEXT,
+        created_at  TIMESTAMPTZ DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_audit_logs_action     ON audit_logs(action);
+      CREATE INDEX IF NOT EXISTS idx_audit_logs_actor      ON audit_logs(actor_id);
+      CREATE INDEX IF NOT EXISTS idx_audit_logs_target     ON audit_logs(target_id);
+      CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC);
+    `);
+    results["audit_logs_table"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
+  // ── 14. Encrypted token columns in profiles ──────────────────────────────
+  // Add encrypted_* shadow columns — the app writes encrypted values here
+  // while keeping the original columns for backward-compat during rollout.
+  if (await columnExists(supa, "profiles", "enc_instagram_access_token")) {
+    results["encrypted_token_columns"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      ALTER TABLE profiles
+        ADD COLUMN IF NOT EXISTS enc_instagram_access_token TEXT,
+        ADD COLUMN IF NOT EXISTS enc_youtube_access_token   TEXT,
+        ADD COLUMN IF NOT EXISTS enc_youtube_refresh_token  TEXT;
+    `);
+    results["encrypted_token_columns"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
+  await logAudit({
+    action: "migration_run",
+    actor_id: "admin",
+    details: { steps: Object.keys(results), applied: Object.values(results).filter(v => v === "applied").length },
+    ip: getIpFromHeaders(req.headers),
+  });
 
   return NextResponse.json({ results });
 }

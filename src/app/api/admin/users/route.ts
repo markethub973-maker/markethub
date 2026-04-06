@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { isAdminAuthorized } from "@/lib/adminAuth";
+import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 import { TOKEN_PLANS } from "@/lib/token-plan-config";
 
 const PLAN_PRICES: Record<string, number> = {
@@ -165,6 +166,14 @@ export async function POST(req: NextRequest) {
       }, { onConflict: "user_id,reason" });
     } catch { /* ignore */ }
 
+    await logAudit({
+      action: "user_blocked",
+      actor_id: "admin",
+      target_id: user_id,
+      entity_type: "user",
+      details: { reason: reason || "Manual block by admin" },
+      ip: getIpFromHeaders(req.headers),
+    });
     return NextResponse.json({ success: true, action: "blocked" });
   }
 
@@ -173,6 +182,13 @@ export async function POST(req: NextRequest) {
       is_blocked: false,
       blocked_reason: null,
     }).eq("id", user_id);
+    await logAudit({
+      action: "user_unblocked",
+      actor_id: "admin",
+      target_id: user_id,
+      entity_type: "user",
+      ip: getIpFromHeaders(req.headers),
+    });
     return NextResponse.json({ success: true, action: "unblocked" });
   }
 
@@ -181,6 +197,14 @@ export async function POST(req: NextRequest) {
     await supa.from("profiles").update({
       subscription_plan: plan,
     }).eq("id", user_id);
+    await logAudit({
+      action: "plan_changed",
+      actor_id: "admin",
+      target_id: user_id,
+      entity_type: "user",
+      details: { new_plan: plan },
+      ip: getIpFromHeaders(req.headers),
+    });
     return NextResponse.json({ success: true, action: "plan_changed", plan });
   }
 

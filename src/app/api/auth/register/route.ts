@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendWelcomeEmail, sendOnboarding1_Welcome } from "@/lib/resend";
+import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 
 const VALID_PLANS = ["free_test", "starter", "lite", "pro", "business", "enterprise"];
 
@@ -159,6 +160,14 @@ export async function POST(req: NextRequest) {
       }
     }
   }
+
+  await logAudit({
+    action: "user_registered",
+    actor_id: data.user?.id,
+    entity_type: "user",
+    details: { plan: selectedPlan },
+    ip: getIpFromHeaders(req.headers),
+  });
 
   await sendWelcomeEmail(email, name).catch(() => {});
   await sendOnboarding1_Welcome(email, name).catch(() => {});

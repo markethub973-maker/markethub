@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { generateAdminToken } from "@/lib/adminAuth";
+import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 
 export async function POST(request: Request) {
   try {
@@ -26,6 +27,12 @@ export async function POST(request: Request) {
     const bPad = Buffer.concat([b, Buffer.alloc(maxLen - b.length)]);
     const passwordMatch = a.length === b.length && crypto.timingSafeEqual(aPad, bPad);
     if (!passwordMatch) {
+      await logAudit({
+        action: "admin_login",
+        actor_id: "unknown",
+        details: { success: false },
+        ip: getIpFromHeaders(request instanceof Request ? request.headers : new Headers()),
+      });
       return NextResponse.json(
         { error: "Invalid password" },
         { status: 401 }
@@ -38,6 +45,14 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       success: true,
       message: "Admin access granted",
+    });
+
+    await logAudit({
+      action: "admin_login",
+      actor_id: "admin",
+      details: { success: true },
+      ip: getIpFromHeaders(request instanceof Request ? request.headers : new Headers()),
+      user_agent: request instanceof Request ? (request.headers.get("user-agent") ?? undefined) : undefined,
     });
 
     // Set secure session cookie

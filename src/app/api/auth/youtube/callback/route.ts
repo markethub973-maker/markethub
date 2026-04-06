@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { encryptField } from "@/lib/fieldCrypto";
+import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
@@ -48,9 +50,12 @@ export async function GET(req: NextRequest) {
   const { error: dbError } = await supabase
     .from("profiles")
     .update({
-      youtube_access_token: access_token,
-      youtube_refresh_token: refresh_token ?? null,
+      youtube_access_token:     access_token,
+      youtube_refresh_token:    refresh_token ?? null,
       youtube_token_expires_at: expiresAt,
+      // Encrypted shadow columns
+      enc_youtube_access_token:  encryptField(access_token),
+      enc_youtube_refresh_token: refresh_token ? encryptField(refresh_token) : null,
     })
     .eq("id", state);
 
@@ -58,6 +63,13 @@ export async function GET(req: NextRequest) {
     console.error("[YouTube OAuth] DB error:", dbError.message);
     return NextResponse.redirect(new URL("/my-channel?error=db_save_failed", req.url));
   }
+
+  await logAudit({
+    action: "token_refreshed",
+    actor_id: state,
+    entity_type: "youtube_oauth",
+    ip: getIpFromHeaders(req.headers),
+  });
 
   return NextResponse.redirect(new URL("/my-channel?analytics=connected", req.url));
 }

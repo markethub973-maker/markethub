@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { encryptField, decryptField } from "@/lib/fieldCrypto";
 
 const ANALYTICS_BASE = "https://youtubeanalytics.googleapis.com/v2/reports";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -43,25 +44,26 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  // Fetch stored tokens
+  // Fetch stored tokens (prefer encrypted column, fall back to plaintext)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("youtube_access_token, youtube_refresh_token, youtube_token_expires_at, youtube_channel_id")
+    .select("youtube_access_token, youtube_refresh_token, youtube_token_expires_at, youtube_channel_id, enc_youtube_access_token, enc_youtube_refresh_token")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.youtube_refresh_token) {
+  const rawRefresh = decryptField(profile?.enc_youtube_refresh_token) ?? profile?.youtube_refresh_token;
+  if (!rawRefresh) {
     return NextResponse.json({ error: "not_connected" }, { status: 200 });
   }
 
   // Check if token is expired — refresh if needed
-  let accessToken = profile.youtube_access_token as string;
-  const expiresAt = profile.youtube_token_expires_at
+  let accessToken = (decryptField(profile?.enc_youtube_access_token) ?? profile?.youtube_access_token) as string;
+  const expiresAt = profile?.youtube_token_expires_at
     ? new Date(profile.youtube_token_expires_at).getTime()
     : 0;
 
   if (!accessToken || Date.now() > expiresAt - 60_000) {
-    const newToken = await refreshAccessToken(profile.youtube_refresh_token as string);
+    const newToken = await refreshAccessToken(rawRefresh as string);
     if (!newToken) {
       return NextResponse.json({ error: "token_refresh_failed" }, { status: 200 });
     }
@@ -69,11 +71,15 @@ export async function GET(req: NextRequest) {
     const newExpiry = new Date(Date.now() + 3600 * 1000).toISOString();
     await supabase
       .from("profiles")
-      .update({ youtube_access_token: newToken, youtube_token_expires_at: newExpiry })
+      .update({
+        youtube_access_token:    newToken,
+        youtube_token_expires_at: newExpiry,
+        enc_youtube_access_token: encryptField(newToken),
+      })
       .eq("id", user.id);
   }
 
-  const channelId = profile.youtube_channel_id as string | null;
+  const channelId = profile?.youtube_channel_id as string | null;
   const ids = channelId ? `channel==${channelId}` : "channel==MINE";
 
   // Date range: last 28 days

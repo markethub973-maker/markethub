@@ -21,6 +21,7 @@ import AdminDiscountCodesPanel from "@/components/admin/AdminDiscountCodesPanel"
 import AdminHealthCheck from "@/components/admin/AdminHealthCheck";
 import AdminTestRunner from "@/components/admin/AdminTestRunner";
 import AdminRestorePanel from "@/components/admin/AdminRestorePanel";
+import AdminAuditLog from "@/components/admin/AdminAuditLog";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 export default function AdminPage() {
@@ -182,6 +183,11 @@ export default function AdminPage() {
         </button>
       </div>
       <div className="p-6 space-y-8">
+
+        {/* ── Audit Log ────────────────────────────────────────────────── */}
+        <ModuleBoundary name="Audit Log" minimal>
+          <AdminAuditLog />
+        </ModuleBoundary>
 
         {/* ── Security: Restore & Health Monitor ───────────────────────── */}
         <ModuleBoundary name="Restore & Health Monitor" minimal>
