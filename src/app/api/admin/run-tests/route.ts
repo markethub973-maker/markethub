@@ -122,14 +122,12 @@ export async function POST(req: NextRequest) {
   // ── TEST 1: Apify — Google Search ─────────────────────────────────────────
   results.push(await runTest("Google Search (Apify)", "apify", async () => {
     const r = await safeApify<any[]>("apify~google-search-scraper", {
-      queries: "servicii DJ nunta Bucuresti",
+      queries: "servicii marketing digital Bucuresti",
       maxPagesPerQuery: 1,
       resultsPerPage: 5,
-      countryCode: "RO",
-      languageCode: "ro",
       saveHtml: false,
       saveHtmlToKeyValueStore: false,
-    }, { timeoutSec: 45, retries: 0 });
+    }, { timeoutSec: 60, retries: 0 });
     if (!r.ok) return r;
     return { ok: true, data: r.data, warnings: validateGoogleSearch(r.data || []) };
   }));
@@ -137,26 +135,26 @@ export async function POST(req: NextRequest) {
   // ── TEST 2: Apify — Google Maps ───────────────────────────────────────────
   results.push(await runTest("Google Maps (Apify)", "apify", async () => {
     const r = await safeApify<any[]>("apify~google-maps-scraper", {
-      searchStringsArray: ["restaurant Bucuresti"],
+      searchStringsArray: ["restaurant Bucuresti Romania"],
       maxCrawledPlacesPerSearch: 3,
       language: "ro",
       exportPlaceUrls: false,
       includeHistogram: false,
-      includeOpeningHours: false,
+      includeOpeningHours: true,
       includePeopleAlsoSearch: false,
       additionalInfo: false,
-    }, { timeoutSec: 60, retries: 0 });
+    }, { timeoutSec: 90, retries: 0 });
     if (!r.ok) return r;
     return { ok: true, data: r.data, warnings: validateMaps(r.data || []) };
   }));
 
-  // ── TEST 3: Apify — Instagram Hashtag ────────────────────────────────────
-  results.push(await runTest("Instagram Hashtag (Apify)", "apify", async () => {
+  // ── TEST 3: Apify — Instagram Profile (username, more reliable than hashtag) ─
+  results.push(await runTest("Instagram Profile (Apify)", "apify", async () => {
     const r = await safeApify<any[]>("apify~instagram-scraper", {
-      hashtags: ["fotografie"],
-      resultsType: "hashtags",
-      resultsLimit: 5,
-    }, { timeoutSec: 60, retries: 0 });
+      directUrls: ["https://www.instagram.com/natgeo/"],
+      resultsType: "posts",
+      resultsLimit: 3,
+    }, { timeoutSec: 90, retries: 0 });
     if (!r.ok) return r;
     return { ok: true, data: r.data, warnings: validateInstagram(r.data || []) };
   }));
@@ -176,11 +174,11 @@ export async function POST(req: NextRequest) {
   // ── TEST 5: Apify — Reddit Search ────────────────────────────────────────
   results.push(await runTest("Reddit Search (Apify)", "apify", async () => {
     const r = await safeApify<any[]>("trudax~reddit-scraper-lite", {
-      startUrls: [{ url: "https://www.reddit.com/search/?q=marketing&sort=relevance&type=link" }],
-      maxPostCount: 5,
+      startUrls: [{ url: "https://www.reddit.com/r/marketing/hot/" }],
+      maxPostCount: 3,
       maxComments: 0,
-      scrollTimeout: 15,
-    }, { timeoutSec: 60, retries: 0 });
+      scrollTimeout: 20,
+    }, { timeoutSec: 90, retries: 0 });
     if (!r.ok) return r;
     return { ok: true, data: r.data, warnings: validateReddit(r.data || []) };
   }));
