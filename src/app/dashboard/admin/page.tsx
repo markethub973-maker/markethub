@@ -20,6 +20,7 @@ import AdminFeatureFlagsPanel from "@/components/admin/AdminFeatureFlagsPanel";
 import AdminDiscountCodesPanel from "@/components/admin/AdminDiscountCodesPanel";
 import AdminHealthCheck from "@/components/admin/AdminHealthCheck";
 import AdminTestRunner from "@/components/admin/AdminTestRunner";
+import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -169,10 +170,14 @@ export default function AdminPage() {
       <div className="p-6 space-y-8">
 
         {/* ── Health Check Agent ────────────────────────────────────────── */}
-        <AdminHealthCheck />
+        <ModuleBoundary name="Health Check" minimal>
+          <AdminHealthCheck />
+        </ModuleBoundary>
 
         {/* ── Integration Test Agent ───────────────────────────────────── */}
-        <AdminTestRunner />
+        <ModuleBoundary name="Integration Tests" minimal>
+          <AdminTestRunner />
+        </ModuleBoundary>
 
         {/* ── Preview Features ──────────────────────────────────────────── */}
         <div className="rounded-2xl p-4 flex items-center gap-4 flex-wrap"
@@ -217,10 +222,14 @@ export default function AdminPage() {
         </div>
 
         {/* Anthropic API Usage */}
-        <AdminAnthropicUsage />
+        <ModuleBoundary name="Anthropic Usage" minimal>
+          <AdminAnthropicUsage />
+        </ModuleBoundary>
 
         {/* Token & API Key Status */}
-        <AdminTokenStatus />
+        <ModuleBoundary name="Token Status" minimal>
+          <AdminTokenStatus />
+        </ModuleBoundary>
 
         {/* Analytics Section */}
         <div
@@ -254,31 +263,49 @@ export default function AdminPage() {
         </div>
 
         {/* Users Table */}
-        <AdminUsersTable users={users} onUserUpdate={handleUserUpdate} />
+        <ModuleBoundary name="Users Table" minimal>
+          <AdminUsersTable users={users} onUserUpdate={handleUserUpdate} />
+        </ModuleBoundary>
 
         {/* Buyer Persona Builder */}
-        <AdminBuyerPersona />
+        <ModuleBoundary name="Buyer Persona" minimal>
+          <AdminBuyerPersona />
+        </ModuleBoundary>
 
         {/* Feature Progress Tracker */}
-        <AdminFeatureProgress />
+        <ModuleBoundary name="Feature Progress" minimal>
+          <AdminFeatureProgress />
+        </ModuleBoundary>
 
         {/* Platform Auto-Connect (admin only) */}
-        <AdminPlatformConnect />
+        <ModuleBoundary name="Platform Connect" minimal>
+          <AdminPlatformConnect />
+        </ModuleBoundary>
 
         {/* API Credentials */}
-        <AdminCredentials />
+        <ModuleBoundary name="Credentials" minimal>
+          <AdminCredentials />
+        </ModuleBoundary>
 
         {/* Pricing Management */}
-        <AdminPricingPanel />
+        <ModuleBoundary name="Pricing Panel" minimal>
+          <AdminPricingPanel />
+        </ModuleBoundary>
 
         {/* Token Allocation per Plan */}
-        <AdminTokensPanel />
+        <ModuleBoundary name="Tokens Panel" minimal>
+          <AdminTokensPanel />
+        </ModuleBoundary>
 
         {/* Feature Flags per Plan */}
-        <AdminFeatureFlagsPanel />
+        <ModuleBoundary name="Feature Flags" minimal>
+          <AdminFeatureFlagsPanel />
+        </ModuleBoundary>
 
         {/* Discount Codes */}
-        <AdminDiscountCodesPanel />
+        <ModuleBoundary name="Discount Codes" minimal>
+          <AdminDiscountCodesPanel />
+        </ModuleBoundary>
       </div>
     </div>
   );
