@@ -11,7 +11,7 @@ export async function GET() {
   try {
     // Fetch active stories
     const storiesRes = await fetch(
-      `https://graph.facebook.com/v21.0/${igId}/stories?fields=id,media_type,timestamp,media_url&access_token=${token}`
+      `https://graph.facebook.com/v22.0/${igId}/stories?fields=id,media_type,timestamp,media_url&access_token=${token}`
     );
     const storiesData = await storiesRes.json();
 
@@ -29,7 +29,7 @@ export async function GET() {
     const withInsights = await Promise.allSettled(
       stories.map(async (s: { id: string; timestamp: string; media_type: string; media_url?: string }) => {
         const insRes = await fetch(
-          `https://graph.facebook.com/v21.0/${s.id}/insights?metric=exits,impressions,reach,replies,taps_forward,taps_back&access_token=${token}`
+          `https://graph.facebook.com/v22.0/${s.id}/insights?metric=exits,impressions,reach,replies,taps_forward,taps_back&access_token=${token}`
         );
         const insData = await insRes.json();
         const m: Record<string, number> = {};

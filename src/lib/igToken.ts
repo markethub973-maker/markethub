@@ -10,14 +10,14 @@ export async function resolveIGToken(
 ): Promise<string> {
   // First, test if the stored token works directly
   const testRes = await fetch(
-    `https://graph.facebook.com/v21.0/${igId}?fields=id&access_token=${storedToken}`
+    `https://graph.facebook.com/v22.0/${igId}?fields=id&access_token=${storedToken}`
   );
   const testData = await testRes.json();
   if (!testData.error) return storedToken; // token works fine
 
   // Token doesn't work — try to get Page Access Token via /me/accounts
   const pagesRes = await fetch(
-    `https://graph.facebook.com/v21.0/me/accounts?fields=id,access_token,instagram_business_account,connected_instagram_account&access_token=${storedToken}`
+    `https://graph.facebook.com/v22.0/me/accounts?fields=id,access_token,instagram_business_account,connected_instagram_account&access_token=${storedToken}`
   );
   const pagesData = await pagesRes.json();
 
@@ -30,7 +30,7 @@ export async function resolveIGToken(
       }
       // Also try fetching IG account from this page token
       const igRes = await fetch(
-        `https://graph.facebook.com/v21.0/${page.id}?fields=instagram_business_account,connected_instagram_account&access_token=${page.access_token}`
+        `https://graph.facebook.com/v22.0/${page.id}?fields=instagram_business_account,connected_instagram_account&access_token=${page.access_token}`
       );
       const igData = await igRes.json();
       if (igData.instagram_business_account?.id === igId || igData.connected_instagram_account?.id === igId) {
@@ -41,7 +41,7 @@ export async function resolveIGToken(
     // If IG ID not matched but we have pages, try the first page token directly
     const firstPageToken = pagesData.data[0].access_token;
     const testWithPageRes = await fetch(
-      `https://graph.facebook.com/v21.0/${igId}?fields=id&access_token=${firstPageToken}`
+      `https://graph.facebook.com/v22.0/${igId}?fields=id&access_token=${firstPageToken}`
     );
     const testWithPage = await testWithPageRes.json();
     if (!testWithPage.error) return firstPageToken;
@@ -51,7 +51,7 @@ export async function resolveIGToken(
   const knownIds = (knownPageIds || process.env.FACEBOOK_PAGE_IDS || "").split(",").filter(Boolean);
   for (const pageId of knownIds) {
     const pageRes = await fetch(
-      `https://graph.facebook.com/v21.0/${pageId}?fields=access_token,instagram_business_account&access_token=${storedToken}`
+      `https://graph.facebook.com/v22.0/${pageId}?fields=access_token,instagram_business_account&access_token=${storedToken}`
     );
     const pageData = await pageRes.json();
     if (pageData.instagram_business_account?.id === igId && pageData.access_token) {

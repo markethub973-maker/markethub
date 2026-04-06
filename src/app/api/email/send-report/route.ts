@@ -135,10 +135,10 @@ export async function POST(req: NextRequest) {
 
     try {
       const [profileRes, insightsRes, mediaRes, fbRes] = await Promise.all([
-        fetch(`https://graph.facebook.com/v21.0/${igId}?fields=followers_count,media_count,username,biography,profile_picture_url&access_token=${token}`),
-        fetch(`https://graph.facebook.com/v21.0/${igId}/insights?metric=reach,impressions&period=day&since=${Math.floor(Date.now() / 1000) - 30 * 86400}&until=${Math.floor(Date.now() / 1000)}&access_token=${token}`),
-        fetch(`https://graph.facebook.com/v21.0/${igId}/media?fields=id,caption,media_type,thumbnail_url,media_url,timestamp,like_count,comments_count,permalink&limit=20&access_token=${token}`),
-        fetch(`https://graph.facebook.com/v21.0/me/accounts?fields=id,name,fan_count,followers_count&access_token=${token}`),
+        fetch(`https://graph.facebook.com/v22.0/${igId}?fields=followers_count,media_count,username,biography,profile_picture_url&access_token=${token}`),
+        fetch(`https://graph.facebook.com/v22.0/${igId}/insights?metric=reach,impressions&period=day&since=${Math.floor(Date.now() / 1000) - 30 * 86400}&until=${Math.floor(Date.now() / 1000)}&access_token=${token}`),
+        fetch(`https://graph.facebook.com/v22.0/${igId}/media?fields=id,caption,media_type,thumbnail_url,media_url,timestamp,like_count,comments_count,permalink&limit=20&access_token=${token}`),
+        fetch(`https://graph.facebook.com/v22.0/me/accounts?fields=id,name,fan_count,followers_count&access_token=${token}`),
       ]);
 
       [igProfile, igInsights, igMedia, fbAccounts] = await Promise.all([

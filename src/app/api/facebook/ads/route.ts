@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   try {
     // Step 1: Find ad accounts linked to this user/token
     const accountsRes = await fetch(
-      `https://graph.facebook.com/v21.0/me/adaccounts?fields=id,name,account_status,currency,spend_cap&access_token=${token}`
+      `https://graph.facebook.com/v22.0/me/adaccounts?fields=id,name,account_status,currency,spend_cap&access_token=${token}`
     );
     const accountsData = await accountsRes.json();
 
@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
     const insightsResults = await Promise.allSettled(
       accounts.slice(0, 5).map(async (acc: { id: string; name: string; account_status: number; currency: string }) => {
         const insRes = await fetch(
-          `https://graph.facebook.com/v21.0/${acc.id}/insights?fields=impressions,clicks,spend,cpm,cpc,ctr,reach,frequency,actions&date_preset=${preset}&access_token=${token}`
+          `https://graph.facebook.com/v22.0/${acc.id}/insights?fields=impressions,clicks,spend,cpm,cpc,ctr,reach,frequency,actions&date_preset=${preset}&access_token=${token}`
         );
         const insData = await insRes.json();
         const ins = insData.data?.[0] || {};

@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
     // Step 1: Exchange code for Facebook access token
     const tokenResponse = await fetch(
-      "https://graph.facebook.com/v18.0/oauth/access_token",
+      "https://graph.facebook.com/v22.0/oauth/access_token",
       {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
 
     // Step 2: Get Instagram accounts linked to Facebook
     const accountsResponse = await fetch(
-      `https://graph.facebook.com/v18.0/me/accounts?fields=instagram_business_account{id,username,name}&access_token=${tokenData.access_token}`
+      `https://graph.facebook.com/v22.0/me/accounts?fields=instagram_business_account{id,username,name}&access_token=${tokenData.access_token}`
     );
     const accountsData = await accountsResponse.json();
 

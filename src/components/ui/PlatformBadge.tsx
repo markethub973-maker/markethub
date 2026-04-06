@@ -15,12 +15,13 @@ const icons: Record<Platform, string> = {
   facebook: "f",
 };
 
-export default function PlatformBadge({ platform }: { platform: Platform }) {
-  const { label, color, bg } = config[platform];
+export default function PlatformBadge({ platform }: { platform: string }) {
+  const cfg = config[platform as Platform] ?? { label: platform, color: "text-gray-600", bg: "bg-gray-50" };
+  const icon = icons[platform as Platform] ?? "●";
   return (
-    <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold", bg, color)}>
-      <span>{icons[platform]}</span>
-      {label}
+    <span className={cn("inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold", cfg.bg, cfg.color)}>
+      <span>{icon}</span>
+      {cfg.label}
     </span>
   );
 }

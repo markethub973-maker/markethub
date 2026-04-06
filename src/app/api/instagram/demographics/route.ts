@@ -22,10 +22,10 @@ export async function GET() {
   try {
     const [demoRes, profileRes] = await Promise.all([
       fetch(
-        `https://graph.facebook.com/v21.0/${igId}/insights?metric=audience_gender_age,audience_city,audience_country,audience_locale&period=lifetime&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${igId}/insights?metric=audience_gender_age,audience_city,audience_country,audience_locale&period=lifetime&access_token=${token}`
       ),
       fetch(
-        `https://graph.facebook.com/v21.0/${igId}?fields=followers_count&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${igId}?fields=followers_count&access_token=${token}`
       ),
     ]);
 

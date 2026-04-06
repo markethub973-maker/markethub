@@ -62,14 +62,14 @@ export async function GET(req: Request) {
 
       // Fetch last 10 posts for ER calculation
       const mediaRes = await fetch(
-        `https://graph.facebook.com/v21.0/${profile.instagram_user_id}/media?fields=caption,like_count,comments_count,media_type,timestamp&limit=10&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${profile.instagram_user_id}/media?fields=caption,like_count,comments_count,media_type,timestamp&limit=10&access_token=${token}`
       );
       const mediaData = await mediaRes.json();
       if (mediaData.error || !mediaData.data?.length) continue;
 
       // Fetch followers
       const igRes = await fetch(
-        `https://graph.facebook.com/v21.0/${profile.instagram_user_id}?fields=followers_count&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${profile.instagram_user_id}?fields=followers_count&access_token=${token}`
       );
       const igData = await igRes.json();
       const followers = igData.followers_count || 0;

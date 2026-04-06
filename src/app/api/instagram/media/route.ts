@@ -31,7 +31,7 @@ export async function GET() {
     const results = await Promise.allSettled(
       trendingHashtags.map(async (tag) => {
         const res = await fetch(
-          `https://graph.facebook.com/v21.0/ig_hashtag_search?user_id=&q=${tag}&access_token=${token}`
+          `https://graph.facebook.com/v22.0/ig_hashtag_search?user_id=&q=${tag}&access_token=${token}`
         );
         return res.json();
       })

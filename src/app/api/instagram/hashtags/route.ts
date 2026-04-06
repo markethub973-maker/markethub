@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
   try {
     // Step 1: Get hashtag ID
     const searchRes = await fetch(
-      `https://graph.facebook.com/v21.0/ig_hashtag_search?user_id=${igId}&q=${encodeURIComponent(hashtag)}&access_token=${token}`
+      `https://graph.facebook.com/v22.0/ig_hashtag_search?user_id=${igId}&q=${encodeURIComponent(hashtag)}&access_token=${token}`
     );
     const searchData = await searchRes.json();
 
@@ -41,13 +41,13 @@ export async function GET(req: NextRequest) {
     // Step 2: Fetch top + recent media for hashtag in parallel
     const [topRes, recentRes, infoRes] = await Promise.all([
       fetch(
-        `https://graph.facebook.com/v21.0/${hashtagId}/top_media?user_id=${igId}&fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,permalink&limit=12&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${hashtagId}/top_media?user_id=${igId}&fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,permalink&limit=12&access_token=${token}`
       ),
       fetch(
-        `https://graph.facebook.com/v21.0/${hashtagId}/recent_media?user_id=${igId}&fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,permalink&limit=12&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${hashtagId}/recent_media?user_id=${igId}&fields=id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count,permalink&limit=12&access_token=${token}`
       ),
       fetch(
-        `https://graph.facebook.com/v21.0/${hashtagId}?fields=id,name&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${hashtagId}?fields=id,name&access_token=${token}`
       ),
     ]);
 

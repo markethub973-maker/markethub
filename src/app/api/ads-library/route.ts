@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const res = await fetch(
-      `https://graph.facebook.com/v25.0/ads_archive?${params.toString()}`,
+      `https://graph.facebook.com/v22.0/ads_archive?${params.toString()}`,
       { headers: { "User-Agent": "Mozilla/5.0" }, next: { revalidate: 300 } }
     );
 

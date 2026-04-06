@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   try {
     // Fetch recent media (Reels only)
     const mediaRes = await fetch(
-      `https://graph.facebook.com/v21.0/${accountId}/media?fields=id,media_type,media_product_type,timestamp,caption,thumbnail_url,permalink&limit=${limit}&access_token=${accessToken}`
+      `https://graph.facebook.com/v22.0/${accountId}/media?fields=id,media_type,media_product_type,timestamp,caption,thumbnail_url,permalink&limit=${limit}&access_token=${accessToken}`
     );
     const mediaData = await mediaRes.json();
 
@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
     const insights = await Promise.allSettled(
       reels.map(async (reel: { id: string; timestamp: string; caption?: string; thumbnail_url?: string; permalink?: string }) => {
         const metricsRes = await fetch(
-          `https://graph.facebook.com/v21.0/${reel.id}/insights?metric=plays,reach,shares,saved,comments,likes,total_interactions&access_token=${accessToken}`
+          `https://graph.facebook.com/v22.0/${reel.id}/insights?metric=plays,reach,shares,saved,comments,likes,total_interactions&access_token=${accessToken}`
         );
         const metricsData = await metricsRes.json();
         const m: Record<string, number> = {};

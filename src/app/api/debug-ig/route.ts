@@ -18,9 +18,9 @@ export async function GET() {
   const igId = profile.instagram_user_id;
 
   const [meRes, accountsRes, bizRes] = await Promise.all([
-    fetch(`https://graph.facebook.com/v21.0/me?fields=id,name&access_token=${token}`),
-    fetch(`https://graph.facebook.com/v21.0/me/accounts?fields=id,name,access_token,instagram_business_account,connected_instagram_account&access_token=${token}`),
-    fetch(`https://graph.facebook.com/v21.0/me/businesses?fields=id,name&access_token=${token}`),
+    fetch(`https://graph.facebook.com/v22.0/me?fields=id,name&access_token=${token}`),
+    fetch(`https://graph.facebook.com/v22.0/me/accounts?fields=id,name,access_token,instagram_business_account,connected_instagram_account&access_token=${token}`),
+    fetch(`https://graph.facebook.com/v22.0/me/businesses?fields=id,name&access_token=${token}`),
   ]);
 
   const [me, accounts, businesses] = await Promise.all([meRes.json(), accountsRes.json(), bizRes.json()]);
@@ -31,8 +31,8 @@ export async function GET() {
   const pageDetails = await Promise.all(pages.map(async (page: any) => {
     const pageToken = page.access_token;
     const [igFromPageRes, igWithPageTokenRes] = await Promise.all([
-      fetch(`https://graph.facebook.com/v21.0/${page.id}?fields=instagram_business_account{id,username,followers_count},connected_instagram_account{id,username,followers_count}&access_token=${pageToken}`),
-      fetch(`https://graph.facebook.com/v21.0/${igId}?fields=id,username,followers_count&access_token=${pageToken}`),
+      fetch(`https://graph.facebook.com/v22.0/${page.id}?fields=instagram_business_account{id,username,followers_count},connected_instagram_account{id,username,followers_count}&access_token=${pageToken}`),
+      fetch(`https://graph.facebook.com/v22.0/${igId}?fields=id,username,followers_count&access_token=${pageToken}`),
     ]);
     const [igFromPage, igWithPageToken] = await Promise.all([igFromPageRes.json(), igWithPageTokenRes.json()]);
     return {
@@ -50,7 +50,7 @@ export async function GET() {
   if (!businesses.error && businesses.data?.length > 0) {
     for (const biz of businesses.data) {
       const igAccRes = await fetch(
-        `https://graph.facebook.com/v21.0/${biz.id}/instagram_business_accounts?fields=id,username&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${biz.id}/instagram_business_accounts?fields=id,username&access_token=${token}`
       );
       const igAccData = await igAccRes.json();
       bizDetails.push({

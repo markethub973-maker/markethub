@@ -48,7 +48,7 @@ export async function GET(req: Request) {
 
         // Get fresh Page Token from new user token
         const pageRes = await fetch(
-          `https://graph.facebook.com/v25.0/${igConfig.extra_data.page_id}?fields=access_token&access_token=${newUserToken}`
+          `https://graph.facebook.com/v22.0/${igConfig.extra_data.page_id}?fields=access_token&access_token=${newUserToken}`
         );
         const pageData = await pageRes.json();
         const newPageToken = pageData.access_token || igConfig.token;
@@ -88,7 +88,7 @@ export async function GET(req: Request) {
 
       if (pageId) {
         const pageRes = await fetch(
-          `https://graph.facebook.com/v25.0/${pageId}?fields=access_token&access_token=${userToken}`
+          `https://graph.facebook.com/v22.0/${pageId}?fields=access_token&access_token=${userToken}`
         );
         const pageData = await pageRes.json();
 

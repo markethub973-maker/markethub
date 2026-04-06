@@ -8,11 +8,14 @@ import {
 export default function ViewsChart() {
   const [data, setData] = useState<{ name: string; views: number }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     fetch("/api/youtube/trending?region=RO&max=10")
       .then((r) => r.json())
       .then((d) => {
+        if (cancelled) return;
         if (Array.isArray(d)) {
           setData(
             d.map((v) => ({
@@ -22,7 +25,9 @@ export default function ViewsChart() {
           );
         }
       })
-      .finally(() => setLoading(false));
+      .catch(() => { if (!cancelled) setError(true); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
   }, []);
 
   return (
@@ -38,6 +43,8 @@ export default function ViewsChart() {
       </div>
       {loading ? (
         <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#C4AA8A" }}>Loading...</div>
+      ) : error ? (
+        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#A8967E" }}>Date indisponibile momentan</div>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={data} layout="vertical" margin={{ top: 4, right: 20, bottom: 0, left: 8 }}>

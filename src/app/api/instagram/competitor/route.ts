@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const res = await fetch(
-      `https://graph.facebook.com/v21.0/${igId}?fields=business_discovery.fields(id,username,name,biography,followers_count,media_count,profile_picture_url,website,media{id,caption,media_type,thumbnail_url,media_url,timestamp,like_count,comments_count,permalink})&username=${encodeURIComponent(username)}&access_token=${token}`
+      `https://graph.facebook.com/v22.0/${igId}?fields=business_discovery.fields(id,username,name,biography,followers_count,media_count,profile_picture_url,website,media{id,caption,media_type,thumbnail_url,media_url,timestamp,like_count,comments_count,permalink})&username=${encodeURIComponent(username)}&access_token=${token}`
     );
     const data = await res.json();
 

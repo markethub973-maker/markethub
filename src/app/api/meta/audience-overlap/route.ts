@@ -23,17 +23,17 @@ export async function GET() {
     const [igDemoRes, fbFansRes, fbPageRes] = await Promise.allSettled([
       // IG audience gender/age + country
       fetch(
-        `https://graph.facebook.com/v21.0/${igId}/insights?metric=audience_gender_age,audience_country&period=lifetime&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${igId}/insights?metric=audience_gender_age,audience_country&period=lifetime&access_token=${token}`
       ).then(r => r.json()),
 
       // FB page fan demographics
       fetch(
-        `https://graph.facebook.com/v21.0/me/insights?metric=page_fans_gender_age,page_fans_country&period=lifetime&access_token=${token}`
+        `https://graph.facebook.com/v22.0/me/insights?metric=page_fans_gender_age,page_fans_country&period=lifetime&access_token=${token}`
       ).then(r => r.json()),
 
       // FB page follower count
       fetch(
-        `https://graph.facebook.com/v21.0/me?fields=fan_count,followers_count&access_token=${token}`
+        `https://graph.facebook.com/v22.0/me?fields=fan_count,followers_count&access_token=${token}`
       ).then(r => r.json()),
     ]);
 

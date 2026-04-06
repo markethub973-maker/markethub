@@ -17,7 +17,7 @@ export async function GET() {
 
   try {
     const res = await fetch(
-      `https://graph.facebook.com/v21.0/me/permissions?access_token=${token}`
+      `https://graph.facebook.com/v22.0/me/permissions?access_token=${token}`
     );
     const data = await res.json();
 

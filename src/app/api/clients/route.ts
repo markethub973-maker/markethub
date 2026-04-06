@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
   // Validate token by fetching basic profile
   const verifyRes = await fetch(
-    `https://graph.facebook.com/v21.0/${instagram_user_id}?fields=username,followers_count&access_token=${instagram_access_token}`
+    `https://graph.facebook.com/v22.0/${instagram_user_id}?fields=username,followers_count&access_token=${instagram_access_token}`
   );
   const verifyData = await verifyRes.json();
 

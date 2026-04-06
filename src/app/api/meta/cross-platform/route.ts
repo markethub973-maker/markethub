@@ -41,12 +41,12 @@ export async function GET(req: NextRequest) {
     const [igRes, fbRes] = await Promise.allSettled([
       // Instagram posts
       igId ? fetch(
-        `https://graph.facebook.com/v21.0/${igId}/media?fields=id,caption,media_type,timestamp,like_count,comments_count,permalink&limit=50&access_token=${token}`
+        `https://graph.facebook.com/v22.0/${igId}/media?fields=id,caption,media_type,timestamp,like_count,comments_count,permalink&limit=50&access_token=${token}`
       ).then(r => r.json()) : Promise.resolve({ data: [] }),
 
       // Facebook page posts
       fetch(
-        `https://graph.facebook.com/v21.0/me/posts?fields=id,message,story,created_time,likes.summary(true),comments.summary(true),permalink_url&since=${since}&limit=50&access_token=${token}`
+        `https://graph.facebook.com/v22.0/me/posts?fields=id,message,story,created_time,likes.summary(true),comments.summary(true),permalink_url&since=${since}&limit=50&access_token=${token}`
       ).then(r => r.json()),
     ]);
 
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
         let impressions = 0;
         try {
           const insRes = await fetch(
-            `https://graph.facebook.com/v21.0/${p.id}/insights?metric=reach,impressions&access_token=${token}`
+            `https://graph.facebook.com/v22.0/${p.id}/insights?metric=reach,impressions&access_token=${token}`
           );
           const insData = await insRes.json();
           for (const item of insData.data || []) {

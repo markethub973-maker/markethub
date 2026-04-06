@@ -27,7 +27,7 @@ export async function GET() {
 
     // Strategy 1: Token might be a Page Token — /me returns the page directly
     const meRes = await fetch(
-      `https://graph.facebook.com/v21.0/me?fields=id,name,fan_count,followers_count,about,website,picture&access_token=${token}`
+      `https://graph.facebook.com/v22.0/me?fields=id,name,fan_count,followers_count,about,website,picture&access_token=${token}`
     );
     const meData = await meRes.json();
 
@@ -47,7 +47,7 @@ export async function GET() {
 
     // Strategy 2: Token is a User Token — get pages via /me/accounts
     const accountsRes = await fetch(
-      `https://graph.facebook.com/v21.0/me/accounts?fields=id,name,fan_count,followers_count,access_token&access_token=${token}`
+      `https://graph.facebook.com/v22.0/me/accounts?fields=id,name,fan_count,followers_count,access_token&access_token=${token}`
     );
     const accountsData = await accountsRes.json();
 
@@ -68,7 +68,7 @@ export async function GET() {
 
     // Get page details
     const pageRes = await fetch(
-      `https://graph.facebook.com/v21.0/${pageId}?fields=id,name,fan_count,followers_count,about,website,picture&access_token=${pageToken}`
+      `https://graph.facebook.com/v22.0/${pageId}?fields=id,name,fan_count,followers_count,about,website,picture&access_token=${pageToken}`
     );
     const pageData = await pageRes.json();
 
@@ -96,7 +96,7 @@ async function getInsights(pageId: string, token: string): Promise<any[]> {
     const since = Math.floor(Date.now() / 1000) - 30 * 86400;
     const until = Math.floor(Date.now() / 1000);
     const res = await fetch(
-      `https://graph.facebook.com/v21.0/${pageId}/insights?metric=page_impressions_unique,page_views_total&period=day&since=${since}&until=${until}&access_token=${token}`
+      `https://graph.facebook.com/v22.0/${pageId}/insights?metric=page_impressions_unique,page_views_total&period=day&since=${since}&until=${until}&access_token=${token}`
     );
     const data = await res.json();
     return data.error ? [] : (data.data || []);
