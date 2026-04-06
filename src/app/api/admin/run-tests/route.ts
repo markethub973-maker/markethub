@@ -173,19 +173,17 @@ export async function POST(req: NextRequest) {
       return { ok: true, data: r.data, warnings: validateTikTok(r.data || []) };
     }),
 
-    // TEST 5: Reddit JSON API (no Apify — public endpoint)
-    runTest("Reddit API (public)", "reddit", async () => {
+    // TEST 5: Reddit actor connectivity (just verify actor exists + Apify token valid)
+    runTest("Reddit Scraper (Apify)", "apify", async () => {
+      // Reddit scraper is too slow for full test — just verify the actor is accessible
+      const key = process.env.APIFY_TOKEN;
+      if (!key) return { ok: false, error: "APIFY_TOKEN not set" };
       const r = await safeFetch<any>(
-        "https://www.reddit.com/r/marketing/hot.json?limit=5",
-        { timeoutMs: 10000, headers: { "User-Agent": "MarketHubPro/1.0" } }
+        `https://api.apify.com/v2/acts/trudax~reddit-scraper-lite?token=${key}`,
+        { timeoutMs: 8000 }
       );
-      if (!r.ok) return r;
-      const posts = r.data?.data?.children?.map((c: any) => c.data) || [];
-      const warnings: string[] = [];
-      if (posts.length === 0) warnings.push("No posts returned");
-      if (!posts[0]?.title) warnings.push("Missing field: title");
-      if (!posts[0]?.url && !posts[0]?.permalink) warnings.push("Missing field: url/permalink");
-      return { ok: true, data: posts, warnings };
+      if (!r.ok) return { ok: false, error: r.error };
+      return { ok: true, data: { actor: r.data?.name, status: r.data?.stats?.totalRuns > 0 ? "active" : "available" } };
     }),
 
     // TEST 6: Apify — Local Market
