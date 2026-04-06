@@ -19,6 +19,7 @@ import AdminTokensPanel from "@/components/admin/AdminTokensPanel";
 import AdminFeatureFlagsPanel from "@/components/admin/AdminFeatureFlagsPanel";
 import AdminDiscountCodesPanel from "@/components/admin/AdminDiscountCodesPanel";
 import AdminHealthCheck from "@/components/admin/AdminHealthCheck";
+import AdminTestRunner from "@/components/admin/AdminTestRunner";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -169,6 +170,9 @@ export default function AdminPage() {
 
         {/* ── Health Check Agent ────────────────────────────────────────── */}
         <AdminHealthCheck />
+
+        {/* ── Integration Test Agent ───────────────────────────────────── */}
+        <AdminTestRunner />
 
         {/* ── Preview Features ──────────────────────────────────────────── */}
         <div className="rounded-2xl p-4 flex items-center gap-4 flex-wrap"
