@@ -117,7 +117,7 @@ export default function HashtagsPage() {
   const [showNewSet, setShowNewSet] = useState(false);
   const [newSet, setNewSet] = useState({ name: "", hashtags: "", platform: "instagram", category: "" });
   const [savingSet, setSavingSet] = useState(false);
-  const [setError, setSetError] = useState("");
+  const [formError, setFormError] = useState("");
   const [mainTab, setMainTab] = useState<"search" | "sets">("search");
 
   useEffect(() => {
@@ -145,9 +145,9 @@ export default function HashtagsPage() {
   };
 
   const handleSaveSet = async () => {
-    setSetError("");
-    if (!newSet.name.trim()) { setSetError("Name is required"); return; }
-    if (!newSet.hashtags.trim()) { setSetError("Add at least one hashtag"); return; }
+    setFormError("");
+    if (!newSet.name.trim()) { setFormError("Name is required"); return; }
+    if (!newSet.hashtags.trim()) { setFormError("Add at least one hashtag"); return; }
     setSavingSet(true);
     const res = await fetch("/api/hashtags/sets", {
       method: "POST",
@@ -155,7 +155,7 @@ export default function HashtagsPage() {
       body: JSON.stringify(newSet),
     });
     const d = await res.json();
-    if (!res.ok) { setSetError(d.error || "Save failed"); setSavingSet(false); return; }
+    if (!res.ok) { setFormError(d.error || "Save failed"); setSavingSet(false); return; }
     setSets(prev => [d.set, ...prev]);
     setNewSet({ name: "", hashtags: "", platform: "instagram", category: "" });
     setShowNewSet(false);
@@ -374,9 +374,9 @@ export default function HashtagsPage() {
                     {newSet.hashtags.trim().split(/\s+/).filter(h => h.startsWith("#")).length} hashtags
                   </p>
                 </div>
-                {setError && (
+                {formError && (
                   <p className="text-xs px-3 py-2 rounded-lg"
-                    style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#DC2626" }}>{setError}</p>
+                    style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#DC2626" }}>{formError}</p>
                 )}
                 <button onClick={handleSaveSet} disabled={savingSet}
                   className="px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2"
