@@ -288,7 +288,30 @@ export async function POST(req: NextRequest) {
     results["audit_logs_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
-  // ── 14. discount_codes table ────────────────────────────────────────────
+  // ── 14. instagram_connections table ─────────────────────────────────────
+  if (await tableExists(supa, "instagram_connections")) {
+    results["instagram_connections_table"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS instagram_connections (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES profiles(id) ON DELETE CASCADE UNIQUE,
+        instagram_id TEXT NOT NULL,
+        instagram_username TEXT DEFAULT '',
+        instagram_name TEXT DEFAULT '',
+        access_token TEXT,
+        enc_access_token TEXT,
+        token_type TEXT DEFAULT 'bearer',
+        connected_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_instagram_conn_user ON instagram_connections(user_id);
+      CREATE INDEX IF NOT EXISTS idx_instagram_conn_ig_id ON instagram_connections(instagram_id);
+    `);
+    results["instagram_connections_table"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
+  // ── 15. discount_codes table ────────────────────────────────────────────
   if (await tableExists(supa, "discount_codes")) {
     results["discount_codes_table"] = "already_exists";
   } else {

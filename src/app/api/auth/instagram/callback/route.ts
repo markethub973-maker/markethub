@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { encryptField } from "@/lib/fieldCrypto";
 import { logAudit } from "@/lib/auditLog";
 
@@ -72,7 +72,7 @@ export async function GET(request: Request) {
     };
 
     // Step 3: Save to Supabase
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: user } = await supabase.auth.getUser();
 
     if (!user?.user?.id) {
