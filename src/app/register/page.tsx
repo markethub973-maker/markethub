@@ -95,6 +95,27 @@ export default function RegisterPage() {
       .finally(() => setLoadingPlans(false));
   }, []);
 
+  // Generate a lightweight device fingerprint from browser signals
+  function getDeviceFingerprint(): string {
+    try {
+      const nav = window.navigator;
+      const parts = [
+        nav.userAgent,
+        nav.language,
+        screen.width + "x" + screen.height + "x" + screen.colorDepth,
+        new Date().getTimezoneOffset(),
+        nav.hardwareConcurrency ?? "",
+        (nav as any).deviceMemory ?? "",
+      ].join("|");
+      // Simple hash
+      let hash = 0;
+      for (let i = 0; i < parts.length; i++) {
+        hash = ((hash << 5) - hash + parts.charCodeAt(i)) | 0;
+      }
+      return Math.abs(hash).toString(36);
+    } catch { return ""; }
+  }
+
   const handleSelectPlan = (planId: string) => {
     setSelectedPlan(planId);
     setStep("form");
@@ -109,7 +130,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, plan: selectedPlan }),
+        body: JSON.stringify({ name, email, password, plan: selectedPlan, device_fingerprint: getDeviceFingerprint() }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error || "An error occurred."); setLoading(false); return; }

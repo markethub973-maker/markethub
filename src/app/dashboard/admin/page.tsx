@@ -197,6 +197,11 @@ export default function AdminPage() {
             style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.25)" }}>
             🎯 Lead Generation Wizard
           </Link>
+          <Link href="/dashboard/admin/users"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all"
+            style={{ backgroundColor: "rgba(22,163,74,0.1)", color: "#16A34A", border: "1px solid rgba(22,163,74,0.25)" }}>
+            👥 Users & Revenue
+          </Link>
         </div>
 
         {/* Quick Stats */}

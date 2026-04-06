@@ -225,5 +225,43 @@ export async function POST(req: NextRequest) {
     results["hashtag_sets_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
+  // ── 11. Anti-abuse columns on profiles ──────────────────────────────────
+  if (await columnExists(supa, "profiles", "is_blocked")) {
+    results["profiles_abuse_columns"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_blocked BOOLEAN DEFAULT false;
+      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS blocked_reason TEXT DEFAULT NULL;
+      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS registration_ip TEXT DEFAULT NULL;
+      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS normalized_email TEXT DEFAULT NULL;
+      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS device_fingerprint TEXT DEFAULT NULL;
+      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS tokens_used_month INTEGER DEFAULT 0;
+      CREATE INDEX IF NOT EXISTS idx_profiles_ip ON profiles(registration_ip);
+      CREATE INDEX IF NOT EXISTS idx_profiles_norm_email ON profiles(normalized_email);
+      CREATE INDEX IF NOT EXISTS idx_profiles_device ON profiles(device_fingerprint);
+    `);
+    results["profiles_abuse_columns"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
+  // ── 12. abuse_flags table ────────────────────────────────────────────────
+  if (await tableExists(supa, "abuse_flags")) {
+    results["abuse_flags_table"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS abuse_flags (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+        reason TEXT NOT NULL,
+        severity TEXT DEFAULT 'medium',
+        resolved BOOLEAN DEFAULT false,
+        detected_at TIMESTAMPTZ DEFAULT now(),
+        UNIQUE(user_id, reason)
+      );
+      CREATE INDEX IF NOT EXISTS idx_abuse_flags_user ON abuse_flags(user_id);
+      CREATE INDEX IF NOT EXISTS idx_abuse_flags_resolved ON abuse_flags(resolved);
+    `);
+    results["abuse_flags_table"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
   return NextResponse.json({ results });
 }

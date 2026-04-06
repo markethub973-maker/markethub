@@ -108,6 +108,7 @@ const PUBLIC_PATHS = [
   "/api/client-portal/",   // public token API for client portal viewer
   "/l/",                    // public Link in Bio pages
   "/portal/",               // public client portal pages
+  "/blocked",               // blocked account page
   // Admin uses its own password-based auth — bypass Supabase middleware
   "/markethub973",
   "/dashboard/admin",
@@ -208,6 +209,25 @@ export async function middleware(request: NextRequest) {
     const redirect = NextResponse.redirect(loginUrl);
     applySecurityHeaders(redirect);
     return redirect;
+  }
+
+  // ── Blocked-user check ─────────────────────────────────────────────────────
+  if (!pathname.startsWith("/blocked") && !pathname.startsWith("/api/auth")) {
+    const { data: blockedCheck } = await supabase
+      .from("profiles")
+      .select("is_blocked, blocked_reason")
+      .eq("id", user.id)
+      .single();
+    if (blockedCheck?.is_blocked) {
+      const blockedUrl = new URL("/blocked", request.url);
+      blockedUrl.searchParams.set(
+        "reason",
+        encodeURIComponent(blockedCheck.blocked_reason || "Account suspended")
+      );
+      const redirect = NextResponse.redirect(blockedUrl);
+      applySecurityHeaders(redirect);
+      return redirect;
+    }
   }
 
   // Skip plan check for upgrade-related paths
