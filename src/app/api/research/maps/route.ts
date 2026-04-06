@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   const searchQuery = location ? `${query} ${location}` : query;
 
   try {
-    const result = await safeApify<any[]>("apify~google-maps-scraper", {
+    const result = await safeApify<any[]>("compass~crawler-google-places", {
       searchStringsArray: [searchQuery],
       maxCrawledPlacesPerSearch: Math.min(limit, 40),
       language: "ro",

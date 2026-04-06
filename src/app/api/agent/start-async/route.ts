@@ -10,7 +10,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 
 const ACTOR_IDS: Record<string, string> = {
   google_search: "apify~google-search-scraper",
-  google_maps: "apify~google-maps-scraper",
+  google_maps: "compass~crawler-google-places",
   instagram_profile: "apify~instagram-scraper",
   instagram_hashtag: "apify~instagram-scraper",
   tiktok_profile: "clockworks~tiktok-scraper",

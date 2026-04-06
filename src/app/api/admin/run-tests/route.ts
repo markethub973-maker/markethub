@@ -136,7 +136,7 @@ export async function POST(req: NextRequest) {
 
     // TEST 2: Apify — Google Maps
     runTest("Google Maps (Apify)", "apify", async () => {
-      const r = await safeApify<any[]>("apify~google-maps-scraper", {
+      const r = await safeApify<any[]>("compass~crawler-google-places", {
         searchStringsArray: ["restaurant Bucuresti Romania"],
         maxCrawledPlacesPerSearch: 3,
         language: "ro",
