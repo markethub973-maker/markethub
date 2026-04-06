@@ -97,12 +97,17 @@ const PUBLIC_PATHS = [
   "/upgrade-required",
   "/auth/callback",
   "/api/auth",
+  "/api/pricing",           // public — used on register page before login
   "/api/stripe/webhook",
   "/api/apify/webhook",
   "/api/webhooks",          // all webhook receivers do their own HMAC auth
   "/api/cron",              // cron routes verify CRON_SECRET themselves
   "/api/subscription/check-trial",
   "/api/admin-session-check",
+  "/api/bio-link/",         // public slug API for Link in Bio viewer
+  "/api/client-portal/",   // public token API for client portal viewer
+  "/l/",                    // public Link in Bio pages
+  "/portal/",               // public client portal pages
   // Admin uses its own password-based auth — bypass Supabase middleware
   "/markethub973",
   "/dashboard/admin",
