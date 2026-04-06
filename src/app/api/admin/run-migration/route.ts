@@ -288,22 +288,43 @@ export async function POST(req: NextRequest) {
     results["audit_logs_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
-  // ── 14. instagram_connections table ─────────────────────────────────────
+  // ── 14. instagram_connections table (multi-account) ─────────────────────
   if (await tableExists(supa, "instagram_connections")) {
-    results["instagram_connections_table"] = "already_exists";
+    // Table exists — ensure multi-account columns are present
+    const hasLabel = await columnExists(supa, "instagram_connections", "account_label");
+    if (!hasLabel) {
+      const r = await runSQL(`
+        ALTER TABLE instagram_connections
+          ADD COLUMN IF NOT EXISTS account_label TEXT DEFAULT '',
+          ADD COLUMN IF NOT EXISTS is_primary BOOLEAN DEFAULT false,
+          ADD COLUMN IF NOT EXISTS page_id TEXT DEFAULT NULL,
+          ADD COLUMN IF NOT EXISTS page_name TEXT DEFAULT NULL;
+        -- Drop old single-account unique constraint if exists, add multi-account one
+        ALTER TABLE instagram_connections DROP CONSTRAINT IF EXISTS instagram_connections_user_id_key;
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_instagram_conn_user_ig ON instagram_connections(user_id, instagram_id);
+      `);
+      results["instagram_connections_multi"] = r.ok ? "applied" : `error: ${r.error}`;
+    } else {
+      results["instagram_connections_table"] = "already_exists";
+    }
   } else {
     const r = await runSQL(`
       CREATE TABLE IF NOT EXISTS instagram_connections (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_id UUID REFERENCES profiles(id) ON DELETE CASCADE UNIQUE,
+        user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
         instagram_id TEXT NOT NULL,
         instagram_username TEXT DEFAULT '',
         instagram_name TEXT DEFAULT '',
+        account_label TEXT DEFAULT '',
+        is_primary BOOLEAN DEFAULT false,
+        page_id TEXT DEFAULT NULL,
+        page_name TEXT DEFAULT NULL,
         access_token TEXT,
         enc_access_token TEXT,
         token_type TEXT DEFAULT 'bearer',
         connected_at TIMESTAMPTZ DEFAULT now(),
-        updated_at TIMESTAMPTZ DEFAULT now()
+        updated_at TIMESTAMPTZ DEFAULT now(),
+        UNIQUE(user_id, instagram_id)
       );
       CREATE INDEX IF NOT EXISTS idx_instagram_conn_user ON instagram_connections(user_id);
       CREATE INDEX IF NOT EXISTS idx_instagram_conn_ig_id ON instagram_connections(instagram_id);
