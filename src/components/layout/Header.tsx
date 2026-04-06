@@ -66,7 +66,7 @@ export default function Header({ title, subtitle }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 flex items-center justify-between px-6 sticky top-0 z-30" style={{ backgroundColor: "#FFFCF7", borderBottom: "1px solid rgba(245,215,160,0.25)" }}>
+    <header data-tour="page-header" className="h-16 flex items-center justify-between px-6 sticky top-0 z-30" style={{ backgroundColor: "#FFFCF7", borderBottom: "1px solid rgba(245,215,160,0.25)" }}>
       <div>
         <h1 className="text-xl font-bold" style={{ color: "#292524" }}>{title}</h1>
         {subtitle && <p className="text-xs" style={{ color: "#A8967E" }}>{subtitle}</p>}

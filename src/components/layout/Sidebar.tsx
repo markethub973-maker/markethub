@@ -141,7 +141,7 @@ export default function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 flex flex-col z-40" style={{ backgroundColor: "#1C1814" }}>
       {/* Logo */}
-      <div className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(245,215,160,0.1)" }}>
+      <div data-tour="sidebar-logo" className="flex items-center gap-2 px-6 py-5" style={{ borderBottom: "1px solid rgba(245,215,160,0.1)" }}>
         <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
           <Zap className="w-4 h-4 text-white" />
         </div>

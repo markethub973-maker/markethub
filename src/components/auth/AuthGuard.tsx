@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "@/components/layout/Sidebar";
 import SetupAgent from "@/components/ui/SetupAgent";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
+import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
 import { createClient } from "@/lib/supabase/client";
 
 const PUBLIC_PATHS = ["/login", "/register", "/markethub973"];
@@ -61,6 +62,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         </ModuleBoundary>
       </main>
       {pathname !== "/ai-hub" && <SetupAgent />}
+      <OnboardingWidget />
     </>
   );
 }
