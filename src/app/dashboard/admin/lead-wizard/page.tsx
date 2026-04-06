@@ -280,7 +280,7 @@ export default function LeadWizardPage() {
             break;
           case "google_maps":
             endpoint = "/api/research/maps";
-            body = { query: q, location: location || "Romania" };
+            body = { query: q, location: location || "" };
             break;
           case "reddit":
             endpoint = "/api/research/reddit";

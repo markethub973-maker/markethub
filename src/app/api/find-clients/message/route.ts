@@ -5,7 +5,7 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const SYSTEM = `You are an expert copywriter for outreach messages. Write SHORT, NATURAL, non-salesy messages.
+const SYSTEM = `You are an international expert copywriter for outreach messages. Detect the language of the lead's info and the user's input — write all messages in that same language. Write SHORT, NATURAL, non-salesy messages.
 
 Rules:
 - Max 3 sentences

@@ -76,13 +76,13 @@ export default function ResearchPage() {
 
   const getPlaceholder = () => {
     switch (tab) {
-      case "google": return "Keyword (ex: DJ evenimente București)";
-      case "youtube": return mode === "channel" ? "@channel (ex: @KoalaProdMusic)" : "Keyword (ex: muzica nunta)";
-      case "website": return "URL (ex: competitor.ro)";
-      case "instagram": return mode === "username" ? "@username (ex: djmania.ro)" : "#hashtag (ex: djromania)";
-      case "tiktok": return mode === "username" ? "@username (ex: djsandu)" : "#hashtag (ex: muzicabuna)";
-      case "facebook": return "Pagina (ex: DJManiaBucuresti)";
-      case "reddit": return mode === "subreddit" ? "subreddit (ex: Romania)" : "Keyword (ex: wedding DJ Romania)";
+      case "google": return "Keyword (ex: wedding DJ New York)";
+      case "youtube": return mode === "channel" ? "@channel (ex: @MrBeast)" : "Keyword (ex: social media marketing)";
+      case "website": return "URL (ex: competitor.com)";
+      case "instagram": return mode === "username" ? "@username (ex: @nike)" : "#hashtag (ex: marketing)";
+      case "tiktok": return mode === "username" ? "@username (ex: @khaby.lame)" : "#hashtag (ex: business)";
+      case "facebook": return "Page name (ex: Nike)";
+      case "reddit": return mode === "subreddit" ? "subreddit (ex: Entrepreneur)" : "Keyword (ex: wedding DJ tips)";
       case "reviews": return "Nume loc sau URL Google Maps";
       default: {
         const actor = localMarket?.actors.find(a => a.id === tab);

@@ -45,7 +45,7 @@ export default function AdminHealthCheck() {
       const res = await fetch("/api/admin/health-check");
       const json = await res.json();
       setData(json);
-      setLastRun(new Date().toLocaleTimeString("ro-RO"));
+      setLastRun(new Date().toLocaleTimeString("en-US"));
     } catch {
       setData(null);
     }

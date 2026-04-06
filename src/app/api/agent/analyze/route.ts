@@ -61,7 +61,7 @@ Provide a concise analysis in JSON format:
   "message_template": "a short outreach message template they could use"
 }
 
-Be specific, practical and focused on the Romanian market. Return only JSON.`
+Be specific, practical and adapt to the user's market and language. Return only JSON.`
       }],
     });
 

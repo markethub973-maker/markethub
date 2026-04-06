@@ -7,7 +7,8 @@ const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "" 
 
 // ── Daily Trends via public RSS (reliable, no auth needed) ──────────────────
 async function getDailyTrends(geo: string) {
-  const hl = geo === "RO" ? "ro" : geo === "FR" ? "fr" : geo === "DE" ? "de" : "en";
+  const HL_MAP: Record<string, string> = { RO: "ro", FR: "fr", DE: "de", ES: "es", IT: "it", PT: "pt", PL: "pl", NL: "nl", TR: "tr", JP: "ja", KR: "ko", AR: "ar" };
+  const hl = HL_MAP[geo] || "en";
   const res = await fetch(`https://trends.google.com/trending/rss?geo=${geo}&hl=${hl}`, {
     headers: { "User-Agent": "Mozilla/5.0 (compatible; GoogleTrendsBot/1.0)" },
     cache: "no-store",
@@ -77,7 +78,7 @@ async function getRelatedQueries(keyword: string, geo: string) {
 
 export async function GET(req: NextRequest) {
   const type = req.nextUrl.searchParams.get("type") || "daily";
-  const geo = req.nextUrl.searchParams.get("geo") || "RO";
+  const geo = req.nextUrl.searchParams.get("geo") || "US";
   const keyword = req.nextUrl.searchParams.get("keyword") || "";
   const keywords = req.nextUrl.searchParams.get("keywords") || "";
 

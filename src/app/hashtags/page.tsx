@@ -12,7 +12,7 @@ import {
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const IG = "#E1306C";
 
-const EXAMPLES = ["photography", "fashion", "travel", "food", "fitness", "romania", "bucharest", "startup"];
+const EXAMPLES = ["photography", "fashion", "travel", "food", "fitness", "marketing", "business", "startup"];
 const PLATFORMS = ["instagram", "tiktok", "linkedin", "twitter", "pinterest", "youtube"];
 
 interface HashtagSet {

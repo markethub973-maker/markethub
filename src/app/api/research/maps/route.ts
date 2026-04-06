@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
 
   if (!process.env.APIFY_TOKEN) return NextResponse.json({ error: "Apify not configured", degraded: true }, { status: 503 });
 
-  const { query, location = "Romania", limit = 20 } = await req.json();
+  const { query, location = "", limit = 20 } = await req.json();
   if (!query?.trim()) return NextResponse.json({ error: "Query required" }, { status: 400 });
 
   const searchQuery = location ? `${query} ${location}` : query;

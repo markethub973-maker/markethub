@@ -238,8 +238,8 @@ export default function LeadFinderPage() {
         let endpoint = "";
         let body: Record<string, unknown> = {};
         switch (src.id) {
-          case "google": endpoint = "/api/research/google"; body = { query: q, country: "ro", language: "ro" }; break;
-          case "google_maps": endpoint = "/api/research/maps"; body = { query: q, location: location || "Romania" }; break;
+          case "google": endpoint = "/api/research/google"; body = { query: q }; break;
+          case "google_maps": endpoint = "/api/research/maps"; body = { query: q, location: location || "" }; break;
           case "reddit": endpoint = "/api/research/reddit"; body = { query: q, limit: 20 }; break;
           case "instagram_hashtag": endpoint = "/api/research/instagram"; body = { hashtag: q.replace(/^#/, ""), limit: 15 }; break;
           case "tiktok_hashtag": endpoint = "/api/research/tiktok"; body = { hashtag: q.replace(/^#/, ""), limit: 15 }; break;

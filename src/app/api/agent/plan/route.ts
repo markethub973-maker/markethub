@@ -27,7 +27,7 @@ When the user provides a goal, you must:
 2. Identify the best CHANNELS to find them
 3. Generate 3-6 sequential steps using the available tools
 4. Each step should build on previous results
-5. Adapt keywords and queries for Romanian market unless specified otherwise
+5. Adapt keywords and queries for the user's target market based on their goal and stated location
 
 Return ONLY valid JSON in this exact format:
 {
@@ -44,7 +44,7 @@ Return ONLY valid JSON in this exact format:
       "purpose": "Identify restaurants, clubs and event halls that could hire DJ services",
       "params": {
         "query": "restaurant evenimente sala nunta",
-        "location": "Romania",
+        "location": "New York, US",
         "limit": 20
       }
     }
@@ -68,7 +68,7 @@ Actor param formats:
 - website_crawler: { url, maxPages }
 
 Always think about the complete marketing funnel: discovery → qualification → contact.
-For Romanian market use Romanian keywords unless the user specifies another market.`;
+Always use keywords and language matching the user's stated market and language. Never assume a default country.`;
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();

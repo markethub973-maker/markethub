@@ -34,7 +34,7 @@ const tones = [
 
 const languages = [
   // Europe
-  "Romanian", "English", "Spanish", "French", "German", "Italian", "Portuguese",
+  "English", "Spanish", "French", "German", "Italian", "Portuguese", "Romanian",
   "Dutch", "Polish", "Swedish", "Norwegian", "Danish", "Finnish", "Czech",
   "Slovak", "Hungarian", "Greek", "Bulgarian", "Croatian", "Serbian",
   "Ukrainian", "Russian", "Turkish", "Catalan", "Basque", "Galician",
@@ -65,7 +65,7 @@ export default function CaptionsPage() {
   const [topic, setTopic] = useState("");
   const [platform, setPlatform] = useState("instagram");
   const [tone, setTone] = useState("Engaging");
-  const [language, setLanguage] = useState("Romanian");
+  const [language, setLanguage] = useState("English");
   const [includeHashtags, setIncludeHashtags] = useState(true);
   const [includeEmoji, setIncludeEmoji] = useState(true);
   const [maxLength, setMaxLength] = useState("");

@@ -134,7 +134,7 @@ Generate a buyer persona for THIS creator's AUDIENCE (the people who follow and 
 
 Return ONLY valid JSON (no markdown, no explanation) with this exact structure:
 {
-  "persona_name": "string (a realistic Romanian/European name that represents the typical follower, e.g. 'Maria, 28 ani')",
+  "persona_name": "string (a realistic name that represents the typical follower, adapted to the account's audience market, e.g. 'Sofia, 28' or 'Carlos, 32')",
   "persona_avatar_emoji": "string (1-2 emojis representing the persona)",
   "content_category": "string (main niche/category of this account)",
   "confidence_score": number (0-100, how confident you are based on available data),
@@ -178,7 +178,7 @@ Return ONLY valid JSON (no markdown, no explanation) with this exact structure:
       "match_score": number (0-100),
       "commission_range": "string",
       "why_it_fits": "string (1 sentence)",
-      "example_cta": "string (example call-to-action in Romanian)"
+      "example_cta": "string (example call-to-action in the audience's primary language)"
     }
   ],
   "content_strategy": {
@@ -196,16 +196,16 @@ Return ONLY valid JSON (no markdown, no explanation) with this exact structure:
     "estimated_cpm_range": "string",
     "affiliate_readiness": "string"
   },
-  "ai_summary": "string (3-4 sentences in Romanian describing the audience, their behavior, and the #1 actionable recommendation for the creator to monetize)",
+  "ai_summary": "string (3-4 sentences in English describing the audience, their behavior, and the #1 actionable recommendation for the creator to monetize)",
   "quick_wins": ["string (3 immediate actions the creator can take this week to increase affiliate revenue)"]
 }
 
 Important rules:
 - All analysis should be based on the hashtags, bio, and content data provided
-- affiliate_opportunities should include 4-6 relevant programs for Romanian/European market
+- affiliate_opportunities should include 4-6 relevant programs matching the account's market and niche
 - Be specific and actionable, not generic
 - If engagement rate is above 3%, note it as a strong signal for affiliate marketing
-- Consider Romanian market specifically (2Performant, eMAG, etc.)`;
+- Adapt recommendations to the creator's actual market (detect from bio, hashtags, content language)`;
 
   const message = await client.messages.create({
     model: "claude-sonnet-4-5",

@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
           headers: { "Content-Type": "application/json", cookie: req.headers.get("cookie") || "" },
           body: JSON.stringify({
             query: step.params.query,
-            location: step.params.location || "Romania",
+            location: step.params.location || "",
             limit: step.params.limit || 20,
           }),
         });

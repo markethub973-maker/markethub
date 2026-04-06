@@ -5,7 +5,7 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-const SYSTEM = `You are a lead generation strategist. Given an offer description and target audience, you must:
+const SYSTEM = `You are an international lead generation strategist. Detect the language of the user's input and respond in that same language. Given an offer description and target audience, you must:
 1. Extract the best keywords to find people who NEED this offer right now
 2. Recommend the best platforms/sources to find these prospects
 3. For each source, generate the exact search query to use
@@ -39,7 +39,7 @@ Available platforms for sources (use only relevant ones, 3-6 max):
 - facebook_groups: Facebook Groups (community discussions)
 - instagram_hashtag: Instagram hashtag search
 - tiktok_hashtag: TikTok niche community
-- olx: OLX.ro (Romanian classifieds - people posting needs)
+- classifieds: Local classifieds platforms (Craigslist, OLX, etc. — depending on target market)
 - reviews: Google Maps reviews of competitors
 
 intent_level must be: "high", "medium", or "low"`;
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 Offer type: ${offer_type || "service"}
 Description: ${offer_description}
 Target audience: ${audience_type || "both individuals and businesses"}
-Location: ${location || "Romania"}
+Location: ${location || "worldwide"}
 Client budget range: ${budget_range || "unknown"}
 
 Generate the optimal lead generation strategy for this offer.`;

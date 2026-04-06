@@ -87,7 +87,7 @@ export default function DashboardPage() {
   const platformCards = [
     {
       platform: "youtube" as const,
-      label: "YouTube Trending RO",
+      label: "YouTube Trending",
       views: ytTotalViews,
       er: Math.round(ytAvgER * 10) / 10,
       count: ytVideos.length,
@@ -130,14 +130,14 @@ export default function DashboardPage() {
         {/* Stats Row — computed from YouTube trending data */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
-            title="Views (Trending RO)"
+            title="Views (Trending)"
             value={ytVideos.length > 0 ? formatNumber(ytTotalViews) : "—"}
             change={undefined}
             accent="#FF0000"
             icon={<Eye className="w-5 h-5" />}
           />
           <StatCard
-            title="Likes (Trending RO)"
+            title="Likes (Trending)"
             value={ytVideos.length > 0 ? formatNumber(ytTotalLikes) : "—"}
             change={undefined}
             accent="#4F4DF0"

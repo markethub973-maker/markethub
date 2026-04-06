@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
 Topic/Product: ${topic}
 Platform: ${platformInstruction}
 Tone: ${tone || "engaging"}
-Language: ${language || "Romanian"}
+Language: ${language || "English"}
 ${includeHashtags ? "Include 5-10 relevant hashtags at the end of each caption." : "Do NOT include hashtags."}
 ${includeEmoji ? "Use emojis naturally throughout the caption." : "Do NOT use emojis."}
 ${maxLength ? `Maximum length: ${maxLength} characters per caption.` : ""}

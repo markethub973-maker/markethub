@@ -17,7 +17,7 @@ const TRENDING_SEARCHES = [
   "marketing", "social media", "brand", "viral", "trending",
   "ecommerce", "creator", "influencer", "startup", "content",
   "fashion", "fitness", "food", "travel", "tech",
-  "Romania", "Bucharest",
+  "london", "newyork",
 ];
 
 type Video = {
