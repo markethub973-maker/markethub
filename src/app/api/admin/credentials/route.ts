@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 function mask(val: string | undefined, showChars = 6): string {
   if (!val) return "— not set —";
@@ -6,7 +7,10 @@ function mask(val: string | undefined, showChars = 6): string {
   return val.slice(0, showChars) + "•".repeat(Math.min(val.length - showChars, 20));
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!isAdminAuthorized(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   // Only expose from server-side — env vars never reach the browser bundle
   const credentials = {
     youtube: {

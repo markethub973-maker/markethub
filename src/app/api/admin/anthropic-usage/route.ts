@@ -61,7 +61,7 @@ export async function GET() {
       limits,
       billing,
       monthly_usage: monthlyUsage,
-      api_key_prefix: apiKey.substring(0, 12) + "...",
+      api_key_configured: true,
       fetched_at: new Date().toISOString(),
     });
   } catch (err) {

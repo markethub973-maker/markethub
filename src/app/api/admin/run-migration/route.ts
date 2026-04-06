@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 const MIGRATIONS = [
   {
@@ -70,11 +71,10 @@ const MIGRATIONS = [
 ];
 
 export async function POST(req: NextRequest) {
-  // Simple secret check
-  const { secret } = await req.json();
-  if (secret !== process.env.CRON_SECRET && secret !== "mh-migrate-2026") {
+  if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+  await req.json().catch(() => {}); // consume body
 
   const supa = createServiceClient();
   const results: Record<string, string> = {};

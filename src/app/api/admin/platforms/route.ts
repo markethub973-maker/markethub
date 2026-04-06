@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { cookies } from "next/headers";
-
-// Verify caller is admin via cookie (set during /markethub973 login)
-async function isAdmin(): Promise<boolean> {
-  const cookieStore = await cookies();
-  const adminCookie = cookieStore.get("admin_session_token");
-  return !!adminCookie?.value;
-}
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 // ── GET — fetch all saved admin platform tokens ────────────────────────────
-export async function GET() {
-  if (!(await isAdmin())) {
+export async function GET(req: NextRequest) {
+  if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -31,7 +24,7 @@ export async function GET() {
 
 // ── POST — save / update a platform token ─────────────────────────────────
 export async function POST(req: NextRequest) {
-  if (!(await isAdmin())) {
+  if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -60,7 +53,7 @@ export async function POST(req: NextRequest) {
 
 // ── DELETE — clear a platform token ───────────────────────────────────────
 export async function DELETE(req: NextRequest) {
-  if (!(await isAdmin())) {
+  if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

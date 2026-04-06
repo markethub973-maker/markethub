@@ -20,6 +20,7 @@ import AdminFeatureFlagsPanel from "@/components/admin/AdminFeatureFlagsPanel";
 import AdminDiscountCodesPanel from "@/components/admin/AdminDiscountCodesPanel";
 import AdminHealthCheck from "@/components/admin/AdminHealthCheck";
 import AdminTestRunner from "@/components/admin/AdminTestRunner";
+import AdminRestorePanel from "@/components/admin/AdminRestorePanel";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 export default function AdminPage() {
@@ -168,6 +169,11 @@ export default function AdminPage() {
         </button>
       </div>
       <div className="p-6 space-y-8">
+
+        {/* ── Security: Restore & Health Monitor ───────────────────────── */}
+        <ModuleBoundary name="Restore & Health Monitor" minimal>
+          <AdminRestorePanel />
+        </ModuleBoundary>
 
         {/* ── Health Check Agent ────────────────────────────────────────── */}
         <ModuleBoundary name="Health Check" minimal>

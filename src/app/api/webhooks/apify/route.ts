@@ -8,8 +8,8 @@ import { createServiceClient } from "@/lib/supabase/service";
  * Events: ACTOR.RUN.SUCCEEDED, ACTOR.RUN.FAILED
  */
 export async function POST(req: NextRequest) {
-  // Verify webhook secret
-  const secret = req.headers.get("x-webhook-secret") || req.nextUrl.searchParams.get("secret");
+  // Verify webhook secret — header only (never accept query params to avoid secret in logs)
+  const secret = req.headers.get("x-webhook-secret");
   if (process.env.APIFY_WEBHOOK_SECRET && secret !== process.env.APIFY_WEBHOOK_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

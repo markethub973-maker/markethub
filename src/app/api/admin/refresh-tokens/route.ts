@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 const META_APP_ID = process.env.META_APP_ID!;
 const META_APP_SECRET = process.env.META_APP_SECRET!;
@@ -9,18 +10,14 @@ const CRON_SECRET = process.env.CRON_SECRET!;
  * Auto-refresh Instagram/Facebook tokens before they expire.
  * Called weekly by Vercel Cron. Also callable manually from admin.
  */
-export async function GET(req: Request) {
-  // Allow both cron (Authorization header) and admin cookie
+export async function GET(req: NextRequest) {
+  // Accept: Vercel cron Bearer token OR admin session cookie (for manual trigger)
   const authHeader = req.headers.get("authorization");
-  const isCron = authHeader === `Bearer ${CRON_SECRET}`;
+  const fromCron = CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`;
+  const fromAdmin = isAdminAuthorized(req);
 
-  if (!isCron) {
-    // Check admin cookie fallback for manual trigger
-    const cookie = req.headers.get("cookie") || "";
-    const isAdmin = cookie.includes("admin_session_token=");
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!fromCron && !fromAdmin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const supabase = createServiceClient();

@@ -166,7 +166,8 @@ export default function AdminTestRunner() {
       const res = await fetch("/api/admin/run-tests", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ secret: "mh-test-2026" }),
+        credentials: "include",
+        body: JSON.stringify({}),
       });
       const json = await res.json();
       if (!res.ok) {

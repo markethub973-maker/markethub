@@ -1,7 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!isAdminAuthorized(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const results: Record<string, { ok: boolean; latency: number; detail: string }> = {};
 
   // ── 1. Supabase ─────────────────────────────────────────────────────────────
@@ -68,7 +72,8 @@ export async function GET() {
       results.apify = { ok: false, latency: 0, detail: "APIFY_TOKEN not set" };
     } else {
       try {
-        const res = await fetch(`https://api.apify.com/v2/users/me?token=${key}`, {
+        const res = await fetch(`https://api.apify.com/v2/users/me`, {
+          headers: { Authorization: `Bearer ${key}` },
           signal: AbortSignal.timeout(8000),
         });
         const data = await res.json();

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import crypto from "crypto";
+import { generateAdminToken } from "@/lib/adminAuth";
 
 export async function POST(request: Request) {
   try {
@@ -17,16 +18,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Admin not configured" }, { status: 500 });
     }
 
-    // Check password
-    if (password !== adminPassword) {
+    // Constant-time comparison
+    const passwordMatch = crypto.timingSafeEqual(
+      Buffer.from(password),
+      Buffer.from(adminPassword)
+    );
+    if (!passwordMatch) {
       return NextResponse.json(
         { error: "Invalid password" },
         { status: 401 }
       );
     }
 
-    // Password correct - create secure session token
-    const sessionToken = crypto.randomBytes(32).toString("hex");
+    // Deterministic HMAC token — verifiable without storing
+    const sessionToken = generateAdminToken();
 
     const response = NextResponse.json({
       success: true,

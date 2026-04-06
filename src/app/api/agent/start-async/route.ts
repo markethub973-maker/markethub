@@ -88,7 +88,9 @@ export async function POST(req: NextRequest) {
   if (!actorId) return NextResponse.json({ error: "Unknown actor" }, { status: 400 });
 
   const input = buildInput(actor, params);
-  const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/apify?secret=${process.env.APIFY_WEBHOOK_SECRET || ""}`;
+  // Secret is passed via header — never in URL (URL params appear in logs, referer headers, CDN access logs)
+  const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/apify`;
+  const webhookSecret = process.env.APIFY_WEBHOOK_SECRET ?? "";
 
   try {
     // Start async run
@@ -102,6 +104,9 @@ export async function POST(req: NextRequest) {
           webhooks: [{
             eventTypes: ["ACTOR.RUN.SUCCEEDED", "ACTOR.RUN.FAILED"],
             requestUrl: webhookUrl,
+            headersTemplate: webhookSecret
+              ? JSON.stringify({ "X-Webhook-Secret": webhookSecret })
+              : undefined,
             payloadTemplate: JSON.stringify({
               eventType: "{{eventType}}",
               actorId: "{{actorId}}",

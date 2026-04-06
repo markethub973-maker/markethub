@@ -9,10 +9,20 @@ const ALERT_COOLDOWN_DAYS = 7; // don't alert more than once per week per user
 
 export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization");
-  const isCron = authHeader === `Bearer ${CRON_SECRET}`;
-  if (!isCron) {
-    const cookie = req.headers.get("cookie") || "";
-    if (!cookie.includes("admin_session_token=")) {
+  const fromCron = CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`;
+  if (!fromCron) {
+    let fromAdmin = false;
+    try {
+      const crypto = (await import("crypto")).default;
+      const { generateAdminToken } = await import("@/lib/adminAuth");
+      const expected = generateAdminToken();
+      const cookieHeader = req.headers.get("cookie") ?? "";
+      const match = cookieHeader.match(/admin_session_token=([^;]+)/);
+      const token = match?.[1] ?? "";
+      fromAdmin = token.length === expected.length &&
+        crypto.timingSafeEqual(Buffer.from(token, "hex"), Buffer.from(expected, "hex"));
+    } catch {}
+    if (!fromAdmin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }

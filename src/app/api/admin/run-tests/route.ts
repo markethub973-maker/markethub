@@ -6,6 +6,7 @@
  */
 import { NextRequest, NextResponse } from "next/server";
 import { safeApify, safeAnthropic, safeFetch } from "@/lib/serviceGuard";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 import Anthropic from "@anthropic-ai/sdk";
 
 export const maxDuration = 120;
@@ -111,8 +112,7 @@ function summarize(data: any): Record<string, unknown> {
 // ── Main handler ─────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
-  const { secret } = await req.json().catch(() => ({}));
-  if (secret !== process.env.CRON_SECRET && secret !== "mh-test-2026") {
+  if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

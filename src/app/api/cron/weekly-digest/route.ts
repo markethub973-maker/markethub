@@ -159,13 +159,23 @@ function fallbackDigest(weekLabel: string): DigestResult {
 }
 
 export async function GET(req: Request) {
+  // Cron: Bearer token. Manual admin trigger: admin session cookie.
   const authHeader = req.headers.get("authorization");
-  const isCron = authHeader === `Bearer ${CRON_SECRET}`;
-
-  if (!isCron) {
-    const cookie = req.headers.get("cookie") || "";
-    const isAdmin = cookie.includes("admin_session_token=");
-    if (!isAdmin) {
+  const fromCron = CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`;
+  if (!fromCron) {
+    // Inline HMAC check (can't use isAdminAuthorized without NextRequest import)
+    let fromAdmin = false;
+    try {
+      const crypto = (await import("crypto")).default;
+      const { generateAdminToken } = await import("@/lib/adminAuth");
+      const expected = generateAdminToken();
+      const cookieHeader = req.headers.get("cookie") ?? "";
+      const match = cookieHeader.match(/admin_session_token=([^;]+)/);
+      const token = match?.[1] ?? "";
+      fromAdmin = token.length === expected.length &&
+        crypto.timingSafeEqual(Buffer.from(token, "hex"), Buffer.from(expected, "hex"));
+    } catch {}
+    if (!fromAdmin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }
