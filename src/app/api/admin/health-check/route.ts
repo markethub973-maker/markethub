@@ -140,11 +140,20 @@ export async function GET(req: NextRequest) {
     const supa = createServiceClient();
     const { data } = await supa
       .from("profiles")
-      .select("instagram_access_token")
-      .not("instagram_access_token", "is", null)
+      .select("instagram_access_token, enc_instagram_access_token")
+      .or("instagram_access_token.not.is.null,enc_instagram_access_token.not.is.null")
       .limit(1)
       .single();
-    const token = data?.instagram_access_token;
+    // Prefer encrypted token; fall back to plaintext (legacy)
+    let token = (data as any)?.instagram_access_token as string | undefined;
+    const encToken = (data as any)?.enc_instagram_access_token as string | undefined;
+    if (encToken?.startsWith("enc:v1:")) {
+      try {
+        const { decryptField } = await import("@/lib/fieldCrypto");
+        const dec = decryptField(encToken);
+        if (dec) token = dec;
+      } catch { /* ignore — fall back to plaintext */ }
+    }
     if (!token) {
       results.instagram = { ok: false, latency: 0, detail: "No connected Instagram account" };
     } else {

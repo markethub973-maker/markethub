@@ -288,7 +288,33 @@ export async function POST(req: NextRequest) {
     results["audit_logs_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
-  // ── 14. Encrypted token columns in profiles ──────────────────────────────
+  // ── 14. discount_codes table ────────────────────────────────────────────
+  if (await tableExists(supa, "discount_codes")) {
+    results["discount_codes_table"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS discount_codes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        code TEXT UNIQUE NOT NULL,
+        discount_percent INTEGER NOT NULL DEFAULT 0,
+        discount_amount INTEGER DEFAULT 0,
+        max_uses INTEGER DEFAULT NULL,
+        uses_count INTEGER DEFAULT 0,
+        valid_from TIMESTAMPTZ DEFAULT now(),
+        valid_until TIMESTAMPTZ DEFAULT NULL,
+        applicable_plans TEXT[] DEFAULT NULL,
+        created_by TEXT DEFAULT 'admin',
+        active BOOLEAN DEFAULT true,
+        created_at TIMESTAMPTZ DEFAULT now(),
+        updated_at TIMESTAMPTZ DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_discount_codes_code ON discount_codes(code);
+      CREATE INDEX IF NOT EXISTS idx_discount_codes_active ON discount_codes(active);
+    `);
+    results["discount_codes_table"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
+  // ── 15. Encrypted token columns in profiles ──────────────────────────────
   // Add encrypted_* shadow columns — the app writes encrypted values here
   // while keeping the original columns for backward-compat during rollout.
   if (await columnExists(supa, "profiles", "enc_instagram_access_token")) {
