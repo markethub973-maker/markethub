@@ -146,12 +146,14 @@ export async function POST(req: NextRequest) {
     }).eq("id", user_id);
 
     // Also log an abuse flag
-    await supa.from("abuse_flags").upsert({
-      user_id,
-      reason: reason || "Manual block by admin",
-      severity: "high",
-      resolved: false,
-    }, { onConflict: "user_id,reason" }).catch(() => {});
+    try {
+      await supa.from("abuse_flags").upsert({
+        user_id,
+        reason: reason || "Manual block by admin",
+        severity: "high",
+        resolved: false,
+      }, { onConflict: "user_id,reason" });
+    } catch { /* ignore */ }
 
     return NextResponse.json({ success: true, action: "blocked" });
   }

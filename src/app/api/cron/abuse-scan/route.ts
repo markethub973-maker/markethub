@@ -60,10 +60,12 @@ export async function GET(req: NextRequest) {
   async function flagUser(userId: string, reason: string, severity: "low" | "medium" | "high") {
     if (flagged.includes(userId)) return;
     flagged.push(userId);
-    await supa.from("abuse_flags").upsert(
-      { user_id: userId, reason, severity, resolved: false },
-      { onConflict: "user_id,reason" }
-    ).catch(() => {});
+    try {
+      await supa.from("abuse_flags").upsert(
+        { user_id: userId, reason, severity, resolved: false },
+        { onConflict: "user_id,reason" }
+      );
+    } catch { /* ignore */ }
   }
 
   // IP: 3+ free accounts from same IP → flag all except oldest
@@ -109,7 +111,7 @@ export async function GET(req: NextRequest) {
       email_dupes: Object.values(emailGroups).filter(ids => ids.length >= 2).length,
       device_dupes: Object.values(deviceGroups).filter(ids => ids.length >= 2).length,
     },
-  }, { onConflict: "job" }).catch(() => {});
+  }, { onConflict: "job" });
 
   return NextResponse.json({
     ok: true,

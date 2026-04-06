@@ -144,12 +144,14 @@ export async function POST(req: NextRequest) {
         .in("subscription_plan", ["free_test"]);
 
       if (ipCheck && ipCheck.length >= 3) {
-        await svc.from("abuse_flags").upsert({
-          user_id: data.user.id,
-          reason: `Multiple free accounts from IP ${registrationIp} (${ipCheck.length} total)`,
-          severity: "medium",
-          resolved: false,
-        }, { onConflict: "user_id,reason" }).catch(() => {});
+        try {
+          await svc.from("abuse_flags").upsert({
+            user_id: data.user.id,
+            reason: `Multiple free accounts from IP ${registrationIp} (${ipCheck.length} total)`,
+            severity: "medium",
+            resolved: false,
+          }, { onConflict: "user_id,reason" });
+        } catch { /* ignore */ }
       }
     }
   }
