@@ -40,7 +40,22 @@ export default function AdminPage() {
   useEffect(() => {
     checkAdminAccess();
     fetchData();
+    runMigrationSilently();
   }, []);
+
+  // Auto-run migration on every admin load (idempotent — only applies missing steps)
+  const runMigrationSilently = async () => {
+    try {
+      const token = typeof window !== "undefined"
+        ? localStorage.getItem("admin_token") ?? ""
+        : "";
+      await fetch("/api/admin/run-migration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-admin-secret": token },
+        body: JSON.stringify({}),
+      });
+    } catch { /* silent */ }
+  };
 
   const checkAdminAccess = async () => {
     try {

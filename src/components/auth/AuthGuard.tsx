@@ -6,6 +6,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import SetupAgent from "@/components/ui/SetupAgent";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
+import TrialWarningBanner from "@/components/TrialWarningBanner";
 import { createClient } from "@/lib/supabase/client";
 
 const PUBLIC_PATHS = ["/login", "/register", "/markethub973"];
@@ -56,10 +57,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Sidebar />
-      <main className="ml-64 min-h-screen">
-        <ModuleBoundary name="Page">
-          {children}
-        </ModuleBoundary>
+      <main className="ml-64 min-h-screen flex flex-col">
+        <TrialWarningBanner />
+        <div className="flex-1">
+          <ModuleBoundary name="Page">
+            {children}
+          </ModuleBoundary>
+        </div>
       </main>
       {pathname !== "/ai-hub" && <SetupAgent />}
       <OnboardingWidget />

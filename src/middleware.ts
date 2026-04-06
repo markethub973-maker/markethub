@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { canAccessRoute } from "@/lib/plan-features";
 
 // ── Security headers applied to every response ─────────────────────────────
 const SECURITY_HEADERS: Record<string, string> = {
@@ -211,25 +212,6 @@ export async function middleware(request: NextRequest) {
     return redirect;
   }
 
-  // ── Blocked-user check ─────────────────────────────────────────────────────
-  if (!pathname.startsWith("/blocked") && !pathname.startsWith("/api/auth")) {
-    const { data: blockedCheck } = await supabase
-      .from("profiles")
-      .select("is_blocked, blocked_reason")
-      .eq("id", user.id)
-      .single();
-    if (blockedCheck?.is_blocked) {
-      const blockedUrl = new URL("/blocked", request.url);
-      blockedUrl.searchParams.set(
-        "reason",
-        encodeURIComponent(blockedCheck.blocked_reason || "Account suspended")
-      );
-      const redirect = NextResponse.redirect(blockedUrl);
-      applySecurityHeaders(redirect);
-      return redirect;
-    }
-  }
-
   // Skip plan check for upgrade-related paths
   const isUpgradePath = UPGRADE_PATHS.some((p) => pathname.startsWith(p));
   if (isUpgradePath) {
@@ -237,18 +219,26 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // ── Check subscription plan ─────────────────────────────────────────────
-  const { data: profile, error: profileError } = await supabase
+  // ── Single profile query: blocked + plan + trial (avoids double round-trip) ─
+  const { data: profile } = await supabase
     .from("profiles")
-    .select("plan, subscription_plan, subscription_status, trial_expires_at")
+    .select("plan, subscription_plan, subscription_status, trial_expires_at, is_blocked, blocked_reason")
     .eq("id", user.id)
     .single();
 
-  const profileOld = profileError
-    ? (await supabase.from("profiles").select("plan").eq("id", user.id).single()).data
-    : null;
+  // Blocked-user check
+  if (profile?.is_blocked && !pathname.startsWith("/blocked")) {
+    const blockedUrl = new URL("/blocked", request.url);
+    blockedUrl.searchParams.set(
+      "reason",
+      encodeURIComponent((profile as any).blocked_reason || "Account suspended")
+    );
+    const redirect = NextResponse.redirect(blockedUrl);
+    applySecurityHeaders(redirect);
+    return redirect;
+  }
 
-  const resolvedProfile = profile ?? profileOld;
+  const resolvedProfile = profile;
 
   if (resolvedProfile) {
     const activePlan = (resolvedProfile as any).subscription_plan ?? (resolvedProfile as any).plan;
@@ -264,6 +254,19 @@ export async function middleware(request: NextRequest) {
 
     if (isExpired && !pathname.startsWith("/api")) {
       const redirect = NextResponse.redirect(new URL("/upgrade-required", request.url));
+      applySecurityHeaders(redirect);
+      return redirect;
+    }
+
+    // ── Route-level plan gate (server-side, URL bypass protection) ──────────
+    if (
+      activePlan &&
+      !pathname.startsWith("/api") &&
+      !canAccessRoute(activePlan, pathname)
+    ) {
+      const upgradeUrl = new URL("/upgrade-required", request.url);
+      upgradeUrl.searchParams.set("feature", pathname);
+      const redirect = NextResponse.redirect(upgradeUrl);
       applySecurityHeaders(redirect);
       return redirect;
     }
