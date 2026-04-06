@@ -139,7 +139,17 @@ export async function POST(req: NextRequest) {
 
   const supa = createServiceClient();
 
+  // Never block an admin account
+  const { data: targetProfile } = await supa
+    .from("profiles")
+    .select("is_admin")
+    .eq("id", user_id)
+    .single();
+
   if (action === "block") {
+    if (targetProfile?.is_admin) {
+      return NextResponse.json({ error: "Cannot block an admin account" }, { status: 403 });
+    }
     await supa.from("profiles").update({
       is_blocked: true,
       blocked_reason: reason || "Blocked by admin",

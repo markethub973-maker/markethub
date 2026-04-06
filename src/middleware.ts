@@ -222,12 +222,12 @@ export async function middleware(request: NextRequest) {
   // ── Single profile query: blocked + plan + trial (avoids double round-trip) ─
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan, subscription_plan, subscription_status, trial_expires_at, is_blocked, blocked_reason")
+    .select("plan, subscription_plan, subscription_status, trial_expires_at, is_blocked, blocked_reason, is_admin")
     .eq("id", user.id)
     .single();
 
-  // Blocked-user check
-  if (profile?.is_blocked && !pathname.startsWith("/blocked")) {
+  // Blocked-user check — admins are never blocked
+  if (profile?.is_blocked && !(profile as any).is_admin && !pathname.startsWith("/blocked")) {
     const blockedUrl = new URL("/blocked", request.url);
     blockedUrl.searchParams.set(
       "reason",
