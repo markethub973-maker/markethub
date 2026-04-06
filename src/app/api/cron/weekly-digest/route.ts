@@ -105,8 +105,19 @@ function buildDigestHtml(digest: DigestResult, weekLabel: string, userName?: str
 </div>`.trim();
 }
 
-async function generateDigestWithAI(weekLabel: string): Promise<DigestResult> {
+async function generateDigestWithAI(
+  weekLabel: string,
+  userCtx?: { name?: string; plan?: string; platforms?: string[] }
+): Promise<DigestResult> {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+  const contextLine = userCtx
+    ? [
+        userCtx.name ? `User: ${userCtx.name}` : "",
+        userCtx.plan ? `Plan: ${userCtx.plan}` : "",
+        userCtx.platforms?.length ? `Active platforms: ${userCtx.platforms.join(", ")}` : "",
+      ].filter(Boolean).join(" | ")
+    : "";
 
   const msg = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
@@ -114,7 +125,7 @@ async function generateDigestWithAI(weekLabel: string): Promise<DigestResult> {
     messages: [
       {
         role: "user",
-        content: `Generate a weekly marketing digest summary for a social media marketing agency for the week of ${weekLabel}.
+        content: `Generate a weekly marketing digest summary for a social media marketing agency for the week of ${weekLabel}.${contextLine ? `\nContext: ${contextLine}` : ""}
 Return ONLY a valid JSON object with these exact fields:
 {
   "subject_line": "catchy email subject",
@@ -127,7 +138,7 @@ Return ONLY a valid JSON object with these exact fields:
   "next_week_focus": "strategic focus for next week"
 }
 Performance badge must be one of: excellent, strong, average, slow.
-Keep all text short and actionable. No markdown, only JSON.`,
+Keep all text short and actionable. Personalise for the user's active platforms if provided. No markdown, only JSON.`,
       },
     ],
   });
@@ -190,7 +201,7 @@ export async function GET(req: Request) {
   // Fetch all active paid users (not free plan, email confirmed)
   const { data: profiles, error } = await supabase
     .from("profiles")
-    .select("id, email, full_name, subscription_plan, email_digest_enabled")
+    .select("id, email, name, full_name, subscription_plan, email_digest_enabled, instagram_username, youtube_channel_id")
     .not("subscription_plan", "in", '("free","free_test")')
     .not("email", "is", null);
 
@@ -217,25 +228,33 @@ export async function GET(req: Request) {
   weekStart.setDate(now.getDate() - now.getDay() + 1); // Monday
   const weekEnd = new Date(weekStart);
   weekEnd.setDate(weekStart.getDate() + 6); // Sunday
-  const fmt = (d: Date) =>
+  const fmtDate = (d: Date) =>
     d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
-  const weekLabel = `${fmt(weekStart)} – ${fmt(weekEnd)}, ${now.getFullYear()}`;
-
-  // Generate digest content (AI or fallback)
-  let digest: DigestResult;
-  try {
-    digest = await generateDigestWithAI(weekLabel);
-  } catch {
-    digest = fallbackDigest(weekLabel);
-  }
+  const weekLabel = `${fmtDate(weekStart)} – ${fmtDate(weekEnd)}, ${now.getFullYear()}`;
 
   const resend = new Resend(resendKey);
-  const subject = digest.subject_line || `Weekly Marketing Digest — ${weekLabel}`;
 
-  // Send one email per user (personalised with their name)
+  // Send one personalised email per user (individual AI digest with their real platform data)
   const results = await Promise.allSettled(
-    eligible.map((user) => {
-      const html = buildDigestHtml(digest, weekLabel, user.full_name || undefined);
+    eligible.map(async (user) => {
+      const userName = user.full_name || user.name || undefined;
+      const platforms: string[] = [];
+      if (user.instagram_username) platforms.push(`Instagram @${user.instagram_username}`);
+      if (user.youtube_channel_id) platforms.push("YouTube channel");
+
+      let digest: DigestResult;
+      try {
+        digest = await generateDigestWithAI(weekLabel, {
+          name: userName,
+          plan: user.subscription_plan,
+          platforms,
+        });
+      } catch {
+        digest = fallbackDigest(weekLabel);
+      }
+
+      const html = buildDigestHtml(digest, weekLabel, userName);
+      const subject = digest.subject_line || `Weekly Marketing Digest — ${weekLabel}`;
       return resend.emails.send({ from: FROM, to: user.email, subject, html });
     })
   );

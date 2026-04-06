@@ -32,6 +32,7 @@ type Post = {
   time: string;
   client: string;
   hashtags: string;
+  image_url: string;
 };
 
 function getDaysInMonth(year: number, month: number) {
@@ -45,7 +46,7 @@ function getFirstDayOfWeek(year: number, month: number) {
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
-const EMPTY_FORM = { title: "", caption: "", platform: "instagram", status: "draft", date: "", time: "12:00", client: "", hashtags: "" };
+const EMPTY_FORM = { title: "", caption: "", platform: "instagram", status: "draft", date: "", time: "12:00", client: "", hashtags: "", image_url: "" };
 
 export default function CalendarPage() {
   const searchParams = useSearchParams();
@@ -100,7 +101,7 @@ export default function CalendarPage() {
 
   const openEdit = (post: Post) => {
     setEditingPost(post);
-    setForm({ title: post.title, caption: post.caption, platform: post.platform, status: post.status, date: post.date, time: post.time, client: post.client, hashtags: post.hashtags });
+    setForm({ title: post.title, caption: post.caption, platform: post.platform, status: post.status, date: post.date, time: post.time, client: post.client, hashtags: post.hashtags, image_url: post.image_url || "" });
     setShowForm(true);
     setError("");
   };
@@ -455,6 +456,20 @@ export default function CalendarPage() {
                     onChange={e => setForm(f => ({ ...f, hashtags: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
                     style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
+                    Image URL <span style={{ color: "#C4AA8A", fontWeight: 400 }}>— required for auto-posting to Instagram</span>
+                  </label>
+                  <input type="url" placeholder="https://cdn.example.com/image.jpg" value={form.image_url}
+                    onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
+                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  {form.image_url && (
+                    <img src={form.image_url} alt="Preview" className="mt-2 rounded-lg max-h-32 object-cover"
+                      style={{ border: "1px solid rgba(245,215,160,0.3)" }}
+                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                  )}
                 </div>
               </div>
 

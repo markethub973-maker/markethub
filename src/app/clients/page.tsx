@@ -80,6 +80,50 @@ export default function ClientsPage() {
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"list" | "compare" | "digest">("list");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [liveLink, setLiveLink] = useState<{ clientId: string; url: string } | null>(null);
+  const [creatingLiveId, setCreatingLiveId] = useState<string | null>(null);
+
+  const createLiveLink = async (client: Client) => {
+    setCreatingLiveId(client.id);
+    try {
+      const res = await fetch("/api/client-portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_name: client.name,
+          ig_username: client.igUsername || "",
+          tt_username: client.tiktokUsername || "",
+          expires_days: 30,
+          data: {
+            ig_followers: client.igData?.profile.followers || 0,
+            ig_following: client.igData?.profile.following || 0,
+            ig_posts: client.igData?.profile.postsCount || 0,
+            ig_engagement: client.igData?.engagementRate || 0,
+            ig_bio: client.igData?.profile.biography?.substring(0, 120) || "",
+            ig_avatar: client.igData?.profile.avatar || "",
+            ig_verified: client.igData?.profile.isVerified || false,
+            tt_followers: client.tiktokData?.followers || 0,
+            tt_likes: client.tiktokData?.likes || 0,
+            tt_videos: client.tiktokData?.videos || 0,
+            notes: client.notes || "",
+            posts: (client.igData?.posts || []).slice(0, 6).map(p => ({
+              s: p.shortcode, l: p.likes, c: p.comments,
+              v: p.isVideo ? 1 : 0, vv: p.videoViews || 0, t: p.timestamp, th: p.thumbnail || "",
+            })),
+          },
+        }),
+      });
+      const json = await res.json();
+      if (json.link?.token) {
+        const url = `${window.location.origin}/portal/${json.link.token}`;
+        await navigator.clipboard.writeText(url);
+        setLiveLink({ clientId: client.id, url });
+        setTimeout(() => setLiveLink(null), 4000);
+      }
+    } catch { /* ignore */ } finally {
+      setCreatingLiveId(null);
+    }
+  };
 
   const copyShareLink = (client: Client) => {
     const payload = {
@@ -451,13 +495,27 @@ export default function ClientsPage() {
 
                       <div className="flex items-center gap-1 flex-shrink-0">
                         <button type="button"
+                          onClick={e => { e.stopPropagation(); createLiveLink(client); }}
+                          disabled={creatingLiveId === client.id}
+                          className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                          style={liveLink?.clientId === client.id
+                            ? { backgroundColor: "rgba(16,163,74,0.12)", color: "#16A34A" }
+                            : { backgroundColor: "rgba(59,130,246,0.1)", color: "#3B82F6" }
+                          }
+                          title="Create live portal link (30 days, stored in DB)">
+                          {creatingLiveId === client.id
+                            ? <Loader2 className="w-3 h-3 animate-spin" />
+                            : <ShieldCheck className="w-3 h-3" />}
+                          <span className="hidden sm:inline">{liveLink?.clientId === client.id ? "Copied!" : "Live Link"}</span>
+                        </button>
+                        <button type="button"
                           onClick={e => { e.stopPropagation(); copyShareLink(client); }}
                           className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                           style={copiedId === client.id
                             ? { backgroundColor: "rgba(16,185,129,0.12)", color: "#10B981" }
                             : { backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }
                           }
-                          title="Copy share link">
+                          title="Copy snapshot link (Base64, no expiry)">
                           <ExternalLink className="w-3 h-3" />
                           <span className="hidden sm:inline">{copiedId === client.id ? "Copied!" : "Share"}</span>
                         </button>

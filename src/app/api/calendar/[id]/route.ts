@@ -9,9 +9,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   const body = await req.json().catch(() => ({}));
-  const { title, caption, platform, status, date, time, client, hashtags } = body as {
+  const { title, caption, platform, status, date, time, client, hashtags, image_url } = body as {
     title?: string; caption?: string; platform?: string; status?: string;
-    date?: string; time?: string; client?: string; hashtags?: string;
+    date?: string; time?: string; client?: string; hashtags?: string; image_url?: string;
   };
 
   const updates: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -23,6 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (time !== undefined) updates.time = time;
   if (client !== undefined) updates.client = client.trim();
   if (hashtags !== undefined) updates.hashtags = hashtags.trim();
+  if (image_url !== undefined) updates.image_url = image_url?.trim() || null;
 
   const { data, error } = await supabase
     .from("scheduled_posts")

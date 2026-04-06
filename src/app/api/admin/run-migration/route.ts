@@ -4,6 +4,38 @@ import { isAdminAuthorized } from "@/lib/adminAuth";
 
 const MIGRATIONS = [
   {
+    name: "client_portal_links_table",
+    check: `SELECT table_name FROM information_schema.tables WHERE table_name='client_portal_links'`,
+    sql: `CREATE TABLE IF NOT EXISTS client_portal_links (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+      token UUID UNIQUE DEFAULT gen_random_uuid(),
+      client_name TEXT NOT NULL,
+      ig_username TEXT DEFAULT '',
+      tt_username TEXT DEFAULT '',
+      data JSONB DEFAULT '{}',
+      view_count INTEGER DEFAULT 0,
+      expires_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT now(),
+      updated_at TIMESTAMPTZ DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS idx_portal_links_token ON client_portal_links(token);
+    CREATE INDEX IF NOT EXISTS idx_portal_links_user ON client_portal_links(user_id);`,
+  },
+  {
+    name: "scheduled_posts_image_url",
+    check: `SELECT column_name FROM information_schema.columns WHERE table_name='scheduled_posts' AND column_name='image_url'`,
+    sql: `ALTER TABLE scheduled_posts ADD COLUMN IF NOT EXISTS image_url TEXT DEFAULT NULL;
+    ALTER TABLE scheduled_posts ADD COLUMN IF NOT EXISTS published_at TIMESTAMPTZ DEFAULT NULL;
+    ALTER TABLE scheduled_posts ADD COLUMN IF NOT EXISTS post_result JSONB DEFAULT NULL;`,
+  },
+  {
+    name: "profiles_digest_columns",
+    check: `SELECT column_name FROM information_schema.columns WHERE table_name='profiles' AND column_name='email_digest_enabled'`,
+    sql: `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS email_digest_enabled BOOLEAN DEFAULT true;
+    ALTER TABLE profiles ADD COLUMN IF NOT EXISTS full_name TEXT DEFAULT NULL;`,
+  },
+  {
     name: "profiles_region_columns",
     check: `SELECT column_name FROM information_schema.columns WHERE table_name='profiles' AND column_name='preferred_region'`,
     sql: `ALTER TABLE profiles ADD COLUMN IF NOT EXISTS preferred_region TEXT DEFAULT NULL; ALTER TABLE profiles ADD COLUMN IF NOT EXISTS local_market_enabled BOOLEAN DEFAULT false;`,
