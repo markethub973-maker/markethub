@@ -54,6 +54,35 @@ export async function resolveIGAuth(): Promise<IGAuth | null> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
+  // Primary: instagram_connections table (written by OAuth callback)
+  const { data: conn } = await supabase
+    .from("instagram_connections")
+    .select("access_token, enc_access_token, instagram_id, instagram_username")
+    .eq("user_id", user.id)
+    .single();
+
+  if (conn?.instagram_id) {
+    // Prefer encrypted token if present
+    let token = conn.access_token as string;
+    const encToken = conn.enc_access_token as string | undefined;
+    if (encToken?.startsWith("enc:v1:")) {
+      try {
+        const { decryptField } = await import("@/lib/fieldCrypto");
+        const dec = decryptField(encToken);
+        if (dec) token = dec;
+      } catch { /* fallback to plaintext */ }
+    }
+    if (token) {
+      return {
+        token,
+        igId: conn.instagram_id as string,
+        username: (conn.instagram_username as string) || "",
+        isAdmin: false,
+      };
+    }
+  }
+
+  // Fallback: legacy profiles columns
   const { data: profile } = await supabase
     .from("profiles")
     .select("instagram_access_token, instagram_user_id, instagram_username")
