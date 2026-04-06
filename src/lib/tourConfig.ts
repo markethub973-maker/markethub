@@ -73,19 +73,27 @@ export const FULL_TOUR: TourStep[] = [
     position: "bottom",
   },
   {
-    id: "settings",
+    id: "settings-connect",
     page: "/settings",
     target: "page-header",
-    title: "Setări & Integrări ⚙️",
-    description: "Conectează-ți conturile (YouTube, Instagram, TikTok), setează notificările și gestionează planul de abonament.",
+    title: "Conectează-ți conturile ⚙️",
+    description: "Primul pas important: conectează YouTube și Instagram pentru date reale. Click pe tab-ul 'Integrations'.",
     position: "bottom",
+  },
+  {
+    id: "account-connections",
+    page: "/settings",
+    target: "account-connections",
+    title: "YouTube & Instagram 🔗",
+    description: "Conectează YouTube pentru statistici canal propriu și Instagram Business pentru reach, engagement și demografii reale.",
+    position: "right",
   },
   {
     id: "done",
     page: "/",
     target: "sidebar-logo",
     title: "Ești gata! 🚀",
-    description: "Turul s-a terminat. Poți relansa oricând din butonul de help sau poți întreba asistentul AI orice întrebare despre platformă.",
+    description: "Turul s-a terminat. Conectează-ți conturile din Settings → Integrations pentru date reale. Poți întreba asistentul AI orice.",
     position: "right",
   },
 ];
@@ -94,6 +102,9 @@ export const FULL_TOUR: TourStep[] = [
 export const PAGE_GUIDES: Record<string, TourStep[]> = {
   "/": [
     { id: "pg-yt-header", page: "/", target: "page-header", title: "YouTube Overview", description: "Statistici generale ale canalului tău YouTube.", position: "bottom" },
+  ],
+  "/settings": [
+    { id: "pg-settings-connect", page: "/settings", target: "account-connections", title: "Conectează conturile", description: "Apasă 'Connect YouTube' sau 'Connect Instagram' pentru a lega conturile și a vedea datele tale reale.", position: "right" },
   ],
   "/research": [
     { id: "pg-research-search", page: "/research", target: "research-search", title: "Caută pe orice platformă", description: "Selectează platforma (Google, Instagram, TikTok etc.) și introdu termenul de căutare.", position: "bottom" },

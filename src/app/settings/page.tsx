@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import InstagramConnect from "@/components/settings/InstagramConnect";
+import AccountConnections from "@/components/settings/AccountConnections";
 import RegionSettings from "@/components/settings/RegionSettings";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -341,8 +342,11 @@ export default function SettingsPage() {
         {/* ══ Integrations Tab ═══════════════════════════════════════════════ */}
         {activeTab === "integrations" && (
           <div>
-            <h2 className="text-lg font-bold mb-4" style={{ color: "#292524" }}>Integrations</h2>
-            <InstagramConnect />
+            <h2 className="text-lg font-bold mb-4" style={{ color: "#292524" }}>Connect Your Accounts</h2>
+            <p className="text-sm mb-6" style={{ color: "#A8967E" }}>
+              Conectează conturile pentru a vedea datele tale reale. Fără conectare, platformele afișează date publice/trending.
+            </p>
+            <AccountConnections />
           </div>
         )}
 
