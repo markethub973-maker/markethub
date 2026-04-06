@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { TOKEN_PLANS, type PlanId } from "@/lib/token-plan-config";
+import { PLAN_FEATURES } from "@/lib/plan-features";
 
 const PLAN_IDS: PlanId[] = ["free_test", "starter", "lite", "pro", "business", "enterprise"];
 
@@ -43,11 +44,12 @@ export async function GET() {
       name: base.name,
       tokens_month: tokens[id] ?? base.included_tokens_month,
       features: {
-        has_calendar:         features[id]?.has_calendar         ?? base.has_calendar,
-        has_tiktok:           features[id]?.has_tiktok           ?? base.has_tiktok,
-        has_api_access:       features[id]?.has_api_access       ?? base.has_api_access,
-        has_white_label:      features[id]?.has_white_label      ?? base.has_white_label,
-        has_priority_support: features[id]?.has_priority_support ?? base.has_priority_support,
+        // DB override wins → falls back to plan-features.ts (source of truth for access control)
+        has_calendar:         features[id]?.has_calendar         ?? PLAN_FEATURES[id]?.has_calendar         ?? base.has_calendar,
+        has_tiktok:           features[id]?.has_tiktok           ?? PLAN_FEATURES[id]?.has_tiktok           ?? base.has_tiktok,
+        has_api_access:       features[id]?.has_api_access       ?? PLAN_FEATURES[id]?.has_api_access       ?? base.has_api_access,
+        has_white_label:      features[id]?.has_white_label      ?? PLAN_FEATURES[id]?.has_white_label      ?? base.has_white_label,
+        has_priority_support: features[id]?.has_priority_support ?? PLAN_FEATURES[id]?.has_priority_support ?? base.has_priority_support,
       },
     };
   });

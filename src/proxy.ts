@@ -36,6 +36,32 @@ const ALLOWED_ORIGINS = [
     : []),
 ];
 
+// ── Plan features cache (DB overrides, refreshed every 5 min) ───────────────
+// Allows admin panel changes to propagate without code redeploy.
+let planFeaturesCache: { data: Record<string, Record<string, boolean>>; at: number } | null = null;
+const PLAN_FEATURES_TTL = 5 * 60 * 1000;
+
+async function loadPlanFeaturesOverrides(
+  supabase: ReturnType<typeof import("@supabase/ssr").createServerClient>
+): Promise<Record<string, Record<string, boolean>>> {
+  const now = Date.now();
+  if (planFeaturesCache && now - planFeaturesCache.at < PLAN_FEATURES_TTL) {
+    return planFeaturesCache.data;
+  }
+  try {
+    const { data } = await supabase
+      .from("admin_platform_config")
+      .select("extra_data")
+      .eq("platform", "plan_features")
+      .maybeSingle();
+    const overrides = (data?.extra_data as Record<string, Record<string, boolean>>) ?? {};
+    planFeaturesCache = { data: overrides, at: now };
+    return overrides;
+  } catch {
+    return planFeaturesCache?.data ?? {};
+  }
+}
+
 // ── In-memory rate limiter (per-edge-worker instance, best-effort) ──────────
 // Provides protection against trivial abuse; for global rate limiting
 // a Redis-backed solution (e.g. Upstash) would be needed.
@@ -298,10 +324,12 @@ export async function proxy(request: NextRequest) {
     }
 
     // ── Route-level plan gate (server-side, URL bypass protection) ──────────
+    // Load DB overrides (cached 5 min) so admin panel changes take effect immediately
+    const planOverrides = await loadPlanFeaturesOverrides(supabase);
     if (
       activePlan &&
       !pathname.startsWith("/api") &&
-      !canAccessRoute(activePlan, pathname)
+      !canAccessRoute(activePlan, pathname, planOverrides)
     ) {
       const upgradeUrl = new URL("/upgrade-required", request.url);
       upgradeUrl.searchParams.set("feature", pathname);

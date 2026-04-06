@@ -232,15 +232,24 @@ export function getRouteGate(pathname: string): RouteGate | null {
   return prefix ? ROUTE_GATES[prefix] : null;
 }
 
-/** True if the user's plan can access this route */
-export function canAccessRoute(userPlan: string, pathname: string): boolean {
+/** True if the user's plan can access this route.
+ *  Pass `overrides` (from admin_platform_config DB) to override code defaults. */
+export function canAccessRoute(
+  userPlan: string,
+  pathname: string,
+  overrides?: Record<string, Record<string, boolean>>
+): boolean {
   const gate = getRouteGate(pathname);
   if (!gate) return true; // No gate = open to all
 
   if (!hasPlanAccess(userPlan, gate.minPlan)) return false;
 
-  // Check specific feature flag if defined
+  // Check specific feature flag — DB override wins over code default
   if (gate.featureKey) {
+    const dbFeatures = overrides?.[userPlan];
+    if (dbFeatures && gate.featureKey in dbFeatures) {
+      return !!dbFeatures[gate.featureKey];
+    }
     const features = PLAN_FEATURES[userPlan as PlanId] ?? PLAN_FEATURES.free_test;
     return !!features[gate.featureKey];
   }
