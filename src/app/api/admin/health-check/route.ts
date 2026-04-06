@@ -138,15 +138,15 @@ export async function GET(req: NextRequest) {
   {
     const t = Date.now();
     const supa = createServiceClient();
+    // Token is stored in instagram_connections, not profiles
     const { data } = await supa
-      .from("profiles")
-      .select("instagram_access_token, enc_instagram_access_token")
-      .or("instagram_access_token.not.is.null,enc_instagram_access_token.not.is.null")
+      .from("instagram_connections")
+      .select("access_token, enc_access_token, instagram_username")
       .limit(1)
       .single();
     // Prefer encrypted token; fall back to plaintext (legacy)
-    let token = (data as any)?.instagram_access_token as string | undefined;
-    const encToken = (data as any)?.enc_instagram_access_token as string | undefined;
+    let token = (data as any)?.access_token as string | undefined;
+    const encToken = (data as any)?.enc_access_token as string | undefined;
     if (encToken?.startsWith("enc:v1:")) {
       try {
         const { decryptField } = await import("@/lib/fieldCrypto");
@@ -158,14 +158,18 @@ export async function GET(req: NextRequest) {
       results.instagram = { ok: false, latency: 0, detail: "No connected Instagram account" };
     } else {
       try {
-        const res = await fetch(`https://graph.instagram.com/me?fields=id,username&access_token=${token}`, {
-          signal: AbortSignal.timeout(8000),
-        });
+        const res = await fetch(
+          `https://graph.facebook.com/v22.0/me?fields=id,name&access_token=${token}`,
+          { signal: AbortSignal.timeout(8000) }
+        );
         const body = await res.json();
+        const igUser = (data as any)?.instagram_username;
         results.instagram = {
           ok: res.status === 200 && !body.error,
           latency: Date.now() - t,
-          detail: res.status === 200 && !body.error ? `@${body.username}` : body.error?.message || `HTTP ${res.status}`,
+          detail: res.status === 200 && !body.error
+            ? `@${igUser || body.name || "connected"}`
+            : body.error?.message || `HTTP ${res.status}`,
         };
       } catch (e: any) {
         results.instagram = { ok: false, latency: Date.now() - t, detail: e.message };
