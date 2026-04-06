@@ -60,6 +60,7 @@ const navGroups = [
     items: [
       { href: "/research", label: "Research Hub", icon: Search },
       { href: "/marketing", label: "Marketing Agent", icon: Megaphone },
+      { href: "/lead-finder", label: "Lead Finder", icon: Target },
       { href: "/leads", label: "Leads Database", icon: Database },
       { href: "/trending", label: "Trending", icon: TrendingUp },
       { href: "/competitors", label: "Competitors", icon: BarChart3 },
@@ -83,7 +84,6 @@ const navGroups = [
     icon: Bell,
     items: [
       { href: "/alerts", label: "Alerts", icon: Bell },
-      { href: "/marketing", label: "Marketing", icon: Megaphone },
       { href: "/email-reports", label: "Email Reports", icon: Mail },
       { href: "/clients", label: "Multi-Account", icon: UserSquare2 },
       { href: "/ai-hub", label: "AI Hub", icon: Sparkles },

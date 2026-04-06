@@ -717,6 +717,24 @@ export default function MarketingAgentPage() {
           </div>
         )}
 
+        {/* Lead Finder CTA */}
+        <div className="rounded-2xl p-4 flex items-center gap-4"
+          style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(29,185,84,0.06))", border: "1px solid rgba(245,215,160,0.25)" }}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+            style={{ background: "linear-gradient(135deg, #F59E0B, #1DB954)" }}>
+            <Users className="w-5 h-5 text-white" />
+          </div>
+          <div className="flex-1">
+            <p className="font-bold text-sm" style={{ color: "#292524" }}>Vrei să găsești clienți pas cu pas?</p>
+            <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Lead Finder îți ghidează căutarea în 5 pași: ofertă → audiență → surse AI → leads scorati → mesaje outreach</p>
+          </div>
+          <a href="/lead-finder"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold flex-shrink-0 transition-all"
+            style={{ backgroundColor: AMBER, color: "#1C1814" }}>
+            Deschide <Zap className="w-3 h-3" />
+          </a>
+        </div>
+
         {/* Stats bar */}
         <div className="grid grid-cols-3 gap-3">
           {[
