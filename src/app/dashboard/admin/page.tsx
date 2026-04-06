@@ -18,6 +18,7 @@ import AdminTokenStatus from "@/components/admin/AdminTokenStatus";
 import AdminTokensPanel from "@/components/admin/AdminTokensPanel";
 import AdminFeatureFlagsPanel from "@/components/admin/AdminFeatureFlagsPanel";
 import AdminDiscountCodesPanel from "@/components/admin/AdminDiscountCodesPanel";
+import AdminHealthCheck from "@/components/admin/AdminHealthCheck";
 
 export default function AdminPage() {
   const router = useRouter();
@@ -165,6 +166,9 @@ export default function AdminPage() {
         </button>
       </div>
       <div className="p-6 space-y-8">
+
+        {/* ── Health Check Agent ────────────────────────────────────────── */}
+        <AdminHealthCheck />
 
         {/* ── Preview Features ──────────────────────────────────────────── */}
         <div className="rounded-2xl p-4 flex items-center gap-4 flex-wrap"
