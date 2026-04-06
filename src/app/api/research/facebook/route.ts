@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { safeApify } from "@/lib/serviceGuard";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const token = process.env.APIFY_TOKEN;
-  if (!token) return NextResponse.json({ error: "Apify not configured" }, { status: 500 });
+  
+  if (!process.env.APIFY_TOKEN) return NextResponse.json({ error: "Apify not configured", degraded: true }, { status: 503 });
 
   const { page, limit = 10 } = await req.json();
   if (!page?.trim()) return NextResponse.json({ error: "Facebook page name or URL required" }, { status: 400 });
@@ -16,30 +17,22 @@ export async function POST(req: NextRequest) {
     ? page
     : `https://www.facebook.com/${page.replace(/^@/, "")}`;
 
+  const result = await safeApify<any[]>("apify~facebook-posts-scraper", {
+    startUrls: [{ url: pageUrl }],
+    maxPosts: Math.min(limit, 20),
+    maxPostComments: 0,
+    maxReviews: 0,
+    scrapeAbout: true,
+    scrapeReviews: false,
+    scrapeServices: false,
+  }, { timeoutSec: 90, retries: 1 });
+
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error, service: "apify", degraded: true }, { status: 503 });
+  }
+
   try {
-    const res = await fetch(
-      `https://api.apify.com/v2/acts/apify~facebook-posts-scraper/run-sync-get-dataset-items?token=${token}&timeout=90&memory=256`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          startUrls: [{ url: pageUrl }],
-          maxPosts: Math.min(limit, 20),
-          maxPostComments: 0,
-          maxReviews: 0,
-          scrapeAbout: true,
-          scrapeReviews: false,
-          scrapeServices: false,
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `Apify error: ${res.status}`, detail: err }, { status: 502 });
-    }
-
-    const data = await res.json();
+    const data = result.data || [];
     const posts = (data || []).map((p: any) => ({
       postId: p.postId,
       url: p.url,

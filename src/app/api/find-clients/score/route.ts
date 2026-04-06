@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { safeAnthropic } from "@/lib/serviceGuard";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -47,20 +48,24 @@ URL: ${r.url || r.profile_url || ""}
 Platform: ${r.platform || ""}
 `).join("\n")}`;
 
-  try {
-    const msg = await anthropic.messages.create({
+  const result = await safeAnthropic(() =>
+    anthropic.messages.create({
       model: "claude-haiku-4-5-20251001",
       max_tokens: 2000,
       system: SYSTEM,
       messages: [{ role: "user", content: prompt }],
-    });
+    })
+  );
 
-    const text = msg.content[0].type === "text" ? msg.content[0].text : "";
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error, service: "anthropic", degraded: true }, { status: 503 });
+  }
+
+  try {
+    const text = result.data.content[0].type === "text" ? result.data.content[0].text : "";
+    const jsonMatch = text.match(/\[\s\S]*\]/);
     if (!jsonMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
-
-    const scored = JSON.parse(jsonMatch[0]);
-    return NextResponse.json({ scored });
+    return NextResponse.json({ scored: JSON.parse(jsonMatch[0]) });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

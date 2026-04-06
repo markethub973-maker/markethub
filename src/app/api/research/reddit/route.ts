@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { safeApify } from "@/lib/serviceGuard";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const token = process.env.APIFY_TOKEN;
-  if (!token) return NextResponse.json({ error: "Apify not configured" }, { status: 500 });
+  
+  if (!process.env.APIFY_TOKEN) return NextResponse.json({ error: "Apify not configured", degraded: true }, { status: 503 });
 
   const { query, subreddit, limit = 20, sort = "relevance" } = await req.json();
   if (!query && !subreddit) return NextResponse.json({ error: "query or subreddit required" }, { status: 400 });
@@ -27,27 +28,19 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const result = await safeApify<any[]>("trudax~reddit-scraper-lite", {
+    startUrls,
+    maxPostCount: Math.min(limit, 30),
+    maxComments: 5,
+    scrollTimeout: 20,
+  }, { timeoutSec: 90, retries: 1 });
+
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error, service: "apify", degraded: true }, { status: 503 });
+  }
+
   try {
-    const res = await fetch(
-      `https://api.apify.com/v2/acts/trudax~reddit-scraper-lite/run-sync-get-dataset-items?token=${token}&timeout=90&memory=256`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          startUrls,
-          maxPostCount: Math.min(limit, 30),
-          maxComments: 5,
-          scrollTimeout: 20,
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `Apify error: ${res.status}`, detail: err }, { status: 502 });
-    }
-
-    const data = await res.json();
+    const data = result.data || [];
     const posts = (data || []).map((p: any) => ({
       id: p.id,
       title: p.title,

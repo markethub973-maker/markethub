@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { safeApify } from "@/lib/serviceGuard";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const token = process.env.APIFY_TOKEN;
-  if (!token) return NextResponse.json({ error: "Apify not configured" }, { status: 500 });
+  
+  if (!process.env.APIFY_TOKEN) return NextResponse.json({ error: "Apify not configured", degraded: true }, { status: 503 });
 
   const { username, hashtag, limit = 15 } = await req.json();
   if (!username && !hashtag) return NextResponse.json({ error: "username or hashtag required" }, { status: 400 });
@@ -24,22 +25,14 @@ export async function POST(req: NextRequest) {
     input.hashtags = [hashtag.replace(/^#/, "")];
   }
 
+  const result = await safeApify<any[]>("clockworks~tiktok-scraper", input, { timeoutSec: 90, retries: 1 });
+
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error, service: "apify", degraded: true }, { status: 503 });
+  }
+
   try {
-    const res = await fetch(
-      `https://api.apify.com/v2/acts/clockworks~tiktok-scraper/run-sync-get-dataset-items?token=${token}&timeout=90&memory=256`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
-      }
-    );
-
-    if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `Apify error: ${res.status}`, detail: err }, { status: 502 });
-    }
-
-    const data = await res.json();
+    const data = result.data || [];
     const videos = (data || []).map((v: any) => ({
       id: v.id,
       url: `https://www.tiktok.com/@${v.authorMeta?.name || ""}/ video/${v.id}`,

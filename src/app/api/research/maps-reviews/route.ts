@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { safeApify } from "@/lib/serviceGuard";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const token = process.env.APIFY_TOKEN;
-  if (!token) return NextResponse.json({ error: "Apify not configured" }, { status: 500 });
+  
+  if (!process.env.APIFY_TOKEN) return NextResponse.json({ error: "Apify not configured", degraded: true }, { status: 503 });
 
   const { placeUrl, placeName, maxReviews = 50, language = "ro" } = await req.json();
   if (!placeUrl && !placeName) return NextResponse.json({ error: "placeUrl or placeName required" }, { status: 400 });
@@ -16,28 +17,20 @@ export async function POST(req: NextRequest) {
     ? [{ url: placeUrl }]
     : [{ url: `https://www.google.com/maps/search/${encodeURIComponent(placeName)}` }];
 
+  const result = await safeApify<any[]>("apify~google-maps-reviews-scraper", {
+    startUrls,
+    maxReviews: Math.min(maxReviews, 100),
+    reviewsSort: "newest",
+    language,
+    personalData: false,
+  }, { timeoutSec: 120, retries: 1 });
+
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error, service: "apify", degraded: true }, { status: 503 });
+  }
+
   try {
-    const res = await fetch(
-      `https://api.apify.com/v2/acts/apify~google-maps-reviews-scraper/run-sync-get-dataset-items?token=${token}&timeout=120&memory=256`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          startUrls,
-          maxReviews: Math.min(maxReviews, 100),
-          reviewsSort: "newest",
-          language,
-          personalData: false,
-        }),
-      }
-    );
-
-    if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: `Apify error: ${res.status}`, detail: err }, { status: 502 });
-    }
-
-    const data = await res.json();
+    const data = result.data || [];
     const reviews = (data || []).map((r: any) => ({
       reviewId: r.reviewId,
       reviewer: r.name || "Anonymous",
