@@ -19,9 +19,9 @@ export const PLAN_ORDER: PlanId[] = [
 
 export const PLAN_PRICES: Record<PlanId, number> = {
   free_test:  0,
-  starter:    9,
-  lite:       19,
-  pro:        39,
+  starter:    14,
+  lite:       24,
+  pro:        49,
   business:   99,
   enterprise: 249,
 };
@@ -58,13 +58,13 @@ export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
     client_accounts:    1,
   },
   starter: {
-    has_calendar:       false,
-    has_tiktok:         false,
+    has_calendar:       true,   // ✓ now included
+    has_tiktok:         true,   // ✓ now included
     has_api_access:     false,
     has_white_label:    false,
     has_priority_support: false,
-    tracked_channels:   3,
-    competitor_brands:  2,
+    tracked_channels:   5,
+    competitor_brands:  3,
     team_members:       1,
     client_accounts:    1,
   },
@@ -74,10 +74,10 @@ export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
     has_api_access:     false,
     has_white_label:    false,
     has_priority_support: false,
-    tracked_channels:   10,
-    competitor_brands:  5,
-    team_members:       1,
-    client_accounts:    1,
+    tracked_channels:   12,
+    competitor_brands:  8,
+    team_members:       2,
+    client_accounts:    2,
   },
   pro: {
     has_calendar:       true,
@@ -85,10 +85,10 @@ export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
     has_api_access:     false,
     has_white_label:    false,
     has_priority_support: true,
-    tracked_channels:   25,
-    competitor_brands:  15,
-    team_members:       2,
-    client_accounts:    3,
+    tracked_channels:   30,
+    competitor_brands:  20,
+    team_members:       3,
+    client_accounts:    5,
   },
   business: {
     has_calendar:       true,
@@ -137,18 +137,31 @@ export interface RouteGate {
 }
 
 export const ROUTE_GATES: Record<string, RouteGate> = {
+  // ── Starter ($14) features ────────────────────────────────────────────────
   "/calendar": {
-    minPlan:    "lite",
+    minPlan:    "starter",
     featureKey: "has_calendar",
     label:      "Content Calendar",
     description: "Schedule posts, get best-time recommendations, and manage first comments for all your platforms.",
   },
   "/tiktok": {
-    minPlan:    "lite",
+    minPlan:    "starter",
     featureKey: "has_tiktok",
     label:      "TikTok Analytics",
     description: "Track TikTok trends, hashtags, and competitor videos to grow your presence.",
   },
+  "/email-reports": {
+    minPlan:    "starter",
+    label:      "Email Reports",
+    description: "Get weekly digest emails with your top metrics and AI recommendations.",
+  },
+  "/ads-library": {
+    minPlan:    "starter",
+    label:      "Ads Library",
+    description: "Browse and analyze competitor ads across Meta platforms.",
+  },
+
+  // ── Lite ($24) features ───────────────────────────────────────────────────
   "/bio": {
     minPlan:    "lite",
     label:      "Link in Bio",
@@ -179,6 +192,8 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     label:      "Multi-Account",
     description: "Manage multiple client accounts from one dashboard.",
   },
+
+  // ── Pro ($49) features ────────────────────────────────────────────────────
   "/ai-hub": {
     minPlan:    "pro",
     label:      "AI Hub",
@@ -193,16 +208,6 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     minPlan:    "pro",
     label:      "Leads Database",
     description: "Full CRM for managing and contacting leads found by the AI agent.",
-  },
-  "/email-reports": {
-    minPlan:    "starter",
-    label:      "Email Reports",
-    description: "Get weekly digest emails with your top metrics and AI recommendations.",
-  },
-  "/ads-library": {
-    minPlan:    "starter",
-    label:      "Ads Library",
-    description: "Browse and analyze competitor ads across Meta platforms.",
   },
 };
 

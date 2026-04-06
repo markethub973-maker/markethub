@@ -18,9 +18,9 @@ import { isAdminAuthorized } from "@/lib/adminAuth";
 // ── Plan prices (must match token-plan-config.ts) ────────────────────────────
 const PLAN_PRICES: Record<string, number> = {
   free_test:  0,
-  starter:    9,
-  lite:       19,
-  pro:        39,
+  starter:    14,
+  lite:       24,
+  pro:        49,
   business:   99,
   enterprise: 249,
 };

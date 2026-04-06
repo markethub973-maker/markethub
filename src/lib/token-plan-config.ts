@@ -81,24 +81,24 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
   starter: {
     id: "starter",
     name: "Starter",
-    price: 9,
-    included_tokens_month: 10_000,       // ~833 captions
-    extra_token_cost: 0.0010,            // $1.00 per 1000 tokens (10% discount)
+    price: 14,                           // ↑ from $9 — now includes Calendar + TikTok
+    included_tokens_month: 15_000,       // ↑ from 10K — ~1,250 captions
+    extra_token_cost: 0.0010,            // $1.00 per 1000 tokens
     max_monthly_tokens: -1,              // Unlimited, but pay per token
     token_recharge_packs: [
-      { id: "starter_tokens_10k",  tokens: 10_000,  price: 15,  bonus_pct: 0  },
-      { id: "starter_tokens_25k",  tokens: 25_000,  price: 35,  bonus_pct: 10 },
-      { id: "starter_tokens_50k",  tokens: 50_000,  price: 65,  bonus_pct: 15 },
+      { id: "starter_tokens_15k",  tokens: 15_000,  price: 18,  bonus_pct: 0  },
+      { id: "starter_tokens_30k",  tokens: 30_000,  price: 35,  bonus_pct: 10 },
+      { id: "starter_tokens_60k",  tokens: 60_000,  price: 65,  bonus_pct: 15 },
     ],
-    tracked_channels: 3,
+    tracked_channels: 5,                 // ↑ from 3
     instagram_accounts: 1,
-    tiktok_accounts: 0,
-    competitor_brands: 2,
+    tiktok_accounts: 1,                  // ↑ from 0 — TikTok now included
+    competitor_brands: 3,                // ↑ from 2
     team_members: 1,
     client_accounts: 1,
     history_days: 30,
-    has_calendar: false,
-    has_tiktok: false,
+    has_calendar: true,                  // ✓ Calendar now included in Starter
+    has_tiktok: true,                    // ✓ TikTok now included in Starter
     has_api_access: false,
     has_white_label: false,
     has_priority_support: false,
@@ -108,22 +108,22 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
   lite: {
     id: "lite",
     name: "Lite",
-    price: 19,
-    included_tokens_month: 50_000,       // ~4,166 captions
-    extra_token_cost: 0.0009,            // $0.90 per 1000 tokens (10% discount from starter)
+    price: 24,                           // ↑ from $19 — maintains clear gap over Starter
+    included_tokens_month: 60_000,       // ↑ from 50K — ~5,000 captions
+    extra_token_cost: 0.0009,            // $0.90 per 1000 tokens
     max_monthly_tokens: -1,              // Unlimited
     token_recharge_packs: [
-      { id: "lite_tokens_25k",   tokens: 25_000,  price: 20,  bonus_pct: 0  },
-      { id: "lite_tokens_50k",   tokens: 50_000,  price: 45,  bonus_pct: 10 },
-      { id: "lite_tokens_100k",  tokens: 100_000, price: 85,  bonus_pct: 15 },
-      { id: "lite_tokens_250k",  tokens: 250_000, price: 200, bonus_pct: 20 },
+      { id: "lite_tokens_30k",   tokens: 30_000,  price: 25,  bonus_pct: 0  },
+      { id: "lite_tokens_60k",   tokens: 60_000,  price: 50,  bonus_pct: 10 },
+      { id: "lite_tokens_120k",  tokens: 120_000, price: 95,  bonus_pct: 15 },
+      { id: "lite_tokens_300k",  tokens: 300_000, price: 220, bonus_pct: 20 },
     ],
-    tracked_channels: 10,
-    instagram_accounts: 1,
-    tiktok_accounts: 1,
-    competitor_brands: 5,
-    team_members: 1,
-    client_accounts: 1,
+    tracked_channels: 12,                // ↑ from 10
+    instagram_accounts: 2,               // ↑ from 1
+    tiktok_accounts: 2,                  // ↑ from 1
+    competitor_brands: 8,                // ↑ from 5
+    team_members: 2,                     // ↑ from 1
+    client_accounts: 2,                  // ↑ from 1
     history_days: 90,
     has_calendar: true,
     has_tiktok: true,
@@ -136,22 +136,22 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
   pro: {
     id: "pro",
     name: "Pro",
-    price: 39,
+    price: 49,                           // ↑ from $39 — Lead Finder now included
     included_tokens_month: 150_000,      // ~12,500 captions
     extra_token_cost: 0.0008,            // $0.80 per 1000 tokens
     max_monthly_tokens: -1,              // Unlimited
     token_recharge_packs: [
-      { id: "pro_tokens_50k",    tokens: 50_000,   price: 35,  bonus_pct: 0  },
-      { id: "pro_tokens_100k",   tokens: 100_000,  price: 75,  bonus_pct: 10 },
-      { id: "pro_tokens_250k",   tokens: 250_000,  price: 180, bonus_pct: 15 },
-      { id: "pro_tokens_500k",   tokens: 500_000,  price: 350, bonus_pct: 20 },
+      { id: "pro_tokens_50k",    tokens: 50_000,   price: 38,  bonus_pct: 0  },
+      { id: "pro_tokens_100k",   tokens: 100_000,  price: 78,  bonus_pct: 10 },
+      { id: "pro_tokens_250k",   tokens: 250_000,  price: 185, bonus_pct: 15 },
+      { id: "pro_tokens_500k",   tokens: 500_000,  price: 360, bonus_pct: 20 },
     ],
-    tracked_channels: 25,
-    instagram_accounts: 3,
-    tiktok_accounts: 3,
-    competitor_brands: 15,
-    team_members: 2,
-    client_accounts: 3,
+    tracked_channels: 30,                // ↑ from 25
+    instagram_accounts: 4,               // ↑ from 3
+    tiktok_accounts: 4,                  // ↑ from 3
+    competitor_brands: 20,               // ↑ from 15
+    team_members: 3,                     // ↑ from 2
+    client_accounts: 5,                  // ↑ from 3
     history_days: 365,
     has_calendar: true,
     has_tiktok: true,
