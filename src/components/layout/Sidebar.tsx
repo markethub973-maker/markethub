@@ -29,6 +29,8 @@ import {
   Puzzle,
   Search,
   Database,
+  Hash,
+  Link2,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -75,6 +77,8 @@ const navGroups = [
       { href: "/ads-library", label: "Ads Library", icon: Library },
       { href: "/calendar", label: "Calendar", icon: CalendarDays },
       { href: "/captions", label: "AI Captions", icon: Sparkles },
+      { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
+      { href: "/bio", label: "Link in Bio", icon: Link2 },
       { href: "/monthly-report", label: "Monthly Report AI", icon: BarChart3 },
       { href: "/campaigns", label: "Campaigns", icon: Target },
     ],

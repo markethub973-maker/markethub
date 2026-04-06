@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
-  Edit3, Trash2, Check, CalendarDays, LayoutGrid, List, Loader2, RefreshCw,
+  Edit3, Trash2, Check, CalendarDays, LayoutGrid, List, Loader2, RefreshCw, Zap,
 } from "lucide-react";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -14,6 +14,11 @@ const PLATFORMS = [
   { id: "instagram", label: "Instagram", color: "#E1306C", icon: Instagram },
   { id: "facebook", label: "Facebook", color: "#1877F2", icon: Facebook },
   { id: "tiktok", label: "TikTok", color: "#FF0050" },
+  { id: "linkedin", label: "LinkedIn", color: "#0A66C2" },
+  { id: "youtube", label: "YouTube", color: "#FF0000" },
+  { id: "twitter", label: "X / Twitter", color: "#000000" },
+  { id: "pinterest", label: "Pinterest", color: "#E60023" },
+  { id: "threads", label: "Threads", color: "#101010" },
 ];
 
 const STATUSES = [
@@ -33,6 +38,7 @@ type Post = {
   client: string;
   hashtags: string;
   image_url: string;
+  first_comment: string;
 };
 
 function getDaysInMonth(year: number, month: number) {
@@ -46,7 +52,7 @@ function getFirstDayOfWeek(year: number, month: number) {
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
-const EMPTY_FORM = { title: "", caption: "", platform: "instagram", status: "draft", date: "", time: "12:00", client: "", hashtags: "", image_url: "" };
+const EMPTY_FORM = { title: "", caption: "", platform: "instagram", status: "draft", date: "", time: "12:00", client: "", hashtags: "", image_url: "", first_comment: "" };
 
 export default function CalendarPage() {
   const searchParams = useSearchParams();
@@ -64,6 +70,7 @@ export default function CalendarPage() {
   const [filterPlatform, setFilterPlatform] = useState("all");
   const [calSearch, setCalSearch] = useState("");
   const [form, setForm] = useState(EMPTY_FORM);
+  const [bestTime, setBestTime] = useState<{ topSlots: { dayName: string; label: string; score: number }[]; hasRealData: boolean } | null>(null);
 
   useEffect(() => {
     const q = searchParams.get("q");
@@ -89,6 +96,11 @@ export default function CalendarPage() {
 
   useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
+  useEffect(() => {
+    fetch(`/api/analytics/best-time?platform=${filterPlatform === "all" ? "instagram" : filterPlatform}`)
+      .then(r => r.json()).then(d => { if (d.topSlots) setBestTime(d); }).catch(() => {});
+  }, [filterPlatform]);
+
   const openNew = (date?: string) => {
     setEditingPost(null);
     setForm({
@@ -101,7 +113,7 @@ export default function CalendarPage() {
 
   const openEdit = (post: Post) => {
     setEditingPost(post);
-    setForm({ title: post.title, caption: post.caption, platform: post.platform, status: post.status, date: post.date, time: post.time, client: post.client, hashtags: post.hashtags, image_url: post.image_url || "" });
+    setForm({ title: post.title, caption: post.caption, platform: post.platform, status: post.status, date: post.date, time: post.time, client: post.client, hashtags: post.hashtags, image_url: post.image_url || "", first_comment: post.first_comment || "" });
     setShowForm(true);
     setError("");
   };
@@ -252,6 +264,28 @@ export default function CalendarPage() {
         {loading && (
           <div className="flex justify-center py-12">
             <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} />
+          </div>
+        )}
+
+        {/* Best Time to Post widget */}
+        {bestTime && bestTime.topSlots.length > 0 && (
+          <div className="rounded-xl px-5 py-3 flex items-center gap-4 flex-wrap"
+            style={{ backgroundColor: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)" }}>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <Zap className="w-3.5 h-3.5" style={{ color: "#F59E0B" }} />
+              <span className="text-xs font-bold" style={{ color: "#D97706" }}>
+                Best time to post {filterPlatform !== "all" ? `(${PLATFORMS.find(p => p.id === filterPlatform)?.label})` : "(Instagram)"}
+                {!bestTime.hasRealData && <span className="font-normal ml-1" style={{ color: "#A8967E" }}>· industry avg</span>}
+              </span>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {bestTime.topSlots.map((s, i) => (
+                <span key={i} className="text-xs px-2.5 py-1 rounded-full font-semibold"
+                  style={{ backgroundColor: i === 0 ? "#F59E0B" : "rgba(245,158,11,0.12)", color: i === 0 ? "white" : "#D97706" }}>
+                  {s.dayName.slice(0, 3)} {s.label}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 
@@ -455,6 +489,15 @@ export default function CalendarPage() {
                   <input type="text" placeholder="#marketing #socialmedia #brand" value={form.hashtags}
                     onChange={e => setForm(f => ({ ...f, hashtags: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
+                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
+                    First comment <span style={{ color: "#C4AA8A", fontWeight: 400 }}>— posted automatically after publish (IG)</span>
+                  </label>
+                  <textarea placeholder="Paste your hashtags here to keep caption clean..." value={form.first_comment}
+                    onChange={e => setForm(f => ({ ...f, first_comment: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none" rows={2}
                     style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
                 </div>
                 <div className="md:col-span-2">

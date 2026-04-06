@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("scheduled_posts")
-    .select("id, title, caption, platform, status, date, time, client, hashtags, created_at, updated_at")
+    .select("id, title, caption, platform, status, date, time, client, hashtags, image_url, first_comment, created_at, updated_at")
     .eq("user_id", user.id)
     .order("date", { ascending: true })
     .order("time", { ascending: true });
@@ -33,9 +33,9 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json().catch(() => ({}));
-  const { title, caption, platform, status, date, time, client, hashtags, image_url } = body as {
+  const { title, caption, platform, status, date, time, client, hashtags, image_url, first_comment } = body as {
     title: string; caption?: string; platform: string; status: string;
-    date: string; time?: string; client?: string; hashtags?: string; image_url?: string;
+    date: string; time?: string; client?: string; hashtags?: string; image_url?: string; first_comment?: string;
   };
 
   if (!title?.trim()) return NextResponse.json({ error: "Title is required" }, { status: 400 });
@@ -54,6 +54,7 @@ export async function POST(req: NextRequest) {
       client: client?.trim() || "",
       hashtags: hashtags?.trim() || "",
       image_url: image_url?.trim() || null,
+      first_comment: first_comment?.trim() || null,
     })
     .select()
     .single();
