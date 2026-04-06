@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { canAccessRoute } from "@/lib/plan-features";
-import crypto from "crypto";
 
 // ── Security headers applied to every response ─────────────────────────────
 const SECURITY_HEADERS: Record<string, string> = {
@@ -144,17 +143,13 @@ function checkAdminTunnel(request: NextRequest): boolean {
   const t = request.nextUrl.searchParams.get("t") ?? "";
   if (!t) return false;
 
-  // Constant-time comparison
-  try {
-    const a = Buffer.from(t.padEnd(tunnelSecret.length, "\0"));
-    const b = Buffer.from(tunnelSecret.padEnd(t.length, "\0"));
-    const maxLen = Math.max(t.length, tunnelSecret.length);
-    return t.length === tunnelSecret.length &&
-      crypto.timingSafeEqual(
-        Buffer.from(t.padEnd(maxLen)),
-        Buffer.from(tunnelSecret.padEnd(maxLen))
-      );
-  } catch { return false; }
+  // Constant-time comparison — pure JS, safe for Edge Runtime
+  if (t.length !== tunnelSecret.length) return false;
+  let diff = 0;
+  for (let i = 0; i < t.length; i++) {
+    diff |= t.charCodeAt(i) ^ tunnelSecret.charCodeAt(i);
+  }
+  return diff === 0;
 }
 
 export async function middleware(request: NextRequest) {
