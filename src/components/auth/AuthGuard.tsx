@@ -9,7 +9,7 @@ import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
 import TrialWarningBanner from "@/components/TrialWarningBanner";
 import { createClient } from "@/lib/supabase/client";
 
-const PUBLIC_PATHS = ["/login", "/register", "/markethub973"];
+const PUBLIC_PATHS = ["/login", "/register", "/markethub973", "/blocked"];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
