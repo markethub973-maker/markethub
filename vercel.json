@@ -30,11 +30,11 @@
     },
     {
       "path": "/api/cron/health-monitor",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 7 * * *"
     },
     {
       "path": "/api/cron/auto-post",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 9 * * *"
     }
   ]
 }
