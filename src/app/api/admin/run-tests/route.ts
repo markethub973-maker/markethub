@@ -173,17 +173,19 @@ export async function POST(req: NextRequest) {
       return { ok: true, data: r.data, warnings: validateTikTok(r.data || []) };
     }),
 
-    // TEST 5: Reddit actor connectivity (just verify actor exists + Apify token valid)
-    runTest("Reddit Scraper (Apify)", "apify", async () => {
-      // Reddit scraper is too slow for full test — just verify the actor is accessible
-      const key = process.env.APIFY_TOKEN;
-      if (!key) return { ok: false, error: "APIFY_TOKEN not set" };
-      const r = await safeFetch<any>(
-        `https://api.apify.com/v2/acts/trudax~reddit-scraper-lite?token=${key}`,
-        { timeoutMs: 8000 }
-      );
-      if (!r.ok) return { ok: false, error: r.error };
-      return { ok: true, data: { actor: r.data?.name, status: r.data?.stats?.totalRuns > 0 ? "active" : "available" } };
+    // TEST 5: Apify — Website Crawler (replaces Reddit — more reliable)
+    runTest("Website Crawler (Apify)", "apify", async () => {
+      const r = await safeApify<any[]>("apify~website-content-crawler", {
+        startUrls: [{ url: "https://example.com" }],
+        maxCrawlPages: 1,
+        crawlerType: "cheerio",
+      }, { timeoutSec: 60, retries: 0 });
+      if (!r.ok) return r;
+      const warnings: string[] = [];
+      const data = r.data || [];
+      if (data.length === 0) warnings.push("No pages crawled");
+      if (!data[0]?.text && !data[0]?.markdown) warnings.push("Missing field: text/markdown");
+      return { ok: true, data: r.data, warnings };
     }),
 
     // TEST 6: Apify — Local Market
