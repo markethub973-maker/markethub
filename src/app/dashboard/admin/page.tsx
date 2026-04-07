@@ -24,6 +24,7 @@ import AdminRestorePanel from "@/components/admin/AdminRestorePanel";
 import AdminPlanTestAgent from "@/components/admin/AdminPlanTestAgent";
 import AdminAuditLog from "@/components/admin/AdminAuditLog";
 import AdminTestAccounts from "@/components/admin/AdminTestAccounts";
+import AdminMarkupPanel from "@/components/admin/AdminMarkupPanel";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 export default function AdminPage() {
@@ -257,6 +258,14 @@ export default function AdminPage() {
             icon="🎁"
           />
         </div>
+
+        {/* API Cost Markup — comision platformă */}
+        <ModuleBoundary name="API Markup" minimal>
+          <div className="rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+            <h2 className="text-lg font-bold mb-4" style={{ color: "#292524" }}>💰 Costuri API Reale & Comision Platformă</h2>
+            <AdminMarkupPanel />
+          </div>
+        </ModuleBoundary>
 
         {/* Anthropic API Usage */}
         <ModuleBoundary name="Anthropic Usage" minimal>

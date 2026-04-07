@@ -378,6 +378,45 @@ export async function POST(req: NextRequest) {
     results["encrypted_token_columns"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
+  // ── 16. api_cost_logs — real API cost tracking ──────────────────────────
+  if (await tableExists(supa, "api_cost_logs")) {
+    results["api_cost_logs_table"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS api_cost_logs (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
+        session_id TEXT NOT NULL,
+        service TEXT NOT NULL,
+        operation TEXT NOT NULL,
+        model TEXT,
+        input_tokens INTEGER DEFAULT 0,
+        output_tokens INTEGER DEFAULT 0,
+        cost_usd NUMERIC(12,8) NOT NULL DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_cost_logs_user ON api_cost_logs(user_id);
+      CREATE INDEX IF NOT EXISTS idx_cost_logs_session ON api_cost_logs(session_id);
+      CREATE INDEX IF NOT EXISTS idx_cost_logs_created ON api_cost_logs(created_at DESC);
+    `);
+    results["api_cost_logs_table"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
+  // ── 17. platform_settings — markup % and other admin configs ─────────────
+  if (await tableExists(supa, "platform_settings")) {
+    results["platform_settings_table"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS platform_settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL,
+        updated_at TIMESTAMPTZ DEFAULT now()
+      );
+      INSERT INTO platform_settings (key, value) VALUES ('api_markup_percent', '20') ON CONFLICT DO NOTHING;
+    `);
+    results["platform_settings_table"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
   await logAudit({
     action: "migration_run",
     actor_id: "admin",

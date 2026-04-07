@@ -4,6 +4,7 @@ import { useState } from "react";
 import Header from "@/components/layout/Header";
 import MarketingAdvisor from "@/components/lead-finder/MarketingAdvisor";
 import StepGuide from "@/components/lead-finder/StepGuide";
+import CostMeter from "@/components/lead-finder/CostMeter";
 import {
   Wand2, Search, Users, Globe, Zap, ArrowRight, ArrowLeft,
   Check, X, Plus, Loader2, Star, Flame, Snowflake, Copy,
@@ -203,6 +204,9 @@ function AddChip({ placeholder, onAdd }: { placeholder: string; onAdd: (v: strin
 // ── Main page ────────────────────────────────────────────────────────────────
 export default function LeadFinderPage() {
   const [step, setStep] = useState(1);
+  // Stable session ID for cost tracking (regenerates per page load = per wizard session)
+  const [sessionId] = useState(() => typeof crypto !== "undefined" ? crypto.randomUUID() : `s-${Date.now()}`);
+  const [costRefresh, setCostRefresh] = useState(0);
 
   // Step 1 — Offer
   const [offerType, setOfferType] = useState("service");
@@ -263,7 +267,7 @@ export default function LeadFinderPage() {
     setSuggestion(null);
     const res = await fetch("/api/find-clients/analyze", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-cost-session": sessionId },
       body: JSON.stringify({ offer_type: offerType, offer_description: offerText, audience_type: audienceType, location, budget_range: budgetRange }),
     });
     const data = await res.json();
@@ -305,7 +309,7 @@ export default function LeadFinderPage() {
           case "reviews": endpoint = "/api/research/maps-reviews"; body = { placeName: q, maxReviews: 30 }; break;
           default: endpoint = "/api/research/google"; body = { query: q };
         }
-        const r = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+        const r = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json", "x-cost-session": sessionId }, body: JSON.stringify(body) });
         const d = await r.json();
         const items: any[] = Array.isArray(d) ? d : d.places || d.posts || d.reviews || d.results || d.items || [];
         const normalized = items.map((item: any) => ({
@@ -337,7 +341,7 @@ export default function LeadFinderPage() {
     try {
       const res = await fetch("/api/find-clients/score", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-cost-session": sessionId },
         body: JSON.stringify({ results: allResults, offer_summary: suggestion.offer_summary, intent_signals: suggestion.intent_signals }),
       });
       const scoreData = await res.json();
@@ -351,6 +355,7 @@ export default function LeadFinderPage() {
     }
     setScoring(false);
     setStep(4);
+    setCostRefresh(n => n + 1);
   };
 
   const handleSaveLead = async (lead: Lead) => {
@@ -358,7 +363,7 @@ export default function LeadFinderPage() {
     setSaveGoal(null);
     const res = await fetch("/api/leads", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-cost-session": sessionId },
       body: JSON.stringify({ ...lead, goal: suggestion?.offer_summary, source: lead.platform, lead_type: (lead as any).source_id || "search_result" }),
     });
     setSavingId(null);
@@ -374,7 +379,7 @@ export default function LeadFinderPage() {
     setStep(5);
     const res = await fetch("/api/find-clients/message", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-cost-session": sessionId },
       body: JSON.stringify({ lead, offer_summary: suggestion?.offer_summary, outreach_hook: suggestion?.outreach_hook }),
     });
     const data = await res.json();
@@ -382,6 +387,7 @@ export default function LeadFinderPage() {
     if (!res.ok) return;
     setOutreach(data);
     setActivePlatform(data.best_platform || "generic");
+    setCostRefresh(n => n + 1);
   };
 
   const copyMessage = (txt: string) => {
@@ -403,7 +409,7 @@ export default function LeadFinderPage() {
     setCampaign(null);
     const res = await fetch("/api/find-clients/campaign", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "x-cost-session": sessionId },
       body: JSON.stringify({
         offer_summary: suggestion.offer_summary,
         outreach_hook: suggestion.outreach_hook,
@@ -424,6 +430,7 @@ export default function LeadFinderPage() {
     if (!res.ok) { setCampaignError(data.error || "Eroare generare campanie"); return; }
     setCampaign(data);
     setActiveCampaignTab("sms");
+    setCostRefresh(n => n + 1);
   };
 
   const toggleEventType = (id: string) =>
@@ -1364,6 +1371,9 @@ export default function LeadFinderPage() {
             </div>
           </div>
         )}
+
+      {/* ── Cost Meter (visible to client) ────────────────────────────────── */}
+      <CostMeter sessionId={sessionId} refreshTrigger={costRefresh} />
 
       </div>
     </div>

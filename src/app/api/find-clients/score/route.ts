@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { safeAnthropic } from "@/lib/serviceGuard";
+import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -60,6 +61,15 @@ Platform: ${r.platform || ""}
   if (!result.ok) {
     return NextResponse.json({ error: result.error, service: "anthropic", degraded: true }, { status: 503 });
   }
+
+  const MODEL_S = "claude-haiku-4-5-20251001";
+  const usageS = result.data.usage;
+  void logApiCost({
+    userId: user.id, sessionId: req.headers.get("x-cost-session") || "unknown",
+    service: "anthropic", operation: "score", model: MODEL_S,
+    inputTokens: usageS.input_tokens, outputTokens: usageS.output_tokens,
+    costUsd: calcAnthropicCost(MODEL_S, usageS.input_tokens, usageS.output_tokens),
+  });
 
   try {
     const text = result.data.content[0].type === "text" ? result.data.content[0].text : "";
