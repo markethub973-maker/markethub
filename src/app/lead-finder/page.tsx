@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Header from "@/components/layout/Header";
 import MarketingAdvisor from "@/components/lead-finder/MarketingAdvisor";
+import StepGuide from "@/components/lead-finder/StepGuide";
 import {
   Wand2, Search, Users, Globe, Zap, ArrowRight, ArrowLeft,
   Check, X, Plus, Loader2, Star, Flame, Snowflake, Copy,
@@ -18,10 +19,18 @@ const RED   = "#EF4444";
 const card  = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
 const OFFER_TYPES = [
-  { id: "service",   icon: Zap,         label: "Serviciu",         desc: "DJ, fotograf, curier, consultant…" },
-  { id: "product",   icon: Package,     label: "Produs fizic",     desc: "Echipament, marfă, handmade…" },
-  { id: "affiliate", icon: Link,        label: "Afiliat",          desc: "Promovezi produsul altcuiva" },
-  { id: "software",  icon: ShoppingCart,label: "Software / SaaS",  desc: "App, tool, abonament digital…" },
+  { id: "service",           icon: Zap,          label: "Serviciu",          desc: "DJ, fotograf, consultant, curier, electrician…" },
+  { id: "event_entertain",   icon: Star,         label: "Events & Show",     desc: "Nunți, corporate, petreceri, animatori…" },
+  { id: "food_beverage",     icon: Package,      label: "Mâncare & Băuturi", desc: "Restaurant, catering, home-made, cafenea…" },
+  { id: "ecommerce",         icon: ShoppingCart, label: "Magazin online",    desc: "Shopify, WooCommerce, marketplace, dropshipping…" },
+  { id: "physical_product",  icon: Package,      label: "Produs fizic",      desc: "Echipament, handmade, fashion, beauty…" },
+  { id: "affiliate",         icon: Link,         label: "Afiliere",          desc: "Promovezi produsul altcuiva, CPA, review…" },
+  { id: "software",          icon: Target,       label: "Software / App",    desc: "SaaS, tool, abonament digital, AI…" },
+  { id: "digital_product",   icon: Zap,          label: "Produs digital",    desc: "Curs, ebook, template, preset, NFT…" },
+  { id: "health_beauty",     icon: User,         label: "Sănătate & Beauty", desc: "Cosmetice, suplimente, salon, spa, wellness…" },
+  { id: "real_estate",       icon: Building2,    label: "Imobiliare",        desc: "Vânzare, închiriere, agenție, construcții…" },
+  { id: "education",         icon: Target,       label: "Educație & Cursuri", desc: "Meditații, cursuri online, coaching, training…" },
+  { id: "b2b_services",      icon: Building2,    label: "Servicii B2B",      desc: "Marketing, IT, contabilitate, HR, logistică…" },
 ];
 
 const AUDIENCE_TYPES = [
@@ -443,7 +452,7 @@ export default function LeadFinderPage() {
               <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Ce vinzi sau promovezi?</h2>
               <p className="text-sm" style={{ color: "#A8967E" }}>Fii specific — AI-ul va genera strategia optimă de găsire a clienților</p>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-2">
               {OFFER_TYPES.map(({ id, icon: Icon, label, desc }) => (
                 <button key={id} type="button" onClick={() => setOfferType(id)}
                   className="flex flex-col items-start gap-1.5 p-4 rounded-xl text-left transition-all"
@@ -475,6 +484,8 @@ export default function LeadFinderPage() {
               Înainte — Definesc audiența <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+          <StepGuide step={1} offerType={offerType} offerText={offerText} audienceType={audienceType}
+            location={location} budgetRange={budgetRange} leadsCount={0} />
           {offerText.trim().length > 10 && (
             <MarketingAdvisor step={1} offerType={offerType} offerDescription={offerText}
               audienceType={audienceType} location={location} budgetRange={budgetRange} />
@@ -547,6 +558,8 @@ export default function LeadFinderPage() {
               </div>
             )}
           </div>
+          <StepGuide step={2} offerType={offerType} offerText={offerText} audienceType={audienceType}
+            location={location} budgetRange={budgetRange} leadsCount={0} />
           <MarketingAdvisor step={2} offerType={offerType} offerDescription={offerText}
             audienceType={audienceType} location={location} budgetRange={budgetRange} />
           </div>
@@ -849,6 +862,10 @@ export default function LeadFinderPage() {
                 </button>
               )}
             </div>
+            {!searching && !scoring && leads.length > 0 && (
+              <StepGuide step={4} offerType={offerType} offerText={offerText} audienceType={audienceType}
+                location={location} budgetRange={budgetRange} leadsCount={leads.length} />
+            )}
             {!searching && !scoring && (
               <MarketingAdvisor step={4} offerType={offerType} offerDescription={offerText}
                 audienceType={audienceType} location={location} budgetRange={budgetRange}
@@ -970,7 +987,11 @@ export default function LeadFinderPage() {
               )}
             </div>
 
-            {/* ── Marketing Advisor ────────────────────────────────────────── */}
+            {/* ── Step Guide + Marketing Advisor ───────────────────────────── */}
+            {outreach && !generatingMsg && (
+              <StepGuide step={5} offerType={offerType} offerText={offerText} audienceType={audienceType}
+                location={location} budgetRange={budgetRange} leadsCount={leads.length} />
+            )}
             {outreach && !generatingMsg && (
               <MarketingAdvisor step={5} offerType={offerType} offerDescription={offerText}
                 audienceType={audienceType} location={location} budgetRange={budgetRange}

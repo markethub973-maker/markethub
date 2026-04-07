@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { safeAnthropic } from "@/lib/serviceGuard";
+import { getMarketContext } from "@/lib/marketContext";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -225,6 +226,9 @@ export async function POST(req: NextRequest) {
   const { step, offer_type, offer_description, audience_type, location, budget_range, context, question } = await req.json();
   if (!offer_description && !question) return NextResponse.json({ error: "offer_description or question required" }, { status: 400 });
 
+  // Inject real-time market context
+  const mctx = getMarketContext();
+
   const stepLabels: Record<number, string> = {
     1: "defining the offer",
     2: "choosing target audience",
@@ -233,19 +237,29 @@ export async function POST(req: NextRequest) {
     5: "creating outreach and campaign",
   };
 
-  const prompt = `Current wizard step: ${step} — ${stepLabels[step] || "unknown"}
+  const prompt = `=== REAL-TIME MARKET CONTEXT (use this to make advice relevant RIGHT NOW) ===
+Date & time: ${mctx.dayOfWeek}, ${mctx.timeOfDay}
+Season: ${mctx.season} (${mctx.seasonEn})
+Platform peaking RIGHT NOW: ${mctx.platformPeakNow}
+Current events & buying patterns this month:
+${mctx.upcomingEvents.map(e => `- ${e}`).join("\n")}
+Seasonal buying behavior: ${mctx.buyingPatterns}
+Urgency signals active: ${mctx.urgencySignals.join("; ")}
+What NOT to do right now: ${mctx.antiPatterns.join("; ")}
 
+=== CAMPAIGN DETAILS ===
+Current wizard step: ${step} — ${stepLabels[step] || "unknown"}
 Offer type: ${offer_type || "unknown"}
 Offer description: ${offer_description || ""}
 Target audience: ${audience_type || "b2c"}
 Location/market: ${location || "Romania"}
 Budget range: ${budget_range || "unknown"}
 
-${context ? `Current context / what they've done so far:\n${JSON.stringify(context, null, 2)}` : ""}
+${context ? `Current context:\n${JSON.stringify(context, null, 2)}` : ""}
 
-${question ? `User question: ${question}` : `Give expert marketing advice for step ${step} of this campaign.`}
+${question ? `User question: ${question}` : `Give expert marketing advice for step ${step} considering the REAL-TIME CONTEXT above.`}
 
-Respond with expert advice tailored EXACTLY to this specific offer, audience, and step.`;
+CRITICAL: Factor in the current day, time, season, and upcoming events. Give advice that is actionable TODAY, not generic. If this is a bad time for something, say so and give the better alternative.`;
 
   const result = await safeAnthropic(() =>
     anthropic.messages.create({
