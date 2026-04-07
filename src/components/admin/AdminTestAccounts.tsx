@@ -81,11 +81,17 @@ export default function AdminTestAccounts() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan }),
       });
-      const data = await res.json();
-      if (data.url) {
-        window.open(data.url, "_blank");
+      if (res.ok && res.headers.get("content-type")?.includes("text/html")) {
+        // Endpoint returns HTML page that sets session and redirects
+        const html = await res.text();
+        const win = window.open("", "_blank");
+        if (win) {
+          win.document.write(html);
+          win.document.close();
+        }
       } else {
-        alert(data.error ?? "Eroare la generarea linkului");
+        const data = await res.json();
+        alert(data.error ?? "Eroare — creează contul mai întâi");
       }
     } catch {
       alert("Eroare rețea");
