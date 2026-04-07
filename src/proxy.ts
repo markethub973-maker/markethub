@@ -161,6 +161,12 @@ const AUTH_PATHS = ["/api/auth/", "/login", "/register", "/api/admin-secret-logi
 //   1. A valid admin_session_token cookie (already logged in), OR
 //   2. The ?t=<secret> query param in the URL (initial access)
 // Without either, admin routes return 404 (not even a login page is shown).
+//
+// NOTE: Bearer tokens in Authorization header are NOT accepted here.
+// They were previously allowed as a bypass for "API clients / test agents",
+// but this allowed any arbitrary Bearer value to skip the tunnel check
+// (VULN-003). The actual admin API key validation is done by isAdminAuthorized()
+// inside each route handler — the tunnel is only a first-layer guard.
 function checkAdminTunnel(request: NextRequest): boolean {
   const tunnelSecret = process.env.ADMIN_TUNNEL_SECRET;
   if (!tunnelSecret) return true; // tunnel not configured — open (backward compat)
@@ -168,10 +174,6 @@ function checkAdminTunnel(request: NextRequest): boolean {
   // Already have a valid session cookie → allow
   const sessionCookie = request.cookies.get("admin_session_token")?.value ?? "";
   if (sessionCookie) return true; // let isAdminAuthorized handle the actual check
-
-  // Bearer token in Authorization header → allow (for API clients / test agents)
-  const bearer = request.headers.get("authorization") ?? "";
-  if (bearer.startsWith("Bearer ")) return true;
 
   // Check ?t=<secret> query param
   const t = request.nextUrl.searchParams.get("t") ?? "";

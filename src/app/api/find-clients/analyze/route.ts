@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { safeAnthropic } from "@/lib/serviceGuard";
+import { getAppAnthropicClient } from "@/lib/anthropic-client";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = getAppAnthropicClient();
 
 const SYSTEM = `You are an international lead generation strategist. Detect the language of the user's input and respond in that same language. Given an offer description and target audience, you must:
 1. Extract the best keywords to find people who NEED this offer right now

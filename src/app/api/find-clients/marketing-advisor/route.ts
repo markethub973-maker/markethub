@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { safeAnthropic } from "@/lib/serviceGuard";
 import { getMarketContext } from "@/lib/marketContext";
 import { getMarketIntelligence } from "@/lib/marketSearch";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
+import { getAppAnthropicClient } from "@/lib/anthropic-client";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = getAppAnthropicClient();
 
 const SYSTEM = `You are APEX — Advanced Predictive Expert & eXecutor. You are a world-class marketing strategist and sales intelligence system trained on global markets, consumer behavior, platform algorithms, and conversion psychology across every industry and geography.
 

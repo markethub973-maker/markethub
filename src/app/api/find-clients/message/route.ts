@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
+import { getAppAnthropicClient } from "@/lib/anthropic-client";
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const anthropic = getAppAnthropicClient();
 
 const SYSTEM = `You are an international expert copywriter for outreach messages. Detect the language of the lead's info and the user's input — write all messages in that same language. Write SHORT, NATURAL, non-salesy messages.
 
