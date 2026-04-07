@@ -194,10 +194,10 @@ export default function Sidebar() {
       if (!user) return;
       const { data } = await supabase
         .from("profiles")
-        .select("subscription_plan, plan, is_admin")
+        .select("plan, is_admin")
         .eq("id", user.id)
         .single();
-      if (data) setProfile(data);
+      if (data) setProfile({ ...data, subscription_plan: data.plan });
     });
   }, []);
 
