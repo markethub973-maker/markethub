@@ -756,12 +756,54 @@ export default function LeadFinderPage() {
           <div className="space-y-4">
             {selectedLead && (
               <div className="rounded-2xl p-4 flex items-center gap-4" style={card}>
-                <div className="flex-1">
+                <div className="flex-1 min-w-0">
                   <p className="text-xs font-bold mb-0.5" style={{ color: "#A8967E" }}>Lead selectat</p>
-                  <p className="font-bold" style={{ color: "#292524" }}>{selectedLead.title || selectedLead.contact_hint || "Prospect"}</p>
+                  <p className="font-bold truncate" style={{ color: "#292524" }}>{selectedLead.title || selectedLead.contact_hint || "Prospect"}</p>
                   <p className="text-xs" style={{ color: "#A8967E" }}>{selectedLead.platform}</p>
                 </div>
-                <ScoreBadge label={selectedLead.label} score={selectedLead.score} />
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  <ScoreBadge label={selectedLead.label} score={selectedLead.score} />
+                  {selectedLead.url && (
+                    <a href={selectedLead.url} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105"
+                      style={{ backgroundColor: "rgba(245,158,11,0.12)", color: AMBER, border: `1px solid ${AMBER}30` }}
+                      title="Deschide sursa originală">
+                      <Globe className="w-3.5 h-3.5" /> Deschide sursa
+                    </a>
+                  )}
+                  <button type="button"
+                    onClick={() => !savedIds.has(selectedLead.index) && handleSaveLead(selectedLead)}
+                    disabled={savingId === selectedLead.index || savedIds.has(selectedLead.index)}
+                    className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold transition-all"
+                    style={{
+                      backgroundColor: savedIds.has(selectedLead.index) ? "rgba(29,185,84,0.1)" : "rgba(29,185,84,0.08)",
+                      color: savedIds.has(selectedLead.index) ? GREEN : "#78614E",
+                      border: `1px solid ${savedIds.has(selectedLead.index) ? GREEN + "40" : "rgba(245,215,160,0.2)"}`,
+                    }}>
+                    {savingId === selectedLead.index ? <Loader2 className="w-3 h-3 animate-spin" /> : savedIds.has(selectedLead.index) ? <BookmarkCheck className="w-3 h-3" /> : <Bookmark className="w-3 h-3" />}
+                    {savedIds.has(selectedLead.index) ? "Salvat" : "Salvează"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Quick lead switcher */}
+            {leads.length > 1 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-semibold" style={{ color: "#A8967E" }}>Alege alt lead:</span>
+                {leads.filter(l => l.index !== selectedLead?.index).slice(0, 5).map(l => (
+                  <button key={l.index} type="button"
+                    onClick={() => handleGenerateMessage(l)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all hover:scale-105"
+                    style={{
+                      backgroundColor: l.label === "hot" ? "rgba(239,68,68,0.08)" : l.label === "warm" ? "rgba(245,158,11,0.08)" : "rgba(120,97,78,0.06)",
+                      color: l.label === "hot" ? RED : l.label === "warm" ? AMBER : "#78614E",
+                      border: `1px solid ${l.label === "hot" ? RED + "25" : l.label === "warm" ? AMBER + "25" : "rgba(120,97,78,0.15)"}`,
+                    }}>
+                    {l.label === "hot" ? <Flame className="w-3 h-3" /> : l.label === "warm" ? <Star className="w-3 h-3" /> : <Snowflake className="w-3 h-3" />}
+                    {(l.title || l.contact_hint || `Lead ${l.index + 1}`).slice(0, 30)}…
+                  </button>
+                ))}
               </div>
             )}
 
