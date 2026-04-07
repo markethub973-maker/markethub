@@ -40,7 +40,12 @@ async function runSQL(sql: string): Promise<{ ok: boolean; error?: string }> {
 // Check table/column existence via Supabase REST (no SQL needed)
 async function tableExists(supa: ReturnType<typeof createServiceClient>, table: string): Promise<boolean> {
   const { error } = await supa.from(table as any).select("*").limit(0);
-  return !error || !error.message.includes("does not exist");
+  if (!error) return true;
+  // Supabase returns different error messages for missing tables:
+  // "relation does not exist", "schema cache", "Could not find the table"
+  const msg = error.message || "";
+  if (msg.includes("does not exist") || msg.includes("schema cache") || msg.includes("Could not find")) return false;
+  return true; // other errors (RLS, etc.) mean table exists
 }
 
 async function columnExists(supa: ReturnType<typeof createServiceClient>, table: string, column: string): Promise<boolean> {
