@@ -15,6 +15,16 @@ export async function POST(req: NextRequest) {
 
   const startUrl = url.startsWith("http") ? url : `https://${url}`;
 
+  // Validate that it looks like a real domain, not a keyword
+  try {
+    const parsed = new URL(startUrl);
+    if (!parsed.hostname.includes(".")) {
+      return NextResponse.json({ error: "Introdu un URL valid (ex: competitor.com), nu un cuvânt cheie." }, { status: 400 });
+    }
+  } catch {
+    return NextResponse.json({ error: "URL invalid. Exemplu: competitor.com" }, { status: 400 });
+  }
+
   const result = await safeApify<any[]>("apify~website-content-crawler", {
     startUrls: [{ url: startUrl }],
     maxCrawlPages: Math.min(maxPages, 10),
