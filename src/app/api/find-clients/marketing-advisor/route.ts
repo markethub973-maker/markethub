@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { safeAnthropic } from "@/lib/serviceGuard";
 import { getMarketContext } from "@/lib/marketContext";
+import { getMarketIntelligence } from "@/lib/marketSearch";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -230,6 +231,14 @@ export async function POST(req: NextRequest) {
   // Inject real-time market context
   const mctx = getMarketContext();
 
+  // Live web intelligence — parallel with static context (non-blocking, degrades gracefully)
+  const intel = await getMarketIntelligence({
+    offerType:        offer_type  || "service",
+    offerDescription: offer_description || "",
+    location:         location   || "Romania",
+    question:         question   || "",
+  });
+
   const stepLabels: Record<number, string> = {
     1: "defining the offer",
     2: "choosing target audience",
@@ -238,7 +247,9 @@ export async function POST(req: NextRequest) {
     5: "creating outreach and campaign",
   };
 
-  const prompt = `=== REAL-TIME MARKET CONTEXT (use this to make advice relevant RIGHT NOW) ===
+  const prompt = `=== LIVE WEB INTELLIGENCE (web search + YouTube scripts fetched just now) ===
+${intel.promptBlock}
+=== REAL-TIME MARKET CONTEXT (use this to make advice relevant RIGHT NOW) ===
 Date & time: ${mctx.dayOfWeek}, ${mctx.timeOfDay}
 Season: ${mctx.season} (${mctx.seasonEn})
 Platform peaking RIGHT NOW: ${mctx.platformPeakNow}
