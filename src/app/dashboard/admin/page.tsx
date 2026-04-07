@@ -21,6 +21,7 @@ import AdminDiscountCodesPanel from "@/components/admin/AdminDiscountCodesPanel"
 import AdminHealthCheck from "@/components/admin/AdminHealthCheck";
 import AdminTestRunner from "@/components/admin/AdminTestRunner";
 import AdminRestorePanel from "@/components/admin/AdminRestorePanel";
+import AdminPlanTestAgent from "@/components/admin/AdminPlanTestAgent";
 import AdminAuditLog from "@/components/admin/AdminAuditLog";
 import AdminTestAccounts from "@/components/admin/AdminTestAccounts";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
@@ -203,6 +204,11 @@ export default function AdminPage() {
         {/* ── Integration Test Agent ───────────────────────────────────── */}
         <ModuleBoundary name="Integration Tests" minimal>
           <AdminTestRunner />
+        </ModuleBoundary>
+
+        {/* ── Plan Testing Agent ───────────────────────────────────────── */}
+        <ModuleBoundary name="Plan Testing Agent" minimal>
+          <AdminPlanTestAgent />
         </ModuleBoundary>
 
         {/* ── Preview Features ──────────────────────────────────────────── */}
