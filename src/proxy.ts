@@ -148,7 +148,7 @@ const PUBLIC_PATHS = [
 const UPGRADE_PATHS = ["/upgrade-required", "/upgrade", "/pricing", "/api/stripe/checkout"];
 
 // ── Auth route rate limits (stricter to prevent brute force) ────────────────
-const AUTH_PATHS = ["/api/auth/", "/login", "/register"];
+const AUTH_PATHS = ["/api/auth/", "/login", "/register", "/api/admin-secret-login", "/api/admin-auth"];
 const AUTH_RATE_LIMIT = { limit: 10, windowMs: 60_000 }; // 10/min per IP
 const API_RATE_LIMIT  = { limit: 120, windowMs: 60_000 }; // 120/min per IP
 
