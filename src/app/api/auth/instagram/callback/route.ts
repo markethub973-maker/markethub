@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { encryptField } from "@/lib/fieldCrypto";
 import { logAudit } from "@/lib/auditLog";
 
 export async function GET(req: NextRequest) {
@@ -111,12 +110,8 @@ export async function GET(req: NextRequest) {
               instagram_username: directData.username || "unknown",
               instagram_name: directData.name || directData.username || "unknown",
               account_label: directData.name || directData.username || "unknown",
-              access_token: longToken,
-              enc_access_token: encryptField(longToken),
-              token_type: "bearer",
               is_primary: true,
               connected_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
             }, { onConflict: "user_id,instagram_id" });
 
           if (!dbError) {
@@ -204,12 +199,8 @@ export async function GET(req: NextRequest) {
             account_label: acc.igName,
             page_id: acc.pageId,
             page_name: acc.pageName,
-            access_token: acc.pageToken,
-            enc_access_token: encryptField(acc.pageToken),
-            token_type: "bearer",
             is_primary: isPrimary,
             connected_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
           },
           { onConflict: "user_id,instagram_id" }
         );
