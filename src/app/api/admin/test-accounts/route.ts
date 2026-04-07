@@ -58,11 +58,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: authError.message }, { status: 400 });
   }
 
-  // Resolve userId — from new user or look up existing by email
+  // Resolve userId — from new user or look up existing by email via admin REST
   let userId = authUser?.user?.id;
   if (!userId) {
-    const { data: existing } = await supabase.auth.admin.listUsers();
-    userId = existing?.users?.find((u: { email?: string; id: string }) => u.email === email)?.id;
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users?email=${encodeURIComponent(email)}&limit=1`,
+        {
+          headers: {
+            apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+            Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+          },
+        }
+      );
+      const data = await res.json();
+      userId = data?.users?.[0]?.id ?? null;
+    } catch {}
   }
 
   if (userId) {
