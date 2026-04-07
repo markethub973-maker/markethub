@@ -25,11 +25,16 @@ export async function GET(req: NextRequest) {
     const t = Date.now();
     try {
       const supa = createServiceClient();
-      const tables = ["research_leads", "agent_runs", "cron_logs", "discount_codes"];
+      const tables: Array<{ name: string; col: string }> = [
+        { name: "research_leads", col: "id" },
+        { name: "agent_runs",     col: "id" },
+        { name: "cron_logs",      col: "ran_at" },
+        { name: "discount_codes", col: "id" },
+      ];
       const missing: string[] = [];
-      for (const table of tables) {
-        const { error } = await supa.from(table as any).select("id").limit(0);
-        if (error) missing.push(table);
+      for (const { name, col } of tables) {
+        const { error } = await supa.from(name as any).select(col).limit(0);
+        if (error) missing.push(name);
       }
       results.supabase_tables = {
         ok: missing.length === 0,
