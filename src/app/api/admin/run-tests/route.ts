@@ -179,7 +179,7 @@ export async function POST(req: NextRequest) {
         startUrls: [{ url: "https://example.com" }],
         maxCrawlPages: 1,
         crawlerType: "cheerio",
-      }, { timeoutSec: 60, retries: 0 });
+      }, { timeoutSec: 60, memorySec: 1024, retries: 0 });
       if (!r.ok) return r;
       const warnings: string[] = [];
       const data = r.data || [];
