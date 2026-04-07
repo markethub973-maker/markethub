@@ -85,7 +85,7 @@ export default function OnboardingWidget() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl font-bold text-sm shadow-2xl transition-all hover:scale-105"
+          className="fixed bottom-24 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl font-bold text-sm shadow-2xl transition-all hover:scale-105"
           style={{
             background: "linear-gradient(135deg, #F59E0B, #D97706)",
             color: "#1C1814",
