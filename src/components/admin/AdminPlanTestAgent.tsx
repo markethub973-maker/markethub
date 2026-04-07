@@ -211,6 +211,53 @@ export default function AdminPlanTestAgent() {
                   <tr><td colSpan={PLAN_ORDER.length + 1} className="pb-2"><div className="border-t border-white/10" /></td></tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
+                  {/* ── Limits section ─────────────────────────────────────── */}
+                  <tr className="bg-white/3">
+                    <td colSpan={PLAN_ORDER.length + 1} className="px-2 py-1.5">
+                      <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Limite plan</span>
+                    </td>
+                  </tr>
+                  {[
+                    { label: "Tokens/lună",         values: ["1,000",  "50,000",  "150,000",  "500,000",   "1,500,000"] },
+                    { label: "Conturi sociale",      values: ["1",      "2",       "5",        "10",        "Unlimited"] },
+                    { label: "Competitor brands",    values: ["1",      "8",       "20",       "25",        "50"] },
+                    { label: "Tracked channels",     values: ["2",      "12",      "30",       "100",       "Unlimited"] },
+                    { label: "Team members",         values: ["1",      "1",       "3",        "2",         "5"] },
+                    { label: "Client accounts",      values: ["1",      "2",       "5",        "10",        "20"] },
+                    { label: "Istoric date",         values: ["7 zile", "90 zile", "1 an",     "1 an",      "2 ani"] },
+                    { label: "API access",           values: [false,    false,     false,      true,        true] },
+                    { label: "White label",          values: [false,    false,     false,      false,       true] },
+                    { label: "Priority support",     values: [false,    false,     true,       true,        true] },
+                    { label: "SLA uptime",           values: ["—",      "—",       "—",        "99.5%",     "99.9%"] },
+                  ].map(({ label, values }) => (
+                    <tr key={label} className="hover:bg-white/2">
+                      <td className="py-2 pr-4">
+                        <span className="text-white text-xs font-medium">{label}</span>
+                      </td>
+                      {PLAN_ORDER.map((planId, i) => (
+                        <td key={planId} className="text-center py-2 px-2">
+                          {values[i] === true ? (
+                            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500/15">
+                              <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+                            </span>
+                          ) : values[i] === false ? (
+                            <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white/3">
+                              <span className="text-gray-700 text-xs font-bold">✕</span>
+                            </span>
+                          ) : (
+                            <span className="text-xs font-semibold text-gray-300">{values[i]}</span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+
+                  {/* ── Feature routes section ──────────────────────────────── */}
+                  <tr className="bg-white/3">
+                    <td colSpan={PLAN_ORDER.length + 1} className="px-2 py-1.5">
+                      <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Acces feature-uri</span>
+                    </td>
+                  </tr>
                   {matrix.routes.map(({ route, label, minPlan }) => (
                     <tr key={route} className="hover:bg-white/2">
                       <td className="py-2 pr-4">
