@@ -55,7 +55,7 @@ async function signInFull(email: string, password: string): Promise<{
 async function testRoute(
   route: string,
   cookie: string
-): Promise<{ result: "accessible" | "blocked" | "error"; status: number; location?: string }> {
+): Promise<"accessible" | "blocked" | "error"> {
   try {
     const url = `${APP_URL}${route}`;
     const res = await fetch(url, {
@@ -64,21 +64,18 @@ async function testRoute(
       redirect: "manual",
     });
 
-    const loc = res.headers.get("location") ?? undefined;
-
-    // 307 or 302 to /upgrade-required = blocked
+    // 3xx redirect
     if (res.status === 307 || res.status === 302 || res.status === 308 || res.status === 301) {
-      if (loc?.includes("upgrade-required")) return { result: "blocked", status: res.status, location: loc };
-      if (loc?.includes("login")) return { result: "blocked", status: res.status, location: loc };
-      return { result: "accessible", status: res.status, location: loc };
+      const loc = res.headers.get("location") ?? "";
+      if (loc.includes("upgrade-required")) return "blocked";
+      if (loc.includes("login")) return "blocked";
+      return "accessible";
     }
 
-    // 200 = accessible
-    if (res.status === 200) return { result: "accessible", status: res.status };
-
-    return { result: "error", status: res.status, location: loc };
-  } catch (err) {
-    return { result: "error", status: 0, location: String(err) };
+    if (res.status === 200) return "accessible";
+    return "error";
+  } catch {
+    return "error";
   }
 }
 
@@ -180,8 +177,6 @@ export async function POST(req: NextRequest) {
       label: string;
       expectedAccess: boolean;
       actualAccess: "accessible" | "blocked" | "error";
-      debugStatus?: number;
-      debugLocation?: string;
       ok: boolean;
     }>;
     passed: number;
@@ -207,7 +202,7 @@ export async function POST(req: NextRequest) {
 
       for (const [route, gate] of Object.entries(ROUTE_GATES)) {
         const expectedAccess = canAccessRoute(planId as PlanId, route);
-        const { result: actualAccess, status: debugStatus, location: debugLocation } = await testRoute(route, cookie);
+        const actualAccess = await testRoute(route, cookie);
         const ok =
           actualAccess === "error"
             ? false
@@ -220,8 +215,6 @@ export async function POST(req: NextRequest) {
           label: gate.label,
           expectedAccess,
           actualAccess,
-          debugStatus,
-          debugLocation,
           ok,
         });
 
