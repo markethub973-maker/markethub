@@ -3,21 +3,19 @@
 import { useState, useEffect } from "react";
 import { FlaskConical, Play, RefreshCw, CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 
-const PLAN_ORDER = ["free_test", "starter", "lite", "pro", "business", "enterprise"] as const;
+const PLAN_ORDER = ["free_test", "lite", "pro", "business", "enterprise"] as const;
 type PlanId = typeof PLAN_ORDER[number];
 
 const PLAN_LABELS: Record<PlanId, string> = {
   free_test: "Free Trial",
-  starter: "Starter",
-  lite: "Lite",
-  pro: "Pro",
-  business: "Business",
-  enterprise: "Enterprise",
+  lite: "Lite — $24",
+  pro: "Pro — $49",
+  business: "Business — $99",
+  enterprise: "Enterprise — $249",
 };
 
 const PLAN_COLORS: Record<PlanId, string> = {
   free_test: "#78614E",
-  starter: "#3B82F6",
   lite: "#F59E0B",
   pro: "#8B5CF6",
   business: "#E1306C",

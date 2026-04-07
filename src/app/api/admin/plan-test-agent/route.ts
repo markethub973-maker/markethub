@@ -96,7 +96,8 @@ export async function GET(req: NextRequest) {
     planMatch: boolean;
   }> = {};
 
-  for (const planId of PLAN_ORDER) {
+  const ACTIVE_PLANS = PLAN_ORDER.filter(p => p !== "starter");
+  for (const planId of ACTIVE_PLANS) {
     const email = `test.${planId}@markethubpromo.com`;
     const password = `Test${planId.charAt(0).toUpperCase() + planId.slice(1)}2026!`;
 
@@ -135,9 +136,10 @@ export async function GET(req: NextRequest) {
     };
   }
 
-  // Build access matrix: plan → route → expected access
+  // Build access matrix: plan → route → expected access (exclude starter)
+  const ACTIVE_PLANS2 = PLAN_ORDER.filter(p => p !== "starter");
   const matrix: Record<string, Record<string, boolean>> = {};
-  for (const planId of PLAN_ORDER) {
+  for (const planId of ACTIVE_PLANS2) {
     matrix[planId] = {};
     for (const route of Object.keys(ROUTE_GATES)) {
       matrix[planId][route] = canAccessRoute(planId, route);
@@ -152,7 +154,7 @@ export async function GET(req: NextRequest) {
       label: gate.label,
       minPlan: gate.minPlan,
     })),
-    plans: PLAN_ORDER,
+    plans: ACTIVE_PLANS2,
   });
 }
 
@@ -165,9 +167,10 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const targetPlan: string | null = body.plan ?? null; // null = all plans
 
+  const ACTIVE_PLANS = PLAN_ORDER.filter(p => p !== "starter");
   const plansToTest = targetPlan
-    ? PLAN_ORDER.filter(p => p === targetPlan)
-    : PLAN_ORDER;
+    ? ACTIVE_PLANS.filter(p => p === targetPlan)
+    : ACTIVE_PLANS;
 
   const results: Record<string, {
     plan: string;
