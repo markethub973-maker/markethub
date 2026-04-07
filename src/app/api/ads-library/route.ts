@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requirePlan } from "@/lib/requirePlan";
 
 export async function GET(req: NextRequest) {
+  const check = await requirePlan(req, "/ads-library");
+  if (check instanceof NextResponse) return check;
+
   const q = req.nextUrl.searchParams.get("q");
   const country = req.nextUrl.searchParams.get("country") || "ALL";
   const cursor = req.nextUrl.searchParams.get("cursor") || null;

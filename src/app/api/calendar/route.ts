@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requirePlan } from "@/lib/requirePlan";
 
 // GET — list posts for the authenticated user, optionally filtered by month
 export async function GET(req: NextRequest) {
+  const check = await requirePlan(req, "/calendar");
+  if (check instanceof NextResponse) return check;
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -28,6 +32,9 @@ export async function GET(req: NextRequest) {
 
 // POST — create a new scheduled post
 export async function POST(req: NextRequest) {
+  const check = await requirePlan(req, "/calendar");
+  if (check instanceof NextResponse) return check;
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

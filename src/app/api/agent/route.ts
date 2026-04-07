@@ -1,11 +1,15 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { AGENTS, AgentType, getAgentPrompt } from "@/lib/agents";
 import { getAnthropicErrorResponse } from "@/lib/anthropic-errors";
 import { createClient } from "@/lib/supabase/server";
 import { getAppApiKey } from "@/lib/anthropic-client";
+import { requirePlan } from "@/lib/requirePlan";
 
 export async function POST(req: NextRequest) {
+  const check = await requirePlan(req, "/ai-hub");
+  if (check instanceof NextResponse) return check;
+
   let appApiKey: string;
   try {
     appApiKey = getAppApiKey();
