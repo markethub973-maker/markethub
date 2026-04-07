@@ -54,25 +54,27 @@ export async function POST(req: NextRequest) {
     email_confirm: true,
   });
 
-  if (authError && !authError.message.includes("already registered")) {
+  if (authError && !authError.message.toLowerCase().includes("already")) {
     return NextResponse.json({ error: authError.message }, { status: 400 });
   }
 
-  // Resolve userId — from new user or look up existing by email via admin REST
+  // Resolve userId — from new user or sign in to get session (extracts user ID from JWT)
   let userId = authUser?.user?.id;
   if (!userId) {
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/admin/users?email=${encodeURIComponent(email)}&limit=1`,
+      const signinRes = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/token?grant_type=password`,
         {
+          method: "POST",
           headers: {
-            apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-            Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+            "Content-Type": "application/json",
+            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
           },
+          body: JSON.stringify({ email, password }),
         }
       );
-      const data = await res.json();
-      userId = data?.users?.[0]?.id ?? null;
+      const session = await signinRes.json();
+      userId = session?.user?.id ?? null;
     } catch {}
   }
 
