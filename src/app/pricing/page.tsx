@@ -317,6 +317,118 @@ export default function PricingPage() {
         </div>
       </div>
 
+      {/* Full Comparison Table */}
+      <div className="max-w-6xl mx-auto px-4 pb-16">
+        <h2 className="text-2xl font-bold text-center mb-2" style={{ color: "#1C1814" }}>Compare all plans</h2>
+        <p className="text-center text-sm mb-8" style={{ color: "#78614E" }}>Everything included in each plan at a glance</p>
+        <div className="overflow-x-auto rounded-2xl border" style={{ borderColor: "rgba(245,215,160,0.3)" }}>
+          <table className="w-full text-sm" style={{ backgroundColor: "#fff" }}>
+            <thead>
+              <tr style={{ borderBottom: "2px solid rgba(245,215,160,0.3)", backgroundColor: "#1C1814" }}>
+                <th className="text-left px-5 py-4 font-semibold" style={{ color: "#A8967E", minWidth: 180 }}>Feature</th>
+                {[
+                  { label: "Free Trial", sub: "7 days", color: "#78614E" },
+                  { label: "Lite", sub: "$24/mo", color: "#F59E0B" },
+                  { label: "Pro", sub: "$49/mo", color: "#8B5CF6" },
+                  { label: "Business", sub: "$99/mo", color: "#E1306C" },
+                  { label: "Enterprise", sub: "$249/mo", color: "#16A34A" },
+                ].map(({ label, sub, color }) => (
+                  <th key={label} className="text-center px-3 py-4" style={{ minWidth: 110 }}>
+                    <span className="block text-xs font-bold" style={{ color }}>{label}</span>
+                    <span className="block text-xs mt-0.5" style={{ color: "#A8967E" }}>{sub}</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                {
+                  category: "Tokens & Usage",
+                  rows: [
+                    { label: "Monthly tokens", values: ["1,000", "50,000", "150,000", "500,000", "1,500,000"] },
+                    { label: "Extra token packs", values: [false, true, true, true, true] },
+                  ],
+                },
+                {
+                  category: "Social Platforms",
+                  rows: [
+                    { label: "Social accounts", values: ["1", "2", "5", "10", "Unlimited"] },
+                    { label: "YouTube analytics", values: [true, true, true, true, true] },
+                    { label: "Instagram analytics", values: [false, true, true, true, true] },
+                    { label: "TikTok analytics", values: [false, true, true, true, true] },
+                  ],
+                },
+                {
+                  category: "Content Tools",
+                  rows: [
+                    { label: "Content calendar", values: [false, true, true, true, true] },
+                    { label: "Ads library", values: [false, true, true, true, true] },
+                    { label: "Hashtag manager", values: [false, true, true, true, true] },
+                    { label: "Link in Bio pages", values: [false, true, true, true, true] },
+                    { label: "Campaigns", values: [false, true, true, true, true] },
+                    { label: "Email reports", values: [false, true, true, true, true] },
+                    { label: "Marketing agent", values: [false, true, true, true, true] },
+                    { label: "Monthly Report AI", values: [false, true, true, true, true] },
+                  ],
+                },
+                {
+                  category: "Research & AI",
+                  rows: [
+                    { label: "AI Hub agents", values: [false, false, true, true, true] },
+                    { label: "Lead Finder", values: [false, false, true, true, true] },
+                    { label: "Leads CRM", values: [false, false, true, true, true] },
+                    { label: "Competitor brands", values: ["1", "8", "20", "25", "50"] },
+                    { label: "Tracked channels", values: ["2", "12", "30", "100", "Unlimited"] },
+                  ],
+                },
+                {
+                  category: "Team & Clients",
+                  rows: [
+                    { label: "Team members", values: ["1", "1", "3", "2", "5"] },
+                    { label: "Client accounts", values: ["1", "2", "5", "10", "20"] },
+                    { label: "Multi-account clients", values: [false, true, true, true, true] },
+                  ],
+                },
+                {
+                  category: "Advanced",
+                  rows: [
+                    { label: "API access", values: [false, false, false, true, true] },
+                    { label: "White label", values: [false, false, false, false, true] },
+                    { label: "Priority support", values: [false, false, true, true, true] },
+                    { label: "Data history", values: ["7 days", "90 days", "1 year", "1 year", "2 years"] },
+                    { label: "SLA uptime", values: ["—", "—", "—", "99.5%", "99.9%"] },
+                  ],
+                },
+              ].map(({ category, rows }) => (
+                <>
+                  <tr key={category} style={{ backgroundColor: "rgba(245,215,160,0.06)", borderTop: "1px solid rgba(245,215,160,0.2)" }}>
+                    <td colSpan={6} className="px-5 py-2">
+                      <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#A8967E" }}>{category}</span>
+                    </td>
+                  </tr>
+                  {rows.map(({ label, values }, ri) => (
+                    <tr key={label} style={{ borderTop: "1px solid rgba(0,0,0,0.04)", backgroundColor: ri % 2 === 0 ? "#fff" : "#FAFAF8" }}>
+                      <td className="px-5 py-3 font-medium" style={{ color: "#292524" }}>{label}</td>
+                      {values.map((val, i) => (
+                        <td key={i} className="text-center px-3 py-3">
+                          {val === true ? (
+                            <Check className="w-4 h-4 mx-auto text-emerald-500" />
+                          ) : val === false ? (
+                            <span className="text-gray-300">—</span>
+                          ) : (
+                            <span className="text-xs font-semibold" style={{ color: "#292524" }}>{val}</span>
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       {/* Token info */}
       <div className="max-w-6xl mx-auto px-4 pb-16">
         <div className="rounded-2xl p-6 sm:p-8" style={{ background: "linear-gradient(135deg, #EFF6FF, #F5F3FF)", border: "1px solid rgba(99,102,241,0.2)" }}>
