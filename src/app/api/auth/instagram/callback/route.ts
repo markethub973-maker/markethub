@@ -1,54 +1,62 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { encryptField } from "@/lib/fieldCrypto";
 import { logAudit } from "@/lib/auditLog";
 
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const code = searchParams.get("code");
+  const userId = searchParams.get("state"); // passed from initiation route
+  const error = searchParams.get("error");
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
+
+  if (error || !code || !userId) {
+    return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=${error || "missing_params"}`);
+  }
+
+  const supabase = createServiceClient(); // service role — no cookie auth needed
+
   try {
-    const { searchParams } = new URL(request.url);
-    const code = searchParams.get("code");
-    const state = searchParams.get("state");
-
-    if (!code || !state) {
-      return NextResponse.redirect(new URL("/settings?error=missing_code", request.url));
-    }
-
-    const appId = process.env.INSTAGRAM_APP_ID;
-    const appSecret = process.env.INSTAGRAM_APP_SECRET;
-    const redirectUri = process.env.INSTAGRAM_REDIRECT_URI;
-
-    if (!appId || !appSecret || !redirectUri) {
-      return NextResponse.redirect(new URL("/settings?error=config_missing", request.url));
-    }
-
-    // Step 1: Exchange code for Facebook user access token
-    const tokenResponse = await fetch("https://graph.facebook.com/v22.0/oauth/access_token", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: appId,
-        client_secret: appSecret,
-        grant_type: "authorization_code",
-        redirect_uri: redirectUri,
+    // Step 1: Exchange code for short-lived token
+    const tokenRes = await fetch(
+      `https://graph.facebook.com/v22.0/oauth/access_token?` +
+      new URLSearchParams({
+        client_id: process.env.META_APP_ID!,
+        client_secret: process.env.META_APP_SECRET!,
+        redirect_uri: `${appUrl}/api/auth/instagram/callback`,
         code,
-      }).toString(),
-    });
+      })
+    );
+    const tokenData = await tokenRes.json();
 
-    const tokenData = await tokenResponse.json();
-    if (!tokenData.access_token) {
+    if (tokenData.error || !tokenData.access_token) {
       console.error("Facebook token error:", tokenData);
-      return NextResponse.redirect(new URL("/settings?error=token_failed", request.url));
+      return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=token_failed`);
     }
 
-    // Step 2: Get ALL Facebook pages + linked Instagram accounts
-    const accountsResponse = await fetch(
-      `https://graph.facebook.com/v22.0/me/accounts?fields=id,name,access_token,instagram_business_account{id,username,name},connected_instagram_account{id,username,name}&access_token=${tokenData.access_token}`
+    // Step 2: Exchange for long-lived token (60 days)
+    const longRes = await fetch(
+      `https://graph.facebook.com/v22.0/oauth/access_token?` +
+      new URLSearchParams({
+        grant_type: "fb_exchange_token",
+        client_id: process.env.META_APP_ID!,
+        client_secret: process.env.META_APP_SECRET!,
+        fb_exchange_token: tokenData.access_token,
+      })
     );
-    const accountsData = await accountsResponse.json();
+    const longData = await longRes.json();
+    const longToken = longData.access_token || tokenData.access_token;
 
-    if (!accountsData.data?.length) {
-      console.error("No Facebook pages found:", accountsData);
-      return NextResponse.redirect(new URL("/settings?error=no_instagram_account", request.url));
+    // Step 3: Get ALL Facebook Pages + linked Instagram accounts
+    const pagesRes = await fetch(
+      `https://graph.facebook.com/v22.0/me/accounts?fields=id,name,access_token,instagram_business_account{id,username,name},connected_instagram_account{id,username,name}&access_token=${longToken}`
+    );
+    const pagesData = await pagesRes.json();
+
+    if (!pagesData.data?.length) {
+      console.error("No Facebook pages found:", pagesData);
+      return NextResponse.redirect(`${appUrl}/settings?instagram=no_page`);
     }
 
     // Collect ALL Instagram accounts across all pages
@@ -57,46 +65,59 @@ export async function GET(request: Request) {
       pageId: string; pageName: string; pageToken: string;
     }> = [];
 
-    for (const page of accountsData.data) {
-      const igAcc = page.instagram_business_account || page.connected_instagram_account;
+    for (const page of pagesData.data) {
+      // Try both business and creator account fields
+      let igAcc = page.instagram_business_account || page.connected_instagram_account;
+
+      // Fallback: query the page directly
+      if (!igAcc?.id) {
+        const igRes = await fetch(
+          `https://graph.facebook.com/v22.0/${page.id}?fields=instagram_business_account,connected_instagram_account&access_token=${page.access_token || longToken}`
+        );
+        const igData = await igRes.json();
+        igAcc = igData.instagram_business_account || igData.connected_instagram_account;
+      }
+
       if (igAcc?.id) {
+        // Get username if missing
+        let username = igAcc.username;
+        if (!username) {
+          const profileRes = await fetch(
+            `https://graph.facebook.com/v22.0/${igAcc.id}?fields=username,name&access_token=${page.access_token || longToken}`
+          );
+          const profileData = await profileRes.json();
+          username = profileData.username || igAcc.id;
+        }
+
         igAccounts.push({
           igId: igAcc.id,
-          igUsername: igAcc.username || "unknown",
-          igName: igAcc.name || igAcc.username || "unknown",
+          igUsername: username || "unknown",
+          igName: igAcc.name || username || "unknown",
           pageId: page.id,
           pageName: page.name,
-          pageToken: page.access_token || tokenData.access_token,
+          pageToken: page.access_token || longToken,
         });
       }
     }
 
     if (igAccounts.length === 0) {
-      return NextResponse.redirect(new URL("/settings?error=no_instagram_account", request.url));
+      return NextResponse.redirect(`${appUrl}/settings?instagram=no_ig_account`);
     }
 
-    // Step 3: Save to Supabase
-    const supabase = await createClient();
-    const { data: authData } = await supabase.auth.getUser();
-    if (!authData?.user?.id) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-    const userId = authData.user.id;
-
-    // Check if user has any existing connections to determine is_primary
+    // Step 4: Check existing connections to determine is_primary
     const { count } = await supabase
       .from("instagram_connections")
       .select("id", { count: "exact", head: true })
       .eq("user_id", userId);
     const hasExisting = (count ?? 0) > 0;
 
-    // Upsert ALL found Instagram accounts (multi-account support)
+    // Step 5: Upsert ALL found Instagram accounts
     let savedCount = 0;
     for (let i = 0; i < igAccounts.length; i++) {
       const acc = igAccounts[i];
-      const isPrimary = !hasExisting && i === 0; // first account is primary if no existing
+      const isPrimary = !hasExisting && i === 0;
 
-      const { error } = await supabase
+      const { error: dbError } = await supabase
         .from("instagram_connections")
         .upsert(
           {
@@ -109,7 +130,7 @@ export async function GET(request: Request) {
             page_name: acc.pageName,
             access_token: acc.pageToken,
             enc_access_token: encryptField(acc.pageToken),
-            token_type: tokenData.token_type || "bearer",
+            token_type: "bearer",
             is_primary: isPrimary,
             connected_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
@@ -117,8 +138,18 @@ export async function GET(request: Request) {
           { onConflict: "user_id,instagram_id" }
         );
 
-      if (!error) savedCount++;
-      else console.error(`Error saving IG account ${acc.igUsername}:`, error);
+      if (!dbError) savedCount++;
+      else console.error(`Error saving IG account ${acc.igUsername}:`, dbError);
+    }
+
+    // Also update profiles for backward compatibility
+    if (igAccounts.length > 0) {
+      const primary = igAccounts[0];
+      await supabase.from("profiles").update({
+        instagram_access_token: primary.pageToken,
+        instagram_user_id: primary.igId,
+        instagram_username: primary.igUsername,
+      }).eq("id", userId);
     }
 
     await logAudit({
@@ -129,10 +160,10 @@ export async function GET(request: Request) {
     });
 
     return NextResponse.redirect(
-      new URL(`/settings?instagram=connected&accounts=${savedCount}`, request.url)
+      `${appUrl}/settings?instagram=connected&accounts=${savedCount}`
     );
-  } catch (error) {
-    console.error("Instagram callback error:", error);
-    return NextResponse.redirect(new URL("/settings?error=unexpected", request.url));
+  } catch (err) {
+    console.error("Instagram callback error:", err);
+    return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=unexpected`);
   }
 }
