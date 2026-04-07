@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
   const result = await safeApify<any[]>("apify~website-content-crawler", {
     startUrls: [{ url: startUrl }],
     maxCrawlPages: Math.min(maxPages, 10),
-    crawlerType: "playwright:firefox",
+    crawlerType: "cheerio",
     removeElementsCssSelector: "nav, footer, header, .cookie-banner, script, style",
     htmlTransformer: "readableText",
     readableTextCharThreshold: 100,
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     debugLog: false,
     saveHtml: false,
     saveMarkdown: true,
-  }, { timeoutSec: 120, memorySec: 2048, retries: 0 });
+  }, { timeoutSec: 60, memorySec: 1024, retries: 0 });
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error, service: "apify", degraded: true }, { status: 503 });
