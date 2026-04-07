@@ -165,9 +165,9 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
     id: "business",
     name: "Business",
     price: 99,
-    included_tokens_month: 500_000,      // ~41,666 captions
-    extra_token_cost: 0.0007,            // $0.70 per 1000 tokens
-    max_monthly_tokens: -1,              // Unlimited
+    included_tokens_month: 500_000,
+    extra_token_cost: 0.0007,
+    max_monthly_tokens: -1,
     token_recharge_packs: [
       { id: "bus_tokens_100k",   tokens: 100_000,  price: 60,  bonus_pct: 0  },
       { id: "bus_tokens_250k",   tokens: 250_000,  price: 165, bonus_pct: 10 },
@@ -177,10 +177,10 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
     tracked_channels: 100,
     instagram_accounts: 10,
     tiktok_accounts: 10,
-    competitor_brands: 50,
-    team_members: 5,
-    client_accounts: 20,
-    history_days: 730,
+    competitor_brands: 25,
+    team_members: 2,
+    client_accounts: 10,
+    history_days: 365,
     has_calendar: true,
     has_tiktok: true,
     has_api_access: true,
@@ -193,9 +193,9 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
     id: "enterprise",
     name: "Enterprise",
     price: 249,
-    included_tokens_month: 1_500_000,    // ~125,000 captions
-    extra_token_cost: 0.0006,            // $0.60 per 1000 tokens
-    max_monthly_tokens: -1,              // Unlimited (but $60/month cap recommended)
+    included_tokens_month: 1_500_000,
+    extra_token_cost: 0.0006,
+    max_monthly_tokens: -1,
     token_recharge_packs: [
       { id: "ent_tokens_250k",   tokens: 250_000,  price: 140, bonus_pct: 0  },
       { id: "ent_tokens_500k",   tokens: 500_000,  price: 280, bonus_pct: 10 },
@@ -205,10 +205,10 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
     tracked_channels: -1,
     instagram_accounts: -1,
     tiktok_accounts: -1,
-    competitor_brands: -1,
-    team_members: -1,
-    client_accounts: -1,
-    history_days: -1,
+    competitor_brands: 50,
+    team_members: 5,
+    client_accounts: 20,
+    history_days: 730,
     has_calendar: true,
     has_tiktok: true,
     has_api_access: true,

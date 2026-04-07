@@ -97,9 +97,9 @@ export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
     has_white_label:    false,
     has_priority_support: true,
     tracked_channels:   100,
-    competitor_brands:  50,
-    team_members:       5,
-    client_accounts:    20,
+    competitor_brands:  25,
+    team_members:       2,
+    client_accounts:    10,
   },
   enterprise: {
     has_calendar:       true,
@@ -108,9 +108,9 @@ export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
     has_white_label:    true,
     has_priority_support: true,
     tracked_channels:   -1,
-    competitor_brands:  -1,
-    team_members:       -1,
-    client_accounts:    -1,
+    competitor_brands:  50,
+    team_members:       5,
+    client_accounts:    20,
   },
 };
 
