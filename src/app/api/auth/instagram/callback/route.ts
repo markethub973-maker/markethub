@@ -54,7 +54,43 @@ export async function GET(req: NextRequest) {
     );
     const pagesData = await pagesRes.json();
 
+    // If no pages found, try direct token approach (Business Manager accounts)
     if (!pagesData.data?.length) {
+      // Try using the user token directly against the env-configured IG account
+      const envIgId = process.env.INSTAGRAM_ACCOUNT_ID;
+      if (envIgId) {
+        const directRes = await fetch(
+          `https://graph.facebook.com/v22.0/${envIgId}?fields=id,username,name&access_token=${longToken}`
+        );
+        const directData = await directRes.json();
+        if (!directData.error && directData.id) {
+          const { error: dbError } = await supabase
+            .from("instagram_connections")
+            .upsert({
+              user_id: userId,
+              instagram_id: directData.id,
+              instagram_username: directData.username || "unknown",
+              instagram_name: directData.name || directData.username || "unknown",
+              account_label: directData.name || directData.username || "unknown",
+              access_token: longToken,
+              enc_access_token: encryptField(longToken),
+              token_type: "bearer",
+              is_primary: true,
+              connected_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            }, { onConflict: "user_id,instagram_id" });
+
+          if (!dbError) {
+            await supabase.from("profiles").update({
+              instagram_access_token: longToken,
+              instagram_user_id: directData.id,
+              instagram_username: directData.username,
+            }).eq("id", userId);
+
+            return NextResponse.redirect(`${appUrl}/settings?instagram=connected&accounts=1`);
+          }
+        }
+      }
       console.error("No Facebook pages found:", pagesData);
       return NextResponse.redirect(`${appUrl}/settings?instagram=no_page`);
     }
