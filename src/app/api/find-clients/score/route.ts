@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
+import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
 
 const anthropic = getAppAnthropicClient();
 
@@ -33,6 +34,11 @@ export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
+  const userPlan = (profile as any)?.plan ?? "free_test";
+  const limitCheck = await checkAndIncrDailyLimit(user.id, userPlan, "apex");
+  if (!limitCheck.allowed) return NextResponse.json(limitExceededResponse(limitCheck, "apex"), { status: 429 });
 
   const { results, offer_summary, intent_signals } = await req.json();
   if (!results?.length) return NextResponse.json({ error: "Results required" }, { status: 400 });

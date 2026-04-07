@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { safeApify } from "@/lib/serviceGuard";
+import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { data: profile } = await supabase.from("profiles").select("plan").eq("id", user.id).single();
+  const userPlan = (profile as any)?.plan ?? "free_test";
+  const limitCheck = await checkAndIncrDailyLimit(user.id, userPlan, "research");
+  if (!limitCheck.allowed) return NextResponse.json(limitExceededResponse(limitCheck, "research"), { status: 429 });
 
   if (!process.env.APIFY_TOKEN) return NextResponse.json({ error: "Apify not configured", degraded: true }, { status: 503 });
 

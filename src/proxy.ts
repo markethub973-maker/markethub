@@ -207,6 +207,22 @@ export async function proxy(request: NextRequest) {
     return preflightRes;
   }
 
+  // ── Request body size limit for AI routes (50 KB max) ─────────────────
+  if (
+    request.method === "POST" &&
+    (pathname.startsWith("/api/find-clients/") || pathname.startsWith("/api/research/"))
+  ) {
+    const contentLength = parseInt(request.headers.get("content-length") ?? "0", 10);
+    if (contentLength > 51_200) {
+      const res = NextResponse.json(
+        { error: "Request body too large. Maximum 50 KB allowed." },
+        { status: 413 },
+      );
+      applySecurityHeaders(res);
+      return res;
+    }
+  }
+
   // ── Admin tunnel check ──────────────────────────────────────────────────
   const isAdminPath =
     pathname.startsWith("/markethub973") ||
