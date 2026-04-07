@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 // ── Admin-only endpoint: applies restrictive RLS policy on profiles table ──────
 // Prevents users from self-escalating plan/is_admin/stripe fields via REST PATCH.
-// Auth: requires ADMIN_API_SECRET header (same Bearer token used by admin panel).
 export async function POST(req: NextRequest) {
-  // Verify admin Bearer token
-  const auth = req.headers.get("authorization") ?? "";
-  const adminSecret = process.env.ADMIN_API_SECRET;
-  if (!adminSecret || auth !== `Bearer ${adminSecret}`) {
+  if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -100,9 +97,7 @@ export async function POST(req: NextRequest) {
 
 // GET — verify current policy state
 export async function GET(req: NextRequest) {
-  const auth = req.headers.get("authorization") ?? "";
-  const adminSecret = process.env.ADMIN_API_SECRET;
-  if (!adminSecret || auth !== `Bearer ${adminSecret}`) {
+  if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
