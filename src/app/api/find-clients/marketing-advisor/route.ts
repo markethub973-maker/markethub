@@ -316,14 +316,25 @@ CRITICAL INSTRUCTIONS:
 - Match response length to question complexity — concise for simple questions, detailed for complex ones
 - NEVER invent data. Use only real, verifiable information.`;
 
-  const result = await safeAnthropic(() =>
-    anthropic.messages.create({
-      model:      "claude-haiku-4-5-20251001",
-      max_tokens: 1800,
-      system:     SYSTEM,
-      messages:   [{ role: "user", content: prompt }],
-    })
-  );
+  const MODEL = "claude-haiku-4-5-20251001";
+  const sessionId = req.headers.get("x-cost-session") || "unknown";
+
+  // Retry once if JSON is not returned (Haiku occasionally skips format)
+  async function callApex(extraHint = "") {
+    return safeAnthropic(() =>
+      anthropic.messages.create({
+        model:      MODEL,
+        max_tokens: 1800,
+        system:     SYSTEM,
+        messages:   [
+          { role: "user",      content: prompt + extraHint },
+          { role: "assistant", content: "{" },  // force JSON start
+        ],
+      })
+    );
+  }
+
+  let result = await callApex();
 
   if (!result.ok) {
     return NextResponse.json(
@@ -333,19 +344,28 @@ CRITICAL INSTRUCTIONS:
   }
 
   // Log cost (non-fatal)
-  const MODEL    = "claude-haiku-4-5-20251001";
-  const usage    = result.data.usage;
-  const sessionId = req.headers.get("x-cost-session") || "unknown";
   void logApiCost({
     userId: user.id, sessionId, service: "anthropic", operation: "marketing_advisor",
-    model: MODEL, inputTokens: usage.input_tokens, outputTokens: usage.output_tokens,
-    costUsd: calcAnthropicCost(MODEL, usage.input_tokens, usage.output_tokens),
+    model: MODEL,
+    inputTokens: result.data.usage.input_tokens,
+    outputTokens: result.data.usage.output_tokens,
+    costUsd: calcAnthropicCost(MODEL, result.data.usage.input_tokens, result.data.usage.output_tokens),
   });
 
   try {
-    const text = result.data.content[0].type === "text" ? result.data.content[0].text : "";
+    const rawText = result.data.content[0].type === "text" ? result.data.content[0].text : "";
+    // Prepend the "{" we injected via prefill
+    const text = "{" + rawText;
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
+    if (!jsonMatch) {
+      // Retry once with explicit reminder
+      result = await callApex("\n\nIMPORTANT: Return ONLY the JSON object, starting with { and ending with }. No explanation.");
+      if (!result.ok) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
+      const retryText = "{" + (result.data.content[0].type === "text" ? result.data.content[0].text : "");
+      const retryMatch = retryText.match(/\{[\s\S]*\}/);
+      if (!retryMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
+      return NextResponse.json(JSON.parse(sanitizeJson(retryMatch[0])));
+    }
     return NextResponse.json(JSON.parse(sanitizeJson(jsonMatch[0])));
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
