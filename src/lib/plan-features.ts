@@ -137,18 +137,6 @@ export interface RouteGate {
 }
 
 export const ROUTE_GATES: Record<string, RouteGate> = {
-  // ── Starter ($14) features ────────────────────────────────────────────────
-  "/email-reports": {
-    minPlan:    "starter",
-    label:      "Email Reports",
-    description: "Get weekly digest emails with your top metrics and AI recommendations.",
-  },
-  "/ads-library": {
-    minPlan:    "starter",
-    label:      "Ads Library",
-    description: "Browse and analyze competitor ads across Meta platforms.",
-  },
-
   // ── Lite ($24) features ───────────────────────────────────────────────────
   "/calendar": {
     minPlan:    "lite",
@@ -161,6 +149,16 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     featureKey: "has_tiktok",
     label:      "TikTok Analytics",
     description: "Track TikTok trends, hashtags, and competitor videos to grow your presence.",
+  },
+  "/email-reports": {
+    minPlan:    "lite",
+    label:      "Email Reports",
+    description: "Get weekly digest emails with your top metrics and AI recommendations.",
+  },
+  "/ads-library": {
+    minPlan:    "lite",
+    label:      "Ads Library",
+    description: "Browse and analyze competitor ads across Meta platforms.",
   },
   "/bio": {
     minPlan:    "lite",
