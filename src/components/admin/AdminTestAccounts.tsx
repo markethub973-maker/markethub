@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Users, Plus, Copy, Check, ExternalLink, RefreshCw, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, Plus, Copy, Check, ExternalLink, RefreshCw, ChevronDown, ChevronUp, LogIn, Loader2 } from "lucide-react";
 
 const PLAN_LABELS: Record<string, string> = {
   free_test: "Free Trial",
@@ -42,6 +42,7 @@ export default function AdminTestAccounts() {
   const [copied, setCopied] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [newCreds, setNewCreds] = useState<Record<string, { email: string; password: string }>>({});
+  const [impersonating, setImpersonating] = useState<string | null>(null);
 
   const fetchAccounts = async () => {
     setLoading(true);
@@ -72,6 +73,26 @@ export default function AdminTestAccounts() {
     setCreating(null);
   };
 
+  const impersonate = async (plan: string) => {
+    setImpersonating(plan);
+    try {
+      const res = await fetch("/api/admin/test-accounts/impersonate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plan }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.open(data.url, "_blank");
+      } else {
+        alert(data.error ?? "Eroare la generarea linkului");
+      }
+    } catch {
+      alert("Eroare rețea");
+    }
+    setImpersonating(null);
+  };
+
   const copy = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
     setCopied(key);
@@ -100,6 +121,7 @@ export default function AdminTestAccounts() {
         </div>
         <button
           type="button"
+          aria-label="Reîncarcă conturile"
           onClick={fetchAccounts}
           className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-all"
         >
@@ -153,17 +175,21 @@ export default function AdminTestAccounts() {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   {hasUser && (
                     <>
-                      <a
-                        href="https://markethubpromo.com/login"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-all"
-                        title="Deschide login"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
                       <button
                         type="button"
+                        aria-label="Intră ca client"
+                        onClick={() => impersonate(planId)}
+                        disabled={impersonating === planId}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 disabled:opacity-50"
+                      >
+                        {impersonating === planId
+                          ? <Loader2 className="w-3 h-3 animate-spin" />
+                          : <LogIn className="w-3 h-3" />}
+                        Intră ca client
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Afișează detalii"
                         onClick={() => setExpanded(isExpanded ? null : planId)}
                         className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-all"
                       >
