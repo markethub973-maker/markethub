@@ -36,6 +36,27 @@ const BUDGET_RANGES = [
   { id: "vhigh",  label: "> €2000" },
 ];
 
+const EVENT_TYPES = [
+  { id: "nuntă",      label: "Nuntă",      emoji: "💍" },
+  { id: "botez",      label: "Botez",      emoji: "👶" },
+  { id: "corporate",  label: "Corporate",  emoji: "🏢" },
+  { id: "petrecere",  label: "Petrecere",  emoji: "🎉" },
+  { id: "aniversare", label: "Aniversare", emoji: "🎂" },
+  { id: "majorat",    label: "Majorat",    emoji: "🎓" },
+];
+
+const CAMPAIGN_TABS = [
+  { id: "sms",          label: "SMS",          emoji: "📱" },
+  { id: "email",        label: "Email",         emoji: "📧" },
+  { id: "whatsapp",     label: "WhatsApp",      emoji: "💬" },
+  { id: "facebook_post",label: "Facebook Post", emoji: "👥" },
+  { id: "instagram_post",label: "Instagram",   emoji: "📸" },
+  { id: "tiktok",       label: "TikTok/Reel",  emoji: "🎵" },
+  { id: "landing_page", label: "Landing Page",  emoji: "🌐" },
+  { id: "video_brief",  label: "Brief Video",   emoji: "🎬" },
+  { id: "photo_brief",  label: "Brief Foto",    emoji: "📷" },
+];
+
 const PLATFORM_ICONS: Record<string, string> = {
   google: "🔍", google_maps: "🗺️", reddit: "🟠",
   facebook_groups: "👥", instagram_hashtag: "📸",
@@ -66,6 +87,18 @@ interface OutreachResult {
   messages: { reddit: string; email: string; facebook: string; generic: string };
   subject_line: string;
   best_platform: string;
+}
+
+interface CampaignResult {
+  sms: { text: string };
+  email: { subject: string; preview: string; body: string };
+  facebook_post: { text: string; cta: string };
+  instagram_post: { caption: string; story_hook: string; story_slides: string[]; story_cta: string };
+  tiktok: { hook: string; script: string; caption: string; cta: string };
+  whatsapp: { text: string };
+  landing_page: { headline: string; subheadline: string; bullets: string[]; cta_button: string; cta_subtext: string; contact_block: string };
+  video_brief: { concept: string; duration: string; scenes: string[]; music: string; caption: string };
+  photo_brief: { concept: string; shots: string[]; style: string; caption: string };
 }
 
 // ── Step indicator ───────────────────────────────────────────────────────────
@@ -199,6 +232,21 @@ export default function LeadFinderPage() {
   const [activePlatform, setActivePlatform] = useState("generic");
   const [copied, setCopied] = useState(false);
 
+  // Campaign Builder
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactWebsite, setContactWebsite] = useState("");
+  const [contactInstagram, setContactInstagram] = useState("");
+  const [contactFacebook, setContactFacebook] = useState("");
+  const [contactWhatsapp, setContactWhatsapp] = useState("");
+  const [campaignEventTypes, setCampaignEventTypes] = useState<string[]>([]);
+  const [generatingCampaign, setGeneratingCampaign] = useState(false);
+  const [campaign, setCampaign] = useState<CampaignResult | null>(null);
+  const [campaignError, setCampaignError] = useState("");
+  const [activeCampaignTab, setActiveCampaignTab] = useState("sms");
+  const [copiedCampaign, setCopiedCampaign] = useState<string | null>(null);
+  const [showContactForm, setShowContactForm] = useState(false);
+
   const handleAnalyze = async () => {
     setAnalyzing(true);
     setAnalyzeError("");
@@ -331,6 +379,45 @@ export default function LeadFinderPage() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const copyCampaign = (key: string, txt: string) => {
+    navigator.clipboard.writeText(txt);
+    setCopiedCampaign(key);
+    setTimeout(() => setCopiedCampaign(null), 2000);
+  };
+
+  const handleGenerateCampaign = async () => {
+    if (!selectedLead || !suggestion) return;
+    setGeneratingCampaign(true);
+    setCampaignError("");
+    setCampaign(null);
+    const res = await fetch("/api/find-clients/campaign", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        offer_summary: suggestion.offer_summary,
+        outreach_hook: suggestion.outreach_hook,
+        lead: selectedLead,
+        contact: {
+          phone: contactPhone,
+          email: contactEmail,
+          website: contactWebsite,
+          instagram: contactInstagram,
+          facebook: contactFacebook,
+          whatsapp: contactWhatsapp,
+        },
+        targeting: { location, event_types: campaignEventTypes, audience_type: audienceType },
+      }),
+    });
+    const data = await res.json();
+    setGeneratingCampaign(false);
+    if (!res.ok) { setCampaignError(data.error || "Eroare generare campanie"); return; }
+    setCampaign(data);
+    setActiveCampaignTab("sms");
+  };
+
+  const toggleEventType = (id: string) =>
+    setCampaignEventTypes(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
   const filteredLeads = filterLabel === "all" ? leads : leads.filter(l => l.label === filterLabel);
   const hotCount  = leads.filter(l => l.label === "hot").length;
@@ -863,6 +950,358 @@ export default function LeadFinderPage() {
                 </>
               )}
             </div>
+
+            {/* ── Campaign Builder ─────────────────────────────────────────── */}
+            {outreach && !generatingMsg && (
+              <div className="space-y-3">
+
+                {/* Contact info (collapsible) */}
+                <div className="rounded-2xl overflow-hidden" style={card}>
+                  <button type="button" onClick={() => setShowContactForm(v => !v)}
+                    className="w-full flex items-center justify-between px-5 py-4"
+                    style={{ backgroundColor: "transparent" }}>
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">📋</span>
+                      <p className="font-bold text-sm" style={{ color: "#292524" }}>Datele tale de contact</p>
+                      <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: AMBER }}>
+                        opțional — pentru campanie
+                      </span>
+                    </div>
+                    <span style={{ color: "#A8967E" }}>{showContactForm ? "▲" : "▼"}</span>
+                  </button>
+                  {showContactForm && (
+                    <div className="px-5 pb-5 grid grid-cols-2 gap-3">
+                      {[
+                        { label: "📱 Telefon", val: contactPhone, set: setContactPhone, ph: "07xx xxx xxx" },
+                        { label: "📧 Email", val: contactEmail, set: setContactEmail, ph: "tu@email.com" },
+                        { label: "🌐 Website", val: contactWebsite, set: setContactWebsite, ph: "siteul-tau.ro" },
+                        { label: "💬 WhatsApp", val: contactWhatsapp, set: setContactWhatsapp, ph: "07xx xxx xxx" },
+                        { label: "📸 Instagram", val: contactInstagram, set: setContactInstagram, ph: "@username" },
+                        { label: "👥 Facebook", val: contactFacebook, set: setContactFacebook, ph: "pagina-ta" },
+                      ].map(({ label, val, set, ph }) => (
+                        <div key={label}>
+                          <p className="text-xs font-semibold mb-1" style={{ color: "#78614E" }}>{label}</p>
+                          <input type="text" value={val} onChange={e => set(e.target.value)} placeholder={ph}
+                            className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
+                            style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Event type filters */}
+                <div className="rounded-2xl p-4 space-y-3" style={card}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-bold" style={{ color: "#78614E" }}>Tip eveniment:</span>
+                    {EVENT_TYPES.map(ev => (
+                      <button key={ev.id} type="button" onClick={() => toggleEventType(ev.id)}
+                        className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
+                        style={campaignEventTypes.includes(ev.id)
+                          ? { backgroundColor: `${AMBER}20`, color: AMBER, border: `1px solid ${AMBER}50` }
+                          : { backgroundColor: "rgba(245,215,160,0.06)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.15)" }}>
+                        {ev.emoji} {ev.label}
+                      </button>
+                    ))}
+                  </div>
+                  {location && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold" style={{ color: "#78614E" }}>Locație:</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                        style={{ backgroundColor: "rgba(29,185,84,0.08)", color: GREEN }}>
+                        📍 {location}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Generate button */}
+                <button type="button" onClick={handleGenerateCampaign} disabled={generatingCampaign}
+                  className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-base transition-all hover:scale-[1.02] disabled:opacity-60 disabled:scale-100"
+                  style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814", boxShadow: "0 4px 20px rgba(245,158,11,0.35)" }}>
+                  {generatingCampaign
+                    ? <><Loader2 className="w-5 h-5 animate-spin" /> AI construiește campania completă…</>
+                    : <><Wand2 className="w-5 h-5" /> Generează Campanie Completă — 9 materiale</>}
+                </button>
+
+                {campaignError && (
+                  <p className="text-sm text-center" style={{ color: RED }}>{campaignError}</p>
+                )}
+
+                {/* Campaign results */}
+                {campaign && (
+                  <div className="rounded-2xl overflow-hidden" style={{ ...card, border: `1px solid ${AMBER}30` }}>
+                    <div className="flex items-center justify-between px-5 py-4"
+                      style={{ borderBottom: `1px solid ${AMBER}15`, background: `linear-gradient(135deg, ${AMBER}08, transparent)` }}>
+                      <p className="font-bold" style={{ color: "#292524" }}>🚀 Campanie completă</p>
+                      <span className="text-xs font-bold px-2 py-1 rounded-full"
+                        style={{ backgroundColor: `${GREEN}15`, color: GREEN }}>9 materiale generate</span>
+                    </div>
+
+                    {/* Tab bar */}
+                    <div className="flex overflow-x-auto border-b" style={{ borderColor: `${AMBER}15` }}>
+                      {CAMPAIGN_TABS.map(tab => (
+                        <button key={tab.id} type="button" onClick={() => setActiveCampaignTab(tab.id)}
+                          className="flex-shrink-0 flex items-center gap-1.5 px-4 py-3 text-xs font-bold whitespace-nowrap transition-all"
+                          style={activeCampaignTab === tab.id
+                            ? { borderBottom: `2px solid ${AMBER}`, color: AMBER, backgroundColor: `${AMBER}08` }
+                            : { borderBottom: "2px solid transparent", color: "#A8967E" }}>
+                          <span>{tab.emoji}</span> {tab.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Tab content */}
+                    <div className="p-5 space-y-3">
+
+                      {activeCampaignTab === "sms" && campaign.sms && (
+                        <>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📱 Mesaj SMS — max 160 caractere</p>
+                          <div className="relative">
+                            <textarea value={campaign.sms.text} readOnly rows={3}
+                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                            <button type="button" onClick={() => copyCampaign("sms", campaign.sms.text)}
+                              className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
+                              style={{ backgroundColor: copiedCampaign === "sms" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "sms" ? GREEN : AMBER }}>
+                              {copiedCampaign === "sms" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                            </button>
+                          </div>
+                          <p className="text-xs" style={{ color: "#A8967E" }}>{campaign.sms.text.length}/160 caractere</p>
+                        </>
+                      )}
+
+                      {activeCampaignTab === "email" && campaign.email && (
+                        <>
+                          <div className="rounded-lg px-3 py-2 space-y-1" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: `1px solid ${AMBER}20` }}>
+                            <p className="text-xs"><span className="font-bold" style={{ color: "#78614E" }}>Subiect: </span><span style={{ color: "#292524" }}>{campaign.email.subject}</span></p>
+                            <p className="text-xs"><span className="font-bold" style={{ color: "#78614E" }}>Preview: </span><span style={{ color: "#A8967E" }}>{campaign.email.preview}</span></p>
+                          </div>
+                          <div className="relative">
+                            <textarea value={campaign.email.body} readOnly rows={8}
+                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                            <button type="button" onClick={() => copyCampaign("email", `Subiect: ${campaign.email.subject}\n\n${campaign.email.body}`)}
+                              className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
+                              style={{ backgroundColor: copiedCampaign === "email" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "email" ? GREEN : AMBER }}>
+                              {copiedCampaign === "email" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {activeCampaignTab === "whatsapp" && campaign.whatsapp && (
+                        <>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>💬 Mesaj WhatsApp</p>
+                          <div className="relative">
+                            <textarea value={campaign.whatsapp.text} readOnly rows={4}
+                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                            <button type="button" onClick={() => copyCampaign("whatsapp", campaign.whatsapp.text)}
+                              className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
+                              style={{ backgroundColor: copiedCampaign === "whatsapp" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "whatsapp" ? GREEN : AMBER }}>
+                              {copiedCampaign === "whatsapp" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {activeCampaignTab === "facebook_post" && campaign.facebook_post && (
+                        <>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>👥 Postare Facebook</p>
+                          <div className="relative">
+                            <textarea value={campaign.facebook_post.text} readOnly rows={5}
+                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                            <button type="button" onClick={() => copyCampaign("fb", campaign.facebook_post.text)}
+                              className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
+                              style={{ backgroundColor: copiedCampaign === "fb" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "fb" ? GREEN : AMBER }}>
+                              {copiedCampaign === "fb" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                            </button>
+                          </div>
+                          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: `1px solid ${AMBER}20` }}>
+                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>CTA buton: </span>
+                            <span className="text-xs font-semibold" style={{ color: AMBER }}>{campaign.facebook_post.cta}</span>
+                          </div>
+                        </>
+                      )}
+
+                      {activeCampaignTab === "instagram_post" && campaign.instagram_post && (
+                        <>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📸 Caption Instagram</p>
+                          <div className="relative">
+                            <textarea value={campaign.instagram_post.caption} readOnly rows={4}
+                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                            <button type="button" onClick={() => copyCampaign("ig", campaign.instagram_post.caption)}
+                              className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
+                              style={{ backgroundColor: copiedCampaign === "ig" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "ig" ? GREEN : AMBER }}>
+                              {copiedCampaign === "ig" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                            </button>
+                          </div>
+                          <p className="text-xs font-bold mt-2" style={{ color: "#78614E" }}>📲 Story</p>
+                          <div className="space-y-2">
+                            <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.1)", border: `1px solid ${AMBER}20` }}>
+                              <span className="text-xs font-bold" style={{ color: "#78614E" }}>Hook (3 sec): </span>
+                              <span className="text-xs font-semibold" style={{ color: "#292524" }}>{campaign.instagram_post.story_hook}</span>
+                            </div>
+                            {(campaign.instagram_post.story_slides || []).map((slide, i) => (
+                              <div key={i} className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.05)", border: `1px solid ${AMBER}15` }}>
+                                <span className="text-xs font-bold" style={{ color: "#A8967E" }}>Slide {i + 1}: </span>
+                                <span className="text-xs" style={{ color: "#292524" }}>{slide}</span>
+                              </div>
+                            ))}
+                            <div className="rounded-lg px-3 py-2" style={{ backgroundColor: `${GREEN}08`, border: `1px solid ${GREEN}25` }}>
+                              <span className="text-xs font-bold" style={{ color: GREEN }}>CTA: </span>
+                              <span className="text-xs" style={{ color: "#292524" }}>{campaign.instagram_post.story_cta}</span>
+                            </div>
+                          </div>
+                          <button type="button" onClick={() => copyCampaign("story", [campaign.instagram_post.story_hook, ...(campaign.instagram_post.story_slides || []), campaign.instagram_post.story_cta].join("\n---\n"))}
+                            className="flex items-center gap-1 text-xs font-bold"
+                            style={{ color: copiedCampaign === "story" ? GREEN : AMBER }}>
+                            {copiedCampaign === "story" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază Story</>}
+                          </button>
+                        </>
+                      )}
+
+                      {activeCampaignTab === "tiktok" && campaign.tiktok && (
+                        <>
+                          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: `${AMBER}10`, border: `1px solid ${AMBER}30` }}>
+                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>🎣 Hook (primele 3 sec): </span>
+                            <span className="text-xs font-bold" style={{ color: "#292524" }}>{campaign.tiktok.hook}</span>
+                          </div>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📝 Script voiceover</p>
+                          <div className="relative">
+                            <textarea value={campaign.tiktok.script} readOnly rows={6}
+                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                            <button type="button" onClick={() => copyCampaign("tiktok", `HOOK: ${campaign.tiktok.hook}\n\n${campaign.tiktok.script}\n\nCTA: ${campaign.tiktok.cta}`)}
+                              className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
+                              style={{ backgroundColor: copiedCampaign === "tiktok" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "tiktok" ? GREEN : AMBER }}>
+                              {copiedCampaign === "tiktok" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                            </button>
+                          </div>
+                          <div className="flex gap-2">
+                            <div className="flex-1 rounded-lg px-3 py-2" style={{ backgroundColor: `${GREEN}08`, border: `1px solid ${GREEN}25` }}>
+                              <span className="text-xs font-bold" style={{ color: GREEN }}>CTA final: </span>
+                              <span className="text-xs" style={{ color: "#292524" }}>{campaign.tiktok.cta}</span>
+                            </div>
+                          </div>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>Caption + hashtags</p>
+                          <div className="relative">
+                            <textarea value={campaign.tiktok.caption} readOnly rows={2}
+                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                            <button type="button" onClick={() => copyCampaign("tiktok_cap", campaign.tiktok.caption)}
+                              className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
+                              style={{ backgroundColor: copiedCampaign === "tiktok_cap" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "tiktok_cap" ? GREEN : AMBER }}>
+                              {copiedCampaign === "tiktok_cap" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                            </button>
+                          </div>
+                        </>
+                      )}
+
+                      {activeCampaignTab === "landing_page" && campaign.landing_page && (
+                        <>
+                          <div className="space-y-2">
+                            <div className="rounded-xl px-4 py-3 text-center" style={{ background: `linear-gradient(135deg, ${AMBER}10, ${AMBER}05)`, border: `1px solid ${AMBER}25` }}>
+                              <p className="font-bold text-lg" style={{ color: "#292524" }}>{campaign.landing_page.headline}</p>
+                              <p className="text-sm mt-1" style={{ color: "#78614E" }}>{campaign.landing_page.subheadline}</p>
+                            </div>
+                            <p className="text-xs font-bold" style={{ color: "#78614E" }}>✅ Beneficii</p>
+                            <div className="space-y-1">
+                              {(campaign.landing_page.bullets || []).map((b, i) => (
+                                <div key={i} className="flex items-start gap-2 text-sm" style={{ color: "#292524" }}>
+                                  <span style={{ color: GREEN }}>✓</span> {b}
+                                </div>
+                              ))}
+                            </div>
+                            <div className="rounded-xl p-3 text-center" style={{ backgroundColor: `${AMBER}15`, border: `1px solid ${AMBER}30` }}>
+                              <p className="font-bold text-sm" style={{ color: "#1C1814", backgroundColor: AMBER, display: "inline-block", padding: "6px 16px", borderRadius: 8 }}>
+                                {campaign.landing_page.cta_button}
+                              </p>
+                              <p className="text-xs mt-1" style={{ color: "#A8967E" }}>{campaign.landing_page.cta_subtext}</p>
+                            </div>
+                            <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.05)", border: `1px solid ${AMBER}15` }}>
+                              <p className="text-xs font-bold mb-1" style={{ color: "#78614E" }}>Contact block</p>
+                              <p className="text-xs whitespace-pre-wrap" style={{ color: "#292524" }}>{campaign.landing_page.contact_block}</p>
+                            </div>
+                          </div>
+                          <button type="button" onClick={() => copyCampaign("lp", [campaign.landing_page.headline, campaign.landing_page.subheadline, ...(campaign.landing_page.bullets || []).map(b => `✓ ${b}`), campaign.landing_page.cta_button, campaign.landing_page.contact_block].join("\n\n"))}
+                            className="flex items-center gap-1 text-xs font-bold"
+                            style={{ color: copiedCampaign === "lp" ? GREEN : AMBER }}>
+                            {copiedCampaign === "lp" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază tot</>}
+                          </button>
+                        </>
+                      )}
+
+                      {activeCampaignTab === "video_brief" && campaign.video_brief && (
+                        <>
+                          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: `${AMBER}08`, border: `1px solid ${AMBER}20` }}>
+                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>Concept: </span>
+                            <span className="text-xs" style={{ color: "#292524" }}>{campaign.video_brief.concept}</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <span className="text-xs px-2 py-1 rounded-full font-semibold" style={{ backgroundColor: `${AMBER}10`, color: AMBER }}>⏱ {campaign.video_brief.duration}</span>
+                            <span className="text-xs px-2 py-1 rounded-full font-semibold" style={{ backgroundColor: "rgba(245,215,160,0.08)", color: "#78614E" }}>🎵 {campaign.video_brief.music}</span>
+                          </div>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>🎬 Scene</p>
+                          <div className="space-y-2">
+                            {(campaign.video_brief.scenes || []).map((scene, i) => (
+                              <div key={i} className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.05)", border: `1px solid ${AMBER}15` }}>
+                                <span className="text-xs font-bold" style={{ color: AMBER }}>Scenă {i + 1}: </span>
+                                <span className="text-xs" style={{ color: "#292524" }}>{scene}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: `${GREEN}08`, border: `1px solid ${GREEN}25` }}>
+                            <span className="text-xs font-bold" style={{ color: GREEN }}>Caption: </span>
+                            <span className="text-xs" style={{ color: "#292524" }}>{campaign.video_brief.caption}</span>
+                          </div>
+                          <button type="button" onClick={() => copyCampaign("vb", [campaign.video_brief.concept, `Durată: ${campaign.video_brief.duration}`, `Muzică: ${campaign.video_brief.music}`, ...(campaign.video_brief.scenes || []).map((s, i) => `Scenă ${i+1}: ${s}`), `Caption: ${campaign.video_brief.caption}`].join("\n\n"))}
+                            className="flex items-center gap-1 text-xs font-bold"
+                            style={{ color: copiedCampaign === "vb" ? GREEN : AMBER }}>
+                            {copiedCampaign === "vb" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază Brief</>}
+                          </button>
+                        </>
+                      )}
+
+                      {activeCampaignTab === "photo_brief" && campaign.photo_brief && (
+                        <>
+                          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: `${AMBER}08`, border: `1px solid ${AMBER}20` }}>
+                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>Concept: </span>
+                            <span className="text-xs" style={{ color: "#292524" }}>{campaign.photo_brief.concept}</span>
+                          </div>
+                          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.05)", border: `1px solid ${AMBER}15` }}>
+                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>Stil: </span>
+                            <span className="text-xs" style={{ color: "#292524" }}>{campaign.photo_brief.style}</span>
+                          </div>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📷 Fotografii de făcut</p>
+                          <div className="space-y-2">
+                            {(campaign.photo_brief.shots || []).map((shot, i) => (
+                              <div key={i} className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.05)", border: `1px solid ${AMBER}15` }}>
+                                <span className="text-xs font-bold" style={{ color: AMBER }}>Foto {i + 1}: </span>
+                                <span className="text-xs" style={{ color: "#292524" }}>{shot}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="rounded-lg px-3 py-2" style={{ backgroundColor: `${GREEN}08`, border: `1px solid ${GREEN}25` }}>
+                            <span className="text-xs font-bold" style={{ color: GREEN }}>Caption postare: </span>
+                            <span className="text-xs" style={{ color: "#292524" }}>{campaign.photo_brief.caption}</span>
+                          </div>
+                          <button type="button" onClick={() => copyCampaign("pb", [campaign.photo_brief.concept, `Stil: ${campaign.photo_brief.style}`, ...(campaign.photo_brief.shots || []).map((s, i) => `Foto ${i+1}: ${s}`), `Caption: ${campaign.photo_brief.caption}`].join("\n\n"))}
+                            className="flex items-center gap-1 text-xs font-bold"
+                            style={{ color: copiedCampaign === "pb" ? GREEN : AMBER }}>
+                            {copiedCampaign === "pb" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază Brief</>}
+                          </button>
+                        </>
+                      )}
+
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="flex gap-3">
               <button type="button" onClick={() => setStep(4)}
