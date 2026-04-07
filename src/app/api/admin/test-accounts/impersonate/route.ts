@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     type: "magiclink",
     email,
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://markethubpromo.com"}/dashboard`,
+      redirectTo: "https://markethubpromo.com/dashboard",
     },
   });
 
