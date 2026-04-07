@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { canAccessRoute } from "@/lib/plan-features";
 import { Redis } from "@upstash/redis";
-import { Ratelimit } from "@upstash/ratelimit";
 
 // ── Security headers applied to every response ─────────────────────────────
 const SECURITY_HEADERS: Record<string, string> = {
@@ -65,56 +64,32 @@ async function loadPlanFeaturesOverrides(
 }
 
 // ── Global rate limiter backed by Upstash Redis ─────────────────────────────
-// Counters are shared across all Vercel worker instances — truly global.
-// Falls back to allow if Redis is unavailable (fail-open to avoid outages).
+// Uses INCR + EXPIRE directly — no @upstash/ratelimit abstraction needed.
+// Counters are shared across all Vercel instances — truly global.
+// Fails open if Redis is unavailable (no outage risk).
 let _redis: Redis | null = null;
 function getRedis(): Redis | null {
-  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
-  if (!_redis) {
-    _redis = new Redis({
-      url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN,
-    });
-  }
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  if (!_redis) _redis = new Redis({ url, token });
   return _redis;
 }
 
-// Two limiters: strict for auth endpoints, lenient for general API
-let _authLimiter: Ratelimit | null = null;
-let _apiLimiter: Ratelimit | null = null;
-
-function getAuthLimiter(): Ratelimit | null {
-  const redis = getRedis();
-  if (!redis) return null;
-  if (!_authLimiter) {
-    _authLimiter = new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(10, "60 s"),
-      prefix: "rl:auth",
-    });
-  }
-  return _authLimiter;
-}
-
-function getApiLimiter(): Ratelimit | null {
-  const redis = getRedis();
-  if (!redis) return null;
-  if (!_apiLimiter) {
-    _apiLimiter = new Ratelimit({
-      redis,
-      limiter: Ratelimit.slidingWindow(120, "60 s"),
-      prefix: "rl:api",
-    });
-  }
-  return _apiLimiter;
-}
+// Auth: 10 req/min | API: 120 req/min
+const LIMITS = { auth: 10, api: 120 } as const;
 
 async function checkRateLimit(ip: string, type: "auth" | "api"): Promise<boolean> {
+  const redis = getRedis();
+  if (!redis) return true; // Redis not configured — fail-open
+  const key = `rl:${type}:${ip}`;
+  const limit = LIMITS[type];
   try {
-    const limiter = type === "auth" ? getAuthLimiter() : getApiLimiter();
-    if (!limiter) return true; // Redis not configured — fail-open
-    const { success } = await limiter.limit(ip);
-    return success;
+    const pipe = redis.pipeline();
+    pipe.incr(key);
+    pipe.expire(key, 60, "NX"); // set TTL only on first request
+    const [count] = await pipe.exec<[number, number]>();
+    return count <= limit;
   } catch {
     return true; // Redis unavailable — fail-open
   }
