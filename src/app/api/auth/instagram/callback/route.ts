@@ -10,6 +10,8 @@ export async function GET(req: NextRequest) {
   const error = searchParams.get("error");
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
+  const redirectUri = process.env.INSTAGRAM_REDIRECT_URI
+    || `${appUrl}/api/auth/instagram/callback`;
 
   if (error || !code || !userId) {
     return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=${error || "missing_params"}`);
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
       new URLSearchParams({
         client_id: process.env.META_APP_ID!,
         client_secret: process.env.META_APP_SECRET!,
-        redirect_uri: `${appUrl}/api/auth/instagram/callback`,
+        redirect_uri: redirectUri,
         code,
       })
     );
