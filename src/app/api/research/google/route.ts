@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       queries: query,
       maxPagesPerQuery: Math.min(pages, 3),
       resultsPerPage: 10,
-      countryCode: country.toUpperCase(),
+      countryCode: country.toLowerCase(),
       languageCode: language,
       includeUnfilteredResults: false,
       saveHtml: false,

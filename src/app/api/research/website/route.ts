@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     debugLog: false,
     saveHtml: false,
     saveMarkdown: true,
-  }, { timeoutSec: 120, retries: 0 });
+  }, { timeoutSec: 120, memorySec: 2048, retries: 0 });
 
   if (!result.ok) {
     return NextResponse.json({ error: result.error, service: "apify", degraded: true }, { status: 503 });
