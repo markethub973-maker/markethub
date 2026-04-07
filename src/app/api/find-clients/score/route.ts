@@ -63,7 +63,7 @@ Platform: ${r.platform || ""}
 
   try {
     const text = result.data.content[0].type === "text" ? result.data.content[0].text : "";
-    const jsonMatch = text.match(/\[\s\S]*\]/);
+    const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (!jsonMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
     return NextResponse.json({ scored: JSON.parse(jsonMatch[0]) });
   } catch (err: any) {
