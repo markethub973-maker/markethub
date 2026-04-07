@@ -739,6 +739,14 @@ export default function LeadFinderPage() {
                   <RefreshCw className="w-4 h-4" /> Re-caută
                 </button>
               )}
+              {leads.length > 0 && !searching && !scoring && (
+                <button type="button"
+                  onClick={() => handleGenerateMessage(leads.find(l => l.label === "hot") || leads[0])}
+                  className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm ml-auto"
+                  style={{ backgroundColor: AMBER, color: "#fff" }}>
+                  <MessageSquare className="w-4 h-4" /> Continuă la Outreach <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         )}
