@@ -66,7 +66,28 @@ Write personalized outreach messages for this specific lead.`;
     const text = result.data.content[0].type === "text" ? result.data.content[0].text : "";
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
-    return NextResponse.json(JSON.parse(jsonMatch[0]));
+    // Sanitize unescaped control characters inside JSON string values.
+    // Walk char-by-char: track whether we're inside a JSON string,
+    // and escape any literal newline/tab that appears there.
+    const raw = jsonMatch[0];
+    let sanitized = "";
+    let inString = false;
+    for (let i = 0; i < raw.length; i++) {
+      const ch = raw[i];
+      if (ch === '"' && (i === 0 || raw[i - 1] !== "\\")) {
+        inString = !inString;
+        sanitized += ch;
+      } else if (inString && ch === "\n") {
+        sanitized += "\\n";
+      } else if (inString && ch === "\r") {
+        sanitized += "\\r";
+      } else if (inString && ch === "\t") {
+        sanitized += "\\t";
+      } else {
+        sanitized += ch;
+      }
+    }
+    return NextResponse.json(JSON.parse(sanitized));
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
