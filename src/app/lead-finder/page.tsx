@@ -6,6 +6,7 @@ import MarketingAdvisor from "@/components/lead-finder/MarketingAdvisor";
 import StepGuide from "@/components/lead-finder/StepGuide";
 import CostMeter from "@/components/lead-finder/CostMeter";
 import AdjacentServicesPanel from "@/components/lead-finder/AdjacentServicesPanel";
+import CampaignStudio from "@/components/lead-finder/CampaignStudio";
 import {
   Wand2, Search, Users, Globe, Zap, ArrowRight, ArrowLeft,
   Check, X, Plus, Loader2, Star, Flame, Snowflake, Copy,
@@ -1411,6 +1412,20 @@ export default function LeadFinderPage() {
             </div>
           </div>
         )}
+
+      {/* ── Campaign Studio — central AI agent chat frame ─────────────────── */}
+      <CampaignStudio
+        sessionId={sessionId}
+        step={step}
+        offerType={offerType}
+        offerText={offerText}
+        audienceType={audienceType}
+        location={location}
+        budgetRange={budgetRange}
+        offerSummary={suggestion?.offer_summary}
+        activeLead={selectedLead ?? undefined}
+        campaignDone={!!campaign}
+      />
 
       {/* ── Cost Meter (visible to client) ────────────────────────────────── */}
       <CostMeter sessionId={sessionId} refreshTrigger={costRefresh} campaignValue={parseFloat(campaignValue) || 0} campaignValueCurrency={campaignValueCurrency} />
