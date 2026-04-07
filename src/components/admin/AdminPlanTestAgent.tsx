@@ -156,7 +156,7 @@ export default function AdminPlanTestAgent() {
           {/* Account Status Row */}
           <div className="mb-5">
             <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">Conturi de test în baza de date</p>
-            <div className="grid grid-cols-3 gap-2 md:grid-cols-6">
+            <div className="grid grid-cols-3 gap-2 md:grid-cols-5">
               {PLAN_ORDER.map(planId => {
                 const status = matrix?.accountStatus[planId];
                 return (
