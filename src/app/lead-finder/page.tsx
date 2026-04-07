@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import MarketingAdvisor from "@/components/lead-finder/MarketingAdvisor";
 import StepGuide from "@/components/lead-finder/StepGuide";
 import CostMeter from "@/components/lead-finder/CostMeter";
+import AdjacentServicesPanel from "@/components/lead-finder/AdjacentServicesPanel";
 import {
   Wand2, Search, Users, Globe, Zap, ArrowRight, ArrowLeft,
   Check, X, Plus, Loader2, Star, Flame, Snowflake, Copy,
@@ -1413,6 +1414,9 @@ export default function LeadFinderPage() {
 
       {/* ── Cost Meter (visible to client) ────────────────────────────────── */}
       <CostMeter sessionId={sessionId} refreshTrigger={costRefresh} campaignValue={parseFloat(campaignValue) || 0} campaignValueCurrency={campaignValueCurrency} />
+
+      {/* ── Adjacent Services — adaptive per campaign type ────────────────── */}
+      <AdjacentServicesPanel offerType={offerType} />
 
       </div>
     </div>
