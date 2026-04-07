@@ -70,8 +70,8 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
     team_members: 1,
     client_accounts: 1,
     history_days: 7,
-    has_calendar: true,
-    has_tiktok: true,
+    has_calendar: false,
+    has_tiktok: true,    // ✓ TikTok basic (50 calls/day limit)
     has_api_access: false,
     has_white_label: false,
     has_priority_support: false,

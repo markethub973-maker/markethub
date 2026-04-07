@@ -21,10 +21,12 @@ const plans = [
       "1,000 tokens",
       "1 social account",
       "YouTube analytics",
+      "TikTok analytics (50 req/day)",
+      "Instagram analytics (50 req/day)",
       "Basic dashboard",
       "1 competitor brand",
     ],
-    missing: ["TikTok analytics", "Content calendar", "Instagram analytics", "AI Hub"],
+    missing: ["Content calendar", "AI Hub", "Leads CRM", "API access"],
   },
   {
     id: "lite",

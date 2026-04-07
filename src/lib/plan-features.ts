@@ -48,7 +48,7 @@ export const PLAN_COLORS: Record<PlanId, string> = {
 export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
   free_test: {
     has_calendar:       false,
-    has_tiktok:         false,
+    has_tiktok:         true,   // ✓ TikTok basic access in free trial (5 days, limited calls)
     has_api_access:     false,
     has_white_label:    false,
     has_priority_support: false,
@@ -145,7 +145,7 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     description: "Schedule posts, get best-time recommendations, and manage first comments for all your platforms.",
   },
   "/tiktok": {
-    minPlan:    "lite",
+    minPlan:    "free_test",
     featureKey: "has_tiktok",
     label:      "TikTok Analytics",
     description: "Track TikTok trends, hashtags, and competitor videos to grow your presence.",
