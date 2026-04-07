@@ -165,6 +165,10 @@ function checkAdminTunnel(request: NextRequest): boolean {
   const sessionCookie = request.cookies.get("admin_session_token")?.value ?? "";
   if (sessionCookie) return true; // let isAdminAuthorized handle the actual check
 
+  // Bearer token in Authorization header → allow (for API clients / test agents)
+  const bearer = request.headers.get("authorization") ?? "";
+  if (bearer.startsWith("Bearer ")) return true;
+
   // Check ?t=<secret> query param
   const t = request.nextUrl.searchParams.get("t") ?? "";
   if (!t) return false;
