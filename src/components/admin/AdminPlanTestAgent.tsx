@@ -153,47 +153,7 @@ export default function AdminPlanTestAgent() {
       {/* ── Matrix Tab ──────────────────────────────────────────────────────── */}
       {activeTab === "matrix" && (
         <div>
-          {/* Account Status Row */}
-          <div className="mb-5">
-            <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wide">Conturi de test în baza de date</p>
-            <div className="grid grid-cols-3 gap-2 md:grid-cols-5">
-              {PLAN_ORDER.map(planId => {
-                const status = matrix?.accountStatus[planId];
-                return (
-                  <div
-                    key={planId}
-                    className="rounded-xl p-2.5 text-center"
-                    style={{
-                      background: status?.exists && status?.planMatch
-                        ? `${PLAN_COLORS[planId]}15`
-                        : "rgba(255,255,255,0.03)",
-                      border: `1px solid ${status?.exists && status?.planMatch
-                        ? `${PLAN_COLORS[planId]}30`
-                        : "rgba(255,255,255,0.08)"}`,
-                    }}
-                  >
-                    <p className="text-xs font-medium mb-1" style={{ color: PLAN_COLORS[planId] }}>
-                      {PLAN_LABELS[planId]}
-                    </p>
-                    {loadingMatrix ? (
-                      <div className="h-4 bg-white/5 rounded animate-pulse" />
-                    ) : status?.exists && status?.planMatch ? (
-                      <CheckCircle className="w-4 h-4 mx-auto text-green-400" />
-                    ) : status?.exists ? (
-                      <div className="flex items-center justify-center gap-1">
-                        <AlertCircle className="w-3.5 h-3.5 text-yellow-400" />
-                        <span className="text-xs text-yellow-400">{status.dbPlan ?? "?"}</span>
-                      </div>
-                    ) : (
-                      <XCircle className="w-4 h-4 mx-auto text-red-400" />
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Access Matrix */}
+          {/* Access Matrix — status row is inside the table so columns align perfectly */}
           {loadingMatrix ? (
             <div className="h-48 flex items-center justify-center">
               <RefreshCw className="w-6 h-6 text-gray-500 animate-spin" />
@@ -202,16 +162,53 @@ export default function AdminPlanTestAgent() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
+                  {/* Row 1: Plan names */}
                   <tr>
-                    <th className="text-left text-xs text-gray-500 font-medium pb-3 pr-4 whitespace-nowrap">Feature / Rută</th>
+                    <th className="text-left text-xs text-gray-500 font-medium pb-2 pr-4 whitespace-nowrap">Feature / Rută</th>
                     {PLAN_ORDER.map(planId => (
-                      <th key={planId} className="text-center pb-3 px-2 whitespace-nowrap">
+                      <th key={planId} className="text-center pb-2 px-2 whitespace-nowrap">
                         <span className="text-xs font-semibold" style={{ color: PLAN_COLORS[planId] }}>
                           {PLAN_LABELS[planId]}
                         </span>
                       </th>
                     ))}
                   </tr>
+                  {/* Row 2: Account status — aligned with table columns */}
+                  <tr>
+                    <td className="pr-4 pb-4">
+                      <span className="text-xs text-gray-600 uppercase tracking-wide font-medium">Conturi test</span>
+                    </td>
+                    {PLAN_ORDER.map(planId => {
+                      const status = matrix?.accountStatus[planId];
+                      return (
+                        <td key={planId} className="text-center pb-4 px-2">
+                          <div
+                            className="rounded-lg py-1.5 px-1 mx-auto"
+                            style={{
+                              background: status?.exists && status?.planMatch
+                                ? `${PLAN_COLORS[planId]}15`
+                                : "rgba(255,255,255,0.03)",
+                              border: `1px solid ${status?.exists && status?.planMatch
+                                ? `${PLAN_COLORS[planId]}30`
+                                : "rgba(255,255,255,0.08)"}`,
+                            }}
+                          >
+                            {loadingMatrix ? (
+                              <div className="h-4 bg-white/5 rounded animate-pulse" />
+                            ) : status?.exists && status?.planMatch ? (
+                              <CheckCircle className="w-4 h-4 mx-auto text-green-400" />
+                            ) : status?.exists ? (
+                              <AlertCircle className="w-4 h-4 mx-auto text-yellow-400" />
+                            ) : (
+                              <XCircle className="w-4 h-4 mx-auto text-red-400" />
+                            )}
+                          </div>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                  {/* Divider */}
+                  <tr><td colSpan={PLAN_ORDER.length + 1} className="pb-2"><div className="border-t border-white/10" /></td></tr>
                 </thead>
                 <tbody className="divide-y divide-white/5">
                   {matrix.routes.map(({ route, label, minPlan }) => (
