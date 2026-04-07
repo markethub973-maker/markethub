@@ -1,386 +1,403 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Header from "@/components/layout/Header";
-import { Check, X, Zap, Settings } from "lucide-react";
+import { Check, X, Zap, ArrowRight, Menu } from "lucide-react";
 import Link from "next/link";
-import { TOKEN_PLANS } from "@/lib/token-plan-config";
 
 const FREE_PLANS = ["free_test", "expired"];
 
+const plans = [
+  {
+    id: "free_test",
+    name: "Free Trial",
+    duration: "7 Days",
+    price: "$0",
+    priceNum: 0,
+    tokens: "1,000",
+    description: "Test the platform for free",
+    cta: "Start Free",
+    popular: false,
+    features: [
+      "1,000 monthly tokens",
+      "1 social account",
+      "YouTube analytics",
+      "Basic dashboard",
+    ],
+    missing: ["Token recharge", "TikTok access", "API access", "Priority support"],
+  },
+  {
+    id: "starter",
+    name: "Starter",
+    duration: "/ month",
+    price: "$9",
+    priceNum: 9,
+    tokens: "10,000",
+    description: "For creators & small teams",
+    cta: "Get Started",
+    popular: false,
+    features: [
+      "10,000 monthly tokens",
+      "2 social accounts",
+      "TikTok analytics",
+      "Content calendar",
+      "Ads library access",
+      "Email reports",
+    ],
+    missing: ["API access", "White label"],
+  },
+  {
+    id: "lite",
+    name: "Lite",
+    duration: "/ month",
+    price: "$19",
+    priceNum: 19,
+    tokens: "50,000",
+    description: "For growing businesses",
+    cta: "Get Started",
+    popular: true,
+    features: [
+      "50,000 monthly tokens",
+      "4 social accounts",
+      "Everything in Starter",
+      "Link in Bio pages",
+      "Hashtag manager",
+      "Campaigns",
+      "Multi-account clients",
+    ],
+    missing: ["Leads CRM", "API access"],
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    duration: "/ month",
+    price: "$39",
+    priceNum: 39,
+    tokens: "150,000",
+    description: "For agencies & professionals",
+    cta: "Get Pro",
+    popular: false,
+    features: [
+      "150,000 monthly tokens",
+      "8 social accounts",
+      "Everything in Lite",
+      "AI Hub agents",
+      "Lead finder & CRM",
+      "2 team members",
+      "15 competitor tracking",
+      "Priority support",
+    ],
+    missing: ["White label", "SLA uptime"],
+  },
+  {
+    id: "business",
+    name: "Business",
+    duration: "/ month",
+    price: "$99",
+    priceNum: 99,
+    tokens: "500,000",
+    description: "For digital marketing agencies",
+    cta: "Get Business",
+    popular: false,
+    features: [
+      "500,000 monthly tokens",
+      "Everything in Pro",
+      "5 team members",
+      "20 client accounts",
+      "API access",
+      "99.5% SLA uptime",
+    ],
+    missing: ["White label"],
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    duration: "/ month",
+    price: "$249",
+    priceNum: 249,
+    tokens: "1.5M",
+    description: "For large-scale operations",
+    cta: "Contact Sales",
+    popular: false,
+    features: [
+      "1,500,000 monthly tokens",
+      "Everything in Business",
+      "Unlimited team members",
+      "White label",
+      "API access",
+      "99.9% SLA uptime",
+    ],
+    missing: [],
+  },
+];
+
 export default function PricingPage() {
-  const [loading, setLoading] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const isLoggedIn = currentPlan !== null;
 
   useEffect(() => {
     fetch("/api/billing")
       .then((r) => r.json())
-      .then((d) => setCurrentPlan(d.plan ?? null))
-      .catch(() => {});
+      .then((d) => setCurrentPlan(d.plan ?? "guest"))
+      .catch(() => setCurrentPlan("guest"));
   }, []);
 
-  const plans = [
-    {
-      id: "free_test",
-      name: "Free Trial",
-      duration: "7 Days",
-      price: "$0",
-      tokens: "1,000",
-      description: "Test the platform for free",
-      cta: "Start Free Trial",
-      popular: false,
-      features: [
-        { name: "Monthly Tokens", value: "1,000", included: true },
-        { name: "Social Accounts", value: "1", included: true },
-        { name: "Can Recharge", included: false },
-        { name: "API Access", included: false },
-        { name: "Priority Support", included: false },
-        { name: "White Label", included: false },
-      ],
-    },
-    {
-      id: "starter",
-      name: "Starter",
-      duration: "Monthly",
-      price: "$9",
-      tokens: "10,000",
-      description: "For creators & small teams",
-      cta: "Subscribe Now",
-      popular: false,
-      features: [
-        { name: "Monthly Tokens", value: "10,000", included: true },
-        { name: "Extra Tokens", value: "$1.00/1K", included: true },
-        { name: "Social Accounts", value: "2", included: true },
-        { name: "TikTok Access", value: "10 videos/month", included: true },
-        { name: "API Access", included: false },
-        { name: "Priority Support", included: false },
-      ],
-    },
-    {
-      id: "lite",
-      name: "Lite",
-      duration: "Monthly",
-      price: "$19",
-      tokens: "50,000",
-      description: "For growing businesses",
-      cta: "Subscribe Now",
-      popular: true,
-      features: [
-        { name: "Monthly Tokens", value: "50,000", included: true },
-        { name: "Extra Tokens", value: "$0.90/1K", included: true },
-        { name: "Social Accounts", value: "4", included: true },
-        { name: "TikTok Access", included: true },
-        { name: "Email Reports", included: true },
-        { name: "Calendar", included: true },
-      ],
-    },
-    {
-      id: "pro",
-      name: "Pro",
-      duration: "Monthly",
-      price: "$39",
-      tokens: "150,000",
-      description: "For agencies & professionals",
-      cta: "Subscribe Now",
-      popular: false,
-      features: [
-        { name: "Monthly Tokens", value: "150,000", included: true },
-        { name: "Extra Tokens", value: "$0.80/1K", included: true },
-        { name: "Social Accounts", value: "8", included: true },
-        { name: "Team Members", value: "2", included: true },
-        { name: "Competitor Tracking", value: "15", included: true },
-        { name: "Priority Support", included: true },
-      ],
-    },
-    {
-      id: "business",
-      name: "Business",
-      duration: "Monthly",
-      price: "$99",
-      tokens: "500,000",
-      description: "For digital marketing agencies",
-      cta: "Subscribe Now",
-      popular: false,
-      features: [
-        { name: "Monthly Tokens", value: "500,000", included: true },
-        { name: "Extra Tokens", value: "$0.70/1K", included: true },
-        { name: "Team Members", value: "5", included: true },
-        { name: "Client Accounts", value: "20", included: true },
-        { name: "API Access", included: true },
-        { name: "SLA Uptime", value: "99.5%", included: true },
-      ],
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise",
-      duration: "Monthly",
-      price: "$249",
-      tokens: "1.5M",
-      description: "For large-scale operations",
-      cta: "Contact Sales",
-      popular: false,
-      features: [
-        { name: "Monthly Tokens", value: "1,500,000", included: true },
-        { name: "Extra Tokens", value: "$0.60/1K", included: true },
-        { name: "Team Members", value: "Unlimited", included: true },
-        { name: "API Access", included: true },
-        { name: "White Label", included: true },
-        { name: "SLA Uptime", value: "99.9%", included: true },
-      ],
-    },
-  ];
-
-  const isPaid = currentPlan && !FREE_PLANS.includes(currentPlan);
-
-  const handleUpgrade = async (planId: string) => {
+  const handleCta = async (planId: string) => {
     if (planId === "free_test") {
       window.location.href = "/register";
       return;
     }
-
+    if (planId === "enterprise") {
+      window.location.href = "mailto:markethub973@gmail.com?subject=Enterprise Plan";
+      return;
+    }
+    if (!isLoggedIn || currentPlan === "guest") {
+      window.location.href = `/register?plan=${planId}`;
+      return;
+    }
     setLoading(true);
     try {
-      const response = await fetch("/api/stripe/checkout", {
+      const res = await fetch("/api/stripe/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: planId }),
       });
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error("Upgrade error:", error);
-      alert("Error processing upgrade. Please try again.");
+      const data = await res.json();
+      if (data.url) window.location.href = data.url;
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <Header title="Pricing Plans" subtitle="Token-based pricing: Pay only for what you use" />
-      <div className="p-6 space-y-12">
+    <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
 
-        {/* Manage subscription banner for paid users */}
-        {isPaid && (
-          <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm" style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)" }}>
-            <Settings className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B" }} />
-            <span style={{ color: "#78614E" }}>
-              You're on the <strong style={{ color: "#292524" }}>{currentPlan!.charAt(0).toUpperCase() + currentPlan!.slice(1)}</strong> plan.{" "}
-              <Link href="/dashboard/billing" className="font-semibold underline" style={{ color: "#F59E0B" }}>
-                Manage subscription
-              </Link>
-            </span>
-          </div>
-        )}
-
-        {/* Info Section */}
-        <div className="rounded-xl p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200">
-          <div className="flex items-start gap-3">
-            <Zap className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold mb-3" style={{ color: "#1E40AF" }}>
-                How Token Pricing Works
-              </h3>
-              <p className="text-sm" style={{ color: "#1E3A8A" }}>
-                Each plan includes monthly tokens that you can use for AI features (captions, analysis, reports, agents).
-                Need more? Buy additional tokens at discounted rates. Extra tokens carry over — no unused credits lost!
-              </p>
-              <div className="mt-3 grid grid-cols-2 gap-4 text-xs">
-                <div>
-                  <span style={{ color: "#1E40AF" }} className="font-semibold">1 Caption:</span>
-                  <span style={{ color: "#1E3A8A" }}> ~800 tokens</span>
-                </div>
-                <div>
-                  <span style={{ color: "#1E40AF" }} className="font-semibold">1 Analysis:</span>
-                  <span style={{ color: "#1E3A8A" }}> ~2,000 tokens</span>
-                </div>
-                <div>
-                  <span style={{ color: "#1E40AF" }} className="font-semibold">1 PDF Report:</span>
-                  <span style={{ color: "#1E3A8A" }}> ~5,000 tokens</span>
-                </div>
-                <div>
-                  <span style={{ color: "#1E40AF" }} className="font-semibold">Agent Chat:</span>
-                  <span style={{ color: "#1E3A8A" }}> ~10,000 tokens</span>
-                </div>
-              </div>
+      {/* Navbar */}
+      <nav className="sticky top-0 z-50 border-b" style={{ backgroundColor: "#1C1814", borderColor: "rgba(245,215,160,0.1)" }}>
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+              <Zap className="w-4 h-4 text-white" />
             </div>
+            <span className="font-bold text-lg" style={{ color: "#FFF8F0" }}>MarketHub Pro</span>
+          </Link>
+
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-6">
+            {isLoggedIn && currentPlan !== "guest" ? (
+              <>
+                <Link href="/" className="text-sm font-medium" style={{ color: "#A8967E" }}>Dashboard</Link>
+                <Link href="/dashboard/billing" className="text-sm font-medium" style={{ color: "#A8967E" }}>Billing</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-sm font-medium" style={{ color: "#A8967E" }}>Sign in</Link>
+                <Link href="/register" className="px-4 py-2 rounded-lg text-sm font-bold" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                  Start free
+                </Link>
+              </>
+            )}
           </div>
+
+          {/* Mobile menu button */}
+          <button type="button" aria-label="Toggle menu" className="md:hidden p-2" style={{ color: "#A8967E" }} onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <Menu size={22} />
+          </button>
         </div>
 
-        {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t px-4 py-4 space-y-3" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
+            {isLoggedIn && currentPlan !== "guest" ? (
+              <>
+                <Link href="/" className="block text-sm py-2" style={{ color: "#A8967E" }}>Dashboard</Link>
+                <Link href="/dashboard/billing" className="block text-sm py-2" style={{ color: "#A8967E" }}>Billing</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="block text-sm py-2" style={{ color: "#A8967E" }}>Sign in</Link>
+                <Link href="/register" className="block w-full text-center py-3 rounded-xl text-sm font-bold" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                  Start free
+                </Link>
+              </>
+            )}
+          </div>
+        )}
+      </nav>
+
+      {/* Hero */}
+      <div className="max-w-6xl mx-auto px-4 pt-14 pb-10 text-center">
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.3)" }}>
+          <Zap className="w-3 h-3" /> Token-based pricing — no waste
+        </div>
+        <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 leading-tight" style={{ color: "#1C1814" }}>
+          Simple, transparent<br className="hidden sm:block" /> pricing
+        </h1>
+        <p className="text-lg max-w-xl mx-auto" style={{ color: "#78614E" }}>
+          Pay only for what you use. Tokens carry over — no unused credits lost.
+        </p>
+      </div>
+
+      {/* Plans grid */}
+      <div className="max-w-6xl mx-auto px-4 pb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {plans.map((plan) => {
             const isCurrent = plan.id === currentPlan;
             return (
-            <div
-              key={plan.id}
-              className={`rounded-2xl p-8 transition-all ${
-                plan.popular && !isCurrent
-                  ? "ring-2 ring-amber-400 transform lg:scale-105"
-                  : isCurrent
-                  ? "ring-2 ring-green-400"
-                  : "border border-amber-200"
-              }`}
-              style={{
-                backgroundColor: "#FFFCF7",
-                boxShadow: plan.popular ? "0 10px 30px rgba(245,158,11,0.2)" : "0 1px 3px rgba(120,97,78,0.08)",
-              }}
-            >
-              {isCurrent ? (
-                <div className="mb-4">
-                  <span
-                    className="text-xs font-bold px-3 py-1 rounded-full"
-                    style={{ backgroundColor: "rgba(34,197,94,0.12)", color: "#16a34a" }}
-                  >
-                    Current Plan
-                  </span>
-                </div>
-              ) : plan.popular && (
-                <div className="mb-4">
-                  <span
-                    className="text-xs font-bold px-3 py-1 rounded-full"
-                    style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#F59E0B" }}
-                  >
-                    Most Popular
-                  </span>
-                </div>
-              )}
-
-              <h3 className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>
-                {plan.name}
-              </h3>
-              <p className="text-sm mb-4" style={{ color: "#A8967E" }}>
-                {plan.duration}
-              </p>
-
-              <div className="mb-6">
-                <p className="text-4xl font-bold mb-1" style={{ color: "#F59E0B" }}>
-                  {plan.price}
-                </p>
-                <div className="flex items-baseline gap-2">
-                  <Zap className="w-4 h-4 text-blue-600" />
-                  <p className="text-sm font-semibold" style={{ color: "#1E40AF" }}>
-                    {plan.tokens} tokens/month
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-sm mb-6" style={{ color: "#78614E" }}>
-                {plan.description}
-              </p>
-
-              <button
-                type="button"
-                onClick={() => !isCurrent && handleUpgrade(plan.id)}
-                disabled={loading || isCurrent}
-                className="w-full py-3 rounded-lg font-semibold text-sm mb-8 transition-all"
-                style={isCurrent ? {
-                  backgroundColor: "rgba(34,197,94,0.1)",
-                  color: "#16a34a",
-                  cursor: "default",
-                } : {
-                  backgroundColor: plan.popular ? "#F59E0B" : "rgba(245,158,11,0.1)",
-                  color: plan.popular ? "#1C1814" : "#F59E0B",
-                  opacity: loading ? 0.7 : 1,
+              <div
+                key={plan.id}
+                className={`relative rounded-2xl p-6 flex flex-col ${plan.popular ? "ring-2 ring-amber-400" : "border"}`}
+                style={{
+                  backgroundColor: plan.popular ? "#FFFBF0" : "#FFFFFF",
+                  borderColor: "rgba(245,215,160,0.4)",
+                  boxShadow: plan.popular ? "0 8px 32px rgba(245,158,11,0.15)" : "0 1px 4px rgba(0,0,0,0.06)",
                 }}
               >
-                {isCurrent ? "Current Plan" : loading ? "Processing..." : isPaid ? "Switch to " + plan.name : plan.cta}
-              </button>
-
-              <div className="space-y-3">
-                {plan.features.map((feature) => (
-                  <div key={feature.name} className="flex items-start gap-3">
-                    {feature.included ? (
-                      <Check className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#10B981" }} />
-                    ) : (
-                      <X className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-300" />
-                    )}
-                    <div className="flex-1">
-                      <p className="text-sm" style={{ color: feature.included ? "#292524" : "#C4AA8A" }}>
-                        {feature.name}
-                        {typeof feature.value === "string" ? (
-                          <span className="font-semibold ml-2">{feature.value}</span>
-                        ) : null}
-                      </p>
-                    </div>
+                {plan.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                      Most Popular
+                    </span>
                   </div>
-                ))}
+                )}
+                {isCurrent && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ backgroundColor: "#10B981", color: "#fff" }}>
+                      Current Plan
+                    </span>
+                  </div>
+                )}
+
+                <div className="mb-5">
+                  <h3 className="text-xl font-bold mb-1" style={{ color: "#1C1814" }}>{plan.name}</h3>
+                  <p className="text-sm mb-4" style={{ color: "#A8967E" }}>{plan.description}</p>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl font-extrabold" style={{ color: "#F59E0B" }}>{plan.price}</span>
+                    <span className="text-sm" style={{ color: "#A8967E" }}>{plan.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-1 mt-1">
+                    <Zap className="w-3.5 h-3.5 text-blue-500" />
+                    <span className="text-xs font-semibold text-blue-600">{plan.tokens} tokens/month</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => !isCurrent && handleCta(plan.id)}
+                  disabled={loading || isCurrent}
+                  className="w-full py-3 rounded-xl text-sm font-bold mb-6 flex items-center justify-center gap-2 transition-all"
+                  style={isCurrent ? {
+                    backgroundColor: "rgba(16,185,129,0.1)",
+                    color: "#10B981",
+                    cursor: "default",
+                  } : plan.popular ? {
+                    backgroundColor: "#F59E0B",
+                    color: "#1C1814",
+                  } : {
+                    backgroundColor: "rgba(245,158,11,0.1)",
+                    color: "#F59E0B",
+                  }}
+                >
+                  {isCurrent ? "Current Plan" : plan.cta}
+                  {!isCurrent && <ArrowRight className="w-4 h-4" />}
+                </button>
+
+                <div className="space-y-2.5 flex-1">
+                  {plan.features.map((f) => (
+                    <div key={f} className="flex items-start gap-2.5">
+                      <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#10B981" }} />
+                      <span className="text-sm" style={{ color: "#292524" }}>{f}</span>
+                    </div>
+                  ))}
+                  {plan.missing.map((f) => (
+                    <div key={f} className="flex items-start gap-2.5 opacity-40">
+                      <X className="w-4 h-4 flex-shrink-0 mt-0.5 text-gray-400" />
+                      <span className="text-sm text-gray-400">{f}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
+            );
           })}
         </div>
+      </div>
 
-        {/* Token Recharge Section */}
-        <div className="rounded-xl p-8" style={{ backgroundColor: "#F0F9FF", border: "1px solid rgba(59,130,246,0.25)" }}>
-          <h3 className="text-xl font-bold mb-6" style={{ color: "#1E40AF" }}>
-            💰 Token Recharge Packs
-          </h3>
-          <p className="text-sm mb-6" style={{ color: "#1E3A8A" }}>
-            Ran out of tokens? Purchase additional tokens at discounted rates. Bonus tokens available on larger purchases!
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Token info */}
+      <div className="max-w-6xl mx-auto px-4 pb-16">
+        <div className="rounded-2xl p-6 sm:p-8" style={{ background: "linear-gradient(135deg, #EFF6FF, #F5F3FF)", border: "1px solid rgba(99,102,241,0.2)" }}>
+          <div className="flex items-center gap-2 mb-4">
+            <Zap className="w-5 h-5 text-blue-600" />
+            <h3 className="font-bold text-lg" style={{ color: "#1E40AF" }}>How tokens work</h3>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { tokens: "10K", price: "$15", bonus: "No bonus" },
-              { tokens: "25K", price: "$35", bonus: "+10% bonus" },
-              { tokens: "50K", price: "$65", bonus: "+15% bonus" },
-              { tokens: "100K", price: "$185", bonus: "+20% bonus" },
-            ].map((pack) => (
-              <div key={pack.tokens} className="rounded-lg p-4 border border-blue-200 bg-white">
-                <p className="font-bold text-blue-600 mb-1">{pack.tokens} Tokens</p>
-                <p className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>{pack.price}</p>
-                <p className="text-xs" style={{ color: "#10B981" }}>{pack.bonus}</p>
+              { label: "1 Caption", cost: "~800 tokens" },
+              { label: "1 Analysis", cost: "~2,000 tokens" },
+              { label: "1 PDF Report", cost: "~5,000 tokens" },
+              { label: "Agent Chat", cost: "~10,000 tokens" },
+            ].map((item) => (
+              <div key={item.label} className="bg-white rounded-xl p-3 text-center" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+                <p className="text-xs font-semibold mb-1" style={{ color: "#1E40AF" }}>{item.label}</p>
+                <p className="text-sm font-bold" style={{ color: "#292524" }}>{item.cost}</p>
               </div>
             ))}
           </div>
+          <p className="text-sm mt-4" style={{ color: "#3730A3" }}>
+            Tokens never expire. Buy extra packs at any time — from $15 for 10K tokens.
+          </p>
         </div>
+      </div>
 
-        {/* FAQ Section */}
-        <div className="rounded-xl p-8" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
-          <h3 className="text-xl font-bold mb-6" style={{ color: "#292524" }}>
-            Frequently Asked Questions
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold mb-2" style={{ color: "#292524" }}>
-                Do unused tokens carry over?
-              </h4>
-              <p className="text-sm" style={{ color: "#78614E" }}>
-                Yes! All tokens purchased in a month are credited to your account and valid until used. No token expiration.
-              </p>
+      {/* FAQ */}
+      <div className="max-w-4xl mx-auto px-4 pb-20">
+        <h2 className="text-2xl font-bold text-center mb-8" style={{ color: "#1C1814" }}>Frequently asked questions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {[
+            { q: "Do unused tokens carry over?", a: "Yes! All tokens are credited to your account and valid until used. No expiration." },
+            { q: "Can I cancel anytime?", a: "Absolutely. No long-term contracts. Cancel from your account settings at any time." },
+            { q: "What if I run out of tokens?", a: "You'll be notified at 80% usage. Buy extra token packs instantly without changing your plan." },
+            { q: "Is there a money-back guarantee?", a: "Yes — 30-day money-back guarantee. Unused tokens are fully refundable." },
+          ].map((item) => (
+            <div key={item.q} className="bg-white rounded-xl p-5" style={{ border: "1px solid rgba(245,215,160,0.4)" }}>
+              <h4 className="font-semibold mb-2" style={{ color: "#1C1814" }}>{item.q}</h4>
+              <p className="text-sm" style={{ color: "#78614E" }}>{item.a}</p>
             </div>
-            <div>
-              <h4 className="font-semibold mb-2" style={{ color: "#292524" }}>
-                Can I cancel anytime?
-              </h4>
-              <p className="text-sm" style={{ color: "#78614E" }}>
-                Absolutely! No long-term contracts. Cancel subscription anytime from your account settings.
-              </p>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA banner */}
+      <div className="max-w-6xl mx-auto px-4 pb-20">
+        <div className="rounded-2xl p-8 sm:p-12 text-center" style={{ background: "linear-gradient(135deg, #1C1814, #2D2218)" }}>
+          <h2 className="text-3xl font-extrabold mb-3" style={{ color: "#FFF8F0" }}>Ready to grow faster?</h2>
+          <p className="mb-6" style={{ color: "#A8967E" }}>Start your 7-day free trial. No credit card required.</p>
+          <Link
+            href="/register"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold"
+            style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+          >
+            Start for free <ArrowRight className="w-5 h-5" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="border-t py-8" style={{ borderColor: "rgba(245,215,160,0.2)" }}>
+        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+              <Zap className="w-3 h-3 text-white" />
             </div>
-            <div>
-              <h4 className="font-semibold mb-2" style={{ color: "#292524" }}>
-                What if I exceed my tokens?
-              </h4>
-              <p className="text-sm" style={{ color: "#78614E" }}>
-                You'll be notified at 80% usage. You can purchase additional tokens instantly or your account will be throttled.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2" style={{ color: "#292524" }}>
-                Do you offer refunds?
-              </h4>
-              <p className="text-sm" style={{ color: "#78614E" }}>
-                Yes! 30-day money-back guarantee if you're not satisfied. Unused tokens are fully refundable.
-              </p>
-            </div>
+            <span className="text-sm font-bold" style={{ color: "#292524" }}>MarketHub Pro</span>
+          </div>
+          <p className="text-xs" style={{ color: "#A8967E" }}>© 2026 MarketHub Pro · All rights reserved</p>
+          <div className="flex gap-4">
+            <Link href="/login" className="text-xs" style={{ color: "#A8967E" }}>Sign in</Link>
+            <Link href="/register" className="text-xs" style={{ color: "#A8967E" }}>Register</Link>
           </div>
         </div>
-
-      </div>
+      </footer>
     </div>
   );
 }
-
-// Vercel force rebuild marker: 1774520187

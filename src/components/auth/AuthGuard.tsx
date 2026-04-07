@@ -9,7 +9,7 @@ import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
 import TrialWarningBanner from "@/components/TrialWarningBanner";
 import { createClient } from "@/lib/supabase/client";
 
-const PUBLIC_PATHS = ["/login", "/register", "/markethub973", "/blocked"];
+const PUBLIC_PATHS = ["/login", "/register", "/markethub973", "/blocked", "/pricing"];
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -44,7 +44,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return (
       <>
         <Sidebar />
-        <main className="ml-64 min-h-screen">
+        <main className="md:ml-64 min-h-screen">
           <ModuleBoundary name="Admin Dashboard">
             {children}
           </ModuleBoundary>
@@ -57,7 +57,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   return (
     <>
       <Sidebar />
-      <main className="ml-64 min-h-screen flex flex-col">
+      <main className="md:ml-64 min-h-screen flex flex-col">
         <TrialWarningBanner />
         <div className="flex-1">
           <ModuleBoundary name="Page">

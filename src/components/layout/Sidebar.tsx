@@ -227,10 +227,36 @@ export default function Sidebar() {
 
   const planLabel = PLAN_LABELS[userPlan as PlanId] ?? "Free Plan";
 
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <>
+      {/* Mobile hamburger button */}
+      <button
+        type="button"
+        className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-xl"
+        style={{ backgroundColor: "#1C1814", border: "1px solid rgba(245,215,160,0.2)" }}
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open menu"
+      >
+        <svg width="20" height="20" fill="none" stroke="#F5D7A0" strokeWidth="2" strokeLinecap="round">
+          <line x1="3" y1="6" x2="17" y2="6" />
+          <line x1="3" y1="12" x2="17" y2="12" />
+          <line x1="3" y1="18" x2="17" y2="18" />
+        </svg>
+      </button>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/60"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
       <aside
-        className="fixed left-0 top-0 h-screen w-64 flex flex-col z-40"
+        className={`fixed left-0 top-0 h-screen w-64 flex flex-col z-40 transition-transform duration-300
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
         style={{ backgroundColor: "#1C1814" }}
       >
         {/* Logo */}
@@ -243,7 +269,16 @@ export default function Sidebar() {
             style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
             <Zap className="w-4 h-4 text-white" />
           </div>
-          <span className="font-bold text-lg tracking-tight" style={{ color: "#FFF8F0" }}>MarketHub Pro</span>
+          <span className="font-bold text-lg tracking-tight flex-1" style={{ color: "#FFF8F0" }}>MarketHub Pro</span>
+          <button
+            type="button"
+            className="md:hidden p-1 rounded-lg"
+            style={{ color: "#A8967E" }}
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close menu"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         {/* Nav */}
