@@ -54,7 +54,22 @@ export async function GET(req: NextRequest) {
     );
     const pagesData = await pagesRes.json();
 
-    // If no pages found, try direct token approach (Business Manager accounts)
+    // If no pages found via /me/accounts, try known Facebook Page IDs from env
+    if (!pagesData.data?.length) {
+      const knownPageIds = (process.env.FACEBOOK_PAGE_IDS || "").split(",").filter(Boolean);
+      for (const pageId of knownPageIds) {
+        const pageRes = await fetch(
+          `https://graph.facebook.com/v22.0/${pageId}?fields=id,name,access_token,instagram_business_account{id,username,name},connected_instagram_account{id,username,name}&access_token=${longToken}`
+        );
+        const pageData = await pageRes.json();
+        if (!pageData.error) {
+          if (!pagesData.data) pagesData.data = [];
+          pagesData.data.push(pageData);
+        }
+      }
+    }
+
+    // If still no pages found, try direct token approach (Business Manager accounts)
     if (!pagesData.data?.length) {
       // Try using the user token directly against the env-configured IG account
       const envIgId = process.env.INSTAGRAM_ACCOUNT_ID;
