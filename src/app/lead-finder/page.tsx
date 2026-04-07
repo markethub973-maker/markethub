@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Header from "@/components/layout/Header";
+import MarketingAdvisor from "@/components/lead-finder/MarketingAdvisor";
 import {
   Wand2, Search, Users, Globe, Zap, ArrowRight, ArrowLeft,
   Check, X, Plus, Loader2, Star, Flame, Snowflake, Copy,
@@ -436,6 +437,7 @@ export default function LeadFinderPage() {
 
         {/* ══ STEP 1 — Ofertă ══════════════════════════════════════════════ */}
         {step === 1 && (
+          <div className="space-y-4">
           <div className="rounded-2xl p-6 space-y-5" style={card}>
             <div>
               <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Ce vinzi sau promovezi?</h2>
@@ -473,10 +475,16 @@ export default function LeadFinderPage() {
               Înainte — Definesc audiența <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+          {offerText.trim().length > 10 && (
+            <MarketingAdvisor step={1} offerType={offerType} offerDescription={offerText}
+              audienceType={audienceType} location={location} budgetRange={budgetRange} />
+          )}
+          </div>
         )}
 
         {/* ══ STEP 2 — Audiență ════════════════════════════════════════════ */}
         {step === 2 && (
+          <div className="space-y-4">
           <div className="rounded-2xl p-6 space-y-5" style={card}>
             <div>
               <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Cine este clientul ideal?</h2>
@@ -538,6 +546,9 @@ export default function LeadFinderPage() {
                 <AlertCircle className="w-4 h-4" />{analyzeError}
               </div>
             )}
+          </div>
+          <MarketingAdvisor step={2} offerType={offerType} offerDescription={offerText}
+            audienceType={audienceType} location={location} budgetRange={budgetRange} />
           </div>
         )}
 
@@ -671,6 +682,9 @@ export default function LeadFinderPage() {
                 <Search className="w-4 h-4" /> Caută prospecți acum
               </button>
             </div>
+          <MarketingAdvisor step={3} offerType={offerType} offerDescription={offerText}
+            audienceType={audienceType} location={location} budgetRange={budgetRange}
+            context={{ sources: suggestion?.sources, keywords: suggestion?.keywords }} />
           </div>
         )}
 
@@ -835,6 +849,11 @@ export default function LeadFinderPage() {
                 </button>
               )}
             </div>
+            {!searching && !scoring && (
+              <MarketingAdvisor step={4} offerType={offerType} offerDescription={offerText}
+                audienceType={audienceType} location={location} budgetRange={budgetRange}
+                context={{ leads_found: leads.length, hot: leads.filter(l => l.label === "hot").length }} />
+            )}
           </div>
         )}
 
@@ -950,6 +969,13 @@ export default function LeadFinderPage() {
                 </>
               )}
             </div>
+
+            {/* ── Marketing Advisor ────────────────────────────────────────── */}
+            {outreach && !generatingMsg && (
+              <MarketingAdvisor step={5} offerType={offerType} offerDescription={offerText}
+                audienceType={audienceType} location={location} budgetRange={budgetRange}
+                context={{ selected_lead: selectedLead, best_platform: outreach?.best_platform }} />
+            )}
 
             {/* ── Campaign Builder ─────────────────────────────────────────── */}
             {outreach && !generatingMsg && (
