@@ -47,19 +47,19 @@ export const PLAN_COLORS: Record<PlanId, string> = {
 // ── Plan feature flags (mirrors token-plan-config.ts) ────────────────────────
 export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
   free_test: {
-    has_calendar:       true,
-    has_tiktok:         true,
+    has_calendar:       false,
+    has_tiktok:         false,
     has_api_access:     false,
     has_white_label:    false,
     has_priority_support: false,
-    tracked_channels:   3,
-    competitor_brands:  2,
+    tracked_channels:   2,
+    competitor_brands:  1,
     team_members:       1,
     client_accounts:    1,
   },
   starter: {
-    has_calendar:       true,   // ✓ now included
-    has_tiktok:         true,   // ✓ now included
+    has_calendar:       false,
+    has_tiktok:         false,
     has_api_access:     false,
     has_white_label:    false,
     has_priority_support: false,
@@ -138,18 +138,6 @@ export interface RouteGate {
 
 export const ROUTE_GATES: Record<string, RouteGate> = {
   // ── Starter ($14) features ────────────────────────────────────────────────
-  "/calendar": {
-    minPlan:    "starter",
-    featureKey: "has_calendar",
-    label:      "Content Calendar",
-    description: "Schedule posts, get best-time recommendations, and manage first comments for all your platforms.",
-  },
-  "/tiktok": {
-    minPlan:    "starter",
-    featureKey: "has_tiktok",
-    label:      "TikTok Analytics",
-    description: "Track TikTok trends, hashtags, and competitor videos to grow your presence.",
-  },
   "/email-reports": {
     minPlan:    "starter",
     label:      "Email Reports",
@@ -162,6 +150,18 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
   },
 
   // ── Lite ($24) features ───────────────────────────────────────────────────
+  "/calendar": {
+    minPlan:    "lite",
+    featureKey: "has_calendar",
+    label:      "Content Calendar",
+    description: "Schedule posts, get best-time recommendations, and manage first comments for all your platforms.",
+  },
+  "/tiktok": {
+    minPlan:    "lite",
+    featureKey: "has_tiktok",
+    label:      "TikTok Analytics",
+    description: "Track TikTok trends, hashtags, and competitor videos to grow your presence.",
+  },
   "/bio": {
     minPlan:    "lite",
     label:      "Link in Bio",
