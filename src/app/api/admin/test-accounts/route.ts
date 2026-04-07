@@ -58,9 +58,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: authError.message }, { status: 400 });
   }
 
-  const userId = authUser?.user?.id;
+  // Resolve userId — from new user or look up existing by email
+  let userId = authUser?.user?.id;
+  if (!userId) {
+    const { data: existing } = await supabase.auth.admin.listUsers();
+    userId = existing?.users?.find((u: { email?: string; id: string }) => u.email === email)?.id;
+  }
+
   if (userId) {
-    // Set plan on profile
+    // Set plan on profile — always overwrite, even if profile already exists
     await supabase.from("profiles").upsert({
       id: userId,
       email,
