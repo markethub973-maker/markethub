@@ -79,11 +79,20 @@ export async function POST(req: NextRequest) {
   }
 
   if (userId) {
-    // Set plan on profile — use the actual column that exists in the schema
-    await supabase.from("profiles").upsert({
-      id: userId,
-      plan,
-    }, { onConflict: "id" });
+    // Set plan via direct REST (most reliable — JS client upsert can fail silently)
+    await fetch(
+      `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/profiles`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          Authorization: `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY!}`,
+          Prefer: "resolution=merge-duplicates",
+        },
+        body: JSON.stringify({ id: userId, plan }),
+      }
+    );
   }
 
   return NextResponse.json({ success: true, email, password });
