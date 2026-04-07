@@ -57,7 +57,7 @@ async function testRoute(
   cookie: string
 ): Promise<"accessible" | "blocked" | "error"> {
   try {
-    const url = `${APP_URL}/dashboard${route}`;
+    const url = `${APP_URL}${route}`;
     const res = await fetch(url, {
       method: "GET",
       headers: { Cookie: cookie },
