@@ -291,47 +291,20 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  // ── Single profile query: blocked + plan + trial (avoids double round-trip) ─
+  // ── Profile query — only columns that exist in the current schema ──────────
+  // NOTE: subscription_plan, subscription_status, trial_expires_at, is_blocked,
+  // blocked_reason are pending migration. Only query what's confirmed to exist.
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan, subscription_plan, subscription_status, trial_expires_at, is_blocked, blocked_reason, is_admin")
+    .select("plan, is_admin")
     .eq("id", user.id)
     .single();
 
-  // Blocked-user check — admins are never blocked
-  if (profile?.is_blocked && !(profile as any).is_admin && !pathname.startsWith("/blocked")) {
-    const blockedUrl = new URL("/blocked", request.url);
-    blockedUrl.searchParams.set(
-      "reason",
-      encodeURIComponent((profile as any).blocked_reason || "Account suspended")
-    );
-    const redirect = NextResponse.redirect(blockedUrl);
-    applySecurityHeaders(redirect);
-    return redirect;
-  }
-
-  const resolvedProfile = profile;
-
-  if (resolvedProfile) {
-    const activePlan = (resolvedProfile as any).subscription_plan ?? (resolvedProfile as any).plan;
-    const status = (resolvedProfile as any).subscription_status;
-    const trialExpiresAt = (resolvedProfile as any).trial_expires_at;
-
-    const isExpired =
-      activePlan === "expired" ||
-      status === "expired" ||
-      (activePlan === "free_test" &&
-        trialExpiresAt &&
-        new Date(trialExpiresAt) < new Date());
-
-    if (isExpired && !pathname.startsWith("/api")) {
-      const redirect = NextResponse.redirect(new URL("/upgrade-required", request.url));
-      applySecurityHeaders(redirect);
-      return redirect;
-    }
+  if (profile) {
+    // "free" (legacy value) is rank 0, same as "free_test"
+    const activePlan = (profile as any).plan ?? null;
 
     // ── Route-level plan gate (server-side, URL bypass protection) ──────────
-    // Load DB overrides (cached 5 min) so admin panel changes take effect immediately
     const planOverrides = await loadPlanFeaturesOverrides(supabase);
     if (
       activePlan &&

@@ -90,19 +90,8 @@ export async function GET(req: NextRequest) {
 
   const supabase = createServiceClient();
 
-  // Fetch all test accounts
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("id, email, subscription_plan, plan")
-    .in("email", PLAN_ORDER.map(p => `test.${p}@markethubpromo.com`));
-
-  type ProfileRow = { id: string; email: string; subscription_plan: string | null; plan: string | null };
-  const accountMap: Record<string, ProfileRow> = {};
-  for (const p of (profiles ?? []) as ProfileRow[]) {
-    accountMap[p.email] = p;
-  }
-
-  // Build account status per plan
+  // Look up each test account: sign in to get user ID, then check profile.plan
+  // (profiles table has no email column, so we can't filter by email directly)
   const accountStatus: Record<string, {
     email: string;
     exists: boolean;
@@ -112,11 +101,38 @@ export async function GET(req: NextRequest) {
 
   for (const planId of PLAN_ORDER) {
     const email = `test.${planId}@markethubpromo.com`;
-    const profile = accountMap[email];
-    const dbPlan = profile?.subscription_plan ?? profile?.plan ?? null;
+    const password = `Test${planId.charAt(0).toUpperCase() + planId.slice(1)}2026!`;
+
+    let dbPlan: string | null = null;
+    let exists = false;
+
+    try {
+      // Sign in to get user ID from session
+      const signinRes = await fetch(
+        `${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+      const session = await signinRes.json();
+      const userId = session?.user?.id;
+
+      if (userId) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("plan")
+          .eq("id", userId)
+          .single();
+        exists = !!profile;
+        dbPlan = (profile as any)?.plan ?? null;
+      }
+    } catch {}
+
     accountStatus[planId] = {
       email,
-      exists: !!profile,
+      exists,
       dbPlan,
       planMatch: dbPlan === planId,
     };

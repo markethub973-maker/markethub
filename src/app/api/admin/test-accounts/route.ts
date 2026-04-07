@@ -79,13 +79,10 @@ export async function POST(req: NextRequest) {
   }
 
   if (userId) {
-    // Set plan on profile — always overwrite, even if profile already exists
+    // Set plan on profile — use the actual column that exists in the schema
     await supabase.from("profiles").upsert({
       id: userId,
-      email,
-      subscription_plan: plan,
-      subscription_status: plan === "free_test" ? "trialing" : "active",
-      trial_expires_at: plan === "free_test" ? new Date(Date.now() + 7 * 86400000).toISOString() : null,
+      plan,
     }, { onConflict: "id" });
   }
 
