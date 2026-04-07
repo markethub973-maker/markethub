@@ -216,6 +216,9 @@ export default function LeadFinderPage() {
   const [audienceType, setAudienceType] = useState("both");
   const [location, setLocation] = useState("România");
   const [budgetRange, setBudgetRange] = useState("mid");
+  // Campaign value — for value-based platform fee (Pro+)
+  const [campaignValue, setCampaignValue] = useState("");
+  const [campaignValueCurrency, setCampaignValueCurrency] = useState<"EUR" | "USD" | "RON">("EUR");
 
   // Step 3 — Sources
   const [analyzing, setAnalyzing] = useState(false);
@@ -546,6 +549,42 @@ export default function LeadFinderPage() {
                 ))}
               </div>
             </div>
+            {/* Campaign value — for value-based fee */}
+            <div className="rounded-xl p-4 space-y-2" style={{ backgroundColor: `rgba(245,158,11,0.05)`, border: `1px solid rgba(245,158,11,0.2)` }}>
+              <div className="flex items-center gap-2">
+                <span className="text-sm">💰</span>
+                <p className="text-xs font-bold" style={{ color: "#78614E" }}>Valoarea medie per tranzacție/client (opțional)</p>
+                <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: `${AMBER}15`, color: AMBER }}>Pro+</span>
+              </div>
+              <p className="text-xs" style={{ color: "#A8967E" }}>
+                Platforma calculează un comision din valoarea generată — cu cât valoarea e mai mare, cu atât campania e mai justificată
+              </p>
+              <div className="flex gap-2">
+                <input
+                  type="number" min="0" step="1" value={campaignValue}
+                  onChange={e => setCampaignValue(e.target.value)}
+                  placeholder="ex: 1000"
+                  className="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none"
+                  style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                <div className="flex gap-1">
+                  {(["EUR", "USD", "RON"] as const).map(c => (
+                    <button key={c} type="button" onClick={() => setCampaignValueCurrency(c)}
+                      className="px-3 py-2 rounded-lg text-xs font-bold transition-all"
+                      style={campaignValueCurrency === c
+                        ? { backgroundColor: `${AMBER}20`, color: AMBER, border: `1px solid ${AMBER}50` }
+                        : { backgroundColor: "rgba(245,215,160,0.08)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.15)" }}>
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {campaignValue && parseFloat(campaignValue) > 0 && (
+                <p className="text-xs font-semibold" style={{ color: GREEN }}>
+                  ✓ Comisionul platformei va fi calculat din {campaignValue} {campaignValueCurrency}
+                </p>
+              )}
+            </div>
+
             <div className="flex gap-3">
               <button type="button" onClick={() => setStep(1)}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
@@ -1373,7 +1412,7 @@ export default function LeadFinderPage() {
         )}
 
       {/* ── Cost Meter (visible to client) ────────────────────────────────── */}
-      <CostMeter sessionId={sessionId} refreshTrigger={costRefresh} />
+      <CostMeter sessionId={sessionId} refreshTrigger={costRefresh} campaignValue={parseFloat(campaignValue) || 0} campaignValueCurrency={campaignValueCurrency} />
 
       </div>
     </div>

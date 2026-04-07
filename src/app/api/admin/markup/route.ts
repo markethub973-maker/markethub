@@ -2,6 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 import { createServiceClient } from "@/lib/supabase/service";
 
+const ALL_KEYS = [
+  "api_markup_percent",
+  "value_fee_percent",
+  "value_fee_min_usd",
+  "value_fee_max_usd",
+  "value_fee_enabled",
+];
+
 export async function GET(req: NextRequest) {
   if (!isAdminAuthorized(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const supa = createServiceClient();
@@ -9,7 +17,7 @@ export async function GET(req: NextRequest) {
   const { data, error } = await supa
     .from("platform_settings" as any)
     .select("key, value")
-    .in("key", ["api_markup_percent"]);
+    .in("key", ALL_KEYS);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
@@ -30,11 +38,19 @@ export async function GET(req: NextRequest) {
     byOp[r.operation] = (byOp[r.operation] || 0) + parseFloat(r.cost_usd);
   }
 
-  const settings: Record<string, string> = {};
-  for (const row of (data ?? []) as any[]) settings[row.key] = row.value;
+  const s: Record<string, string> = {};
+  for (const row of (data ?? []) as any[]) s[row.key] = row.value;
 
   return NextResponse.json({
-    markup_percent: parseFloat(settings["api_markup_percent"] ?? "20"),
+    settings: {
+      markup_percent:      parseFloat(s["api_markup_percent"] ?? "20"),
+      value_fee_percent:   parseFloat(s["value_fee_percent"]  ?? "10"),
+      value_fee_min_usd:   parseFloat(s["value_fee_min_usd"]  ?? "5"),
+      value_fee_max_usd:   parseFloat(s["value_fee_max_usd"]  ?? "500"),
+      value_fee_enabled:   s["value_fee_enabled"] !== "false",
+    },
+    // keep legacy field for old clients
+    markup_percent: parseFloat(s["api_markup_percent"] ?? "20"),
     costs_30d: {
       total_usd: totalUsd,
       by_service: byService,
@@ -46,16 +62,35 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   if (!isAdminAuthorized(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-  const { markup_percent } = await req.json();
+
+  const body = await req.json();
+  const {
+    markup_percent,
+    value_fee_percent,
+    value_fee_min_usd,
+    value_fee_max_usd,
+    value_fee_enabled,
+  } = body;
+
   if (typeof markup_percent !== "number" || markup_percent < 0 || markup_percent > 500) {
     return NextResponse.json({ error: "markup_percent must be 0-500" }, { status: 400 });
   }
 
   const supa = createServiceClient();
+  const now = new Date().toISOString();
+
+  const upserts = [
+    { key: "api_markup_percent", value: String(markup_percent),    updated_at: now },
+    { key: "value_fee_percent",  value: String(value_fee_percent ?? 10),  updated_at: now },
+    { key: "value_fee_min_usd",  value: String(value_fee_min_usd ?? 5),   updated_at: now },
+    { key: "value_fee_max_usd",  value: String(value_fee_max_usd ?? 500), updated_at: now },
+    { key: "value_fee_enabled",  value: String(value_fee_enabled !== false), updated_at: now },
+  ];
+
   const { error } = await supa
     .from("platform_settings" as any)
-    .upsert({ key: "api_markup_percent", value: String(markup_percent), updated_at: new Date().toISOString() });
+    .upsert(upserts);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ ok: true, markup_percent });
+  return NextResponse.json({ ok: true });
 }

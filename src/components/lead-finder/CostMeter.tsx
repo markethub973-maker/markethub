@@ -18,11 +18,16 @@ interface CostLine {
 
 interface SessionCost {
   lines: CostLine[];
-  total_usd: number;
+  api_cost_usd: number;
+  api_markup_usd: number;
+  markup_percent: number;
   anthropic_usd: number;
   apify_usd: number;
-  markup_percent: number;
-  total_with_markup_usd: number;
+  value_fee_usd: number;
+  value_fee_percent: number;
+  value_fee_enabled: boolean;
+  campaign_value_usd: number;
+  total_usd: number;
 }
 
 const OPERATION_LABELS: Record<string, string> = {
@@ -53,10 +58,12 @@ function fmtTotal(usd: number): string {
 
 interface Props {
   sessionId: string;
-  refreshTrigger?: number; // increment to force refresh
+  refreshTrigger?: number;
+  campaignValue?: number;
+  campaignValueCurrency?: string;
 }
 
-export default function CostMeter({ sessionId, refreshTrigger }: Props) {
+export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0, campaignValueCurrency = "EUR" }: Props) {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState<SessionCost | null>(null);
   const [loading, setLoading] = useState(false);
@@ -65,18 +72,23 @@ export default function CostMeter({ sessionId, refreshTrigger }: Props) {
     if (!sessionId || sessionId === "unknown") return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/costs/session?session_id=${encodeURIComponent(sessionId)}`);
+      const params = new URLSearchParams({
+        session_id: sessionId,
+        campaign_value: String(campaignValue || 0),
+        currency: campaignValueCurrency || "EUR",
+      });
+      const res = await fetch(`/api/costs/session?${params}`);
       if (res.ok) setData(await res.json());
     } finally {
       setLoading(false);
     }
-  }, [sessionId]);
+  }, [sessionId, campaignValue, campaignValueCurrency]);
 
   useEffect(() => { fetchCosts(); }, [fetchCosts, refreshTrigger]);
 
   if (!data || data.lines.length === 0) return null;
 
-  const clientPrice = data.total_with_markup_usd;
+  const clientPrice = data.total_usd;
   const ronRate = 4.6;
 
   return (
@@ -144,14 +156,26 @@ export default function CostMeter({ sessionId, refreshTrigger }: Props) {
               <span className="font-mono" style={{ color: "#292524" }}>{fmt(data.apify_usd)}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span style={{ color: "#A8967E" }}>Cost real total</span>
-              <span className="font-mono" style={{ color: "#292524" }}>{fmtTotal(data.total_usd)}</span>
+              <span style={{ color: "#A8967E" }}>Cost API real total</span>
+              <span className="font-mono" style={{ color: "#292524" }}>{fmtTotal(data.api_cost_usd)}</span>
             </div>
+            <div className="flex justify-between text-xs">
+              <span style={{ color: "#A8967E" }}>Comision platformă ({data.markup_percent}%)</span>
+              <span className="font-mono" style={{ color: "#292524" }}>{fmtTotal(data.api_markup_usd)}</span>
+            </div>
+            {data.value_fee_enabled && data.campaign_value_usd > 0 && (
+              <div className="flex justify-between text-xs">
+                <span style={{ color: "#A8967E" }}>
+                  Comision valoare afacere ({data.value_fee_percent}% din ${data.campaign_value_usd.toFixed(0)})
+                </span>
+                <span className="font-mono font-bold" style={{ color: AMBER }}>
+                  {fmtTotal(data.value_fee_usd)}
+                </span>
+              </div>
+            )}
             <div className="border-t pt-1.5 flex justify-between text-xs font-bold"
               style={{ borderColor: "rgba(245,215,160,0.2)" }}>
-              <span style={{ color: "#78614E" }}>
-                Total cu comision platformă ({data.markup_percent}%)
-              </span>
+              <span style={{ color: "#78614E" }}>Total de plată</span>
               <span className="font-mono" style={{ color: AMBER }}>{fmtTotal(clientPrice)}</span>
             </div>
             <div className="flex justify-between text-xs">
