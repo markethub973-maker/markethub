@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { canAccessRoute } from "@/lib/plan-features";
+import { Redis } from "@upstash/redis";
+import { Ratelimit } from "@upstash/ratelimit";
 
 // ── Security headers applied to every response ─────────────────────────────
 const SECURITY_HEADERS: Record<string, string> = {
@@ -62,31 +64,60 @@ async function loadPlanFeaturesOverrides(
   }
 }
 
-// ── In-memory rate limiter (per-edge-worker instance, best-effort) ──────────
-// Provides protection against trivial abuse; for global rate limiting
-// a Redis-backed solution (e.g. Upstash) would be needed.
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-let lastCleanup = Date.now();
-
-function checkRateLimit(ip: string, limit: number, windowMs: number): boolean {
-  const now = Date.now();
-
-  // Periodic cleanup to avoid unbounded memory growth
-  if (now - lastCleanup > 60_000) {
-    for (const [key, val] of rateLimitMap.entries()) {
-      if (now > val.resetAt) rateLimitMap.delete(key);
-    }
-    lastCleanup = now;
+// ── Global rate limiter backed by Upstash Redis ─────────────────────────────
+// Counters are shared across all Vercel worker instances — truly global.
+// Falls back to allow if Redis is unavailable (fail-open to avoid outages).
+let _redis: Redis | null = null;
+function getRedis(): Redis | null {
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) return null;
+  if (!_redis) {
+    _redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
   }
+  return _redis;
+}
 
-  const entry = rateLimitMap.get(ip);
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + windowMs });
-    return true;
+// Two limiters: strict for auth endpoints, lenient for general API
+let _authLimiter: Ratelimit | null = null;
+let _apiLimiter: Ratelimit | null = null;
+
+function getAuthLimiter(): Ratelimit | null {
+  const redis = getRedis();
+  if (!redis) return null;
+  if (!_authLimiter) {
+    _authLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, "60 s"),
+      prefix: "rl:auth",
+    });
   }
-  if (entry.count >= limit) return false;
-  entry.count++;
-  return true;
+  return _authLimiter;
+}
+
+function getApiLimiter(): Ratelimit | null {
+  const redis = getRedis();
+  if (!redis) return null;
+  if (!_apiLimiter) {
+    _apiLimiter = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(120, "60 s"),
+      prefix: "rl:api",
+    });
+  }
+  return _apiLimiter;
+}
+
+async function checkRateLimit(ip: string, type: "auth" | "api"): Promise<boolean> {
+  try {
+    const limiter = type === "auth" ? getAuthLimiter() : getApiLimiter();
+    if (!limiter) return true; // Redis not configured — fail-open
+    const { success } = await limiter.limit(ip);
+    return success;
+  } catch {
+    return true; // Redis unavailable — fail-open
+  }
 }
 
 function getClientIp(req: NextRequest): string {
@@ -149,8 +180,7 @@ const UPGRADE_PATHS = ["/upgrade-required", "/upgrade", "/pricing", "/api/stripe
 
 // ── Auth route rate limits (stricter to prevent brute force) ────────────────
 const AUTH_PATHS = ["/api/auth/", "/login", "/register", "/api/admin-secret-login", "/api/admin-auth"];
-const AUTH_RATE_LIMIT = { limit: 10, windowMs: 60_000 }; // 10/min per IP
-const API_RATE_LIMIT  = { limit: 120, windowMs: 60_000 }; // 120/min per IP
+// Rate limits are configured in getAuthLimiter/getApiLimiter (10/min auth, 120/min API)
 
 // ── Admin tunnel verification ────────────────────────────────────────────────
 // If ADMIN_TUNNEL_SECRET is set, admin routes require either:
@@ -222,7 +252,7 @@ export async function proxy(request: NextRequest) {
   // ── Rate limiting ───────────────────────────────────────────────────────
   const isAuthPath = AUTH_PATHS.some((p) => pathname.startsWith(p));
   if (isAuthPath) {
-    if (!checkRateLimit(`auth:${ip}`, AUTH_RATE_LIMIT.limit, AUTH_RATE_LIMIT.windowMs)) {
+    if (!await checkRateLimit(ip, "auth")) {
       const res = NextResponse.json(
         { error: "Too many requests. Please wait before trying again." },
         { status: 429 }
@@ -232,7 +262,7 @@ export async function proxy(request: NextRequest) {
       return res;
     }
   } else if (pathname.startsWith("/api/")) {
-    if (!checkRateLimit(`api:${ip}`, API_RATE_LIMIT.limit, API_RATE_LIMIT.windowMs)) {
+    if (!await checkRateLimit(ip, "api")) {
       const res = NextResponse.json(
         { error: "Rate limit exceeded." },
         { status: 429 }
