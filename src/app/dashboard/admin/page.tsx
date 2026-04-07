@@ -22,6 +22,7 @@ import AdminHealthCheck from "@/components/admin/AdminHealthCheck";
 import AdminTestRunner from "@/components/admin/AdminTestRunner";
 import AdminRestorePanel from "@/components/admin/AdminRestorePanel";
 import AdminAuditLog from "@/components/admin/AdminAuditLog";
+import AdminTestAccounts from "@/components/admin/AdminTestAccounts";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 export default function AdminPage() {
@@ -310,6 +311,11 @@ export default function AdminPage() {
         {/* Platform Auto-Connect (admin only) */}
         <ModuleBoundary name="Platform Connect" minimal>
           <AdminPlatformConnect />
+        </ModuleBoundary>
+
+        {/* Test Accounts per Plan */}
+        <ModuleBoundary name="Test Accounts" minimal>
+          <AdminTestAccounts />
         </ModuleBoundary>
 
         {/* API Credentials */}
