@@ -177,7 +177,7 @@ export default function CampaignStudio({
   }, [messages]);
 
   // Welcome message — neutral, short, language-agnostic (user types first → APEX detects language)
-  const WELCOME = "APEX online. Describe your offer or ask anything — I'll respond in your language.";
+  const WELCOME = "APEX online — your Growth Partner. What's the product, who's the audience, and which competitor do we defeat today?";
 
   useEffect(() => {
     if (messages.length === 0) {
