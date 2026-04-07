@@ -9,13 +9,13 @@ export async function GET() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("stripe_customer_id, stripe_subscription_id, subscription_plan, subscription_status, trial_expires_at")
+    .select("stripe_customer_id, stripe_subscription_id, plan, subscription_plan, subscription_status, trial_expires_at")
     .eq("id", user.id)
     .single();
 
   if (!profile?.stripe_customer_id) {
     return NextResponse.json({
-      plan: profile?.subscription_plan ?? "free_test",
+      plan: profile?.subscription_plan ?? profile?.plan ?? "free_test",
       status: profile?.subscription_status ?? "active",
       trial_expires_at: profile?.trial_expires_at ?? null,
       invoices: [],
@@ -65,7 +65,7 @@ export async function GET() {
     : null;
 
   return NextResponse.json({
-    plan: profile.subscription_plan,
+    plan: profile.subscription_plan ?? profile.plan,
     status: profile.subscription_status,
     trial_expires_at: profile.trial_expires_at,
     invoices,
