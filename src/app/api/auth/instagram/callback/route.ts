@@ -56,9 +56,12 @@ export async function GET(req: NextRequest) {
     );
     const pagesData = await pagesRes.json();
 
+    const debugSteps: string[] = [`me_accounts:${pagesData.data?.length ?? 0}`];
+
     // If no pages found via /me/accounts, try known Facebook Page IDs from env
     if (!pagesData.data?.length) {
       const knownPageIds = (process.env.FACEBOOK_PAGE_IDS || "").split(",").filter(Boolean);
+      debugSteps.push(`page_ids:${knownPageIds.join(",") || "none"}`);
       for (const pageId of knownPageIds) {
         const pageRes = await fetch(
           `https://graph.facebook.com/v22.0/${pageId}?fields=id,name,access_token,instagram_business_account{id,username,name},connected_instagram_account{id,username,name}&access_token=${longToken}`
@@ -67,19 +70,38 @@ export async function GET(req: NextRequest) {
         if (!pageData.error) {
           if (!pagesData.data) pagesData.data = [];
           pagesData.data.push(pageData);
+          debugSteps.push(`page_found:${pageData.name}`);
+        } else {
+          debugSteps.push(`page_err:${pageData.error?.code}:${pageData.error?.message?.slice(0,40)}`);
+        }
+      }
+    }
+
+    // If still no pages found, try Business Manager API
+    if (!pagesData.data?.length) {
+      const bizId = process.env.META_BUSINESS_ID;
+      if (bizId) {
+        const bizRes = await fetch(
+          `https://graph.facebook.com/v22.0/${bizId}/pages?fields=id,name,access_token,instagram_business_account{id,username,name}&access_token=${longToken}`
+        );
+        const bizData = await bizRes.json();
+        debugSteps.push(`biz_pages:${bizData.data?.length ?? bizData.error?.code}`);
+        if (bizData.data?.length) {
+          pagesData.data = bizData.data;
         }
       }
     }
 
     // If still no pages found, try direct token approach (Business Manager accounts)
     if (!pagesData.data?.length) {
-      // Try using the user token directly against the env-configured IG account
       const envIgId = process.env.INSTAGRAM_ACCOUNT_ID;
+      debugSteps.push(`direct_ig:${envIgId || "not_set"}`);
       if (envIgId) {
         const directRes = await fetch(
           `https://graph.facebook.com/v22.0/${envIgId}?fields=id,username,name&access_token=${longToken}`
         );
         const directData = await directRes.json();
+        debugSteps.push(`direct_result:${directData.error?.code || directData.id}`);
         if (!directData.error && directData.id) {
           const { error: dbError } = await supabase
             .from("instagram_connections")
@@ -106,10 +128,11 @@ export async function GET(req: NextRequest) {
 
             return NextResponse.redirect(`${appUrl}/settings?instagram=connected&accounts=1`);
           }
+          debugSteps.push(`db_err:${dbError?.message?.slice(0,30)}`);
         }
       }
-      console.error("No Facebook pages found:", pagesData);
-      return NextResponse.redirect(`${appUrl}/settings?instagram=no_page`);
+      const debugStr = encodeURIComponent(debugSteps.join("|"));
+      return NextResponse.redirect(`${appUrl}/settings?instagram=no_page&debug=${debugStr}`);
     }
 
     // Collect ALL Instagram accounts across all pages
