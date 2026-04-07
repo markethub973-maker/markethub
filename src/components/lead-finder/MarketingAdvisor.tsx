@@ -102,7 +102,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
           </div>
           <div className="text-left">
             <p className="text-sm font-bold" style={{ color: "#292524" }}>
-              MAX — Expert Marketing AI
+              APEX — Marketing Intelligence
             </p>
             <p className="text-xs" style={{ color: "#A8967E" }}>
               {STEP_HINTS[step] || "Sfaturi & alternative pentru pasul curent"}
@@ -129,7 +129,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
             <div className="flex items-center gap-3 py-8 justify-center">
               <Loader2 className="w-5 h-5 animate-spin" style={{ color: AMBER }} />
               <p className="text-sm font-semibold" style={{ color: "#A8967E" }}>
-                MAX analizează oferta ta…
+                APEX analizează…
               </p>
             </div>
           )}

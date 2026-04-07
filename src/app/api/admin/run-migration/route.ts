@@ -402,8 +402,18 @@ export async function POST(req: NextRequest) {
     results["api_cost_logs_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
-  // ── 17. platform_settings — markup % and other admin configs ─────────────
+  // ── 17. platform_settings — markup % and value-based fee configs ──────────
   if (await tableExists(supa, "platform_settings")) {
+    // Ensure new value-fee keys exist even if table already existed
+    await runSQL(`
+      INSERT INTO platform_settings (key, value) VALUES
+        ('api_markup_percent',        '20'),
+        ('value_fee_percent',         '10'),
+        ('value_fee_min_usd',         '5'),
+        ('value_fee_max_usd',         '500'),
+        ('value_fee_enabled',         'true')
+      ON CONFLICT (key) DO NOTHING;
+    `);
     results["platform_settings_table"] = "already_exists";
   } else {
     const r = await runSQL(`
@@ -412,7 +422,13 @@ export async function POST(req: NextRequest) {
         value TEXT NOT NULL,
         updated_at TIMESTAMPTZ DEFAULT now()
       );
-      INSERT INTO platform_settings (key, value) VALUES ('api_markup_percent', '20') ON CONFLICT DO NOTHING;
+      INSERT INTO platform_settings (key, value) VALUES
+        ('api_markup_percent',        '20'),
+        ('value_fee_percent',         '10'),
+        ('value_fee_min_usd',         '5'),
+        ('value_fee_max_usd',         '500'),
+        ('value_fee_enabled',         'true')
+      ON CONFLICT (key) DO NOTHING;
     `);
     results["platform_settings_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }

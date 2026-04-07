@@ -31,7 +31,7 @@ export const OPERATION_LABELS: Record<string, string> = {
   score:                "Scorare leads AI",
   message:              "Mesaj outreach AI",
   campaign:             "Campanie completă AI",
-  marketing_advisor:    "Expert Marketing MAX",
+  marketing_advisor:    "APEX — Marketing Intelligence",
   research_google:      "Căutare Google",
   research_maps:        "Căutare Maps",
   research_reddit:      "Căutare Reddit",

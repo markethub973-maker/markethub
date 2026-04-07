@@ -176,36 +176,22 @@ export default function CampaignStudio({
     }
   }, [messages]);
 
-  // Welcome message when step changes
+  // Welcome message — neutral, short, language-agnostic (user types first → APEX detects language)
+  const WELCOME = "APEX online. Describe your offer or ask anything — I'll respond in your language.";
+
   useEffect(() => {
     if (messages.length === 0) {
-      const welcomes: Record<number, string> = {
-        1: "Bună! Sunt agentul tău de marketing MAX. Selectează tipul de ofertă și descrie ce vinzi — te ajut să construiești o campanie câștigătoare de la zero.",
-        2: "Gata pentru pasul 2 — audiența. Spune-mi mai multe despre publicul tău sau folosește acțiunile rapide de mai jos pentru sfaturi personalizate.",
-        3: "Sursele de research sunt activate. Te pot ajuta să prioritizezi unde să cauți și ce cuvinte cheie să folosești pentru tipul tău de campanie.",
-        4: "Lead-urile sunt scorat! Acum e momentul pentru outreach. Pot genera mesaje personalizate, scripturi de vânzare și strategii de follow-up.",
-        5: "Campania e generată! Pot îmbunătăți orice canal, crea variante A/B, planifica publicarea pe 7 zile sau explica cum să măsori rezultatele.",
-      };
-      setMessages([{
-        role: "ai",
-        content: welcomes[step] || welcomes[1],
-        ts: Date.now(),
-      }]);
+      setMessages([{ role: "ai", content: WELCOME, ts: Date.now() }]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update welcome when step changes (only if conversation just has welcome)
   useEffect(() => {
     if (messages.length === 1 && messages[0].role === "ai") {
-      const welcomes: Record<number, string> = {
-        1: "Bună! Sunt agentul tău de marketing MAX. Selectează tipul de ofertă și descrie ce vinzi — te ajut să construiești o campanie câștigătoare de la zero.",
-        2: "Gata pentru pasul 2 — audiența. Spune-mi mai multe despre publicul tău sau folosește acțiunile rapide de mai jos pentru sfaturi personalizate.",
-        3: "Sursele de research sunt activate. Te pot ajuta să prioritizezi unde să cauți și ce cuvinte cheie să folosești pentru tipul tău de campanie.",
-        4: "Lead-urile sunt scorat! Acum e momentul pentru outreach. Pot genera mesaje personalizate, scripturi de vânzare și strategii de follow-up.",
-        5: "Campania e generată! Pot îmbunătăți orice canal, crea variante A/B, planifica publicarea pe 7 zile sau explica cum să măsori rezultatele.",
-      };
-      setMessages([{ role: "ai", content: welcomes[step] || welcomes[1], ts: Date.now() }]);
+      setMessages([{ role: "ai", content: WELCOME, ts: Date.now() }]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
 
   const sendMessage = useCallback(async (text: string) => {
@@ -289,7 +275,7 @@ export default function CampaignStudio({
           </div>
           <div className="flex items-center gap-2">
             <Bot className="w-4 h-4" style={{ color: AMBER }} />
-            <span className="text-sm font-bold" style={{ color: "#E8DDD0" }}>Agent Marketing MAX</span>
+            <span className="text-sm font-bold" style={{ color: "#E8DDD0" }}>APEX — Marketing Intelligence</span>
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: GREEN }} />
               <span className="text-[10px]" style={{ color: GREEN }}>activ</span>
@@ -351,7 +337,7 @@ export default function CampaignStudio({
                 style={{ backgroundColor: BG_MSG_AI, border: "1px solid rgba(245,215,160,0.1)" }}>
                 <div className="flex gap-1.5 items-center">
                   <RefreshCw className="w-3.5 h-3.5 animate-spin" style={{ color: AMBER }} />
-                  <span className="text-xs" style={{ color: "#A8967E" }}>Agentul analizează...</span>
+                  <span className="text-xs" style={{ color: "#A8967E" }}>APEX analyzing…</span>
                 </div>
               </div>
             </div>
@@ -409,7 +395,7 @@ export default function CampaignStudio({
           <div className="flex items-center gap-3 mt-2 px-1">
             <Sparkles className="w-3 h-3" style={{ color: "#A8967E" }} />
             <p className="text-[10px]" style={{ color: "#6B5744" }}>
-              Agentul cunoaște contextul complet: oferta ta, audiența, locația, sezonul și platforma optimă chiar acum
+              APEX · Live web search · YouTube transcripts · Global market intelligence · Responds in your language
             </p>
           </div>
         </div>

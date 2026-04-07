@@ -12,6 +12,36 @@
 
 const SEARCH_TIMEOUT_MS = 6000; // 6s max total per source
 
+// ── Language detection from location string ───────────────────────────────────
+
+const LOCATION_LANG_MAP: { keywords: string[]; lang: string; yt_lang: string }[] = [
+  { keywords: ["romania", "bucuresti", "cluj", "timisoara", "iasi", "brasov", "constanta", "craiova"],  lang: "ro", yt_lang: "ro" },
+  { keywords: ["france", "paris", "marseille", "lyon", "france", "français"],                           lang: "fr", yt_lang: "fr" },
+  { keywords: ["germany", "deutschland", "berlin", "munich", "hamburg", "köln", "frankfurt"],           lang: "de", yt_lang: "de" },
+  { keywords: ["spain", "españa", "madrid", "barcelona", "seville", "valencia"],                       lang: "es", yt_lang: "es" },
+  { keywords: ["italy", "italia", "rome", "milan", "naples", "turin"],                                  lang: "it", yt_lang: "it" },
+  { keywords: ["portugal", "lisboa", "porto", "brazil", "brasil", "são paulo", "rio"],                  lang: "pt", yt_lang: "pt" },
+  { keywords: ["netherlands", "amsterdam", "rotterdam", "holland", "dutch"],                            lang: "nl", yt_lang: "nl" },
+  { keywords: ["poland", "polska", "warsaw", "krakow", "wroclaw"],                                      lang: "pl", yt_lang: "pl" },
+  { keywords: ["turkey", "türkiye", "istanbul", "ankara"],                                              lang: "tr", yt_lang: "tr" },
+  { keywords: ["arab", "saudi", "dubai", "uae", "qatar", "kuwait", "egypt", "مصر", "السعودية"],        lang: "ar", yt_lang: "ar" },
+  { keywords: ["india", "mumbai", "delhi", "bangalore", "chennai", "hyderabad"],                        lang: "en", yt_lang: "hi" },
+  { keywords: ["uk", "united kingdom", "london", "manchester", "birmingham", "glasgow"],                lang: "en", yt_lang: "en-GB" },
+  { keywords: ["australia", "sydney", "melbourne", "brisbane", "perth"],                               lang: "en", yt_lang: "en-AU" },
+  { keywords: ["canada", "toronto", "montreal", "vancouver", "calgary"],                               lang: "en", yt_lang: "en-CA" },
+  { keywords: ["usa", "us", "united states", "new york", "los angeles", "chicago", "houston"],         lang: "en", yt_lang: "en-US" },
+];
+
+function detectLanguage(location: string): { newsLang: string; ytLang: string } {
+  const loc = location.toLowerCase();
+  for (const entry of LOCATION_LANG_MAP) {
+    if (entry.keywords.some(k => loc.includes(k))) {
+      return { newsLang: entry.lang, ytLang: entry.yt_lang };
+    }
+  }
+  return { newsLang: "en", ytLang: "en" }; // default international
+}
+
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface NewsArticle {
@@ -45,12 +75,12 @@ function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
 
 // ── NewsAPI ───────────────────────────────────────────────────────────────────
 
-async function fetchNews(query: string): Promise<NewsArticle[]> {
+async function fetchNews(query: string, preferredLang = "en"): Promise<NewsArticle[]> {
   const apiKey = process.env.NEWS_API_KEY;
   if (!apiKey) return [];
 
-  // Try Romanian first, then English
-  const langs = ["ro", "en"];
+  // Try preferred language first, then English as fallback
+  const langs = preferredLang !== "en" ? [preferredLang, "en"] : ["en"];
   for (const lang of langs) {
     try {
       const url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&apiKey=${apiKey}&language=${lang}&sortBy=publishedAt&pageSize=5`;
@@ -160,7 +190,7 @@ async function getTranscript(videoId: string): Promise<string | undefined> {
 
 // ── YouTube search ─────────────────────────────────────────────────────────────
 
-async function searchYouTube(query: string): Promise<YouTubeVideo[]> {
+async function searchYouTube(query: string, relevanceLang = "en"): Promise<YouTubeVideo[]> {
   const apiKey = process.env.YOUTUBE_API_KEY;
   if (!apiKey) return [];
 
@@ -171,7 +201,7 @@ async function searchYouTube(query: string): Promise<YouTubeVideo[]> {
       `&q=${encodeURIComponent(query)}` +
       `&type=video` +
       `&maxResults=4` +
-      `&relevanceLanguage=ro` +
+      `&relevanceLanguage=${relevanceLang}` +
       `&videoDuration=medium` +    // 4-20 min videos — most likely to have good content
       `&key=${apiKey}`;
 
@@ -214,15 +244,18 @@ export async function getMarketIntelligence(params: {
 }): Promise<MarketIntelligence> {
   const { offerType, offerDescription, location, question } = params;
 
-  // Build smart search queries
+  // Detect language from location for localized searches
+  const { newsLang, ytLang } = detectLanguage(location);
+
+  // Build smart search queries — localized
   const offerQuery = offerDescription?.slice(0, 60) || offerType;
   const newsQuery  = `${offerQuery} marketing ${location} 2025 2026`;
-  const ytQuery    = `${offerType} strategie marketing romania ${question.slice(0, 40)}`;
+  const ytQuery    = `${offerType} marketing strategy ${location} ${question.slice(0, 40)}`;
 
   // Run both searches in parallel with hard timeout
   const [news, videos] = await Promise.all([
-    withTimeout(fetchNews(newsQuery), SEARCH_TIMEOUT_MS, []),
-    withTimeout(searchYouTube(ytQuery), SEARCH_TIMEOUT_MS, []),
+    withTimeout(fetchNews(newsQuery, newsLang), SEARCH_TIMEOUT_MS, []),
+    withTimeout(searchYouTube(ytQuery, ytLang), SEARCH_TIMEOUT_MS, []),
   ]);
 
   // Build formatted block for injection into Claude prompt
