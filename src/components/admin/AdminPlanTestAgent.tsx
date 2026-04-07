@@ -230,11 +230,8 @@ export default function AdminPlanTestAgent() {
                         return (
                           <td key={planId} className="text-center py-2 px-2">
                             {hasAccess ? (
-                              <span
-                                className="inline-flex items-center justify-center w-7 h-7 rounded-full"
-                                style={{ background: `${PLAN_COLORS[planId]}20` }}
-                              >
-                                <CheckCircle className="w-3.5 h-3.5" style={{ color: PLAN_COLORS[planId] }} />
+                              <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald-500/15">
+                                <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
                               </span>
                             ) : (
                               <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-white/3">
