@@ -55,6 +55,6 @@ export async function POST(req: NextRequest) {
       combined_text: allText,
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Service temporarily unavailable" }, { status: 500 });
   }
 }

@@ -60,6 +60,6 @@ export async function POST(req: NextRequest) {
       place_name: placeName,
     });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Service temporarily unavailable" }, { status: 500 });
   }
 }

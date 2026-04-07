@@ -50,6 +50,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ places, total: places.length, query: searchQuery });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message, degraded: true }, { status: 503 });
+    return NextResponse.json({ error: "Service temporarily unavailable", degraded: true }, { status: 503 });
   }
 }
