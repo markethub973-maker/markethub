@@ -38,6 +38,10 @@ export async function POST(req: NextRequest) {
       signals: l.signals || [],
       why: l.why || null,
       platform: l.platform || null,
+      // Merge any custom extra_data passed by the caller (e.g. plays/likes/followers
+      // from Research Hub bulk save). Caller fields take precedence except over the
+      // agent-session keys above which are still authoritative for agent flows.
+      ...(l.extra_data && typeof l.extra_data === "object" ? l.extra_data : {}),
     },
   }));
 
