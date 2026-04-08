@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   try {
     const parsed = new URL(startUrl);
     if (!parsed.hostname.includes(".")) {
-      return NextResponse.json({ error: "Introdu un URL valid (ex: competitor.com), nu un cuvânt cheie." }, { status: 400 });
+      return NextResponse.json({ error: "Enter a valid URL (e.g. competitor.com), not a keyword." }, { status: 400 });
     }
   } catch {
     return NextResponse.json({ error: "URL invalid. Exemplu: competitor.com" }, { status: 400 });

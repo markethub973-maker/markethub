@@ -93,13 +93,13 @@ export default function RegionSettings() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4" style={{ color: "#6366F1" }} />
-              <p className="text-sm font-bold" style={{ color: "#292524" }}>Rulează SQL în Supabase → SQL Editor</p>
+              <p className="text-sm font-bold" style={{ color: "#292524" }}>Run this SQL in Supabase → SQL Editor</p>
             </div>
             <button type="button" onClick={() => { navigator.clipboard.writeText(SQL_MIGRATION); setCopiedSQL(true); setTimeout(() => setCopiedSQL(false), 2000); }}
               className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg font-semibold"
               style={{ backgroundColor: copiedSQL ? "rgba(29,185,84,0.1)" : "rgba(99,102,241,0.1)", color: copiedSQL ? GREEN : "#6366F1" }}>
               {copiedSQL ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-              {copiedSQL ? "Copiat!" : "Copiază SQL"}
+              {copiedSQL ? "Copied!" : "Copy SQL"}
             </button>
           </div>
           <code className="block text-xs font-mono p-2 rounded-lg whitespace-pre"
@@ -118,8 +118,8 @@ export default function RegionSettings() {
             <p className="text-sm font-bold" style={{ color: "#292524" }}>Local Market Tools</p>
             <p className="text-xs" style={{ color: "#A8967E" }}>
               {enabled && region
-                ? `Activ — unelte specifice ${SUPPORTED_REGIONS.find(r => r.code === region)?.label || region} vizibile`
-                : "Dezactivat — interfață internațională"}
+                ? `Active — ${SUPPORTED_REGIONS.find(r => r.code === region)?.label || region}-specific tools visible`
+                : "Disabled — international interface"}
             </p>
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function RegionSettings() {
 
       {/* Region selector */}
       <div className="space-y-2">
-        <p className="text-xs font-bold" style={{ color: "#78614E" }}>Selectează piața locală</p>
+        <p className="text-xs font-bold" style={{ color: "#78614E" }}>Select local market</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {SUPPORTED_REGIONS.map(({ code, flag, label }) => {
             const isSelected = region === code;
@@ -157,7 +157,7 @@ export default function RegionSettings() {
           })}
         </div>
         <p className="text-xs" style={{ color: "#C4AA8A" }}>
-          ✓ = piață cu unelte specifice disponibile · celelalte folosesc Google Maps + Social Media generice
+          ✓ = market with dedicated tools available · others use generic Google Maps + Social Media
         </p>
       </div>
 
@@ -166,7 +166,7 @@ export default function RegionSettings() {
         <div className="rounded-xl p-4 space-y-3"
           style={{ backgroundColor: `${selectedMarket.color}08`, border: `1px solid ${selectedMarket.color}25` }}>
           <p className="text-xs font-bold" style={{ color: selectedMarket.color }}>
-            {selectedMarket.flag} Unelte activate pentru {selectedMarket.label}
+            {selectedMarket.flag} Tools activated for {selectedMarket.label}
           </p>
           <div className="grid grid-cols-2 gap-2">
             {selectedMarket.actors.map(a => (
@@ -181,7 +181,7 @@ export default function RegionSettings() {
             ))}
           </div>
           <p className="text-xs" style={{ color: "#A8967E" }}>
-            Aceste tab-uri apar în <strong>Research Hub</strong> și <strong>Marketing Agent</strong> le folosește automat.
+            These tabs appear in <strong>Research Hub</strong> and <strong>Marketing Agent</strong> uses them automatically.
           </p>
         </div>
       )}
@@ -189,12 +189,12 @@ export default function RegionSettings() {
       {/* Save status */}
       {saving && (
         <div className="flex items-center gap-2 text-xs" style={{ color: "#A8967E" }}>
-          <Loader2 className="w-3 h-3 animate-spin" />Salvez…
+          <Loader2 className="w-3 h-3 animate-spin" />Saving…
         </div>
       )}
       {saved && (
         <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: GREEN }}>
-          <Check className="w-3 h-3" />Salvat — modificările sunt active imediat
+          <Check className="w-3 h-3" />Saved — changes are active immediately
         </div>
       )}
       {error && (

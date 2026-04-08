@@ -9,19 +9,19 @@ import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits
 
 const anthropic = getAppAnthropicClient();
 
-const SYSTEM = `You are APEX — Advanced Predictive Expert & eXecutor. You are a world-class marketing strategist and sales intelligence system trained on global markets, consumer behavior, platform algorithms, and conversion psychology across every industry and geography.
+const SYSTEM = `You are APEX — Advanced Predictive Expert & eXecutor. You are a world-class marketing strategist and sales intelligence system trained on global markets, consumer behavior, platform algorithms, and conversion psychology across every industry and geography. You are an INTERNATIONAL agent — you operate across all markets and languages equally.
 
 ════════════════════════════════════════════════════════════
 LANGUAGE & COMMUNICATION RULES — CRITICAL, ALWAYS APPLY
 ════════════════════════════════════════════════════════════
 
-1. LANGUAGE: Detect the language of the user's message and respond EXCLUSIVELY in that language.
-   — Romanian question → Romanian answer
-   — English question → English answer
-   — French question → French answer
-   — Spanish question → Spanish answer
-   — German question → German answer
-   — And so on for any language. NEVER switch languages mid-response.
+1. LANGUAGE — absolute priority rule:
+   — Default response language is ENGLISH.
+   — If the user's question is in another language, respond EXCLUSIVELY in that language.
+   — The language of the QUESTION determines the language of the response.
+   — The location/market does NOT determine the response language — a user can ask in English about the Romanian market and must get an English answer about Romania.
+   — If there is no user question (step advice mode), respond in English.
+   — NEVER switch languages mid-response.
 
 2. RESPONSE LENGTH — adapt to what is asked:
    — Short, specific question → concise, direct answer (2-5 sentences + bullets)
@@ -277,13 +277,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "offer_description or question required" }, { status: 400 });
   }
 
-  // Run market context + live intelligence in parallel
+  // Run market context (location-aware) + live intelligence in parallel.
+  // NO default location — if the user doesn't specify one, APEX treats it as global.
+  const resolvedLocation = typeof location === "string" && location.trim() ? location.trim() : "";
   const [mctx, intel] = await Promise.all([
-    Promise.resolve(getMarketContext()),
+    Promise.resolve(getMarketContext(resolvedLocation || undefined)),
     getMarketIntelligence({
       offerType:        offer_type        || "service",
       offerDescription: offer_description || "",
-      location:         location          || "Romania",
+      location:         resolvedLocation,
       question:         question          || "",
     }),
   ]);
@@ -296,12 +298,13 @@ export async function POST(req: NextRequest) {
     5: "creating outreach and campaign",
   };
 
+  const marketLabel = resolvedLocation || "global (no specific market provided)";
   const prompt = `${intel.promptBlock ? `=== LIVE WEB INTELLIGENCE (fetched now from NewsAPI + YouTube) ===\n${intel.promptBlock}\n` : ""}=== REAL-TIME CONTEXT ===
-Current date/time: ${mctx.dayOfWeek}, ${mctx.timeOfDay}
-Season (local): ${mctx.season}
+Current date/time: ${mctx.dayOfWeek}, ${mctx.timeOfDay} (timezone: ${mctx.timezone})
+Season: ${mctx.season} (${mctx.hemisphere === "S" ? "Southern" : "Northern"} hemisphere)
 Platform peaking NOW: ${mctx.platformPeakNow}
-Local events & patterns: ${mctx.upcomingEvents.join("; ")}
-Seasonal buying: ${mctx.buyingPatterns}
+Upcoming events & cultural moments: ${mctx.upcomingEvents.join("; ")}
+Seasonal buying behaviour: ${mctx.buyingPatterns}
 Active urgency signals: ${mctx.urgencySignals.join("; ")}
 Avoid now: ${mctx.antiPatterns.join("; ")}
 
@@ -310,17 +313,19 @@ Wizard step: ${step} — ${stepLabels[step] || "unknown"}
 Offer type: ${offer_type || "unknown"}
 Offer: ${offer_description || ""}
 Audience: ${audience_type || "b2c"}
-Location/market: ${location || "Romania"}
+Location/market: ${marketLabel}
 Budget: ${budget_range || "unknown"}
 ${context ? `\nAdditional context:\n${JSON.stringify(context, null, 2)}` : ""}
 
 ${question ? `User question: ${question}` : `Provide expert APEX advice for step ${step}.`}
 
 CRITICAL INSTRUCTIONS:
-- Detect the language of the user's question and respond in THAT EXACT LANGUAGE
-- Adapt all platform recommendations, timing, and cultural references to: ${location || "the user's location"}
-- Be specific to this exact market. If you don't have specific local data, say so and give best global guidance
-- Match response length to question complexity — concise for simple questions, detailed for complex ones
+- LANGUAGE RULE — absolute priority: detect the language of the user's question above ("User question:") and respond EXCLUSIVELY in that language. The language of the question OVERRIDES the location's language. If the question is in English, respond in English even if the market is Romania / France / Japan. NEVER switch languages mid-response.
+- If no user question is provided (step advice mode), default to English.
+- Adapt platform recommendations, timing, examples, and cultural references to the market: ${marketLabel}.
+- If no specific market is provided, give globally-applicable guidance and say so.
+- Be specific to this exact market. If you don't have specific local data, say so and give best global guidance.
+- Match response length to question complexity — concise for simple questions, detailed for complex ones.
 - NEVER invent data. Use only real, verifiable information.`;
 
   const MODEL = "claude-haiku-4-5-20251001";

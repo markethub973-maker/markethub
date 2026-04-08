@@ -10,7 +10,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: "Bun venit la MarketHub Pro!",
+    subject: "Welcome to MarketHub Pro!",
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
         <div style="text-align:center;margin-bottom:24px;">
@@ -19,16 +19,16 @@ export async function sendWelcomeEmail(email: string, name: string) {
           </div>
           <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
         </div>
-        <h2 style="color:#292524;font-size:18px;margin-bottom:8px;">Bun venit, ${name}!</h2>
+        <h2 style="color:#292524;font-size:18px;margin-bottom:8px;">Welcome, ${name}!</h2>
         <p style="color:#78614E;line-height:1.6;margin-bottom:16px;">
-          Contul tau a fost creat cu succes. Acum ai acces la analytics pentru YouTube, TikTok si Instagram — toate intr-un singur loc.
+          Your account has been created successfully. You now have access to analytics for YouTube, TikTok and Instagram — all in one place.
         </p>
         <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
-          Incepi cu planul <strong>Free</strong>. Daca vrei mai multe date si canale, poti face upgrade oricand.
+          You're starting on the <strong>Free</strong> plan. If you want more data and channels, you can upgrade anytime.
         </p>
         <div style="text-align:center;margin-bottom:24px;">
           <a href="https://markethubpromo.com" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
-            Deschide dashboard
+            Open dashboard
           </a>
         </div>
         <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
@@ -44,7 +44,7 @@ export async function sendPaymentConfirmationEmail(email: string, name: string, 
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: `Abonament ${planLabel} activat — MarketHub Pro`,
+    subject: `${planLabel} subscription activated — MarketHub Pro`,
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
         <div style="text-align:center;margin-bottom:24px;">
@@ -53,17 +53,17 @@ export async function sendPaymentConfirmationEmail(email: string, name: string, 
           </div>
           <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
         </div>
-        <h2 style="color:#292524;font-size:18px;margin-bottom:8px;">Plata confirmata!</h2>
+        <h2 style="color:#292524;font-size:18px;margin-bottom:8px;">Payment confirmed!</h2>
         <p style="color:#78614E;line-height:1.6;margin-bottom:16px;">
-          Salut ${name}, abonamentul tau <strong>${planLabel}</strong> este activ. Acum ai acces complet la toate functiile platformei.
+          Hi ${name}, your <strong>${planLabel}</strong> subscription is active. You now have full access to every feature on the platform.
         </p>
         <div style="background:#FFFCF7;border:1px solid rgba(245,215,160,0.5);border-radius:10px;padding:16px;margin-bottom:24px;">
           <p style="margin:0 0 6px;color:#78614E;font-size:13px;"><strong>Plan:</strong> ${planLabel}</p>
-          <p style="margin:0;color:#78614E;font-size:13px;"><strong>Status:</strong> Activ</p>
+          <p style="margin:0;color:#78614E;font-size:13px;"><strong>Status:</strong> Active</p>
         </div>
         <div style="text-align:center;margin-bottom:24px;">
           <a href="https://markethubpromo.com" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
-            Deschide dashboard
+            Open dashboard
           </a>
         </div>
         <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
@@ -197,7 +197,7 @@ export async function sendSubscriptionCancelledEmail(email: string, name: string
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: "Abonamentul tau a fost anulat — MarketHub Pro",
+    subject: "Your subscription has been cancelled — MarketHub Pro",
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
         <div style="text-align:center;margin-bottom:24px;">
@@ -206,16 +206,16 @@ export async function sendSubscriptionCancelledEmail(email: string, name: string
           </div>
           <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
         </div>
-        <h2 style="color:#292524;font-size:18px;margin-bottom:8px;">Abonament anulat</h2>
+        <h2 style="color:#292524;font-size:18px;margin-bottom:8px;">Subscription cancelled</h2>
         <p style="color:#78614E;line-height:1.6;margin-bottom:16px;">
-          Salut ${name}, abonamentul tau a fost anulat. Contul tau a revenit la planul <strong>Free</strong>.
+          Hi ${name}, your subscription has been cancelled. Your account has been moved back to the <strong>Free</strong> plan.
         </p>
         <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
-          Daca te-ai razgandit sau ai anulat din greseala, poti reactiva oricand din sectiunea Upgrade.
+          If you changed your mind or cancelled by mistake, you can reactivate anytime from the Upgrade section.
         </p>
         <div style="text-align:center;margin-bottom:24px;">
           <a href="https://markethubpromo.com/upgrade" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
-            Reactivare abonament
+            Reactivate subscription
           </a>
         </div>
         <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
@@ -232,7 +232,7 @@ export async function sendTrialExpiringSoonEmail(email: string, name: string, da
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: `Trialul tau expira in ${daysLeft} ${daysLeft === 1 ? "zi" : "zile"} — MarketHub Pro`,
+    subject: `Your trial expires in ${daysLeft} ${daysLeft === 1 ? "day" : "days"} — MarketHub Pro`,
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
         <div style="text-align:center;margin-bottom:24px;">
@@ -242,18 +242,18 @@ export async function sendTrialExpiringSoonEmail(email: string, name: string, da
           <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
         </div>
         <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:center;">
-          <span style="font-size:13px;font-weight:700;color:#D97706;">⏳ ${daysLeft} ${daysLeft === 1 ? "zi" : "zile"} ramase din trial</span>
+          <span style="font-size:13px;font-weight:700;color:#D97706;">⏳ ${daysLeft} ${daysLeft === 1 ? "day" : "days"} left on your trial</span>
         </div>
-        <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Salut, ${name}!</h2>
+        <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Hi, ${name}!</h2>
         <p style="color:#78614E;line-height:1.6;margin-bottom:20px;">
-          Trialul tau gratuit de 7 zile expira curand. Nu iti pierde accesul la analytics, AI tools si toate datele conectate.
+          Your free 7-day trial is about to expire. Don't lose access to analytics, AI tools and all your connected data.
         </p>
         <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
-          Alege un plan si continua fara intreruperi — fara sa pierzi nimic din ce ai configurat.
+          Pick a plan and keep going without interruptions — without losing anything you've already configured.
         </p>
         <div style="text-align:center;margin-bottom:24px;">
           <a href="https://markethubpromo.com/upgrade" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
-            Alege un plan acum
+            Pick a plan now
           </a>
         </div>
         <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
@@ -268,7 +268,7 @@ export async function sendTrialExpiredEmail(email: string, name: string) {
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: "Trialul tau a expirat — MarketHub Pro",
+    subject: "Your trial has expired — MarketHub Pro",
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
         <div style="text-align:center;margin-bottom:24px;">
@@ -278,22 +278,22 @@ export async function sendTrialExpiredEmail(email: string, name: string) {
           <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
         </div>
         <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);border-radius:10px;padding:14px 16px;margin-bottom:20px;text-align:center;">
-          <span style="font-size:13px;font-weight:700;color:#dc2626;">Trial expirat</span>
+          <span style="font-size:13px;font-weight:700;color:#dc2626;">Trial expired</span>
         </div>
-        <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Salut, ${name},</h2>
+        <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Hi, ${name},</h2>
         <p style="color:#78614E;line-height:1.6;margin-bottom:20px;">
-          Cei 7 zile de trial gratuit au expirat. Accesul la analytics si AI tools este momentan restrictionat.
+          Your free 7-day trial has ended. Access to analytics and AI tools is currently restricted.
         </p>
         <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
-          Activeaza un plan platit pentru a recapata accesul complet la toate datele si functiile tale.
+          Activate a paid plan to regain full access to all your data and features.
         </p>
         <div style="text-align:center;margin-bottom:24px;">
           <a href="https://markethubpromo.com/upgrade-required" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
-            Reactiveaza contul
+            Reactivate account
           </a>
         </div>
         <p style="color:#A8967E;font-size:12px;text-align:center;margin-bottom:8px;">
-          Ai intrebari? Scrie-ne la <a href="mailto:support@markethubpromo.com" style="color:#F59E0B;">support@markethubpromo.com</a>
+          Got questions? Write to us at <a href="mailto:support@markethubpromo.com" style="color:#F59E0B;">support@markethubpromo.com</a>
         </p>
         <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
           © 2026 MarketHub Pro · <a href="https://markethubpromo.com/privacy" style="color:#F59E0B;">Privacy</a> · <a href="https://markethubpromo.com/terms" style="color:#F59E0B;">Terms</a>

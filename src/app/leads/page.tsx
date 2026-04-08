@@ -235,7 +235,7 @@ export default function LeadsPage() {
 
   return (
     <div>
-      <Header title="Leads Database" subtitle="Contacte descoperite de Marketing Agent — salvate automat via Apify Webhooks" />
+      <Header title="Leads Database" subtitle="Contacts discovered by Marketing Agent — saved automatically via Apify Webhooks" />
       <div className="p-6 space-y-5">
 
         {/* SQL Migration notice */}
@@ -245,24 +245,24 @@ export default function LeadsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertCircle className="w-5 h-5" style={{ color: "#6366F1" }} />
-                <p className="font-bold" style={{ color: "#292524" }}>Tabelele nu există încă în Supabase</p>
+                <p className="font-bold" style={{ color: "#292524" }}>Tables don't exist yet in Supabase</p>
               </div>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setShowSQL(s => !s)}
                   className="text-xs px-3 py-1.5 rounded-lg font-semibold"
                   style={{ backgroundColor: "rgba(99,102,241,0.1)", color: "#6366F1" }}>
-                  {showSQL ? "Ascunde SQL" : "Vezi SQL"}
+                  {showSQL ? "Hide SQL" : "View SQL"}
                 </button>
                 <button type="button" onClick={copySQL}
                   className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
                   style={{ backgroundColor: copied ? "rgba(29,185,84,0.1)" : "rgba(99,102,241,0.1)", color: copied ? GREEN : "#6366F1" }}>
                   {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                  {copied ? "Copiat!" : "Copiază SQL"}
+                  {copied ? "Copied!" : "Copy SQL"}
                 </button>
               </div>
             </div>
             <p className="text-sm" style={{ color: "#78614E" }}>
-              Rulează SQL-ul de mai jos în <strong>Supabase → SQL Editor</strong>, apoi actualizează pagina.
+              Run the SQL below in <strong>Supabase → SQL Editor</strong>, then refresh the page.
             </p>
             {showSQL && (
               <pre className="text-xs rounded-xl p-4 overflow-x-auto"
@@ -277,7 +277,7 @@ export default function LeadsPage() {
         <div className="rounded-2xl p-5 space-y-3" style={card}>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: GREEN }} />
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>Apify Webhook — Configurare</p>
+            <p className="font-bold text-sm" style={{ color: "#292524" }}>Apify Webhook — Setup</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(29,185,84,0.06)", border: "1px solid rgba(29,185,84,0.15)" }}>
@@ -285,25 +285,25 @@ export default function LeadsPage() {
               <code className="block font-mono text-xs break-all" style={{ color: "#292524" }}>
                 https://markethubpromo.com/api/webhooks/apify
               </code>
-              <p className="mt-1" style={{ color: "#A8967E" }}>Adaugă în Apify → Actor → Settings → Webhooks</p>
+              <p className="mt-1" style={{ color: "#A8967E" }}>Add it in Apify → Actor → Settings → Webhooks</p>
             </div>
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)" }}>
-              <p className="font-bold mb-1" style={{ color: AMBER }}>Events de activat</p>
+              <p className="font-bold mb-1" style={{ color: AMBER }}>Events to enable</p>
               <p style={{ color: "#78614E" }}>✓ ACTOR.RUN.SUCCEEDED</p>
               <p style={{ color: "#78614E" }}>✓ ACTOR.RUN.FAILED</p>
-              <p className="mt-1" style={{ color: "#A8967E" }}>Datele se salvează automat la finalizare</p>
+              <p className="mt-1" style={{ color: "#A8967E" }}>Data is saved automatically on completion</p>
             </div>
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.15)" }}>
               <p className="font-bold mb-1" style={{ color: "#6366F1" }}>ENV Variable</p>
-              <code className="font-mono" style={{ color: "#292524" }}>APIFY_WEBHOOK_SECRET=<span style={{ color: "#A8967E" }}>orice_string_secret</span></code>
-              <p className="mt-1" style={{ color: "#A8967E" }}>Adaugă în Vercel + .env.local</p>
+              <code className="font-mono" style={{ color: "#292524" }}>APIFY_WEBHOOK_SECRET=<span style={{ color: "#A8967E" }}>any_secret_string</span></code>
+              <p className="mt-1" style={{ color: "#A8967E" }}>Add it in Vercel + .env.local</p>
             </div>
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.2)" }}>
-              <p className="font-bold mb-1" style={{ color: "#78614E" }}>Flow automat</p>
-              <p style={{ color: "#78614E" }}>1. Agent pornește Apify run</p>
-              <p style={{ color: "#78614E" }}>2. Apify procesează în background</p>
-              <p style={{ color: "#78614E" }}>3. Webhook → date în Supabase</p>
-              <p style={{ color: GREEN }}>4. Leads apar automat aici ✓</p>
+              <p className="font-bold mb-1" style={{ color: "#78614E" }}>Automatic flow</p>
+              <p style={{ color: "#78614E" }}>1. Agent starts Apify run</p>
+              <p style={{ color: "#78614E" }}>2. Apify processes in background</p>
+              <p style={{ color: "#78614E" }}>3. Webhook → data into Supabase</p>
+              <p style={{ color: GREEN }}>4. Leads appear here automatically ✓</p>
             </div>
           </div>
         </div>
@@ -317,17 +317,17 @@ export default function LeadsPage() {
             </div>
             <div className="rounded-xl p-4" style={card}>
               <p className="text-2xl font-bold" style={{ color: GREEN }}>{withPhone}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Cu telefon</p>
+              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>With phone</p>
             </div>
             <div className="rounded-xl p-4" style={card}>
               <p className="text-2xl font-bold" style={{ color: "#6366F1" }}>{withEmail}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Cu email</p>
+              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>With email</p>
             </div>
             <div className="rounded-xl p-4" style={card}>
               <p className="text-2xl font-bold" style={{ color: IG }}>
                 {leads.filter(l => l.contacted).length}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Contactați</p>
+              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Contacted</p>
             </div>
           </div>
         )}
@@ -339,7 +339,7 @@ export default function LeadsPage() {
               style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFFDF9" }}>
               <Search className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#C4AA8A" }} />
               <input type="text" value={search} onChange={e => setSearch(e.target.value)}
-                placeholder="Caută după nume, telefon, oraș..."
+                placeholder="Search by name, phone, city..."
                 className="flex-1 text-xs bg-transparent focus:outline-none" style={{ color: "#292524" }} />
             </div>
 
@@ -355,7 +355,7 @@ export default function LeadsPage() {
                       ? { backgroundColor: color + "20", color, border: `1px solid ${color}40` }
                       : { backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.2)" }}>
                     <Icon className="w-3 h-3" />
-                    {t === "all" ? `Toate (${leads.length})` : `${TYPE_LABELS[t] || t} (${typeCounts[t] || 0})`}
+                    {t === "all" ? `All (${leads.length})` : `${TYPE_LABELS[t] || t} (${typeCounts[t] || 0})`}
                   </button>
                 );
               })}
@@ -366,7 +366,7 @@ export default function LeadsPage() {
                 <button type="button" onClick={handleDelete}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
                   style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#DC2626" }}>
-                  <Trash2 className="w-3 h-3" />Șterge ({selected.size})
+                  <Trash2 className="w-3 h-3" />Delete ({selected.size})
                 </button>
               )}
               <button type="button" onClick={exportCSV}
@@ -393,12 +393,12 @@ export default function LeadsPage() {
           <div className="rounded-2xl p-10 text-center" style={card}>
             <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(196,170,138,0.4)" }} />
             <p className="font-semibold" style={{ color: "#78614E" }}>
-              {leads.length === 0 ? "Niciun lead salvat încă" : "Niciun rezultat pentru filtrele selectate"}
+              {leads.length === 0 ? "No leads saved yet" : "No results for the selected filters"}
             </p>
             <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>
               {leads.length === 0
-                ? "Pornește Marketing Agent → leads se salvează automat via webhook"
-                : "Schimbă filtrul sau caută alt termen"}
+                ? "Start the Marketing Agent → leads are saved automatically via webhook"
+                : "Change the filter or search for a different term"}
             </p>
           </div>
         )}
@@ -410,7 +410,7 @@ export default function LeadsPage() {
               <input type="checkbox" checked={selected.size === filtered.length && filtered.length > 0}
                 onChange={selectAll} className="w-3.5 h-3.5 rounded" />
               <span className="text-xs font-semibold" style={{ color: "#A8967E" }}>
-                {filtered.length} leads {selected.size > 0 ? `· ${selected.size} selectate` : ""}
+                {filtered.length} leads {selected.size > 0 ? `· ${selected.size} selected` : ""}
               </span>
             </div>
 
@@ -474,7 +474,7 @@ export default function LeadsPage() {
                         {lead.url && !lead.website && (
                           <a href={lead.url} target="_blank" rel="noopener noreferrer"
                             className="flex items-center gap-1 text-xs" style={{ color: color }}>
-                            <ExternalLink className="w-3 h-3" />profil
+                            <ExternalLink className="w-3 h-3" />profile
                           </a>
                         )}
                       </div>
@@ -496,7 +496,7 @@ export default function LeadsPage() {
 
                     <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
                       <p className="text-xs" style={{ color: "#C4AA8A" }}>
-                        {new Date(lead.created_at).toLocaleDateString("ro", { day: "2-digit", month: "short" })}
+                        {new Date(lead.created_at).toLocaleDateString("en", { day: "2-digit", month: "short" })}
                       </p>
                       {/* Contacted toggle */}
                       <button type="button"
@@ -512,7 +512,7 @@ export default function LeadsPage() {
                           : lead.contacted
                           ? <CheckCircle2 className="w-3 h-3" />
                           : <Circle className="w-3 h-3" />}
-                        {lead.contacted ? "Contactat" : "Marchează"}
+                        {lead.contacted ? "Contacted" : "Mark"}
                       </button>
                       {/* Notes */}
                       <button type="button"
@@ -520,7 +520,7 @@ export default function LeadsPage() {
                         className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
                         style={{ color: lead.notes ? AMBER : "#C4AA8A", backgroundColor: lead.notes ? `${AMBER}10` : "transparent" }}>
                         <StickyNote className="w-3 h-3" />
-                        {lead.notes ? "Notă" : "+ Notă"}
+                        {lead.notes ? "Note" : "+ Note"}
                       </button>
                     </div>
                   </div>
@@ -532,7 +532,7 @@ export default function LeadsPage() {
                         value={noteText}
                         onChange={e => setNoteText(e.target.value)}
                         autoFocus rows={2}
-                        placeholder="Adaugă o notă despre acest lead..."
+                        placeholder="Add a note about this lead..."
                         className="flex-1 text-xs px-3 py-2 rounded-xl resize-none focus:outline-none"
                         style={{ border: `1px solid ${AMBER}40`, backgroundColor: "#FFFDF9", color: "#292524" }}
                       />

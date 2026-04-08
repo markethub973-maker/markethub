@@ -166,7 +166,18 @@ const PUBLIC_PATHS = [
 const UPGRADE_PATHS = ["/upgrade-required", "/upgrade", "/pricing", "/api/stripe/checkout"];
 
 // ── Auth route rate limits (stricter to prevent brute force) ────────────────
-const AUTH_PATHS = ["/api/auth/", "/login", "/register", "/api/admin-secret-login", "/api/admin-auth"];
+// Only PASSWORD login / registration endpoints get the strict 10/min bucket.
+// Social OAuth init routes (/api/auth/instagram, /api/auth/youtube, /api/auth/tiktok)
+// are NOT brute-forceable — they just redirect to the provider — and legitimate users
+// often click them multiple times during the OAuth dance, so they use the normal
+// 120/min API bucket instead.
+const AUTH_PATHS = [
+  "/api/auth/register",
+  "/login",
+  "/register",
+  "/api/admin-secret-login",
+  "/api/admin-auth",
+];
 // Rate limits are configured in getAuthLimiter/getApiLimiter (10/min auth, 120/min API)
 
 // ── Admin tunnel verification ────────────────────────────────────────────────

@@ -133,7 +133,7 @@ Seller contact info:
 ${contactLines || "(no contact info provided — omit contact details from all copy)"}
 
 Targeting:
-- Location: ${targeting?.location || "Romania"}
+- Location: ${targeting?.location || "global (no specific market provided)"}
 - Event types: ${eventTypes}
 - Audience: ${targeting?.audience_type || "b2c"}
 

@@ -31,19 +31,19 @@ interface SessionCost {
 }
 
 const OPERATION_LABELS: Record<string, string> = {
-  analyze:              "Analiză ofertă AI",
-  score:                "Scorare leads AI",
-  message:              "Mesaj outreach AI",
-  campaign:             "Campanie completă AI",
+  analyze:              "AI offer analysis",
+  score:                "AI lead scoring",
+  message:              "AI outreach message",
+  campaign:             "AI full campaign",
   marketing_advisor:    "APEX — Marketing Intelligence",
-  research_google:      "Căutare Google",
-  research_maps:        "Căutare Maps",
-  research_reddit:      "Căutare Reddit",
-  research_website:     "Analiză website",
-  research_maps_reviews:"Recenzii Maps",
-  research_local_market:"Piața locală",
-  research_instagram:   "Căutare Instagram",
-  research_tiktok:      "Căutare TikTok",
+  research_google:      "Google search",
+  research_maps:        "Maps search",
+  research_reddit:      "Reddit search",
+  research_website:     "Website analysis",
+  research_maps_reviews:"Maps reviews",
+  research_local_market:"Local market",
+  research_instagram:   "Instagram search",
+  research_tiktok:      "TikTok search",
 };
 
 function fmt(usd: number): string {
@@ -102,10 +102,10 @@ export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0
           <Zap className="w-4 h-4" style={{ color: AMBER }} />
           <div className="text-left">
             <p className="text-xs font-bold" style={{ color: "#292524" }}>
-              Costul sesiunii curente
+              Current session cost
             </p>
             <p className="text-xs" style={{ color: "#A8967E" }}>
-              {data.lines.length} operațiuni • {fmtTotal(clientPrice)} ({(clientPrice * ronRate).toFixed(3)} RON)
+              {data.lines.length} operations • {fmtTotal(clientPrice)} ({(clientPrice * ronRate).toFixed(3)} RON)
             </p>
           </div>
         </div>
@@ -148,25 +148,25 @@ export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0
           <div className="rounded-xl p-3 space-y-1.5"
             style={{ backgroundColor: "rgba(245,215,160,0.06)", border: "1px solid rgba(245,215,160,0.15)" }}>
             <div className="flex justify-between text-xs">
-              <span style={{ color: "#A8967E" }}>Cost AI (Anthropic)</span>
+              <span style={{ color: "#A8967E" }}>AI cost (Anthropic)</span>
               <span className="font-mono" style={{ color: "#292524" }}>{fmt(data.anthropic_usd)}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span style={{ color: "#A8967E" }}>Cost căutări (Apify)</span>
+              <span style={{ color: "#A8967E" }}>Search cost (Apify)</span>
               <span className="font-mono" style={{ color: "#292524" }}>{fmt(data.apify_usd)}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span style={{ color: "#A8967E" }}>Cost API real total</span>
+              <span style={{ color: "#A8967E" }}>Real API cost total</span>
               <span className="font-mono" style={{ color: "#292524" }}>{fmtTotal(data.api_cost_usd)}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span style={{ color: "#A8967E" }}>Comision platformă ({data.markup_percent}%)</span>
+              <span style={{ color: "#A8967E" }}>Platform fee ({data.markup_percent}%)</span>
               <span className="font-mono" style={{ color: "#292524" }}>{fmtTotal(data.api_markup_usd)}</span>
             </div>
             {data.value_fee_enabled && data.campaign_value_usd > 0 && (
               <div className="flex justify-between text-xs">
                 <span style={{ color: "#A8967E" }}>
-                  Comision valoare afacere ({data.value_fee_percent}% din ${data.campaign_value_usd.toFixed(0)})
+                  Business value fee ({data.value_fee_percent}% of ${data.campaign_value_usd.toFixed(0)})
                 </span>
                 <span className="font-mono font-bold" style={{ color: AMBER }}>
                   {fmtTotal(data.value_fee_usd)}
@@ -175,11 +175,11 @@ export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0
             )}
             <div className="border-t pt-1.5 flex justify-between text-xs font-bold"
               style={{ borderColor: "rgba(245,215,160,0.2)" }}>
-              <span style={{ color: "#78614E" }}>Total de plată</span>
+              <span style={{ color: "#78614E" }}>Total to pay</span>
               <span className="font-mono" style={{ color: AMBER }}>{fmtTotal(clientPrice)}</span>
             </div>
             <div className="flex justify-between text-xs">
-              <span style={{ color: "#A8967E" }}>Echivalent RON (~{ronRate} curs)</span>
+              <span style={{ color: "#A8967E" }}>RON equivalent (~{ronRate} rate)</span>
               <span className="font-mono font-bold" style={{ color: GREEN }}>
                 {(clientPrice * ronRate).toFixed(4)} RON
               </span>
@@ -187,7 +187,7 @@ export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0
           </div>
 
           <p className="text-xs text-center" style={{ color: "#A8967E" }}>
-            Costurile sunt calculate în timp real per apel API
+            Costs are calculated in real time per API call
           </p>
         </div>
       )}

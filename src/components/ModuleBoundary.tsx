@@ -52,7 +52,7 @@ export class ModuleBoundary extends React.Component<Props, State> {
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs"
           style={{ backgroundColor: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)", color: "#EF4444" }}>
           <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-          <span className="flex-1">{this.props.name || "Module"} indisponibil momentan</span>
+          <span className="flex-1">{this.props.name || "Module"} temporarily unavailable</span>
           <button type="button" onClick={this.reset}
             className="flex items-center gap-1 font-bold opacity-70 hover:opacity-100">
             <RefreshCw className="w-3 h-3" /> Retry
@@ -70,10 +70,10 @@ export class ModuleBoundary extends React.Component<Props, State> {
         </div>
         <div>
           <p className="font-bold text-base" style={{ color: "#292524" }}>
-            {this.props.name ? `${this.props.name} indisponibil` : "Modul indisponibil"}
+            {this.props.name ? `${this.props.name} unavailable` : "Module unavailable"}
           </p>
           <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
-            A apărut o eroare neașteptată. Restul aplicației funcționează normal.
+            An unexpected error occurred. The rest of the app keeps working normally.
           </p>
           {this.state.error && (
             <p className="text-xs mt-2 font-mono px-3 py-1.5 rounded-lg inline-block"
@@ -85,7 +85,7 @@ export class ModuleBoundary extends React.Component<Props, State> {
         <button type="button" onClick={this.reset}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
           style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.25)" }}>
-          <RefreshCw className="w-4 h-4" /> Încearcă din nou
+          <RefreshCw className="w-4 h-4" /> Try again
         </button>
       </div>
     );
@@ -148,8 +148,8 @@ export function ServiceErrorBanner({
       <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
       <div className="flex-1">
         <p className="font-semibold" style={{ color: "#292524" }}>
-          {service ? `${service} indisponibil` : "Eroare serviciu"}
-          {degraded && <span className="ml-2 text-xs font-normal" style={{ color: "#A8967E" }}>(serviciu degradat)</span>}
+          {service ? `${service} unavailable` : "Service error"}
+          {degraded && <span className="ml-2 text-xs font-normal" style={{ color: "#A8967E" }}>(degraded service)</span>}
         </p>
         <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{error}</p>
       </div>

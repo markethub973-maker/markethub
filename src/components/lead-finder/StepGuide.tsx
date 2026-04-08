@@ -21,73 +21,73 @@ interface StepConfig {
 
 const STEP_CONFIGS: Record<number, (ctx: StepGuideContext) => StepConfig> = {
   1: (ctx) => ({
-    title: "Definește ce vinzi",
-    subtitle: "Cu cât ești mai specific, cu atât AI-ul găsește clienți mai buni",
+    title: "Define what you sell",
+    subtitle: "The more specific you are, the better leads the AI finds",
     actions: [
-      { label: "Selectează tipul ofertei", detail: "Serviciu, produs fizic, mâncare, afiliere, app etc.", done: !!ctx.offerType },
-      { label: "Descrie oferta în 1-2 propoziții", detail: "Include ce faci, pentru cine, unde — fii concret, nu generic", done: ctx.offerText.trim().length > 20 },
-      { label: "Menționează diferențiatorul", detail: "Ce ai tu în plus față de concurență? Preț, calitate, unicitate?", done: ctx.offerText.trim().length > 60 },
+      { label: "Select the offer type", detail: "Service, physical product, food, affiliate, app, etc.", done: !!ctx.offerType },
+      { label: "Describe the offer in 1-2 sentences", detail: "Include what you do, for whom, where — be concrete, not generic", done: ctx.offerText.trim().length > 20 },
+      { label: "Mention your differentiator", detail: "What do you have over competitors? Price, quality, uniqueness?", done: ctx.offerText.trim().length > 60 },
     ],
-    next: "Definirea audienței țintă",
+    next: "Define the target audience",
     tip: ctx.offerType === "food_beverage"
-      ? "Mâncarea se vinde vizual — pregătește poze de calitate pentru campanie"
+      ? "Food sells visually — prepare quality photos for the campaign"
       : ctx.offerType === "affiliate"
-      ? "La afiliere, transparența bate totul — spune că promovezi, nu ascunde"
+      ? "With affiliate, transparency beats everything — disclose that you're promoting"
       : ctx.offerType === "software"
-      ? "Pentru app/SaaS, demo-ul video scurt bate orice text"
-      : "Ofertele cu testimoniale concrete se convertesc de 3x mai bine",
+      ? "For apps/SaaS, a short video demo beats any text"
+      : "Offers with concrete testimonials convert 3x better",
   }),
 
   2: (ctx) => ({
-    title: "Definește audiența ideală",
-    subtitle: "Targetarea greșită = bani aruncați — fii precis",
+    title: "Define your ideal audience",
+    subtitle: "Wrong targeting = wasted money — be precise",
     actions: [
-      { label: "Alege tipul clientului (B2C/B2B/Ambele)", detail: "B2C = persoane fizice, B2B = firme. Mesajul diferă complet", done: !!ctx.audienceType },
-      { label: "Setează locația", detail: "Oraș, regiune sau toată România — afectează sursele și mesajul", done: !!ctx.location },
-      { label: "Alege range-ul de buget al clienților", detail: "Știind bugetul lor, știi cum să comunici valoarea", done: !!ctx.budgetRange },
+      { label: "Choose customer type (B2C/B2B/Both)", detail: "B2C = individuals, B2B = companies. The message differs completely", done: !!ctx.audienceType },
+      { label: "Set the location", detail: "City, region or country — affects sources and messaging", done: !!ctx.location },
+      { label: "Choose customer budget range", detail: "Knowing their budget tells you how to communicate value", done: !!ctx.budgetRange },
     ],
-    next: "Selectarea surselor AI de căutare",
+    next: "Select AI search sources",
     tip: ctx.audienceType === "b2b"
-      ? "B2B: LinkedIn + Google + cold email bat Facebook și TikTok pentru prospecți de firmă"
-      : "B2C: Facebook Groups + OLX + Google Maps sunt cele mai bogate surse de lead-uri locale",
+      ? "B2B: LinkedIn + Google + cold email beat Facebook and TikTok for company prospects"
+      : "B2C: Facebook Groups + Marketplace + Google Maps are the richest sources for local leads",
   }),
 
   3: (ctx) => ({
-    title: "Selectează sursele de căutare",
-    subtitle: "AI-ul a ales sursele optime — le poți ajusta manual",
+    title: "Select your search sources",
+    subtitle: "AI picked the optimal sources — you can adjust them manually",
     actions: [
-      { label: "Verifică sursele activate de AI", detail: "Fiecare sursă are un scor de potrivire — activează-le pe cele cu intent ridicat", done: true },
-      { label: "Ajustează query-urile de căutare", detail: "Poți edita manual cuvintele cheie per sursă — fii specific cu locația și evenimentul", done: false },
-      { label: "Alege 3-5 surse maxim", detail: "Prea multe surse = date zgomotoase. Calitate > cantitate", done: false },
+      { label: "Check the AI-activated sources", detail: "Each source has a match score — activate the ones with high intent", done: true },
+      { label: "Adjust search queries", detail: "You can manually edit keywords per source — be specific about location and event", done: false },
+      { label: "Choose max 3-5 sources", detail: "Too many sources = noisy data. Quality > quantity", done: false },
     ],
-    next: "Analiza și scorarea lead-urilor",
-    tip: "Google + Facebook Groups + OLX este combinația care aduce cel mai bun ROI pentru România",
+    next: "Analyze and score the leads",
+    tip: "Google + Facebook Groups + Marketplace is the combo that brings the best ROI",
   }),
 
   4: (ctx) => ({
-    title: "Analizează lead-urile găsite",
-    subtitle: ctx.leadsCount > 0 ? `${ctx.leadsCount} prospecți găsiți — filtrează și alege` : "Căutarea este în progres…",
+    title: "Analyze the leads found",
+    subtitle: ctx.leadsCount > 0 ? `${ctx.leadsCount} prospects found — filter and pick` : "Search in progress…",
     actions: [
-      { label: "Filtrează după scor (HOT > WARM > COLD)", detail: "Concentrează-te pe leads HOT și WARM — cold leads costă mult timp", done: ctx.leadsCount > 0 },
-      { label: "Deschide sursele și verifică contextul", detail: "Click pe linkul fiecărui lead pentru a vedea contextul real", done: false },
-      { label: "Salvează cele mai bune lead-uri în CRM", detail: "Leads HOT salvate = pipeline activ pe care îl poți urmări", done: false },
+      { label: "Filter by score (HOT > WARM > COLD)", detail: "Focus on HOT and WARM leads — cold leads cost a lot of time", done: ctx.leadsCount > 0 },
+      { label: "Open the sources and check context", detail: "Click each lead's link to see the real context", done: false },
+      { label: "Save the best leads to the CRM", detail: "Saved HOT leads = an active pipeline you can follow up on", done: false },
     ],
-    next: "Crearea mesajului de outreach personalizat",
+    next: "Create the personalized outreach message",
     tip: ctx.leadsCount > 0
-      ? `Din ${ctx.leadsCount} leads, concentrează-te pe primele ${Math.min(5, ctx.leadsCount)} — calitatea bate cantitatea`
-      : "Dacă nu găsești leads, schimbă query-ul sau sursa, nu oferta",
+      ? `Out of ${ctx.leadsCount} leads, focus on the top ${Math.min(5, ctx.leadsCount)} — quality beats quantity`
+      : "If you can't find leads, change the query or source — not the offer",
   }),
 
   5: (_ctx) => ({
-    title: "Outreach & Campanie completă",
-    subtitle: "Mesaj personalizat + 9 materiale de marketing generate AI",
+    title: "Outreach & Full campaign",
+    subtitle: "Personalized message + 9 AI-generated marketing assets",
     actions: [
-      { label: "Copiază mesajul de outreach și trimite", detail: "Folosește platforma recomandată — nu trimite același mesaj pe toate", done: false },
-      { label: "Completează datele de contact", detail: "Phone, email, website, WhatsApp — se integrează în toate materialele campaniei", done: false },
-      { label: "Generează campania completă (9 materiale)", detail: "SMS, Email, WhatsApp, Facebook, Instagram, TikTok, Landing page, Video brief, Brief foto", done: false },
+      { label: "Copy the outreach message and send", detail: "Use the recommended platform — don't send the same message everywhere", done: false },
+      { label: "Fill in your contact details", detail: "Phone, email, website, WhatsApp — they get embedded in all campaign assets", done: false },
+      { label: "Generate the full campaign (9 assets)", detail: "SMS, Email, WhatsApp, Facebook, Instagram, TikTok, Landing page, Video brief, Photo brief", done: false },
     ],
-    next: "Trimite, urmărește răspunsul, re-targetează",
-    tip: "Nu trimite același mesaj la 50 de oameni. 10 mesaje personalizate bat 200 generice.",
+    next: "Send, track replies, re-target",
+    tip: "Don't send the same message to 50 people. 10 personalized messages beat 200 generic ones.",
   }),
 };
 
@@ -119,7 +119,7 @@ export default function StepGuide({ step, offerType, offerText, audienceType, lo
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-bold" style={{ color: AMBER }}>Ghid pas {step}/5</p>
+          <p className="text-xs font-bold" style={{ color: AMBER }}>Step {step}/5 guide</p>
           <p className="text-sm font-bold" style={{ color: "#292524" }}>{config.title}</p>
           <p className="text-xs" style={{ color: "#A8967E" }}>{config.subtitle}</p>
         </div>
@@ -159,7 +159,7 @@ export default function StepGuide({ step, offerType, offerText, audienceType, lo
       {/* Next step */}
       <div className="flex items-center gap-2">
         <ArrowRight className="w-3.5 h-3.5" style={{ color: "rgba(245,215,160,0.4)" }} />
-        <p className="text-xs" style={{ color: "#A8967E" }}>Urmează: <span className="font-semibold" style={{ color: "#78614E" }}>{config.next}</span></p>
+        <p className="text-xs" style={{ color: "#A8967E" }}>Next: <span className="font-semibold" style={{ color: "#78614E" }}>{config.next}</span></p>
       </div>
     </div>
   );

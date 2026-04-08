@@ -21,7 +21,7 @@ export default function OnboardingWidget() {
   const [open, setOpen] = useState(false);
   const [tour, setTour] = useState<"full" | "page" | null>(null);
   const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", text: "Salut! 👋 Sunt asistentul tău MarketHub. Întreabă-mă orice despre platformă sau folosește butoanele de mai jos pentru a porni un tur ghidat." }
+    { role: "assistant", text: "Hi! 👋 I'm your MarketHub assistant. Ask me anything about the platform or use the buttons below to start a guided tour." }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -52,9 +52,9 @@ export default function OnboardingWidget() {
         body: JSON.stringify({ message: text, currentPage: pathname }),
       });
       const data = await res.json();
-      setMessages(m => [...m, { role: "assistant", text: data.reply || "Îmi pare rău, nu am putut procesa cererea." }]);
+      setMessages(m => [...m, { role: "assistant", text: data.reply || "Sorry, I couldn't process the request." }]);
     } catch {
-      setMessages(m => [...m, { role: "assistant", text: "Eroare de conexiune. Încearcă din nou." }]);
+      setMessages(m => [...m, { role: "assistant", text: "Connection error. Please try again." }]);
     } finally {
       setLoading(false);
     }
@@ -118,7 +118,7 @@ export default function OnboardingWidget() {
               </div>
               <div>
                 <p className="text-sm font-bold" style={{ color: "#FFF8F0" }}>MarketHub Assistant</p>
-                <p className="text-xs" style={{ color: "#A8967E" }}>AI · Răspunde instant</p>
+                <p className="text-xs" style={{ color: "#A8967E" }}>AI · Instant replies</p>
               </div>
             </div>
             <button type="button" onClick={() => setOpen(false)} style={{ color: "#A8967E" }}>
@@ -185,7 +185,7 @@ export default function OnboardingWidget() {
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && sendMessage()}
-                placeholder="Întreabă ceva..."
+                placeholder="Ask something..."
                 className="flex-1 bg-transparent text-sm outline-none"
                 style={{ color: "#F5F0E8" }}
               />

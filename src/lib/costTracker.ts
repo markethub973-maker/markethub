@@ -27,19 +27,19 @@ export const APIFY_ACU_ESTIMATES: Record<string, number> = {
 
 // ── Human-readable operation labels ──────────────────────────────────────────
 export const OPERATION_LABELS: Record<string, string> = {
-  analyze:              "Analiză ofertă AI",
-  score:                "Scorare leads AI",
-  message:              "Mesaj outreach AI",
-  campaign:             "Campanie completă AI",
+  analyze:              "AI offer analysis",
+  score:                "AI lead scoring",
+  message:              "AI outreach message",
+  campaign:             "AI full campaign",
   marketing_advisor:    "APEX — Marketing Intelligence",
-  research_google:      "Căutare Google",
-  research_maps:        "Căutare Maps",
-  research_reddit:      "Căutare Reddit",
-  research_website:     "Analiză website",
-  research_maps_reviews:"Recenzii Maps",
-  research_local_market:"Piața locală OLX",
-  research_instagram:   "Căutare Instagram",
-  research_tiktok:      "Căutare TikTok",
+  research_google:      "Google search",
+  research_maps:        "Maps search",
+  research_reddit:      "Reddit search",
+  research_website:     "Website analysis",
+  research_maps_reviews:"Maps reviews",
+  research_local_market:"Local market (OLX)",
+  research_instagram:   "Instagram search",
+  research_tiktok:      "TikTok search",
 };
 
 // ── Cost calculation ──────────────────────────────────────────────────────────

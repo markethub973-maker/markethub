@@ -22,24 +22,24 @@ const RED   = "#EF4444";
 const card  = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
 const OFFER_TYPES = [
-  { id: "service",           icon: Zap,          label: "Serviciu",          desc: "DJ, fotograf, consultant, curier, electrician…" },
-  { id: "event_entertain",   icon: Star,         label: "Events & Show",     desc: "Nunți, corporate, petreceri, animatori…" },
-  { id: "food_beverage",     icon: Package,      label: "Mâncare & Băuturi", desc: "Restaurant, catering, home-made, cafenea…" },
-  { id: "ecommerce",         icon: ShoppingCart, label: "Magazin online",    desc: "Shopify, WooCommerce, marketplace, dropshipping…" },
-  { id: "physical_product",  icon: Package,      label: "Produs fizic",      desc: "Echipament, handmade, fashion, beauty…" },
-  { id: "affiliate",         icon: Link,         label: "Afiliere",          desc: "Promovezi produsul altcuiva, CPA, review…" },
-  { id: "software",          icon: Target,       label: "Software / App",    desc: "SaaS, tool, abonament digital, AI…" },
-  { id: "digital_product",   icon: Zap,          label: "Produs digital",    desc: "Curs, ebook, template, preset, NFT…" },
-  { id: "health_beauty",     icon: User,         label: "Sănătate & Beauty", desc: "Cosmetice, suplimente, salon, spa, wellness…" },
-  { id: "real_estate",       icon: Building2,    label: "Imobiliare",        desc: "Vânzare, închiriere, agenție, construcții…" },
-  { id: "education",         icon: Target,       label: "Educație & Cursuri", desc: "Meditații, cursuri online, coaching, training…" },
-  { id: "b2b_services",      icon: Building2,    label: "Servicii B2B",      desc: "Marketing, IT, contabilitate, HR, logistică…" },
+  { id: "service",           icon: Zap,          label: "Service",            desc: "DJ, photographer, consultant, courier, electrician…" },
+  { id: "event_entertain",   icon: Star,         label: "Events & Show",      desc: "Weddings, corporate, parties, entertainers…" },
+  { id: "food_beverage",     icon: Package,      label: "Food & Beverage",    desc: "Restaurant, catering, home-made, café…" },
+  { id: "ecommerce",         icon: ShoppingCart, label: "Online store",       desc: "Shopify, WooCommerce, marketplace, dropshipping…" },
+  { id: "physical_product",  icon: Package,      label: "Physical product",   desc: "Equipment, handmade, fashion, beauty…" },
+  { id: "affiliate",         icon: Link,         label: "Affiliate",          desc: "Promote someone else's product, CPA, reviews…" },
+  { id: "software",          icon: Target,       label: "Software / App",     desc: "SaaS, tool, digital subscription, AI…" },
+  { id: "digital_product",   icon: Zap,          label: "Digital product",    desc: "Course, ebook, template, preset, NFT…" },
+  { id: "health_beauty",     icon: User,         label: "Health & Beauty",    desc: "Cosmetics, supplements, salon, spa, wellness…" },
+  { id: "real_estate",       icon: Building2,    label: "Real estate",        desc: "Sales, rentals, agency, construction…" },
+  { id: "education",         icon: Target,       label: "Education & Courses", desc: "Tutoring, online courses, coaching, training…" },
+  { id: "b2b_services",      icon: Building2,    label: "B2B Services",       desc: "Marketing, IT, accounting, HR, logistics…" },
 ];
 
 const AUDIENCE_TYPES = [
-  { id: "b2c", label: "Persoane fizice" },
-  { id: "b2b", label: "Companii" },
-  { id: "both", label: "Ambele" },
+  { id: "b2c", label: "Consumers" },
+  { id: "b2b", label: "Businesses" },
+  { id: "both", label: "Both" },
 ];
 
 const BUDGET_RANGES = [
@@ -50,12 +50,12 @@ const BUDGET_RANGES = [
 ];
 
 const EVENT_TYPES = [
-  { id: "nuntă",      label: "Nuntă",      emoji: "💍" },
-  { id: "botez",      label: "Botez",      emoji: "👶" },
+  { id: "wedding",    label: "Wedding",    emoji: "💍" },
+  { id: "baptism",    label: "Baptism",    emoji: "👶" },
   { id: "corporate",  label: "Corporate",  emoji: "🏢" },
-  { id: "petrecere",  label: "Petrecere",  emoji: "🎉" },
-  { id: "aniversare", label: "Aniversare", emoji: "🎂" },
-  { id: "majorat",    label: "Majorat",    emoji: "🎓" },
+  { id: "party",      label: "Party",      emoji: "🎉" },
+  { id: "birthday",   label: "Birthday",   emoji: "🎂" },
+  { id: "graduation", label: "Graduation", emoji: "🎓" },
 ];
 
 const CAMPAIGN_TABS = [
@@ -66,8 +66,8 @@ const CAMPAIGN_TABS = [
   { id: "instagram_post",label: "Instagram",   emoji: "📸" },
   { id: "tiktok",       label: "TikTok/Reel",  emoji: "🎵" },
   { id: "landing_page", label: "Landing Page",  emoji: "🌐" },
-  { id: "video_brief",  label: "Brief Video",   emoji: "🎬" },
-  { id: "photo_brief",  label: "Brief Foto",    emoji: "📷" },
+  { id: "video_brief",  label: "Video Brief",   emoji: "🎬" },
+  { id: "photo_brief",  label: "Photo Brief",   emoji: "📷" },
 ];
 
 const PLATFORM_ICONS: Record<string, string> = {
@@ -116,7 +116,7 @@ interface CampaignResult {
 
 // ── Step indicator ───────────────────────────────────────────────────────────
 function Stepper({ step }: { step: number }) {
-  const steps = ["Ofertă", "Audiență", "Surse AI", "Leads", "Outreach"];
+  const steps = ["Offer", "Audience", "AI Sources", "Leads", "Outreach"];
   return (
     <div className="flex items-center justify-center gap-0 mb-8">
       {steps.map((label, i) => {
@@ -216,7 +216,7 @@ export default function LeadFinderPage() {
 
   // Step 2 — Audience
   const [audienceType, setAudienceType] = useState("both");
-  const [location, setLocation] = useState("România");
+  const [location, setLocation] = useState("");
   const [budgetRange, setBudgetRange] = useState("mid");
   // Campaign value — for value-based platform fee (Pro+)
   const [campaignValue, setCampaignValue] = useState("");
@@ -277,7 +277,7 @@ export default function LeadFinderPage() {
     });
     const data = await res.json();
     setAnalyzing(false);
-    if (!res.ok) { setAnalyzeError(data.error || "Eroare AI"); return; }
+    if (!res.ok) { setAnalyzeError(data.error || "AI error"); return; }
     setSuggestion(data);
     setKeywords(data.keywords || []);
     const enabled: Record<string, boolean> = {};
@@ -300,7 +300,7 @@ export default function LeadFinderPage() {
 
     for (const src of activeSrcs) {
       const q = sourceQueries[src.id] || src.query;
-      setSearchProgress(p => [...p, `Caut pe ${src.platform}…`]);
+      setSearchProgress(p => [...p, `Searching ${src.platform}…`]);
       try {
         let endpoint = "";
         let body: Record<string, unknown> = {};
@@ -332,15 +332,15 @@ export default function LeadFinderPage() {
         }));
         const tagged = normalized.slice(0, 15);
         allResults.push(...tagged);
-        setSearchProgress(p => [...p.slice(0, -1), `✓ ${src.platform} — ${tagged.length} rezultate`]);
+        setSearchProgress(p => [...p.slice(0, -1), `✓ ${src.platform} — ${tagged.length} results`]);
       } catch {
-        setSearchProgress(p => [...p.slice(0, -1), `✗ ${src.platform} — eroare`]);
+        setSearchProgress(p => [...p.slice(0, -1), `✗ ${src.platform} — error`]);
       }
     }
 
     setRawResults(allResults);
     setSearching(false);
-    if (!allResults.length) { setSearchError("Niciun rezultat. Încearcă alte cuvinte-cheie."); setStep(4); return; }
+    if (!allResults.length) { setSearchError("No results. Try different keywords."); setStep(4); return; }
 
     setScoring(true);
     try {
@@ -432,7 +432,7 @@ export default function LeadFinderPage() {
     });
     const data = await res.json();
     setGeneratingCampaign(false);
-    if (!res.ok) { setCampaignError(data.error || "Eroare generare campanie"); return; }
+    if (!res.ok) { setCampaignError(data.error || "Campaign generation error"); return; }
     setCampaign(data);
     setActiveCampaignTab("sms");
     setCostRefresh(n => n + 1);
@@ -450,19 +450,19 @@ export default function LeadFinderPage() {
     <div>
       <Header
         title="Lead Finder"
-        subtitle="Găsește prospecți calificați în orice nișă cu ajutorul AI"
+        subtitle="Find qualified prospects in any niche with AI"
       />
       <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-6">
 
         <Stepper step={step} />
 
-        {/* ══ STEP 1 — Ofertă ══════════════════════════════════════════════ */}
+        {/* ══ STEP 1 — Offer ═══════════════════════════════════════════════ */}
         {step === 1 && (
           <div className="space-y-4">
           <div className="rounded-2xl p-6 space-y-5" style={card}>
             <div>
-              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Ce vinzi sau promovezi?</h2>
-              <p className="text-sm" style={{ color: "#A8967E" }}>Fii specific — AI-ul va genera strategia optimă de găsire a clienților</p>
+              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>What are you selling or promoting?</h2>
+              <p className="text-sm" style={{ color: "#A8967E" }}>Be specific — AI will generate the optimal client-finding strategy</p>
             </div>
             <div className="grid grid-cols-3 gap-2">
               {OFFER_TYPES.map(({ id, icon: Icon, label, desc }) => (
@@ -479,13 +479,13 @@ export default function LeadFinderPage() {
             </div>
             <div>
               <label className="text-xs font-bold mb-2 block" style={{ color: "#78614E" }}>
-                Descrie oferta ta în 1-2 propoziții
+                Describe your offer in 1-2 sentences
               </label>
               <textarea value={offerText} onChange={e => setOfferText(e.target.value)}
                 rows={3} placeholder={
-                  offerType === "service" ? "Ex: Servicii DJ și solist voce pentru nunți, botezuri și corporate în București și Ilfov" :
-                  offerType === "affiliate" ? "Ex: Promovez un curs online de fotografie pentru fotografi amatori" :
-                  "Descrie ce vinzi și cui îi este util..."
+                  offerType === "service" ? "e.g. DJ and vocalist services for weddings, baptisms and corporate events in London and surrounding area" :
+                  offerType === "affiliate" ? "e.g. I promote an online photography course for amateur photographers" :
+                  "Describe what you sell and who it's useful for..."
                 }
                 className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
                 style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
@@ -493,7 +493,7 @@ export default function LeadFinderPage() {
             <button type="button" onClick={() => setStep(2)} disabled={!offerText.trim()}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold disabled:opacity-40 transition-all"
               style={{ backgroundColor: AMBER, color: "#1C1814" }}>
-              Înainte — Definesc audiența <ArrowRight className="w-4 h-4" />
+              Next — Define audience <ArrowRight className="w-4 h-4" />
             </button>
           </div>
           <StepGuide step={1} offerType={offerType} offerText={offerText} audienceType={audienceType}
@@ -505,16 +505,16 @@ export default function LeadFinderPage() {
           </div>
         )}
 
-        {/* ══ STEP 2 — Audiență ════════════════════════════════════════════ */}
+        {/* ══ STEP 2 — Audience ════════════════════════════════════════════ */}
         {step === 2 && (
           <div className="space-y-4">
           <div className="rounded-2xl p-6 space-y-5" style={card}>
             <div>
-              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Cine este clientul ideal?</h2>
-              <p className="text-sm" style={{ color: "#A8967E" }}>Cu cât ești mai specific, cu atât leads-urile sunt mai relevante</p>
+              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Who is the ideal customer?</h2>
+              <p className="text-sm" style={{ color: "#A8967E" }}>The more specific you are, the more relevant the leads will be</p>
             </div>
             <div>
-              <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Tip client</p>
+              <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Customer type</p>
               <div className="flex gap-2">
                 {AUDIENCE_TYPES.map(({ id, label }) => (
                   <button key={id} type="button" onClick={() => setAudienceType(id)}
@@ -531,14 +531,14 @@ export default function LeadFinderPage() {
               </div>
             </div>
             <div>
-              <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Locație țintă</p>
+              <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Target location</p>
               <input value={location} onChange={e => setLocation(e.target.value)}
-                placeholder="Ex: București, România sau Europe"
+                placeholder="e.g. London, UK or Europe — leave empty for global"
                 className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
                 style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
             </div>
             <div>
-              <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Buget estimat al clientului</p>
+              <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Customer budget estimate</p>
               <div className="flex flex-wrap gap-2">
                 {BUDGET_RANGES.map(({ id, label }) => (
                   <button key={id} type="button" onClick={() => setBudgetRange(id)}
@@ -555,17 +555,17 @@ export default function LeadFinderPage() {
             <div className="rounded-xl p-4 space-y-2" style={{ backgroundColor: `rgba(245,158,11,0.05)`, border: `1px solid rgba(245,158,11,0.2)` }}>
               <div className="flex items-center gap-2">
                 <span className="text-sm">💰</span>
-                <p className="text-xs font-bold" style={{ color: "#78614E" }}>Valoarea medie per tranzacție/client (opțional)</p>
+                <p className="text-xs font-bold" style={{ color: "#78614E" }}>Average value per transaction/customer (optional)</p>
                 <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: `${AMBER}15`, color: AMBER }}>Pro+</span>
               </div>
               <p className="text-xs" style={{ color: "#A8967E" }}>
-                Platforma calculează un comision din valoarea generată — cu cât valoarea e mai mare, cu atât campania e mai justificată
+                The platform calculates a commission from the generated value — the higher the value, the more justified the campaign
               </p>
               <div className="flex gap-2">
                 <input
                   type="number" min="0" step="1" value={campaignValue}
                   onChange={e => setCampaignValue(e.target.value)}
-                  placeholder="ex: 1000"
+                  placeholder="e.g. 1000"
                   className="flex-1 px-3 py-2 rounded-lg text-sm focus:outline-none"
                   style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                 <div className="flex gap-1">
@@ -582,7 +582,7 @@ export default function LeadFinderPage() {
               </div>
               {campaignValue && parseFloat(campaignValue) > 0 && (
                 <p className="text-xs font-semibold" style={{ color: GREEN }}>
-                  ✓ Comisionul platformei va fi calculat din {campaignValue} {campaignValueCurrency}
+                  ✓ Platform commission will be calculated from {campaignValue} {campaignValueCurrency}
                 </p>
               )}
             </div>
@@ -591,12 +591,12 @@ export default function LeadFinderPage() {
               <button type="button" onClick={() => setStep(1)}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
                 style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
-                <ArrowLeft className="w-4 h-4" /> Înapoi
+                <ArrowLeft className="w-4 h-4" /> Back
               </button>
               <button type="button" onClick={handleAnalyze} disabled={analyzing}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all disabled:opacity-60"
                 style={{ background: `linear-gradient(135deg, ${AMBER}, #D97706)`, color: "#1C1814" }}>
-                {analyzing ? <><Loader2 className="w-4 h-4 animate-spin" /> AI analizează…</> : <><Wand2 className="w-4 h-4" /> Generează strategie AI</>}
+                {analyzing ? <><Loader2 className="w-4 h-4 animate-spin" /> AI analyzing…</> : <><Wand2 className="w-4 h-4" /> Generate AI strategy</>}
               </button>
             </div>
             {analyzeError && (
@@ -613,51 +613,51 @@ export default function LeadFinderPage() {
           </div>
         )}
 
-        {/* ══ STEP 3 — Surse AI ════════════════════════════════════════════ */}
+        {/* ══ STEP 3 — AI Sources ══════════════════════════════════════════ */}
         {step === 3 && suggestion && (
           <div className="space-y-4">
             <div className="rounded-2xl p-5 space-y-3" style={card}>
               <div className="flex items-center gap-2">
                 <Wand2 className="w-4 h-4" style={{ color: AMBER }} />
-                <p className="text-sm font-bold" style={{ color: "#292524" }}>Analiza AI</p>
+                <p className="text-sm font-bold" style={{ color: "#292524" }}>AI analysis</p>
               </div>
               <div className="grid sm:grid-cols-2 gap-3">
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,215,160,0.08)" }}>
-                  <p className="text-xs font-bold mb-1" style={{ color: "#78614E" }}>Oferta reformulată</p>
+                  <p className="text-xs font-bold mb-1" style={{ color: "#78614E" }}>Refined offer</p>
                   <p className="text-xs" style={{ color: "#292524" }}>{suggestion.offer_summary}</p>
                 </div>
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,215,160,0.08)" }}>
-                  <p className="text-xs font-bold mb-1" style={{ color: "#78614E" }}>Profilul clientului ideal</p>
+                  <p className="text-xs font-bold mb-1" style={{ color: "#78614E" }}>Ideal customer profile</p>
                   <p className="text-xs" style={{ color: "#292524" }}>{suggestion.target_profile}</p>
                 </div>
               </div>
               {suggestion.affiliate_angle && (
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.15)" }}>
-                  <p className="text-xs font-bold mb-1" style={{ color: "#6366F1" }}>🎯 Unghi afiliat</p>
+                  <p className="text-xs font-bold mb-1" style={{ color: "#6366F1" }}>🎯 Affiliate angle</p>
                   <p className="text-xs" style={{ color: "#292524" }}>{suggestion.affiliate_angle}</p>
                 </div>
               )}
             </div>
 
             <div className="rounded-2xl p-5 space-y-3" style={card}>
-              <p className="text-sm font-bold" style={{ color: "#292524" }}>Cuvinte-cheie detectate</p>
-              <p className="text-xs" style={{ color: "#A8967E" }}>Acestea sunt folosite în căutări. Modifică după nevoie.</p>
+              <p className="text-sm font-bold" style={{ color: "#292524" }}>Detected keywords</p>
+              <p className="text-xs" style={{ color: "#A8967E" }}>These are used in searches. Edit as needed.</p>
               <div className="flex flex-wrap gap-2">
                 {keywords.map(kw => (
                   <Chip key={kw} text={kw} onRemove={() => setKeywords(keywords.filter(k => k !== kw))} />
                 ))}
-                <AddChip placeholder="+ cuvânt" onAdd={kw => setKeywords([...keywords, kw])} />
+                <AddChip placeholder="+ keyword" onAdd={kw => setKeywords([...keywords, kw])} />
               </div>
             </div>
 
             <div className="rounded-2xl p-5 space-y-3" style={card}>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold" style={{ color: "#292524" }}>Surse recomandate de AI</p>
+                <p className="text-sm font-bold" style={{ color: "#292524" }}>AI-recommended sources</p>
                 <span className="text-xs" style={{ color: "#A8967E" }}>
                   {Object.values(enabledSources).filter(Boolean).length} active
                 </span>
               </div>
-              <p className="text-xs" style={{ color: "#A8967E" }}>Activează/dezactivează surse · Click pe query pentru a-l edita</p>
+              <p className="text-xs" style={{ color: "#A8967E" }}>Toggle sources · Click the query to edit it</p>
               <div className="space-y-2">
                 {suggestion.sources.map(src => {
                   const on = enabledSources[src.id] ?? true;
@@ -680,7 +680,7 @@ export default function LeadFinderPage() {
                                 backgroundColor: src.intent_level === "high" ? "rgba(239,68,68,0.1)" : src.intent_level === "medium" ? `${AMBER}15` : "rgba(148,163,184,0.1)",
                                 color: src.intent_level === "high" ? RED : src.intent_level === "medium" ? AMBER : "#94A3B8",
                               }}>
-                              {src.intent_level === "high" ? "🔥 Intenție ridicată" : src.intent_level === "medium" ? "⚡ Medie" : "💤 Scăzută"}
+                              {src.intent_level === "high" ? "🔥 High intent" : src.intent_level === "medium" ? "⚡ Medium" : "💤 Low"}
                             </span>
                             <span className="text-xs ml-auto" style={{ color: "#A8967E" }}>~{src.estimated_leads} leads</span>
                           </div>
@@ -720,7 +720,7 @@ export default function LeadFinderPage() {
             <div className="rounded-xl px-4 py-3 flex items-start gap-3" style={{ backgroundColor: "rgba(29,185,84,0.06)", border: "1px solid rgba(29,185,84,0.15)" }}>
               <Target className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: GREEN }} />
               <div>
-                <p className="text-xs font-bold mb-1" style={{ color: GREEN }}>Semnale de intenție căutate</p>
+                <p className="text-xs font-bold mb-1" style={{ color: GREEN }}>Intent signals targeted</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(suggestion.intent_signals || []).map(s => (
                     <span key={s} className="text-xs px-2 py-0.5 rounded-full"
@@ -734,13 +734,13 @@ export default function LeadFinderPage() {
               <button type="button" onClick={() => setStep(2)}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
                 style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
-                <ArrowLeft className="w-4 h-4" /> Înapoi
+                <ArrowLeft className="w-4 h-4" /> Back
               </button>
               <button type="button" onClick={() => { handleSearch(); setStep(4); }}
                 disabled={!Object.values(enabledSources).some(Boolean)}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all disabled:opacity-40"
                 style={{ backgroundColor: AMBER, color: "#1C1814" }}>
-                <Search className="w-4 h-4" /> Caută prospecți acum
+                <Search className="w-4 h-4" /> Find prospects now
               </button>
             </div>
           <MarketingAdvisor step={3} offerType={offerType} offerDescription={offerText}
@@ -757,14 +757,14 @@ export default function LeadFinderPage() {
                 <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" style={{ color: AMBER }} />
                   <p className="text-sm font-bold" style={{ color: "#292524" }}>
-                    {searching ? "Căutare în progres…" : "AI scorează prospecții…"}
+                    {searching ? "Search in progress…" : "AI scoring prospects…"}
                   </p>
                 </div>
                 <div className="space-y-1">
                   {searchProgress.map((p, i) => (
                     <p key={i} className="text-xs" style={{ color: p.startsWith("✓") ? GREEN : p.startsWith("✗") ? RED : "#A8967E" }}>{p}</p>
                   ))}
-                  {scoring && <p className="text-xs" style={{ color: AMBER }}>⚡ AI analizează {rawResults.length} rezultate…</p>}
+                  {scoring && <p className="text-xs" style={{ color: AMBER }}>⚡ AI analyzing {rawResults.length} results…</p>}
                 </div>
               </div>
             )}
@@ -781,20 +781,20 @@ export default function LeadFinderPage() {
                 {saveGoal === "ok" && (
                   <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
                     style={{ backgroundColor: "rgba(29,185,84,0.08)", color: GREEN, border: "1px solid rgba(29,185,84,0.2)" }}>
-                    <BookmarkCheck className="w-4 h-4" /> Lead salvat! Vezi în <a href="/leads" className="underline ml-1">Leads Database</a>
+                    <BookmarkCheck className="w-4 h-4" /> Lead saved! See it in <a href="/leads" className="underline ml-1">Leads Database</a>
                   </div>
                 )}
                 {saveGoal === "error" && (
                   <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
                     style={{ backgroundColor: "rgba(239,68,68,0.08)", color: RED }}>
-                    <AlertCircle className="w-4 h-4" /> Eroare la salvare
+                    <AlertCircle className="w-4 h-4" /> Save error
                   </div>
                 )}
 
                 <div className="rounded-2xl p-4 flex items-center gap-4 flex-wrap" style={card}>
                   <div className="flex-1">
-                    <p className="font-bold" style={{ color: "#292524" }}>{leads.length} prospecți găsiți</p>
-                    <p className="text-xs" style={{ color: "#A8967E" }}>din {rawResults.length} rezultate totale</p>
+                    <p className="font-bold" style={{ color: "#292524" }}>{leads.length} prospects found</p>
+                    <p className="text-xs" style={{ color: "#A8967E" }}>out of {rawResults.length} total results</p>
                   </div>
                   <div className="flex gap-2 flex-wrap">
                     {(["hot","warm","cold","all"] as const).map(f => (
@@ -809,7 +809,7 @@ export default function LeadFinderPage() {
                         {f === "hot" && <Flame className="w-3 h-3" />}
                         {f === "warm" && <Star className="w-3 h-3" />}
                         {f === "cold" && <Snowflake className="w-3 h-3" />}
-                        {f === "hot" ? `HOT · ${hotCount}` : f === "warm" ? `WARM · ${warmCount}` : f === "cold" ? `COLD · ${coldCount}` : "Toate"}
+                        {f === "hot" ? `HOT · ${hotCount}` : f === "warm" ? `WARM · ${warmCount}` : f === "cold" ? `COLD · ${coldCount}` : "All"}
                       </button>
                     ))}
                   </div>
@@ -854,13 +854,13 @@ export default function LeadFinderPage() {
                           <a href={lead.url} target="_blank" rel="noopener noreferrer"
                             className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
                             style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#78614E" }}>
-                            <Globe className="w-3 h-3" /> Sursă
+                            <Globe className="w-3 h-3" /> Source
                           </a>
                         )}
                         <button type="button" onClick={() => handleGenerateMessage(lead)}
                           className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-bold"
                           style={{ backgroundColor: `${AMBER}15`, color: AMBER }}>
-                          <MessageSquare className="w-3 h-3" /> Mesaj
+                          <MessageSquare className="w-3 h-3" /> Message
                         </button>
                         <button type="button"
                           onClick={() => !savedIds.has(lead.index) && handleSaveLead(lead)}
@@ -871,7 +871,7 @@ export default function LeadFinderPage() {
                             color: savedIds.has(lead.index) ? GREEN : "#78614E",
                           }}>
                           {savingId === lead.index ? <Loader2 className="w-3 h-3 animate-spin" /> : savedIds.has(lead.index) ? <BookmarkCheck className="w-3 h-3" /> : <Bookmark className="w-3 h-3" />}
-                          {savedIds.has(lead.index) ? "Salvat" : "Salvează"}
+                          {savedIds.has(lead.index) ? "Saved" : "Save"}
                         </button>
                       </div>
                     </div>
@@ -883,8 +883,8 @@ export default function LeadFinderPage() {
             {!searching && !scoring && leads.length === 0 && !searchError && (
               <div className="rounded-2xl p-10 text-center" style={card}>
                 <Search className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(196,170,138,0.3)" }} />
-                <p className="font-semibold" style={{ color: "#78614E" }}>Pregătit pentru căutare</p>
-                <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>Apasă "Caută" pe pasul anterior</p>
+                <p className="font-semibold" style={{ color: "#78614E" }}>Ready to search</p>
+                <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>Click "Find prospects" on the previous step</p>
               </div>
             )}
 
@@ -892,13 +892,13 @@ export default function LeadFinderPage() {
               <button type="button" onClick={() => setStep(3)}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
                 style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
-                <ArrowLeft className="w-4 h-4" /> Modifică surse
+                <ArrowLeft className="w-4 h-4" /> Edit sources
               </button>
               {leads.length > 0 && (
                 <button type="button" onClick={handleSearch}
                   className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
                   style={{ backgroundColor: "rgba(245,215,160,0.08)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
-                  <RefreshCw className="w-4 h-4" /> Re-caută
+                  <RefreshCw className="w-4 h-4" /> Re-search
                 </button>
               )}
               {leads.length > 0 && !searching && !scoring && (
@@ -906,7 +906,7 @@ export default function LeadFinderPage() {
                   onClick={() => handleGenerateMessage(leads.find(l => l.label === "hot") || leads[0])}
                   className="flex items-center gap-2 px-5 py-3 rounded-xl font-bold text-sm ml-auto"
                   style={{ backgroundColor: AMBER, color: "#fff" }}>
-                  <MessageSquare className="w-4 h-4" /> Continuă la Outreach <ArrowRight className="w-4 h-4" />
+                  <MessageSquare className="w-4 h-4" /> Continue to Outreach <ArrowRight className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -928,7 +928,7 @@ export default function LeadFinderPage() {
             {selectedLead && (
               <div className="rounded-2xl p-4 flex items-center gap-4" style={card}>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold mb-0.5" style={{ color: "#A8967E" }}>Lead selectat</p>
+                  <p className="text-xs font-bold mb-0.5" style={{ color: "#A8967E" }}>Selected lead</p>
                   <p className="font-bold truncate" style={{ color: "#292524" }}>{selectedLead.title || selectedLead.contact_hint || "Prospect"}</p>
                   <p className="text-xs" style={{ color: "#A8967E" }}>{selectedLead.platform}</p>
                 </div>
@@ -938,8 +938,8 @@ export default function LeadFinderPage() {
                     <a href={selectedLead.url} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold transition-all hover:scale-105"
                       style={{ backgroundColor: "rgba(245,158,11,0.12)", color: AMBER, border: `1px solid ${AMBER}30` }}
-                      title="Deschide sursa originală">
-                      <Globe className="w-3.5 h-3.5" /> Deschide sursa
+                      title="Open original source">
+                      <Globe className="w-3.5 h-3.5" /> Open source
                     </a>
                   )}
                   <button type="button"
@@ -952,7 +952,7 @@ export default function LeadFinderPage() {
                       border: `1px solid ${savedIds.has(selectedLead.index) ? GREEN + "40" : "rgba(245,215,160,0.2)"}`,
                     }}>
                     {savingId === selectedLead.index ? <Loader2 className="w-3 h-3 animate-spin" /> : savedIds.has(selectedLead.index) ? <BookmarkCheck className="w-3 h-3" /> : <Bookmark className="w-3 h-3" />}
-                    {savedIds.has(selectedLead.index) ? "Salvat" : "Salvează"}
+                    {savedIds.has(selectedLead.index) ? "Saved" : "Save"}
                   </button>
                 </div>
               </div>
@@ -961,7 +961,7 @@ export default function LeadFinderPage() {
             {/* Quick lead switcher */}
             {leads.length > 1 && (
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-semibold" style={{ color: "#A8967E" }}>Alege alt lead:</span>
+                <span className="text-xs font-semibold" style={{ color: "#A8967E" }}>Pick another lead:</span>
                 {leads.filter(l => l.index !== selectedLead?.index).slice(0, 5).map(l => (
                   <button key={l.index} type="button"
                     onClick={() => handleGenerateMessage(l)}
@@ -980,11 +980,11 @@ export default function LeadFinderPage() {
 
             <div className="rounded-2xl p-5 space-y-4" style={card}>
               <div className="flex items-center justify-between">
-                <p className="font-bold" style={{ color: "#292524" }}>Mesaj personalizat AI</p>
+                <p className="font-bold" style={{ color: "#292524" }}>AI personalized message</p>
                 {outreach && (
                   <p className="text-xs font-semibold px-2 py-1 rounded-lg"
                     style={{ backgroundColor: "rgba(29,185,84,0.1)", color: GREEN }}>
-                    ✓ Recomandat: {outreach.best_platform}
+                    ✓ Recommended: {outreach.best_platform}
                   </p>
                 )}
               </div>
@@ -992,7 +992,7 @@ export default function LeadFinderPage() {
               {generatingMsg && (
                 <div className="flex items-center gap-2 py-6 justify-center">
                   <Loader2 className="w-5 h-5 animate-spin" style={{ color: AMBER }} />
-                  <p className="text-sm" style={{ color: "#A8967E" }}>AI scrie mesajul…</p>
+                  <p className="text-sm" style={{ color: "#A8967E" }}>AI writing message…</p>
                 </div>
               )}
 
@@ -1011,7 +1011,7 @@ export default function LeadFinderPage() {
                   </div>
                   {activePlatform === "email" && outreach.subject_line && (
                     <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.2)" }}>
-                      <span className="text-xs font-bold" style={{ color: "#78614E" }}>Subiect: </span>
+                      <span className="text-xs font-bold" style={{ color: "#78614E" }}>Subject: </span>
                       <span className="text-xs" style={{ color: "#292524" }}>{outreach.subject_line}</span>
                     </div>
                   )}
@@ -1024,12 +1024,12 @@ export default function LeadFinderPage() {
                       onClick={() => copyMessage(outreach.messages[activePlatform as keyof typeof outreach.messages] || "")}
                       className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
                       style={{ backgroundColor: copied ? `${GREEN}15` : `${AMBER}15`, color: copied ? GREEN : AMBER }}>
-                      {copied ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                      {copied ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                     </button>
                   </div>
                   <button type="button" onClick={() => selectedLead && handleGenerateMessage(selectedLead)}
                     className="flex items-center gap-2 text-sm font-semibold" style={{ color: "#A8967E" }}>
-                    <RefreshCw className="w-3.5 h-3.5" /> Regenerează mesajul
+                    <RefreshCw className="w-3.5 h-3.5" /> Regenerate message
                   </button>
                 </>
               )}
@@ -1057,9 +1057,9 @@ export default function LeadFinderPage() {
                     style={{ backgroundColor: "transparent" }}>
                     <div className="flex items-center gap-2">
                       <span className="text-base">📋</span>
-                      <p className="font-bold text-sm" style={{ color: "#292524" }}>Datele tale de contact</p>
+                      <p className="font-bold text-sm" style={{ color: "#292524" }}>Your contact details</p>
                       <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: AMBER }}>
-                        opțional — pentru campanie
+                        optional — for campaign
                       </span>
                     </div>
                     <span style={{ color: "#A8967E" }}>{showContactForm ? "▲" : "▼"}</span>
@@ -1067,12 +1067,12 @@ export default function LeadFinderPage() {
                   {showContactForm && (
                     <div className="px-5 pb-5 grid grid-cols-2 gap-3">
                       {[
-                        { label: "📱 Telefon", val: contactPhone, set: setContactPhone, ph: "07xx xxx xxx" },
-                        { label: "📧 Email", val: contactEmail, set: setContactEmail, ph: "tu@email.com" },
-                        { label: "🌐 Website", val: contactWebsite, set: setContactWebsite, ph: "siteul-tau.ro" },
-                        { label: "💬 WhatsApp", val: contactWhatsapp, set: setContactWhatsapp, ph: "07xx xxx xxx" },
+                        { label: "📱 Phone", val: contactPhone, set: setContactPhone, ph: "+1 555 123 4567" },
+                        { label: "📧 Email", val: contactEmail, set: setContactEmail, ph: "you@email.com" },
+                        { label: "🌐 Website", val: contactWebsite, set: setContactWebsite, ph: "your-site.com" },
+                        { label: "💬 WhatsApp", val: contactWhatsapp, set: setContactWhatsapp, ph: "+1 555 123 4567" },
                         { label: "📸 Instagram", val: contactInstagram, set: setContactInstagram, ph: "@username" },
-                        { label: "👥 Facebook", val: contactFacebook, set: setContactFacebook, ph: "pagina-ta" },
+                        { label: "👥 Facebook", val: contactFacebook, set: setContactFacebook, ph: "your-page" },
                       ].map(({ label, val, set, ph }) => (
                         <div key={label}>
                           <p className="text-xs font-semibold mb-1" style={{ color: "#78614E" }}>{label}</p>
@@ -1088,7 +1088,7 @@ export default function LeadFinderPage() {
                 {/* Event type filters */}
                 <div className="rounded-2xl p-4 space-y-3" style={card}>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-bold" style={{ color: "#78614E" }}>Tip eveniment:</span>
+                    <span className="text-xs font-bold" style={{ color: "#78614E" }}>Event type:</span>
                     {EVENT_TYPES.map(ev => (
                       <button key={ev.id} type="button" onClick={() => toggleEventType(ev.id)}
                         className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
@@ -1101,7 +1101,7 @@ export default function LeadFinderPage() {
                   </div>
                   {location && (
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-bold" style={{ color: "#78614E" }}>Locație:</span>
+                      <span className="text-xs font-bold" style={{ color: "#78614E" }}>Location:</span>
                       <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
                         style={{ backgroundColor: "rgba(29,185,84,0.08)", color: GREEN }}>
                         📍 {location}
@@ -1115,8 +1115,8 @@ export default function LeadFinderPage() {
                   className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-bold text-base transition-all hover:scale-[1.02] disabled:opacity-60 disabled:scale-100"
                   style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814", boxShadow: "0 4px 20px rgba(245,158,11,0.35)" }}>
                   {generatingCampaign
-                    ? <><Loader2 className="w-5 h-5 animate-spin" /> AI construiește campania completă…</>
-                    : <><Wand2 className="w-5 h-5" /> Generează Campanie Completă — 9 materiale</>}
+                    ? <><Loader2 className="w-5 h-5 animate-spin" /> AI building complete campaign…</>
+                    : <><Wand2 className="w-5 h-5" /> Generate Complete Campaign — 9 assets</>}
                 </button>
 
                 {campaignError && (
@@ -1128,9 +1128,9 @@ export default function LeadFinderPage() {
                   <div className="rounded-2xl overflow-hidden" style={{ ...card, border: `1px solid ${AMBER}30` }}>
                     <div className="flex items-center justify-between px-5 py-4"
                       style={{ borderBottom: `1px solid ${AMBER}15`, background: `linear-gradient(135deg, ${AMBER}08, transparent)` }}>
-                      <p className="font-bold" style={{ color: "#292524" }}>🚀 Campanie completă</p>
+                      <p className="font-bold" style={{ color: "#292524" }}>🚀 Complete campaign</p>
                       <span className="text-xs font-bold px-2 py-1 rounded-full"
-                        style={{ backgroundColor: `${GREEN}15`, color: GREEN }}>9 materiale generate</span>
+                        style={{ backgroundColor: `${GREEN}15`, color: GREEN }}>9 assets generated</span>
                     </div>
 
                     {/* Tab bar */}
@@ -1151,7 +1151,7 @@ export default function LeadFinderPage() {
 
                       {activeCampaignTab === "sms" && campaign.sms && (
                         <>
-                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📱 Mesaj SMS — max 160 caractere</p>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📱 SMS message — max 160 characters</p>
                           <div className="relative">
                             <textarea value={campaign.sms.text} readOnly rows={3}
                               className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
@@ -1159,27 +1159,27 @@ export default function LeadFinderPage() {
                             <button type="button" onClick={() => copyCampaign("sms", campaign.sms.text)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
                               style={{ backgroundColor: copiedCampaign === "sms" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "sms" ? GREEN : AMBER }}>
-                              {copiedCampaign === "sms" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                              {copiedCampaign === "sms" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                             </button>
                           </div>
-                          <p className="text-xs" style={{ color: "#A8967E" }}>{campaign.sms.text.length}/160 caractere</p>
+                          <p className="text-xs" style={{ color: "#A8967E" }}>{campaign.sms.text.length}/160 characters</p>
                         </>
                       )}
 
                       {activeCampaignTab === "email" && campaign.email && (
                         <>
                           <div className="rounded-lg px-3 py-2 space-y-1" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: `1px solid ${AMBER}20` }}>
-                            <p className="text-xs"><span className="font-bold" style={{ color: "#78614E" }}>Subiect: </span><span style={{ color: "#292524" }}>{campaign.email.subject}</span></p>
+                            <p className="text-xs"><span className="font-bold" style={{ color: "#78614E" }}>Subject: </span><span style={{ color: "#292524" }}>{campaign.email.subject}</span></p>
                             <p className="text-xs"><span className="font-bold" style={{ color: "#78614E" }}>Preview: </span><span style={{ color: "#A8967E" }}>{campaign.email.preview}</span></p>
                           </div>
                           <div className="relative">
                             <textarea value={campaign.email.body} readOnly rows={8}
                               className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
                               style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
-                            <button type="button" onClick={() => copyCampaign("email", `Subiect: ${campaign.email.subject}\n\n${campaign.email.body}`)}
+                            <button type="button" onClick={() => copyCampaign("email", `Subject: ${campaign.email.subject}\n\n${campaign.email.body}`)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
                               style={{ backgroundColor: copiedCampaign === "email" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "email" ? GREEN : AMBER }}>
-                              {copiedCampaign === "email" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                              {copiedCampaign === "email" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                             </button>
                           </div>
                         </>
@@ -1187,7 +1187,7 @@ export default function LeadFinderPage() {
 
                       {activeCampaignTab === "whatsapp" && campaign.whatsapp && (
                         <>
-                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>💬 Mesaj WhatsApp</p>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>💬 WhatsApp message</p>
                           <div className="relative">
                             <textarea value={campaign.whatsapp.text} readOnly rows={4}
                               className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
@@ -1195,7 +1195,7 @@ export default function LeadFinderPage() {
                             <button type="button" onClick={() => copyCampaign("whatsapp", campaign.whatsapp.text)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
                               style={{ backgroundColor: copiedCampaign === "whatsapp" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "whatsapp" ? GREEN : AMBER }}>
-                              {copiedCampaign === "whatsapp" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                              {copiedCampaign === "whatsapp" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                             </button>
                           </div>
                         </>
@@ -1203,7 +1203,7 @@ export default function LeadFinderPage() {
 
                       {activeCampaignTab === "facebook_post" && campaign.facebook_post && (
                         <>
-                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>👥 Postare Facebook</p>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>👥 Facebook post</p>
                           <div className="relative">
                             <textarea value={campaign.facebook_post.text} readOnly rows={5}
                               className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
@@ -1211,11 +1211,11 @@ export default function LeadFinderPage() {
                             <button type="button" onClick={() => copyCampaign("fb", campaign.facebook_post.text)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
                               style={{ backgroundColor: copiedCampaign === "fb" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "fb" ? GREEN : AMBER }}>
-                              {copiedCampaign === "fb" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                              {copiedCampaign === "fb" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                             </button>
                           </div>
                           <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: `1px solid ${AMBER}20` }}>
-                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>CTA buton: </span>
+                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>CTA button: </span>
                             <span className="text-xs font-semibold" style={{ color: AMBER }}>{campaign.facebook_post.cta}</span>
                           </div>
                         </>
@@ -1223,7 +1223,7 @@ export default function LeadFinderPage() {
 
                       {activeCampaignTab === "instagram_post" && campaign.instagram_post && (
                         <>
-                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📸 Caption Instagram</p>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📸 Instagram caption</p>
                           <div className="relative">
                             <textarea value={campaign.instagram_post.caption} readOnly rows={4}
                               className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
@@ -1231,7 +1231,7 @@ export default function LeadFinderPage() {
                             <button type="button" onClick={() => copyCampaign("ig", campaign.instagram_post.caption)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
                               style={{ backgroundColor: copiedCampaign === "ig" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "ig" ? GREEN : AMBER }}>
-                              {copiedCampaign === "ig" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                              {copiedCampaign === "ig" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                             </button>
                           </div>
                           <p className="text-xs font-bold mt-2" style={{ color: "#78614E" }}>📲 Story</p>
@@ -1254,7 +1254,7 @@ export default function LeadFinderPage() {
                           <button type="button" onClick={() => copyCampaign("story", [campaign.instagram_post.story_hook, ...(campaign.instagram_post.story_slides || []), campaign.instagram_post.story_cta].join("\n---\n"))}
                             className="flex items-center gap-1 text-xs font-bold"
                             style={{ color: copiedCampaign === "story" ? GREEN : AMBER }}>
-                            {copiedCampaign === "story" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază Story</>}
+                            {copiedCampaign === "story" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy Story</>}
                           </button>
                         </>
                       )}
@@ -1262,10 +1262,10 @@ export default function LeadFinderPage() {
                       {activeCampaignTab === "tiktok" && campaign.tiktok && (
                         <>
                           <div className="rounded-lg px-3 py-2" style={{ backgroundColor: `${AMBER}10`, border: `1px solid ${AMBER}30` }}>
-                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>🎣 Hook (primele 3 sec): </span>
+                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>🎣 Hook (first 3 sec): </span>
                             <span className="text-xs font-bold" style={{ color: "#292524" }}>{campaign.tiktok.hook}</span>
                           </div>
-                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📝 Script voiceover</p>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📝 Voiceover script</p>
                           <div className="relative">
                             <textarea value={campaign.tiktok.script} readOnly rows={6}
                               className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
@@ -1273,12 +1273,12 @@ export default function LeadFinderPage() {
                             <button type="button" onClick={() => copyCampaign("tiktok", `HOOK: ${campaign.tiktok.hook}\n\n${campaign.tiktok.script}\n\nCTA: ${campaign.tiktok.cta}`)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
                               style={{ backgroundColor: copiedCampaign === "tiktok" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "tiktok" ? GREEN : AMBER }}>
-                              {copiedCampaign === "tiktok" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                              {copiedCampaign === "tiktok" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                             </button>
                           </div>
                           <div className="flex gap-2">
                             <div className="flex-1 rounded-lg px-3 py-2" style={{ backgroundColor: `${GREEN}08`, border: `1px solid ${GREEN}25` }}>
-                              <span className="text-xs font-bold" style={{ color: GREEN }}>CTA final: </span>
+                              <span className="text-xs font-bold" style={{ color: GREEN }}>Final CTA: </span>
                               <span className="text-xs" style={{ color: "#292524" }}>{campaign.tiktok.cta}</span>
                             </div>
                           </div>
@@ -1290,7 +1290,7 @@ export default function LeadFinderPage() {
                             <button type="button" onClick={() => copyCampaign("tiktok_cap", campaign.tiktok.caption)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
                               style={{ backgroundColor: copiedCampaign === "tiktok_cap" ? `${GREEN}15` : `${AMBER}15`, color: copiedCampaign === "tiktok_cap" ? GREEN : AMBER }}>
-                              {copiedCampaign === "tiktok_cap" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază</>}
+                              {copiedCampaign === "tiktok_cap" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy</>}
                             </button>
                           </div>
                         </>
@@ -1303,7 +1303,7 @@ export default function LeadFinderPage() {
                               <p className="font-bold text-lg" style={{ color: "#292524" }}>{campaign.landing_page.headline}</p>
                               <p className="text-sm mt-1" style={{ color: "#78614E" }}>{campaign.landing_page.subheadline}</p>
                             </div>
-                            <p className="text-xs font-bold" style={{ color: "#78614E" }}>✅ Beneficii</p>
+                            <p className="text-xs font-bold" style={{ color: "#78614E" }}>✅ Benefits</p>
                             <div className="space-y-1">
                               {(campaign.landing_page.bullets || []).map((b, i) => (
                                 <div key={i} className="flex items-start gap-2 text-sm" style={{ color: "#292524" }}>
@@ -1325,7 +1325,7 @@ export default function LeadFinderPage() {
                           <button type="button" onClick={() => copyCampaign("lp", [campaign.landing_page.headline, campaign.landing_page.subheadline, ...(campaign.landing_page.bullets || []).map(b => `✓ ${b}`), campaign.landing_page.cta_button, campaign.landing_page.contact_block].join("\n\n"))}
                             className="flex items-center gap-1 text-xs font-bold"
                             style={{ color: copiedCampaign === "lp" ? GREEN : AMBER }}>
-                            {copiedCampaign === "lp" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază tot</>}
+                            {copiedCampaign === "lp" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy all</>}
                           </button>
                         </>
                       )}
@@ -1340,11 +1340,11 @@ export default function LeadFinderPage() {
                             <span className="text-xs px-2 py-1 rounded-full font-semibold" style={{ backgroundColor: `${AMBER}10`, color: AMBER }}>⏱ {campaign.video_brief.duration}</span>
                             <span className="text-xs px-2 py-1 rounded-full font-semibold" style={{ backgroundColor: "rgba(245,215,160,0.08)", color: "#78614E" }}>🎵 {campaign.video_brief.music}</span>
                           </div>
-                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>🎬 Scene</p>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>🎬 Scenes</p>
                           <div className="space-y-2">
                             {(campaign.video_brief.scenes || []).map((scene, i) => (
                               <div key={i} className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.05)", border: `1px solid ${AMBER}15` }}>
-                                <span className="text-xs font-bold" style={{ color: AMBER }}>Scenă {i + 1}: </span>
+                                <span className="text-xs font-bold" style={{ color: AMBER }}>Scene {i + 1}: </span>
                                 <span className="text-xs" style={{ color: "#292524" }}>{scene}</span>
                               </div>
                             ))}
@@ -1353,10 +1353,10 @@ export default function LeadFinderPage() {
                             <span className="text-xs font-bold" style={{ color: GREEN }}>Caption: </span>
                             <span className="text-xs" style={{ color: "#292524" }}>{campaign.video_brief.caption}</span>
                           </div>
-                          <button type="button" onClick={() => copyCampaign("vb", [campaign.video_brief.concept, `Durată: ${campaign.video_brief.duration}`, `Muzică: ${campaign.video_brief.music}`, ...(campaign.video_brief.scenes || []).map((s, i) => `Scenă ${i+1}: ${s}`), `Caption: ${campaign.video_brief.caption}`].join("\n\n"))}
+                          <button type="button" onClick={() => copyCampaign("vb", [campaign.video_brief.concept, `Duration: ${campaign.video_brief.duration}`, `Music: ${campaign.video_brief.music}`, ...(campaign.video_brief.scenes || []).map((s, i) => `Scene ${i+1}: ${s}`), `Caption: ${campaign.video_brief.caption}`].join("\n\n"))}
                             className="flex items-center gap-1 text-xs font-bold"
                             style={{ color: copiedCampaign === "vb" ? GREEN : AMBER }}>
-                            {copiedCampaign === "vb" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază Brief</>}
+                            {copiedCampaign === "vb" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy Brief</>}
                           </button>
                         </>
                       )}
@@ -1368,26 +1368,26 @@ export default function LeadFinderPage() {
                             <span className="text-xs" style={{ color: "#292524" }}>{campaign.photo_brief.concept}</span>
                           </div>
                           <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.05)", border: `1px solid ${AMBER}15` }}>
-                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>Stil: </span>
+                            <span className="text-xs font-bold" style={{ color: "#78614E" }}>Style: </span>
                             <span className="text-xs" style={{ color: "#292524" }}>{campaign.photo_brief.style}</span>
                           </div>
-                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📷 Fotografii de făcut</p>
+                          <p className="text-xs font-bold" style={{ color: "#78614E" }}>📷 Photos to take</p>
                           <div className="space-y-2">
                             {(campaign.photo_brief.shots || []).map((shot, i) => (
                               <div key={i} className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.05)", border: `1px solid ${AMBER}15` }}>
-                                <span className="text-xs font-bold" style={{ color: AMBER }}>Foto {i + 1}: </span>
+                                <span className="text-xs font-bold" style={{ color: AMBER }}>Shot {i + 1}: </span>
                                 <span className="text-xs" style={{ color: "#292524" }}>{shot}</span>
                               </div>
                             ))}
                           </div>
                           <div className="rounded-lg px-3 py-2" style={{ backgroundColor: `${GREEN}08`, border: `1px solid ${GREEN}25` }}>
-                            <span className="text-xs font-bold" style={{ color: GREEN }}>Caption postare: </span>
+                            <span className="text-xs font-bold" style={{ color: GREEN }}>Post caption: </span>
                             <span className="text-xs" style={{ color: "#292524" }}>{campaign.photo_brief.caption}</span>
                           </div>
-                          <button type="button" onClick={() => copyCampaign("pb", [campaign.photo_brief.concept, `Stil: ${campaign.photo_brief.style}`, ...(campaign.photo_brief.shots || []).map((s, i) => `Foto ${i+1}: ${s}`), `Caption: ${campaign.photo_brief.caption}`].join("\n\n"))}
+                          <button type="button" onClick={() => copyCampaign("pb", [campaign.photo_brief.concept, `Style: ${campaign.photo_brief.style}`, ...(campaign.photo_brief.shots || []).map((s, i) => `Shot ${i+1}: ${s}`), `Caption: ${campaign.photo_brief.caption}`].join("\n\n"))}
                             className="flex items-center gap-1 text-xs font-bold"
                             style={{ color: copiedCampaign === "pb" ? GREEN : AMBER }}>
-                            {copiedCampaign === "pb" ? <><Check className="w-3 h-3" /> Copiat!</> : <><Copy className="w-3 h-3" /> Copiază Brief</>}
+                            {copiedCampaign === "pb" ? <><Check className="w-3 h-3" /> Copied!</> : <><Copy className="w-3 h-3" /> Copy Brief</>}
                           </button>
                         </>
                       )}
@@ -1402,12 +1402,12 @@ export default function LeadFinderPage() {
               <button type="button" onClick={() => setStep(4)}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
                 style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
-                <ArrowLeft className="w-4 h-4" /> Înapoi la leads
+                <ArrowLeft className="w-4 h-4" /> Back to leads
               </button>
               <button type="button" onClick={() => { setStep(1); setOfferText(""); setSuggestion(null); setLeads([]); setOutreach(null); }}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
                 style={{ backgroundColor: "rgba(245,215,160,0.08)", color: "#78614E", border: "1px solid rgba(245,215,160,0.15)" }}>
-                <RefreshCw className="w-4 h-4" /> Caută altceva
+                <RefreshCw className="w-4 h-4" /> New search
               </button>
             </div>
           </div>

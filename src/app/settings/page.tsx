@@ -344,7 +344,7 @@ export default function SettingsPage() {
           <div>
             <h2 className="text-lg font-bold mb-4" style={{ color: "#292524" }}>Connect Your Accounts</h2>
             <p className="text-sm mb-6" style={{ color: "#A8967E" }}>
-              Conectează conturile pentru a vedea datele tale reale. Fără conectare, platformele afișează date publice/trending.
+              Connect your accounts to see your real data. Without connecting, the platforms show public/trending data.
             </p>
             <AccountConnections />
           </div>
@@ -436,13 +436,13 @@ export default function SettingsPage() {
                   {budget.is_exhausted && (
                     <div className="flex items-start gap-2.5 p-3.5 rounded-lg text-sm" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#dc2626" }}>
                       <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                      <span>Bugetul AI pentru această lună este <strong>complet epuizat</strong>. Cumpără credite extra pentru a continua.</span>
+                      <span>The AI budget for this month is <strong>completely exhausted</strong>. Buy extra credits to continue.</span>
                     </div>
                   )}
                   {!budget.is_exhausted && budget.usage_pct >= 80 && (
                     <div className="flex items-start gap-2.5 p-3.5 rounded-lg text-sm" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "#d97706" }}>
                       <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-                      <span>Ai folosit <strong>{budget.usage_pct}%</strong> din bugetul lunar AI. Consideră achiziționarea de credite extra.</span>
+                      <span>You've used <strong>{budget.usage_pct}%</strong> of your monthly AI budget. Consider purchasing extra credits.</span>
                     </div>
                   )}
                 </div>
@@ -523,9 +523,9 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h2 className="text-lg font-bold" style={{ color: "#292524" }}>API Keys — Monitorizare & Oportunități</h2>
+                <h2 className="text-lg font-bold" style={{ color: "#292524" }}>API Keys — Monitoring & Opportunities</h2>
                 <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
-                  Toate API-urile active ale platformei, cu link-uri directe la console și analiza datelor neutilizate.
+                  All active platform APIs, with direct links to consoles and analysis of untapped data.
                 </p>
               </div>
               <span className="text-xs px-2.5 py-1 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#d97706", border: "1px solid rgba(245,158,11,0.25)" }}>
@@ -582,7 +582,7 @@ export default function SettingsPage() {
                         className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-medium transition-all"
                         style={{ backgroundColor: "rgba(194,133,76,0.1)", color: "#C2854C" }}>
                         {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                        {isExpanded ? "Ascunde" : "Detalii"}
+                        {isExpanded ? "Hide" : "Details"}
                       </button>
                     </div>
                   </div>
@@ -596,7 +596,7 @@ export default function SettingsPage() {
                       <div>
                         <h4 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
                           <CheckCircle size={15} style={{ color: "#22c55e" }} />
-                          Folosit curent în platformă
+                          Currently used in the platform
                         </h4>
                         <ul className="space-y-2">
                           {api.using.map((item, i) => (
@@ -612,7 +612,7 @@ export default function SettingsPage() {
                       <div>
                         <h4 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
                           <Sparkles size={15} style={{ color: "#C2854C" }} />
-                          Date valoroase neutilizate încă
+                          Valuable untapped data
                         </h4>
                         <ul className="space-y-3">
                           {api.untapped.map((item, i) => (

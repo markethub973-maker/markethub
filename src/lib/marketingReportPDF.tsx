@@ -270,9 +270,9 @@ export function MarketingReportPDF({ data }: { data: MarketingReportData }) {
 
       {/* ═══ PAGE 4: RECOMMENDATIONS ═══ */}
       <Page size="A4" style={styles.page}>
-        <Text style={[styles.h2, { marginBottom: 4 }]}>Recomandări & Strategie</Text>
+        <Text style={[styles.h2, { marginBottom: 4 }]}>Recommendations & Strategy</Text>
         <Text style={[styles.text, { marginBottom: 16 }]}>
-          Bazate pe datele din perioada {period}, pentru optimizarea campaniilor viitoare.
+          Based on data from the {period} period, to optimize future campaigns.
         </Text>
 
         {recommendations.map((r, i) => (

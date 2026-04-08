@@ -107,9 +107,12 @@ async function fetchNews(query: string, preferredLang = "en"): Promise<NewsArtic
 
 // ── YouTube transcript extraction ─────────────────────────────────────────────
 
-async function extractTranscriptDirect(videoId: string): Promise<string | undefined> {
+async function extractTranscriptDirect(
+  videoId: string,
+  preferredLangs: string[] = ["en", "en-US"],
+): Promise<string | undefined> {
   // Try YouTube timedtext API with different language codes
-  for (const lang of ["ro", "en", "en-US"]) {
+  for (const lang of preferredLangs) {
     try {
       const url = `https://www.youtube.com/api/timedtext?v=${videoId}&lang=${lang}&fmt=json3`;
       const res = await fetch(url, {
@@ -135,12 +138,19 @@ async function extractTranscriptDirect(videoId: string): Promise<string | undefi
   return undefined;
 }
 
-async function extractTranscriptFromPage(videoId: string): Promise<string | undefined> {
+async function extractTranscriptFromPage(
+  videoId: string,
+  preferredLangs: string[] = ["en"],
+): Promise<string | undefined> {
   try {
+    const acceptLang = preferredLangs
+      .map((l, i) => `${l}${i === 0 ? "" : `;q=${(1 - i * 0.1).toFixed(1)}`}`)
+      .concat("en;q=0.5")
+      .join(",");
     const res = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-        "Accept-Language": "ro-RO,ro;q=0.9,en;q=0.8",
+        "Accept-Language": acceptLang,
       },
       next: { revalidate: 3600 },
       signal: AbortSignal.timeout(4000),
@@ -156,10 +166,13 @@ async function extractTranscriptFromPage(videoId: string): Promise<string | unde
     try { tracks = JSON.parse(match[1]); } catch { return undefined; }
     if (!tracks.length) return undefined;
 
-    const track =
-      tracks.find((t: any) => t.languageCode === "ro") ||
-      tracks.find((t: any) => t.languageCode?.startsWith("en")) ||
-      tracks[0];
+    // Prefer tracks in the requested language order, then any English variant, then first
+    let track: any = undefined;
+    for (const lang of preferredLangs) {
+      track = tracks.find((t: any) => t.languageCode === lang || t.languageCode?.startsWith(lang));
+      if (track) break;
+    }
+    if (!track) track = tracks.find((t: any) => t.languageCode?.startsWith("en")) || tracks[0];
     if (!track?.baseUrl) return undefined;
 
     const captionRes = await fetch(`${track.baseUrl}&fmt=json3`, {
@@ -183,9 +196,15 @@ async function extractTranscriptFromPage(videoId: string): Promise<string | unde
   }
 }
 
-async function getTranscript(videoId: string): Promise<string | undefined> {
+async function getTranscript(
+  videoId: string,
+  preferredLangs: string[] = ["en", "en-US"],
+): Promise<string | undefined> {
   // Try direct API first (faster), fallback to page scrape
-  return (await extractTranscriptDirect(videoId)) ?? (await extractTranscriptFromPage(videoId));
+  return (
+    (await extractTranscriptDirect(videoId, preferredLangs)) ??
+    (await extractTranscriptFromPage(videoId, preferredLangs))
+  );
 }
 
 // ── YouTube search ─────────────────────────────────────────────────────────────
@@ -219,10 +238,13 @@ async function searchYouTube(query: string, relevanceLang = "en"): Promise<YouTu
       description: (item.snippet.description || "").slice(0, 300),
     }));
 
+    // Transcript language priority: the search relevance language, then English
+    const transcriptLangs = relevanceLang === "en" ? ["en", "en-US", "en-GB"] : [relevanceLang, "en"];
+
     // Extract transcripts in parallel (non-fatal — use description as fallback)
     const withTranscripts = await Promise.all(
       videos.map(async (v) => {
-        const transcript = await withTimeout(getTranscript(v.id), 4000, undefined);
+        const transcript = await withTimeout(getTranscript(v.id, transcriptLangs), 4000, undefined);
         return { ...v, transcript };
       })
     );
@@ -244,13 +266,19 @@ export async function getMarketIntelligence(params: {
 }): Promise<MarketIntelligence> {
   const { offerType, offerDescription, location, question } = params;
 
-  // Detect language from location for localized searches
-  const { newsLang, ytLang } = detectLanguage(location);
+  // Detect language from location for localized searches.
+  // If no location is provided, default to English / international.
+  const { newsLang, ytLang } = location
+    ? detectLanguage(location)
+    : { newsLang: "en", ytLang: "en" };
 
-  // Build smart search queries — localized
+  const locationTag = location || "global";
+  const year = new Date().getFullYear();
+
+  // Build smart search queries — localized when possible, else international
   const offerQuery = offerDescription?.slice(0, 60) || offerType;
-  const newsQuery  = `${offerQuery} marketing ${location} 2025 2026`;
-  const ytQuery    = `${offerType} marketing strategy ${location} ${question.slice(0, 40)}`;
+  const newsQuery  = `${offerQuery} marketing ${locationTag} ${year}`;
+  const ytQuery    = `${offerType} marketing strategy ${locationTag} ${question.slice(0, 40)}`;
 
   // Run both searches in parallel with hard timeout
   const [news, videos] = await Promise.all([
@@ -258,11 +286,12 @@ export async function getMarketIntelligence(params: {
     withTimeout(searchYouTube(ytQuery, ytLang), SEARCH_TIMEOUT_MS, []),
   ]);
 
-  // Build formatted block for injection into Claude prompt
+  // Build formatted block for injection into Claude prompt (all English — the
+  // LLM adapts output to the user's question language).
   let promptBlock = "";
 
   if (news.length > 0) {
-    promptBlock += "=== LIVE WEB INTELLIGENCE (surse recente) ===\n";
+    promptBlock += "=== LIVE WEB INTELLIGENCE (recent sources) ===\n";
     news.forEach((n, i) => {
       promptBlock += `[${i + 1}] ${n.source} (${n.publishedAt}): ${n.title}\n`;
       if (n.snippet) promptBlock += `    ${n.snippet}\n`;
@@ -271,20 +300,20 @@ export async function getMarketIntelligence(params: {
   }
 
   if (videos.length > 0) {
-    promptBlock += "=== YOUTUBE MARKETING CONTENT (scripturi video relevante) ===\n";
+    promptBlock += "=== YOUTUBE MARKETING CONTENT (relevant video scripts) ===\n";
     videos.forEach((v, i) => {
       promptBlock += `[Video ${i + 1}] "${v.title}"\n`;
       if (v.transcript) {
-        promptBlock += `Script (extras): "${v.transcript.slice(0, 600)}..."\n`;
+        promptBlock += `Script (excerpt): "${v.transcript.slice(0, 600)}..."\n`;
       } else {
-        promptBlock += `Descriere: ${v.description}\n`;
+        promptBlock += `Description: ${v.description}\n`;
       }
     });
     promptBlock += "\n";
   }
 
   if (!promptBlock) {
-    promptBlock = "(Căutarea live nu a returnat rezultate — folosesc cunoștințele interne)\n";
+    promptBlock = "(Live search returned no results — falling back to internal knowledge)\n";
   }
 
   return { news, videos, promptBlock };

@@ -25,14 +25,18 @@ function buildInput(actor: string, params: Record<string, unknown>): Record<stri
         queries: params.query,
         maxPagesPerQuery: params.pages || 1,
         resultsPerPage: 10,
-        countryCode: ((params.country as string) || "ro").toUpperCase(),
-        languageCode: params.language || "ro",
+        countryCode: ((params.country as string) || "us").toUpperCase(),
+        languageCode: params.language || "en",
       };
     case "google_maps":
       return {
-        searchStringsArray: [`${params.query} ${params.location || "Romania"}`],
+        searchStringsArray: [
+          params.location
+            ? `${params.query} ${params.location}`
+            : String(params.query),
+        ],
         maxCrawledPlacesPerSearch: params.limit || 20,
-        language: "ro",
+        language: (params.language as string) || "en",
         includeOpeningHours: true,
       };
     case "instagram_profile":

@@ -143,13 +143,13 @@ export default function YouTubePage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-white">YouTube</h1>
-              <p className="text-xs" style={{ color: "#A8967E" }}>Conectează canale și compară performanțele</p>
+              <p className="text-xs" style={{ color: "#A8967E" }}>Connect channels and compare performance</p>
             </div>
           </div>
           <a href="/api/auth/youtube/connect"
             className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all"
             style={{ backgroundColor: YT_RED, color: "#fff" }}>
-            <Plus className="w-4 h-4" /> Adaugă canal
+            <Plus className="w-4 h-4" /> Add channel
           </a>
         </div>
 
@@ -170,7 +170,7 @@ export default function YouTubePage() {
               style={activeTab === tab
                 ? { background: `${YT_RED}25`, color: YT_RED }
                 : { color: "#6b7280" }}>
-              {tab === "channels" ? "📺 Canale" : "📊 Comparație"}
+              {tab === "channels" ? "📺 Channels" : "📊 Compare"}
             </button>
           ))}
         </div>
@@ -187,15 +187,15 @@ export default function YouTubePage() {
                 style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px dashed rgba(255,255,255,0.1)" }}>
                 <Youtube className="w-10 h-10" style={{ color: "#4B5563" }} />
                 <div>
-                  <p className="font-semibold text-white">Niciun canal conectat</p>
+                  <p className="font-semibold text-white">No channels connected</p>
                   <p className="text-sm mt-1" style={{ color: "#6b7280" }}>
-                    Apasă "Adaugă canal" pentru a conecta canalul tău YouTube via Google OAuth.
+                    Click "Add channel" to connect your YouTube channel via Google OAuth.
                   </p>
                 </div>
                 <a href="/api/auth/youtube/connect"
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold"
                   style={{ backgroundColor: YT_RED, color: "#fff" }}>
-                  <Plus className="w-4 h-4" /> Conectează primul canal
+                  <Plus className="w-4 h-4" /> Connect first channel
                 </a>
               </div>
             ) : (
@@ -231,12 +231,12 @@ export default function YouTubePage() {
                       <div className="flex items-center gap-2 flex-shrink-0">
                         {!acc.is_primary && (
                           <button onClick={() => accountAction(acc.channel_id, "set_primary")}
-                            className="p-1.5 rounded-lg transition-all hover:bg-white/10" title="Setează primar">
+                            className="p-1.5 rounded-lg transition-all hover:bg-white/10" title="Set as primary">
                             <Star className="w-4 h-4" style={{ color: "#6b7280" }} />
                           </button>
                         )}
                         <button onClick={() => accountAction(acc.channel_id, "disconnect")}
-                          className="p-1.5 rounded-lg transition-all hover:bg-red-500/10" title="Deconectează">
+                          className="p-1.5 rounded-lg transition-all hover:bg-red-500/10" title="Disconnect">
                           <Trash2 className="w-4 h-4" style={{ color: RED }} />
                         </button>
                         <button onClick={() => setExpandedCh(expandedCh === acc.channel_id ? null : acc.channel_id)}
@@ -251,7 +251,7 @@ export default function YouTubePage() {
                     {/* Expanded: rename */}
                     {expandedCh === acc.channel_id && (
                       <div className="px-4 pb-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-                        <p className="text-xs font-semibold mt-3 mb-2" style={{ color: "#A8967E" }}>Etichetă personalizată</p>
+                        <p className="text-xs font-semibold mt-3 mb-2" style={{ color: "#A8967E" }}>Custom label</p>
                         <div className="flex gap-2">
                           <input
                             defaultValue={acc.account_label ?? ""}
@@ -267,7 +267,7 @@ export default function YouTubePage() {
                             }}
                             className="px-3 py-1.5 rounded-lg text-sm font-bold"
                             style={{ backgroundColor: `${YT_RED}20`, color: YT_RED }}>
-                            Salvează
+                            Save
                           </button>
                         </div>
                       </div>
@@ -280,7 +280,7 @@ export default function YouTubePage() {
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all disabled:opacity-60"
                   style={{ backgroundColor: `${YT_RED}15`, color: YT_RED, border: `1px solid ${YT_RED}30` }}>
                   {comparing ? <Loader2 className="w-4 h-4 animate-spin" /> : <BarChart2 className="w-4 h-4" />}
-                  Compară toate canalele
+                  Compare all channels
                 </button>
               </>
             )}
@@ -294,9 +294,9 @@ export default function YouTubePage() {
             {/* Add public channel */}
             <div className="rounded-2xl p-4 space-y-3"
               style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <p className="text-sm font-bold text-white">Adaugă canal competitor (ID public)</p>
+              <p className="text-sm font-bold text-white">Add competitor channel (public ID)</p>
               <p className="text-xs" style={{ color: "#6b7280" }}>
-                Găsești Channel ID pe pagina YouTube a canalului → About → Scroll jos → Share channel → Copy channel ID
+                Find the Channel ID on the channel's YouTube page → About → Scroll down → Share channel → Copy channel ID
               </p>
               <div className="flex gap-2">
                 <input value={extraInput} onChange={e => setExtraInput(e.target.value)}
@@ -327,7 +327,7 @@ export default function YouTubePage() {
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl font-bold text-sm disabled:opacity-50"
                 style={{ backgroundColor: YT_RED, color: "#fff" }}>
                 {comparing ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-                {comparing ? "Se încarcă..." : "Rulează comparația"}
+                {comparing ? "Loading..." : "Run comparison"}
               </button>
             </div>
 
@@ -342,20 +342,20 @@ export default function YouTubePage() {
               <>
                 {compareData.channels.length === 0 ? (
                   <p className="text-center py-8 text-sm" style={{ color: "#6b7280" }}>
-                    Niciun canal de comparat. Conectează cel puțin un canal.
+                    No channels to compare. Connect at least one channel.
                   </p>
                 ) : (
                   <div className="space-y-6">
                     {/* Winner summary */}
                     <div className="rounded-2xl p-4"
                       style={{ backgroundColor: `${AMBER}08`, border: `1px solid ${AMBER}25` }}>
-                      <p className="text-sm font-bold mb-3" style={{ color: AMBER }}>★ Câștigători per categorie</p>
+                      <p className="text-sm font-bold mb-3" style={{ color: AMBER }}>★ Winners per category</p>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                         {[
-                          { key: "subscribers",     label: "Abonați",         icon: <Users className="w-3.5 h-3.5" /> },
-                          { key: "avg_views",       label: "Avg. Vizualizări",icon: <Eye className="w-3.5 h-3.5" /> },
-                          { key: "engagement_rate", label: "Engagement",      icon: <TrendingUp className="w-3.5 h-3.5" /> },
-                          { key: "total_views",     label: "Total vizualizări",icon: <Video className="w-3.5 h-3.5" /> },
+                          { key: "subscribers",     label: "Subscribers",      icon: <Users className="w-3.5 h-3.5" /> },
+                          { key: "avg_views",       label: "Avg. Views",       icon: <Eye className="w-3.5 h-3.5" /> },
+                          { key: "engagement_rate", label: "Engagement",       icon: <TrendingUp className="w-3.5 h-3.5" /> },
+                          { key: "total_views",     label: "Total views",      icon: <Video className="w-3.5 h-3.5" /> },
                         ].map(({ key, label, icon }) => {
                           const winnerId = compareData.winners[key];
                           const winner   = compareData.channels.find(c => c.channel_id === winnerId);
@@ -404,16 +404,16 @@ export default function YouTubePage() {
 
                         {/* Stats grid */}
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 px-4 pb-4">
-                          <StatCard label="Abonați"          value={fmt(ch.subscribers)}            winner={compareData.winners.subscribers === ch.channel_id} />
-                          <StatCard label="Avg. Vizualizări" value={fmt(ch.avg_views)}              winner={compareData.winners.avg_views === ch.channel_id} />
-                          <StatCard label="Engagement"       value={ch.engagement_rate.toFixed(2) + "%"} winner={compareData.winners.engagement_rate === ch.channel_id} />
-                          <StatCard label="Total vizualizări"value={fmt(ch.total_views)}            winner={compareData.winners.total_views === ch.channel_id} />
+                          <StatCard label="Subscribers"     value={fmt(ch.subscribers)}            winner={compareData.winners.subscribers === ch.channel_id} />
+                          <StatCard label="Avg. Views"      value={fmt(ch.avg_views)}              winner={compareData.winners.avg_views === ch.channel_id} />
+                          <StatCard label="Engagement"      value={ch.engagement_rate.toFixed(2) + "%"} winner={compareData.winners.engagement_rate === ch.channel_id} />
+                          <StatCard label="Total views"     value={fmt(ch.total_views)}            winner={compareData.winners.total_views === ch.channel_id} />
                         </div>
 
                         {/* Recent videos */}
                         {ch.recent_videos.length > 0 && (
                           <div className="px-4 pb-4 border-t" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-                            <p className="text-xs font-bold mt-3 mb-2" style={{ color: "#A8967E" }}>Ultimele video-uri</p>
+                            <p className="text-xs font-bold mt-3 mb-2" style={{ color: "#A8967E" }}>Recent videos</p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                               {ch.recent_videos.slice(0, 4).map(v => (
                                 <a key={v.id} href={`https://youtube.com/watch?v=${v.id}`} target="_blank" rel="noopener noreferrer"
@@ -422,7 +422,7 @@ export default function YouTubePage() {
                                   <div className="min-w-0">
                                     <p className="text-xs font-medium text-white truncate">{v.title}</p>
                                     <p className="text-xs" style={{ color: "#6b7280" }}>
-                                      {fmt(v.views)} viz · {fmt(v.likes)} like · {fmtDate(v.published)}
+                                      {fmt(v.views)} views · {fmt(v.likes)} likes · {fmtDate(v.published)}
                                     </p>
                                   </div>
                                 </a>

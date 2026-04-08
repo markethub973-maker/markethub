@@ -74,11 +74,11 @@ const ACTOR_LABELS: Record<string, string> = {
 };
 
 const EXAMPLE_GOALS = [
-  "Vreau să găsesc clienți pentru servicii DJ și solist voce/chitară la evenimente",
-  "Caut restaurante și cafenele care ar putea fi interesate de produsele noastre de cafea",
-  "Vreau să găsesc influenceri de fitness pentru o campanie de suplimente",
-  "Caut agenții de wedding planning pentru parteneriat foto-video",
-  "Vreau să identific competitorii mei din domeniul e-commerce de îmbrăcăminte",
+  "I want to find clients for DJ and vocalist services at events",
+  "Looking for restaurants and cafés that could be interested in our coffee products",
+  "I want to find fitness influencers for a supplements campaign",
+  "Looking for wedding planning agencies for photo-video partnerships",
+  "I want to identify my competitors in the clothing e-commerce niche",
 ];
 
 function fmtNum(n: number) {
@@ -111,15 +111,15 @@ function ResultPreview({ step }: { step: WorkflowStep }) {
         <div className="flex items-center gap-3 flex-wrap">
           <span className="text-xs font-bold px-2 py-1 rounded-full"
             style={{ backgroundColor: "rgba(52,168,83,0.1)", color: "#34A853" }}>
-            {r.total} locații găsite
+            {r.total} locations found
           </span>
           <span className="text-xs" style={{ color: "#A8967E" }}>
-            {withPhone} au număr de telefon
+            {withPhone} have phone numbers
           </span>
           <button type="button" onClick={() => setExpanded(e => !e)}
             className="text-xs flex items-center gap-1 font-semibold" style={{ color: AMBER }}>
             {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            {expanded ? "Ascunde" : "Vezi toate"}
+            {expanded ? "Hide" : "View all"}
           </button>
         </div>
         {expanded && (
@@ -168,18 +168,18 @@ function ResultPreview({ step }: { step: WorkflowStep }) {
         <div className="flex items-center gap-3 flex-wrap">
           <span className="text-xs font-bold px-2 py-1 rounded-full"
             style={{ backgroundColor: "rgba(245,158,11,0.1)", color: AMBER }}>
-            {organic.length} rezultate organice
+            {organic.length} organic results
           </span>
           {ads.length > 0 && (
             <span className="text-xs px-2 py-1 rounded-full"
               style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#DC2626" }}>
-              {ads.length} reclame active
+              {ads.length} active ads
             </span>
           )}
           <button type="button" onClick={() => setExpanded(e => !e)}
             className="text-xs flex items-center gap-1 font-semibold" style={{ color: AMBER }}>
             {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            {expanded ? "Ascunde" : "Vezi toate"}
+            {expanded ? "Hide" : "View all"}
           </button>
         </div>
         {expanded && (
@@ -220,7 +220,7 @@ function ResultPreview({ step }: { step: WorkflowStep }) {
           <button type="button" onClick={() => setExpanded(e => !e)}
             className="text-xs flex items-center gap-1 font-semibold" style={{ color: AMBER }}>
             {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            {expanded ? "Ascunde" : "Vezi toate"}
+            {expanded ? "Hide" : "View all"}
           </button>
         </div>
         {expanded && (
@@ -261,7 +261,7 @@ function ResultPreview({ step }: { step: WorkflowStep }) {
           <button type="button" onClick={() => setExpanded(e => !e)}
             className="text-xs flex items-center gap-1 font-semibold" style={{ color: AMBER }}>
             {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            {expanded ? "Ascunde" : "Vezi toate"}
+            {expanded ? "Hide" : "View all"}
           </button>
         </div>
         {expanded && (
@@ -422,7 +422,7 @@ export default function MarketingAgentPage() {
               <div>
                 <h2 className="font-bold text-lg" style={{ color: "#292524" }}>Marketing Research Agent</h2>
                 <p className="text-sm" style={{ color: "#A8967E" }}>
-                  Descrie obiectivul tău de marketing și agentul va crea și executa automat planul de cercetare
+                  Describe your marketing goal and the agent will automatically build and run the research plan
                 </p>
               </div>
             </div>
@@ -431,14 +431,14 @@ export default function MarketingAgentPage() {
               <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold"
                 style={{ backgroundColor: `${localMarket.color}10`, border: `1px solid ${localMarket.color}30`, color: localMarket.color }}>
                 <span>{localMarket.flag}</span>
-                <span>Piața locală activă: {localMarket.label} — agentul folosește unelte și cuvinte-cheie specifice {localMarket.label}</span>
+                <span>Local market active: {localMarket.label} — the agent uses tools and keywords specific to {localMarket.label}</span>
               </div>
             )}
 
             <textarea
               value={goal}
               onChange={e => setGoal(e.target.value)}
-              placeholder="Ex: Vreau să găsesc clienți pentru servicii DJ și solist voce la events, restaurante, nunți și corporate în București și împrejurimi..."
+              placeholder="e.g. I want to find clients for DJ and vocalist services at events, restaurants, weddings and corporate parties in New York and nearby..."
               rows={3}
               className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
               style={{ border: `1px solid ${AMBER}40`, backgroundColor: "#FFFDF9", color: "#292524" }}
@@ -458,7 +458,7 @@ export default function MarketingAgentPage() {
                 className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 transition-all"
                 style={{ backgroundColor: AMBER, color: "#1C1814" }}>
                 <Zap className="w-4 h-4" />
-                Pornește Agentul
+                Start Agent
               </button>
             </div>
 
@@ -479,9 +479,9 @@ export default function MarketingAgentPage() {
               <Sparkles className="w-6 h-6 text-white animate-pulse" />
             </div>
             <div>
-              <p className="font-bold text-lg" style={{ color: "#292524" }}>Claude analizează cererea ta…</p>
+              <p className="font-bold text-lg" style={{ color: "#292524" }}>Claude is analyzing your request…</p>
               <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
-                Identifică audiența țintă și construiește planul de cercetare optim
+                Identifying the target audience and building the optimal research plan
               </p>
             </div>
             <Loader2 className="w-5 h-5 animate-spin" style={{ color: AMBER }} />
@@ -497,13 +497,13 @@ export default function MarketingAgentPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Sparkles className="w-4 h-4" style={{ color: AMBER }} />
-                  <span className="font-bold" style={{ color: "#292524" }}>Plan generat de AI</span>
+                  <span className="font-bold" style={{ color: "#292524" }}>AI-generated plan</span>
                 </div>
                 {phase === "done" && (
                   <button type="button" onClick={handleReset}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
                     style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
-                    <RefreshCw className="w-3 h-3" />Cerere nouă
+                    <RefreshCw className="w-3 h-3" />New request
                   </button>
                 )}
               </div>
@@ -512,15 +512,15 @@ export default function MarketingAgentPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.15)" }}>
-                  <p className="text-xs font-bold mb-1" style={{ color: AMBER }}>Audiența țintă</p>
+                  <p className="text-xs font-bold mb-1" style={{ color: AMBER }}>Target audience</p>
                   <p className="text-xs leading-relaxed" style={{ color: "#78614E" }}>{plan.target_audience}</p>
                 </div>
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(29,185,84,0.06)", border: "1px solid rgba(29,185,84,0.15)" }}>
-                  <p className="text-xs font-bold mb-1" style={{ color: GREEN }}>Strategie</p>
+                  <p className="text-xs font-bold mb-1" style={{ color: GREEN }}>Strategy</p>
                   <p className="text-xs leading-relaxed" style={{ color: "#78614E" }}>{plan.strategy}</p>
                 </div>
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.15)" }}>
-                  <p className="text-xs font-bold mb-1" style={{ color: "#6366F1" }}>Leads estimate</p>
+                  <p className="text-xs font-bold mb-1" style={{ color: "#6366F1" }}>Estimated leads</p>
                   <p className="text-xs font-bold text-lg" style={{ color: "#292524" }}>{plan.estimated_leads}</p>
                 </div>
               </div>
@@ -563,7 +563,7 @@ export default function MarketingAgentPage() {
                           <div className="flex items-center gap-2">
                             <span className="text-xs font-bold px-1.5 py-0.5 rounded"
                               style={{ backgroundColor: "rgba(196,170,138,0.15)", color: "#A8967E" }}>
-                              Pas {i + 1}
+                              Step {i + 1}
                             </span>
                             <span className="text-xs font-semibold" style={{ color: ACTOR_COLORS[step.actor] }}>
                               {ACTOR_LABELS[step.actor]}
@@ -608,8 +608,8 @@ export default function MarketingAgentPage() {
               <div className="rounded-2xl p-6 flex items-center gap-4" style={{ ...card, borderColor: `${AMBER}30` }}>
                 <Loader2 className="w-6 h-6 animate-spin flex-shrink-0" style={{ color: AMBER }} />
                 <div>
-                  <p className="font-bold" style={{ color: "#292524" }}>Claude analizează rezultatele…</p>
-                  <p className="text-sm" style={{ color: "#A8967E" }}>Generează insights și recomandări personalizate</p>
+                  <p className="font-bold" style={{ color: "#292524" }}>Claude is analyzing the results…</p>
+                  <p className="text-sm" style={{ color: "#A8967E" }}>Generating insights and personalized recommendations</p>
                 </div>
               </div>
             )}
@@ -619,7 +619,7 @@ export default function MarketingAgentPage() {
               <div className="rounded-2xl p-5 space-y-4" style={{ ...card, borderColor: `${GREEN}30` }}>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5" style={{ color: GREEN }} />
-                  <span className="font-bold" style={{ color: "#292524" }}>Analiză finală AI</span>
+                  <span className="font-bold" style={{ color: "#292524" }}>Final AI analysis</span>
                 </div>
 
                 {/* Headline + scores */}
@@ -628,13 +628,13 @@ export default function MarketingAgentPage() {
                   <div className="flex items-center gap-4 mt-3">
                     <div className="text-center">
                       <p className="text-2xl font-bold" style={{ color: GREEN }}>{analysis.total_leads}</p>
-                      <p className="text-xs" style={{ color: "#A8967E" }}>leads potențiali</p>
+                      <p className="text-xs" style={{ color: "#A8967E" }}>potential leads</p>
                     </div>
                     <div className="text-center">
                       <p className="text-2xl font-bold" style={{ color: qualityColor(analysis.quality_score) }}>
                         {analysis.quality_score}/10
                       </p>
-                      <p className="text-xs" style={{ color: "#A8967E" }}>calitate date</p>
+                      <p className="text-xs" style={{ color: "#A8967E" }}>data quality</p>
                     </div>
                   </div>
                 </div>
@@ -642,7 +642,7 @@ export default function MarketingAgentPage() {
                 {/* Key findings */}
                 {analysis.key_findings?.length > 0 && (
                   <div>
-                    <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Concluzii cheie</p>
+                    <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Key findings</p>
                     <div className="space-y-1.5">
                       {analysis.key_findings.map((f: string, i: number) => (
                         <div key={i} className="flex items-start gap-2 text-xs" style={{ color: "#78614E" }}>
@@ -656,7 +656,7 @@ export default function MarketingAgentPage() {
                 {/* Top opportunities */}
                 {analysis.top_opportunities?.length > 0 && (
                   <div>
-                    <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Oportunități top</p>
+                    <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Top opportunities</p>
                     <div className="space-y-2">
                       {analysis.top_opportunities.map((opp: any, i: number) => (
                         <div key={i} className="rounded-xl p-3"
@@ -673,7 +673,7 @@ export default function MarketingAgentPage() {
                 {/* Next actions */}
                 {analysis.next_actions?.length > 0 && (
                   <div>
-                    <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Pașii următori</p>
+                    <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Next steps</p>
                     <div className="space-y-1">
                       {analysis.next_actions.map((a: string, i: number) => (
                         <div key={i} className="flex items-start gap-2 text-xs rounded-lg px-2 py-1.5"
@@ -691,13 +691,13 @@ export default function MarketingAgentPage() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <MessageSquare className="w-3.5 h-3.5" style={{ color: AMBER }} />
-                        <p className="text-xs font-bold" style={{ color: "#78614E" }}>Template mesaj de outreach</p>
+                        <p className="text-xs font-bold" style={{ color: "#78614E" }}>Outreach message template</p>
                       </div>
                       <button type="button" onClick={copyTemplate}
                         className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg"
                         style={{ backgroundColor: copied ? "rgba(29,185,84,0.1)" : "rgba(245,158,11,0.1)", color: copied ? GREEN : AMBER }}>
                         {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                        {copied ? "Copiat!" : "Copiază"}
+                        {copied ? "Copied!" : "Copy"}
                       </button>
                     </div>
                     <p className="text-xs leading-relaxed whitespace-pre-line" style={{ color: "#78614E" }}>
@@ -710,7 +710,7 @@ export default function MarketingAgentPage() {
                   className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold"
                   style={{ backgroundColor: AMBER, color: "#1C1814" }}>
                   <Zap className="w-4 h-4" />
-                  Cerere nouă
+                  New request
                 </button>
               </div>
             )}
@@ -725,21 +725,21 @@ export default function MarketingAgentPage() {
             <Users className="w-5 h-5 text-white" />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>Vrei să găsești clienți pas cu pas?</p>
-            <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Lead Finder îți ghidează căutarea în 5 pași: ofertă → audiență → surse AI → leads scorati → mesaje outreach</p>
+            <p className="font-bold text-sm" style={{ color: "#292524" }}>Want to find clients step by step?</p>
+            <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Lead Finder guides your search in 5 steps: offer → audience → AI sources → scored leads → outreach messages</p>
           </div>
           <a href="/lead-finder"
             className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold flex-shrink-0 transition-all"
             style={{ backgroundColor: AMBER, color: "#1C1814" }}>
-            Deschide <Zap className="w-3 h-3" />
+            Open <Zap className="w-3 h-3" />
           </a>
         </div>
 
         {/* Stats bar */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: Search, label: "Google Search", desc: "Rezultate organice + reclame" },
-            { icon: Map, label: "Google Maps", desc: "Locații, telefoane, recenzii" },
+            { icon: Search, label: "Google Search", desc: "Organic results + ads" },
+            { icon: Map, label: "Google Maps", desc: "Locations, phones, reviews" },
             { icon: Users, label: "Social Media", desc: "IG, TikTok, Facebook" },
           ].map(({ icon: Icon, label, desc }) => (
             <div key={label} className="rounded-xl p-3 flex items-center gap-3" style={card}>

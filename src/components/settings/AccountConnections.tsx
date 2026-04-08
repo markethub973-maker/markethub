@@ -29,19 +29,19 @@ export default function AccountConnections() {
       color: "#FF0000",
       colorBg: "rgba(255,0,0,0.06)",
       colorBorder: "rgba(255,0,0,0.2)",
-      description: "Conectează canalul tău YouTube pentru analiză completă: vizualizări, abonați, venituri, cele mai bune videoclipuri.",
+      description: "Connect your YouTube channel for full analytics: views, subscribers, revenue and top videos.",
       connectUrl: "/api/auth/youtube/connect",
       what_you_get: [
-        "Statistici reale canal (subscribers, views, venituri)",
-        "Cele mai performante videoclipuri",
-        "Analiză retenție și demografii",
-        "Rapoarte lunare automate PDF",
+        "Real channel stats (subscribers, views, revenue)",
+        "Top performing videos",
+        "Retention and demographics analysis",
+        "Automated monthly PDF reports",
       ],
       how_to: [
-        "Click pe 'Connect YouTube'",
-        "Loghează-te cu contul Google al canalului",
-        "Aprobă accesul la YouTube Analytics",
-        "Ești redirecționat automat înapoi",
+        "Click 'Connect YouTube'",
+        "Sign in with the channel's Google account",
+        "Approve access to YouTube Analytics",
+        "You'll be redirected back automatically",
       ],
       connected: false,
       loading: true,
@@ -53,21 +53,21 @@ export default function AccountConnections() {
       color: "#E1306C",
       colorBg: "rgba(225,48,108,0.06)",
       colorBorder: "rgba(225,48,108,0.2)",
-      description: "Conectează contul Instagram Business sau Creator pentru a vedea reach, impressions, engagement și demografii.",
+      description: "Connect your Instagram Business or Creator account to see reach, impressions, engagement and demographics.",
       connectUrl: "/api/auth/instagram",
       what_you_get: [
-        "Reach, impressions, engagement rate real",
-        "Performanță Stories și Reels",
-        "Demografii audiență (vârstă, țară, gen)",
-        "Analiză hashtag-uri",
-        "Date Facebook Page integrate",
+        "Real reach, impressions and engagement rate",
+        "Stories and Reels performance",
+        "Audience demographics (age, country, gender)",
+        "Hashtag analysis",
+        "Integrated Facebook Page data",
       ],
       how_to: [
-        "Click pe 'Connect Instagram'",
-        "Loghează-te cu contul Facebook conectat la Instagram",
-        "Selectează pagina Facebook și contul Instagram",
-        "Aprobă permisiunile cerute",
-        "⚠️ Necesită cont Instagram Business sau Creator",
+        "Click 'Connect Instagram'",
+        "Sign in with the Facebook account linked to Instagram",
+        "Select the Facebook page and Instagram account",
+        "Approve the requested permissions",
+        "⚠️ Requires an Instagram Business or Creator account",
       ],
       connected: false,
       loading: true,
@@ -164,12 +164,12 @@ export default function AccountConnections() {
         </div>
         <div>
           <p className="font-bold text-base" style={{ color: "#292524" }}>
-            {connectedCount === 0 && "Conectează conturile pentru date reale"}
-            {connectedCount === 1 && "Un cont conectat — conectează și celălalt!"}
-            {connectedCount === connections.length && "Toate conturile conectate ✅"}
+            {connectedCount === 0 && "Connect your accounts for real data"}
+            {connectedCount === 1 && "One account connected — connect the other one too!"}
+            {connectedCount === connections.length && "All accounts connected ✅"}
           </p>
           <p className="text-sm mt-0.5" style={{ color: "#A8967E" }}>
-            Fără conectare, platformele afișează date demo sau trending public. Cu contul conectat, datele sunt ale tale.
+            Without connecting, the platforms show demo data or public trending. With your account connected, the data is yours.
           </p>
         </div>
       </div>
@@ -199,10 +199,10 @@ export default function AccountConnections() {
                 {!conn.loading && (
                   conn.connected
                     ? <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "rgba(34,197,94,0.1)", color: "#16A34A" }}>
-                        <CheckCircle2 size={11} /> Conectat
+                        <CheckCircle2 size={11} /> Connected
                       </span>
                     : <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "rgba(239,68,68,0.08)", color: "#DC2626" }}>
-                        <XCircle size={11} /> Neconectat
+                        <XCircle size={11} /> Not connected
                       </span>
                 )}
               </div>
@@ -222,7 +222,7 @@ export default function AccountConnections() {
                     className="text-xs px-3 py-1.5 rounded-lg font-medium transition-all hover:opacity-80"
                     style={{ background: "rgba(239,68,68,0.08)", color: "#DC2626", border: "1px solid rgba(239,68,68,0.2)" }}
                   >
-                    Deconectează
+                    Disconnect
                   </button>
                 ) : (
                   <button
@@ -232,7 +232,7 @@ export default function AccountConnections() {
                     style={{ background: `linear-gradient(135deg, ${conn.color}, ${conn.color}CC)`, color: "white" }}
                   >
                     <ExternalLink size={13} />
-                    Conectează
+                    Connect
                   </button>
                 )
               )}
@@ -251,7 +251,7 @@ export default function AccountConnections() {
           {expanded === conn.id && (
             <div className="px-5 pb-5 pt-2 grid grid-cols-2 gap-5" style={{ borderTop: `1px solid ${conn.colorBorder}`, background: "#FAFAF8" }}>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#A8967E" }}>Ce primești după conectare</p>
+                <p className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#A8967E" }}>What you get after connecting</p>
                 <ul className="space-y-1.5">
                   {conn.what_you_get.map((item, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm" style={{ color: "#4B3E35" }}>
@@ -262,7 +262,7 @@ export default function AccountConnections() {
                 </ul>
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#A8967E" }}>Pași pentru conectare</p>
+                <p className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#A8967E" }}>Steps to connect</p>
                 <ol className="space-y-1.5">
                   {conn.how_to.map((step, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm" style={{ color: step.startsWith("⚠️") ? "#D97706" : "#4B3E35" }}>
@@ -284,7 +284,7 @@ export default function AccountConnections() {
                     style={{ background: `linear-gradient(135deg, ${conn.color}, ${conn.color}CC)`, color: "white" }}
                   >
                     <ExternalLink size={14} />
-                    Conectează {conn.name} acum
+                    Connect {conn.name} now
                   </button>
                 )}
               </div>

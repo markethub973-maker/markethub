@@ -28,19 +28,19 @@ interface Props {
 }
 
 const STEP_LABELS: Record<number, string> = {
-  1: "Definirea ofertei",
-  2: "Audiența țintă",
-  3: "Surse de căutare",
-  4: "Analiza lead-urilor",
-  5: "Outreach & Campanie",
+  1: "Define the offer",
+  2: "Target audience",
+  3: "Search sources",
+  4: "Lead analysis",
+  5: "Outreach & Campaign",
 };
 
 const STEP_HINTS: Record<number, string> = {
-  1: "Cum să formulezi oferta să atragă cumpărători",
-  2: "Unde se află clienții tăi și cum îi targetezi",
-  3: "Ce surse aduc leaduri care plătesc",
-  4: "Cum să identifici cumpărătorii din lista de rezultate",
-  5: "Ce canal, când să trimiți și ce format să folosești",
+  1: "How to frame the offer to attract buyers",
+  2: "Where your customers are and how to target them",
+  3: "Which sources bring paying leads",
+  4: "How to spot buyers in the result list",
+  5: "Which channel, when to send and what format to use",
 };
 
 export default function MarketingAdvisor({ step, offerType, offerDescription, audienceType, location, budgetRange, context }: Props) {
@@ -71,12 +71,12 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
         }),
       });
       const data = await res.json();
-      if (!res.ok) { setError(data.error || "Eroare"); return; }
+      if (!res.ok) { setError(data.error || "Error"); return; }
       setAdvice(data);
       setActiveTab("tips");
       setQuestion("");
     } catch {
-      setError("Eroare de rețea");
+      setError("Network error");
     } finally {
       setLoading(false);
       setAsking(false);
@@ -105,7 +105,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
               APEX — Marketing Intelligence
             </p>
             <p className="text-xs" style={{ color: "#A8967E" }}>
-              {STEP_HINTS[step] || "Sfaturi & alternative pentru pasul curent"}
+              {STEP_HINTS[step] || "Tips & alternatives for the current step"}
             </p>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
           {!advice && !open && (
             <span className="text-xs px-2 py-1 rounded-full font-bold"
               style={{ backgroundColor: `${AMBER}15`, color: AMBER }}>
-              Cere sfat
+              Get advice
             </span>
           )}
           {open ? <ChevronUp className="w-4 h-4" style={{ color: "#A8967E" }} /> : <ChevronDown className="w-4 h-4" style={{ color: "#A8967E" }} />}
@@ -129,7 +129,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
             <div className="flex items-center gap-3 py-8 justify-center">
               <Loader2 className="w-5 h-5 animate-spin" style={{ color: AMBER }} />
               <p className="text-sm font-semibold" style={{ color: "#A8967E" }}>
-                APEX analizează…
+                APEX is analyzing…
               </p>
             </div>
           )}
@@ -152,10 +152,10 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
               {/* Tabs */}
               <div className="flex gap-1 overflow-x-auto">
                 {([
-                  { id: "tips",         label: "Sfaturi",       icon: "💡" },
-                  { id: "alternatives", label: "Alternative",   icon: "🔀" },
-                  { id: "content",      label: "Conținut",      icon: "🎯" },
-                  { id: "timing",       label: "Timp & Format", icon: "⏰" },
+                  { id: "tips",         label: "Tips",            icon: "💡" },
+                  { id: "alternatives", label: "Alternatives",    icon: "🔀" },
+                  { id: "content",      label: "Content",         icon: "🎯" },
+                  { id: "timing",       label: "Time & Format",   icon: "⏰" },
                 ] as const).map(tab => (
                   <button key={tab.id} type="button" onClick={() => setActiveTab(tab.id)}
                     className="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all"
@@ -184,7 +184,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                       style={{ backgroundColor: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)" }}>
                       <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: RED }} />
                       <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.6 }}>
-                        <span className="font-bold" style={{ color: RED }}>Atenție: </span>
+                        <span className="font-bold" style={{ color: RED }}>Warning: </span>
                         {advice.warning}
                       </p>
                     </div>
@@ -202,7 +202,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                         🔀 {alt.idea}
                       </p>
                       <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.6 }}>
-                        <span style={{ color: GREEN }}>De ce funcționează: </span>{alt.why}
+                        <span style={{ color: GREEN }}>Why it works: </span>{alt.why}
                       </p>
                     </div>
                   ))}
@@ -230,7 +230,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                       style={{ backgroundColor: `${AMBER}08`, border: `1px solid ${AMBER}25` }}>
                       <div className="flex items-center gap-2 mb-2">
                         <Clock className="w-4 h-4" style={{ color: AMBER }} />
-                        <p className="text-xs font-bold" style={{ color: "#292524" }}>Momentul optim de postare</p>
+                        <p className="text-xs font-bold" style={{ color: "#292524" }}>Best posting time</p>
                       </div>
                       <p className="text-xs font-bold" style={{ color: AMBER }}>
                         {advice.timing.best_platform} — {advice.timing.best_time}
@@ -243,7 +243,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                       style={{ backgroundColor: "rgba(245,215,160,0.06)", border: "1px solid rgba(245,215,160,0.15)" }}>
                       <div className="flex items-center gap-2 mb-2">
                         <ImageIcon className="w-4 h-4" style={{ color: "#78614E" }} />
-                        <p className="text-xs font-bold" style={{ color: "#292524" }}>Format recomandat</p>
+                        <p className="text-xs font-bold" style={{ color: "#292524" }}>Recommended format</p>
                       </div>
                       <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.6 }}>{advice.format_tip}</p>
                     </div>
@@ -252,15 +252,15 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                   {/* Posting times reference */}
                   <div className="rounded-xl px-4 py-3 space-y-2"
                     style={{ backgroundColor: "rgba(245,215,160,0.04)", border: "1px solid rgba(245,215,160,0.1)" }}>
-                    <p className="text-xs font-bold" style={{ color: "#78614E" }}>📅 Referință ore optime / platformă</p>
+                    <p className="text-xs font-bold" style={{ color: "#78614E" }}>📅 Best times reference / platform</p>
                     {[
-                      { platform: "Facebook", time: "Mie 11am, Joi 12-1pm, Vin 9-10am" },
-                      { platform: "Instagram Feed", time: "Lun & Mie 11am, Vin 10-11am" },
-                      { platform: "Instagram Reels", time: "Mar-Vin 6-9am, Mie 9-11am" },
-                      { platform: "TikTok", time: "Mar & Joi 7-9pm, Vin 5-6pm" },
-                      { platform: "WhatsApp", time: "Mar-Joi 10am-12pm, 7-8pm" },
-                      { platform: "Email", time: "Mar 10am, Joi 9am" },
-                      { platform: "Pinterest", time: "Sâm 8-11pm, Vin 3-5pm" },
+                      { platform: "Facebook", time: "Wed 11am, Thu 12-1pm, Fri 9-10am" },
+                      { platform: "Instagram Feed", time: "Mon & Wed 11am, Fri 10-11am" },
+                      { platform: "Instagram Reels", time: "Tue-Fri 6-9am, Wed 9-11am" },
+                      { platform: "TikTok", time: "Tue & Thu 7-9pm, Fri 5-6pm" },
+                      { platform: "WhatsApp", time: "Tue-Thu 10am-12pm, 7-8pm" },
+                      { platform: "Email", time: "Tue 10am, Thu 9am" },
+                      { platform: "Pinterest", time: "Sat 8-11pm, Fri 3-5pm" },
                     ].map(({ platform, time }) => (
                       <div key={platform} className="flex justify-between items-center">
                         <span className="text-xs font-semibold" style={{ color: "#A8967E" }}>{platform}</span>
@@ -272,15 +272,15 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                   {/* Format specs reference */}
                   <div className="rounded-xl px-4 py-3 space-y-2"
                     style={{ backgroundColor: "rgba(245,215,160,0.04)", border: "1px solid rgba(245,215,160,0.1)" }}>
-                    <p className="text-xs font-bold" style={{ color: "#78614E" }}>📐 Formate imagine/video</p>
+                    <p className="text-xs font-bold" style={{ color: "#78614E" }}>📐 Image/video formats</p>
                     {[
-                      { platform: "IG Feed", spec: "1080×1080 (1:1) sau 1080×1350 (4:5)" },
+                      { platform: "IG Feed", spec: "1080×1080 (1:1) or 1080×1350 (4:5)" },
                       { platform: "IG/FB Story", spec: "1080×1920 (9:16)" },
                       { platform: "IG Reel / TikTok", spec: "1080×1920 (9:16), 15-60 sec" },
-                      { platform: "FB Feed", spec: "1200×630 sau 1200×1200" },
+                      { platform: "FB Feed", spec: "1200×630 or 1200×1200" },
                       { platform: "YouTube Thumb", spec: "1280×720 (16:9)" },
                       { platform: "Pinterest Pin", spec: "1000×1500 (2:3) — tall" },
-                      { platform: "Email header", spec: "600px lățime, max 200px înălțime" },
+                      { platform: "Email header", spec: "600px width, max 200px height" },
                     ].map(({ platform, spec }) => (
                       <div key={platform} className="flex justify-between items-start gap-2">
                         <span className="text-xs font-semibold flex-shrink-0" style={{ color: "#A8967E" }}>{platform}</span>
@@ -296,7 +296,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                 disabled={loading}
                 className="flex items-center gap-1.5 text-xs font-semibold"
                 style={{ color: "#A8967E" }}>
-                <TrendingUp className="w-3.5 h-3.5" /> Generează alte idei
+                <TrendingUp className="w-3.5 h-3.5" /> Generate more ideas
               </button>
             </>
           )}
@@ -306,7 +306,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
             <div className="flex items-center gap-2 px-3 py-2"
               style={{ backgroundColor: `${AMBER}08`, borderBottom: `1px solid ${AMBER}15` }}>
               <Lightbulb className="w-3.5 h-3.5" style={{ color: AMBER }} />
-              <p className="text-xs font-bold" style={{ color: "#78614E" }}>Întreabă expert-ul</p>
+              <p className="text-xs font-bold" style={{ color: "#78614E" }}>Ask the expert</p>
             </div>
             <div className="flex gap-2 p-3">
               <input
@@ -314,7 +314,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                 value={question}
                 onChange={e => setQuestion(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && question.trim() && fetchAdvice(question.trim())}
-                placeholder="ex: Ce tip de poze funcționează pentru nunți pe Instagram?"
+                placeholder="e.g. What type of photos work best for weddings on Instagram?"
                 className="flex-1 text-xs px-3 py-2 rounded-lg focus:outline-none"
                 style={{ border: `1px solid ${AMBER}20`, backgroundColor: "#FFFDF9", color: "#292524" }}
               />

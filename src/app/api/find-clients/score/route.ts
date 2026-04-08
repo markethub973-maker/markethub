@@ -21,7 +21,7 @@ Return ONLY valid JSON array:
     "index": 0,
     "score": 8,
     "label": "hot",
-    "signals": ["Caută activ", "Buget menționat", "Eveniment specific"],
+    "signals": ["Actively searching", "Budget mentioned", "Specific event"],
     "contact_hint": "name or handle if visible",
     "why": "one sentence why this is a good lead"
   }

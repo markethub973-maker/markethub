@@ -14,7 +14,7 @@ To see REAL data (not public/trending data), users must connect their accounts:
 
 **YouTube connection:**
 1. Go to Settings (/settings) → click "Integrations" tab
-2. Click "Conectează YouTube" button
+2. Click the "Connect YouTube" button
 3. Login with the Google account that owns the YouTube channel
 4. Approve YouTube Analytics access
 5. Auto-redirected back → My Channel (/my-channel) shows real stats
@@ -23,7 +23,7 @@ To see REAL data (not public/trending data), users must connect their accounts:
 
 **Instagram connection:**
 1. Go to Settings (/settings) → click "Integrations" tab
-2. Click "Conectează Instagram" button
+2. Click the "Connect Instagram" button
 3. Login with the Facebook account connected to Instagram
 4. Select Facebook Page + Instagram account
 5. Approve all permissions

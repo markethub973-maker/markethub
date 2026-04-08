@@ -83,7 +83,7 @@ export default function ResearchPage() {
       case "tiktok": return mode === "username" ? "@username (ex: @khaby.lame)" : "#hashtag (ex: business)";
       case "facebook": return "Page name (ex: Nike)";
       case "reddit": return mode === "subreddit" ? "subreddit (ex: Entrepreneur)" : "Keyword (ex: wedding DJ tips)";
-      case "reviews": return "Nume loc sau URL Google Maps";
+      case "reviews": return "Place name or Google Maps URL";
       default: {
         const actor = localMarket?.actors.find(a => a.id === tab);
         return actor?.placeholder || "Search...";
@@ -96,17 +96,17 @@ export default function ResearchPage() {
       case "instagram":
       case "tiktok":
         return [
-          { id: "username", label: "Profil", icon: User },
+          { id: "username", label: "Profile", icon: User },
           { id: "hashtag", label: "Hashtag", icon: Hash },
         ];
       case "youtube":
         return [
-          { id: "channel", label: "Canal", icon: Play },
-          { id: "keyword", label: "Căutare", icon: Search },
+          { id: "channel", label: "Channel", icon: Play },
+          { id: "keyword", label: "Search", icon: Search },
         ];
       case "reddit":
         return [
-          { id: "keyword", label: "Căutare", icon: Search },
+          { id: "keyword", label: "Search", icon: Search },
           { id: "subreddit", label: "Subreddit", icon: Hash },
         ];
       default: return [];
@@ -126,7 +126,7 @@ export default function ResearchPage() {
       switch (tab) {
         case "google":
           endpoint = "/api/research/google";
-          body = { query: query.trim(), country: "ro", language: "ro" };
+          body = { query: query.trim(), country: "us", language: "en" };
           break;
         case "youtube":
           endpoint = "/api/research/youtube";
@@ -255,16 +255,16 @@ export default function ResearchPage() {
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 transition-all"
               style={{ backgroundColor: tabColor, color: tab === "tiktok" ? "#FFF8F0" : "white" }}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              {loading ? "Se caută…" : "Search"}
+              {loading ? "Searching…" : "Search"}
             </button>
           </div>
 
           <p className="text-xs" style={{ color: "#C4AA8A" }}>
-            {tab === "website" && "Extrage conținut, prețuri și structură de pe orice site competitor. 15–60s."}
-            {tab === "youtube" && "Scrape canal YouTube: videos, views, likes, comentarii."}
-            {tab === "reddit" && "Caută discuții, feedback și opinii reale despre orice subiect."}
-            {tab === "reviews" && "Analizează recenziile Google Maps — sentiment pozitiv/negativ, tendințe."}
-            {(tab === "google" || tab === "instagram" || tab === "tiktok" || tab === "facebook") && "Powered by Apify — date publice. 15–45s."}
+            {tab === "website" && "Extract content, pricing and structure from any competitor site. 15–60s."}
+            {tab === "youtube" && "Scrape YouTube channel: videos, views, likes, comments."}
+            {tab === "reddit" && "Find real discussions, feedback and opinions on any topic."}
+            {tab === "reviews" && "Analyze Google Maps reviews — positive/negative sentiment, trends."}
+            {(tab === "google" || tab === "instagram" || tab === "tiktok" || tab === "facebook") && "Powered by Apify — public data. 15–45s."}
             {localMarket?.actors.some(a => a.id === tab) && `${localMarket!.flag} ${localMarket!.actors.find(a => a.id === tab)?.description}`}
           </p>
         </div>
@@ -282,7 +282,7 @@ export default function ResearchPage() {
           <div className="rounded-2xl p-12 flex flex-col items-center gap-3" style={card}>
             <Loader2 className="w-8 h-8 animate-spin" style={{ color: tabColor }} />
             <p className="text-sm font-semibold" style={{ color: "#78614E" }}>
-              Apify procesează cererea…
+              Apify is processing the request…
             </p>
           </div>
         )}
@@ -290,11 +290,11 @@ export default function ResearchPage() {
         {/* ── GOOGLE ── */}
         {!loading && results && tab === "google" && (
           <div className="space-y-4">
-            <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} rezultate pentru "{results.query}"</p>
+            <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} results for "{results.query}"</p>
             {["ad", "organic", "paa", "related"].map(type => {
               const items = results.results?.filter((r: any) => r.type === type) || [];
               if (!items.length) return null;
-              const labels: Record<string, string> = { ad: "Reclame active", organic: "Rezultate organice", paa: "People Also Ask", related: "Căutări similare" };
+              const labels: Record<string, string> = { ad: "Active ads", organic: "Organic results", paa: "People Also Ask", related: "Related searches" };
               return (
                 <div key={type}>
                   <p className="text-xs font-bold uppercase tracking-wide mb-2"
@@ -354,7 +354,7 @@ export default function ResearchPage() {
                 <div>
                   <p className="font-bold" style={{ color: "#292524" }}>{results.channelInfo.name}</p>
                   {results.channelInfo.subscribers > 0 && (
-                    <p className="text-xs font-semibold" style={{ color: YT }}>{fmtNum(results.channelInfo.subscribers)} abonați</p>
+                    <p className="text-xs font-semibold" style={{ color: YT }}>{fmtNum(results.channelInfo.subscribers)} subscribers</p>
                   )}
                 </div>
               </div>
@@ -396,7 +396,7 @@ export default function ResearchPage() {
               <p className="font-bold" style={{ color: "#292524" }}>{results.domain}</p>
               {results.home_title && <p className="text-sm mt-0.5" style={{ color: "#78614E" }}>{results.home_title}</p>}
               {results.home_description && <p className="text-xs mt-1" style={{ color: "#A8967E" }}>{results.home_description}</p>}
-              <p className="text-xs mt-2 font-semibold" style={{ color: "#6366F1" }}>{results.total} pagini crawlate</p>
+              <p className="text-xs mt-2 font-semibold" style={{ color: "#6366F1" }}>{results.total} pages crawled</p>
             </div>
             {results.pages.map((p: any, i: number) => (
               <div key={i} className="rounded-xl p-4 space-y-2" style={card}>
@@ -416,7 +416,7 @@ export default function ResearchPage() {
                     <button type="button" onClick={() => toggleSection(`web-${i}`)}
                       className="flex items-center gap-1 text-xs font-semibold" style={{ color: AMBER }}>
                       {expandedSections[`web-${i}`] ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                      {expandedSections[`web-${i}`] ? "Ascunde conținut" : "Vezi conținut extras"}
+                      {expandedSections[`web-${i}`] ? "Hide content" : "View extracted content"}
                     </button>
                     {expandedSections[`web-${i}`] && (
                       <p className="text-xs mt-2 leading-relaxed whitespace-pre-line"
@@ -585,7 +585,7 @@ export default function ResearchPage() {
                         <ThumbsUp className="w-3 h-3" />{fmtNum(p.score)}
                       </span>
                       <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                        <MessageCircle className="w-3 h-3" />{p.numComments} comentarii
+                        <MessageCircle className="w-3 h-3" />{p.numComments} comments
                       </span>
                       {p.createdAt && <span className="text-xs" style={{ color: "#C4AA8A" }}>{timeAgo(p.createdAt)}</span>}
                     </div>
@@ -614,11 +614,11 @@ export default function ResearchPage() {
               <div className="flex items-center gap-4 flex-wrap">
                 <div className="text-center">
                   <p className="text-2xl font-bold" style={{ color: AMBER }}>{results.avg_rating}</p>
-                  <p className="text-xs" style={{ color: "#A8967E" }}>rating mediu</p>
+                  <p className="text-xs" style={{ color: "#A8967E" }}>average rating</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold" style={{ color: GREEN }}>{results.sentiment?.positive}</p>
-                  <p className="text-xs" style={{ color: "#A8967E" }}>pozitive (4-5★)</p>
+                  <p className="text-xs" style={{ color: "#A8967E" }}>positive (4-5★)</p>
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold" style={{ color: "#EF4444" }}>{results.sentiment?.negative}</p>
@@ -626,7 +626,7 @@ export default function ResearchPage() {
                 </div>
                 <div className="text-center">
                   <p className="text-2xl font-bold" style={{ color: "#A8967E" }}>{results.total}</p>
-                  <p className="text-xs" style={{ color: "#A8967E" }}>total recenzii</p>
+                  <p className="text-xs" style={{ color: "#A8967E" }}>total reviews</p>
                 </div>
               </div>
             </div>
@@ -651,7 +651,7 @@ export default function ResearchPage() {
                         {r.text && <p className="text-sm" style={{ color: "#78614E" }}>{r.text}</p>}
                         {r.ownerResponse && (
                           <div className="mt-2 px-3 py-2 rounded-lg text-xs" style={{ backgroundColor: "rgba(245,158,11,0.06)", borderLeft: `2px solid ${AMBER}` }}>
-                            <span className="font-bold" style={{ color: AMBER }}>Răspuns proprietar: </span>
+                            <span className="font-bold" style={{ color: AMBER }}>Owner response: </span>
                             <span style={{ color: "#78614E" }}>{r.ownerResponse}</span>
                           </div>
                         )}
@@ -673,11 +673,11 @@ export default function ResearchPage() {
               return (
                 <>
                   <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>
-                    {localMarket!.flag} {actor.label} — {items.length} rezultate
+                    {localMarket!.flag} {actor.label} — {items.length} results
                   </p>
                   {items.length === 0 && (
                     <div className="rounded-xl p-8 text-center" style={card}>
-                      <p className="text-sm" style={{ color: "#A8967E" }}>Niciun rezultat găsit</p>
+                      <p className="text-sm" style={{ color: "#A8967E" }}>No results found</p>
                     </div>
                   )}
                   {items.map((item: any, i: number) => (
@@ -687,7 +687,7 @@ export default function ResearchPage() {
                       {item.price && <p className="text-sm font-bold" style={{ color: localMarket!.color }}>{item.price} {localMarket!.currency}</p>}
                       {item.address && <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}><MapPin className="w-3 h-3" />{item.address}</p>}
                       {item.phone && <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}><Phone className="w-3 h-3" />{item.phone}</p>}
-                      {item.url && <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs flex items-center gap-1" style={{ color: localMarket!.color }}><ExternalLink className="w-3 h-3" />Deschide</a>}
+                      {item.url && <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs flex items-center gap-1" style={{ color: localMarket!.color }}><ExternalLink className="w-3 h-3" />Open</a>}
                       {item.description && <p className="text-xs" style={{ color: "#A8967E" }}>{item.description.slice(0, 200)}{item.description.length > 200 ? "…" : ""}</p>}
                     </div>
                   ))}
@@ -702,7 +702,7 @@ export default function ResearchPage() {
           <div className="rounded-2xl p-10 text-center" style={card}>
             <Search className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(196,170,138,0.4)" }} />
             <p className="font-semibold" style={{ color: "#78614E" }}>
-              {localMarket ? `${localMarket.flag} ${8 + localMarket.actors.length} surse disponibile` : "8 surse de date disponibile"}
+              {localMarket ? `${localMarket.flag} ${8 + localMarket.actors.length} data sources available` : "8 data sources available"}
             </p>
             <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>
               Google · YouTube · Website · Instagram · TikTok · Facebook · Reddit · Reviews

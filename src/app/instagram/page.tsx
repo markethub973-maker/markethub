@@ -136,7 +136,7 @@ export default function InstagramPage() {
             <div>
               <h1 className="text-2xl font-bold text-white">Instagram Analytics</h1>
               <p className="text-gray-400 text-sm">
-                {accounts.length > 0 ? `${accounts.length} cont${accounts.length > 1 ? "uri conectate" : " conectat"}` : "Niciun cont conectat"}
+                {accounts.length > 0 ? `${accounts.length} account${accounts.length > 1 ? "s connected" : " connected"}` : "No accounts connected"}
               </p>
             </div>
           </div>
@@ -146,7 +146,7 @@ export default function InstagramPage() {
               className="flex items-center gap-1.5 px-3 py-2 bg-[#1a1d27] border border-white/10 rounded-lg text-gray-400 hover:text-pink-400 hover:border-pink-500/40 transition-all text-sm"
             >
               <Plus className="w-4 h-4" />
-              Adaugă cont
+              Add account
             </Link>
             {accounts.length > 0 && (
               <button
@@ -165,14 +165,14 @@ export default function InstagramPage() {
         {noAccounts && (
           <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-12 text-center">
             <Instagram className="w-16 h-16 text-pink-500/30 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">Niciun cont Instagram conectat</h2>
-            <p className="text-gray-400 mb-6">Conectează conturile tale pentru a vedea analytics real.</p>
+            <h2 className="text-xl font-semibold text-white mb-2">No Instagram accounts connected</h2>
+            <p className="text-gray-400 mb-6">Connect your accounts to see real analytics.</p>
             <Link
               href="/settings?tab=integrations"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-semibold hover:opacity-90 transition-all"
             >
               <Plus className="w-4 h-4" />
-              Conectează Instagram
+              Connect Instagram
             </Link>
           </div>
         )}
@@ -207,7 +207,7 @@ export default function InstagramPage() {
                 }`}
               >
                 <BarChart2 className="w-4 h-4" />
-                Comparație ({accounts.length})
+                Compare ({accounts.length})
               </button>
             )}
           </div>
@@ -224,7 +224,7 @@ export default function InstagramPage() {
           <div className="flex items-center justify-center py-24">
             <div className="text-center">
               <div className="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-gray-400">Se încarcă datele...</p>
+              <p className="text-gray-400">Loading data...</p>
             </div>
           </div>
         )}
@@ -281,12 +281,12 @@ export default function InstagramPage() {
             <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
                 <Image className="w-4 h-4 text-pink-400" />
-                Postări recente ({posts.length})
+                Recent posts ({posts.length})
               </h3>
               {posts.length === 0 ? (
                 <div className="text-center py-12 text-gray-500">
                   <Instagram className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>Nicio postare disponibilă</p>
+                  <p>No posts available</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -312,7 +312,7 @@ export default function InstagramPage() {
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-xs text-gray-600">{timeAgo(post.timestamp)}</span>
-                            <a href={post.permalink} target="_blank" rel="noopener noreferrer" title="Vezi pe Instagram" className="text-pink-400 hover:text-pink-300">
+                            <a href={post.permalink} target="_blank" rel="noopener noreferrer" title="View on Instagram" className="text-pink-400 hover:text-pink-300">
                               <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           </div>
@@ -342,14 +342,14 @@ export default function InstagramPage() {
             <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-6">
               <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
                 <BarChart2 className="w-5 h-5 text-purple-400" />
-                Comparație conturi ({compareData.length})
+                Account comparison ({compareData.length})
               </h2>
               <div className={`grid gap-4 ${compareData.length === 2 ? "grid-cols-2" : compareData.length === 3 ? "grid-cols-3" : "grid-cols-2 lg:grid-cols-4"}`}>
                 {compareData.map((acc, i) => (
                   <div key={acc.instagram_id} className="bg-[#0f1117] border border-white/10 rounded-xl p-5 relative">
                     {acc.is_primary && (
                       <span className="absolute top-3 right-3 flex items-center gap-1 text-xs text-yellow-400">
-                        <Star className="w-3 h-3" /> Principal
+                        <Star className="w-3 h-3" /> Primary
                       </span>
                     )}
                     <div className="flex items-center gap-2 mb-4">
@@ -385,7 +385,7 @@ export default function InstagramPage() {
                         </div>
                       </div>
                     ) : (
-                      <p className="text-gray-500 text-xs">Se încarcă...</p>
+                      <p className="text-gray-500 text-xs">Loading...</p>
                     )}
                   </div>
                 ))}
@@ -403,16 +403,16 @@ export default function InstagramPage() {
               return (
                 <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-6">
                   <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-yellow-400" /> Câștigători per categorie
+                    <Zap className="w-4 h-4 text-yellow-400" /> Winners per category
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[#0f1117] rounded-xl p-4">
-                      <p className="text-gray-400 text-xs mb-1">Cel mai mare engagement rate</p>
+                      <p className="text-gray-400 text-xs mb-1">Highest engagement rate</p>
                       <p className="text-white font-bold">@{best.username}</p>
                       <p className="text-green-400 text-sm">{best.engagement_rate}%</p>
                     </div>
                     <div className="bg-[#0f1117] rounded-xl p-4">
-                      <p className="text-gray-400 text-xs mb-1">Cei mai mulți followers</p>
+                      <p className="text-gray-400 text-xs mb-1">Most followers</p>
                       <p className="text-white font-bold">@{bestFollowers.username}</p>
                       <p className="text-blue-400 text-sm">{fmt(bestFollowers.profile?.followers_count ?? 0)}</p>
                     </div>

@@ -41,34 +41,34 @@ interface Props {
 // Quick action chips per step
 const QUICK_ACTIONS: Record<number, { label: string; icon: string; q: string }[]> = {
   1: [
-    { label: "Analizează oferta mea",        icon: "🔍", q: "Analizează oferta mea și spune-mi ce puncte forte și ce slăbiciuni are față de piață" },
-    { label: "Găsește nișe neacoperite",     icon: "💡", q: "Care sunt nișele neacoperite în piața mea unde am putea câștiga ușor?" },
-    { label: "Strategie de preț",             icon: "💰", q: "Care e cea mai bună strategie de preț pentru tipul meu de ofertă și audiență?" },
-    { label: "Top 3 mesaje de vânzare",       icon: "🎯", q: "Generează top 3 mesaje de vânzare diferite (rațional, emoțional, social proof) pentru oferta mea" },
+    { label: "Analyze my offer",              icon: "🔍", q: "Analyze my offer and tell me its strengths and weaknesses against the market" },
+    { label: "Find untapped niches",          icon: "💡", q: "What are the untapped niches in my market where I could win easily?" },
+    { label: "Pricing strategy",              icon: "💰", q: "What's the best pricing strategy for my type of offer and audience?" },
+    { label: "Top 3 sales messages",          icon: "🎯", q: "Generate 3 different top sales messages (rational, emotional, social proof) for my offer" },
   ],
   2: [
-    { label: "Profilul clientului ideal",     icon: "👤", q: "Descrie în detaliu profilul clientului ideal pentru oferta mea în această locație" },
-    { label: "Unde se adună audiența",        icon: "📍", q: "Unde se adună online și offline audiența mea țintă? Ce platforme, grupuri, forumuri frecventează?" },
-    { label: "Obiecții și răspunsuri",        icon: "🛡️", q: "Care sunt principalele 5 obiecții pe care le va ridica clientul și cum le răspund eficient?" },
-    { label: "Sezon și timing",               icon: "📅", q: "Când e cel mai bun moment din an și din săptămână să lansez campania pentru acest tip de ofertă?" },
+    { label: "Ideal customer profile",        icon: "👤", q: "Describe in detail the ideal customer profile for my offer in this location" },
+    { label: "Where the audience hangs out",  icon: "📍", q: "Where does my target audience hang out online and offline? Which platforms, groups, forums?" },
+    { label: "Objections and answers",        icon: "🛡️", q: "What are the top 5 objections the customer will raise and how do I answer them effectively?" },
+    { label: "Season and timing",             icon: "📅", q: "When is the best time of year and week to launch the campaign for this type of offer?" },
   ],
   3: [
-    { label: "Care surse să activez",         icon: "🔌", q: "Pe care dintre sursele de research trebuie să le activez prioritar pentru tipul meu de campanie?" },
-    { label: "Cuvinte cheie de căutat",       icon: "🔑", q: "Care sunt cele mai bune cuvinte cheie și interogări de search pentru a găsi potențiali clienți?" },
-    { label: "Cum filtrez lead-urile",        icon: "🎯", q: "Cum recunosc un lead HOT față de unul COLD pentru oferta mea? Ce semnale să caut?" },
+    { label: "Which sources to activate",     icon: "🔌", q: "Which research sources should I activate as priority for my type of campaign?" },
+    { label: "Keywords to search",            icon: "🔑", q: "What are the best keywords and search queries to find potential clients?" },
+    { label: "How to filter leads",           icon: "🎯", q: "How do I recognize a HOT lead vs a COLD one for my offer? What signals should I look for?" },
   ],
   4: [
-    { label: "Cum să abordez lead-ul HOT",   icon: "🔥", q: "Cum să abordez un lead cu scor ridicat? Ce să spun prima dată pentru a nu fi ignorat?" },
-    { label: "Template mesaj de contact",     icon: "✉️", q: "Creează un template de mesaj de contact personalizabil pentru primul outreach pe Facebook/WhatsApp" },
-    { label: "Follow-up după lipsa răspuns",  icon: "🔄", q: "Ce mesaj de follow-up trimit dacă nu primesc răspuns în 48h? Fără să par insistent" },
-    { label: "Cum neg și închid",             icon: "🤝", q: "Care e scriptul de negociere și închidere pentru tipul meu de produs/serviciu?" },
+    { label: "How to approach a HOT lead",    icon: "🔥", q: "How do I approach a high-score lead? What to say first so I'm not ignored?" },
+    { label: "Outreach message template",     icon: "✉️", q: "Create a customizable outreach message template for first contact on Facebook/WhatsApp" },
+    { label: "Follow-up after no reply",      icon: "🔄", q: "What follow-up message should I send if I get no reply in 48h? Without sounding pushy" },
+    { label: "How to negotiate and close",    icon: "🤝", q: "What's the negotiation and closing script for my type of product/service?" },
   ],
   5: [
-    { label: "Îmbunătățește campania",        icon: "✨", q: "Analizează campania generată și propune îmbunătățiri concrete pentru fiecare canal" },
-    { label: "Variante A/B de testat",        icon: "🧪", q: "Creează 2 variante alternative (A și B) pentru canalul cu cea mai mare prioritate pe care să le testez" },
-    { label: "Plan de publicare 7 zile",      icon: "📅", q: "Creează un plan de publicare pe 7 zile cu ce, unde și când postez pentru maximum de impact" },
-    { label: "Cum măsor rezultatele",         icon: "📊", q: "Ce KPI-uri și metrici trebuie să urmăresc pentru campania mea? Cum știu dacă merge sau nu?" },
-    { label: "Scalare dacă merge",            icon: "🚀", q: "Dacă campania merge bine, cum o scalez fără să-mi explodeze costurile?" },
+    { label: "Improve the campaign",          icon: "✨", q: "Analyze the generated campaign and suggest concrete improvements for each channel" },
+    { label: "A/B variants to test",          icon: "🧪", q: "Create 2 alternative variants (A and B) for the highest-priority channel for me to test" },
+    { label: "7-day publishing plan",         icon: "📅", q: "Create a 7-day publishing plan with what, where and when to post for maximum impact" },
+    { label: "How to measure results",        icon: "📊", q: "Which KPIs and metrics should I track for my campaign? How do I know if it's working?" },
+    { label: "Scaling if it works",           icon: "🚀", q: "If the campaign works well, how do I scale it without blowing up costs?" },
   ],
 };
 
@@ -86,13 +86,13 @@ function AIResponseCard({ msg }: { msg: Message }) {
     <div className="space-y-3">
       {/* Main insight */}
       <div className="rounded-xl p-3" style={{ backgroundColor: `${AMBER}12`, border: `1px solid ${AMBER}25` }}>
-        <p className="text-xs font-bold mb-1" style={{ color: AMBER }}>💡 Insight principal</p>
+        <p className="text-xs font-bold mb-1" style={{ color: AMBER }}>💡 Main insight</p>
         <p className="text-sm leading-relaxed" style={{ color: "#E8DDD0" }}>{s.main_insight}</p>
       </div>
       {/* Tips */}
       {s.tips && s.tips.length > 0 && (
         <div>
-          <p className="text-xs font-bold mb-2" style={{ color: "#A8967E" }}>✅ Pași de acțiune</p>
+          <p className="text-xs font-bold mb-2" style={{ color: "#A8967E" }}>✅ Action steps</p>
           <ul className="space-y-1.5">
             {s.tips.map((t, i) => (
               <li key={i} className="flex gap-2 text-sm" style={{ color: "#C8B898" }}>
@@ -120,7 +120,7 @@ function AIResponseCard({ msg }: { msg: Message }) {
       {/* Content ideas */}
       {s.content_ideas && s.content_ideas.length > 0 && (
         <div>
-          <p className="text-xs font-bold mb-2" style={{ color: "#A8967E" }}>🎨 Idei de conținut</p>
+          <p className="text-xs font-bold mb-2" style={{ color: "#A8967E" }}>🎨 Content ideas</p>
           <div className="flex flex-wrap gap-1.5">
             {s.content_ideas.map((idea, i) => (
               <span key={i} className="px-2 py-1 rounded-lg text-xs"
@@ -142,14 +142,14 @@ function AIResponseCard({ msg }: { msg: Message }) {
       {/* Format tip */}
       {s.format_tip && (
         <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(59,130,246,0.08)", border: "1px solid rgba(59,130,246,0.15)" }}>
-          <p className="text-xs font-bold mb-0.5" style={{ color: "#93C5FD" }}>📐 Format recomandat</p>
+          <p className="text-xs font-bold mb-0.5" style={{ color: "#93C5FD" }}>📐 Recommended format</p>
           <p className="text-xs" style={{ color: "#C0D8F8" }}>{s.format_tip}</p>
         </div>
       )}
       {/* Warning */}
       {s.warning && (
         <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.15)" }}>
-          <p className="text-xs font-bold mb-0.5" style={{ color: "#FCA5A5" }}>⚠️ Atenție</p>
+          <p className="text-xs font-bold mb-0.5" style={{ color: "#FCA5A5" }}>⚠️ Warning</p>
           <p className="text-xs" style={{ color: "#FCA5A5" }}>{s.warning}</p>
         </div>
       )}
@@ -226,7 +226,7 @@ export default function CampaignStudio({
         const d = await res.json();
         const aiMsg: Message = {
           role: "ai",
-          content: d.main_insight || "Am analizat cererea ta.",
+          content: d.main_insight || "I've analyzed your request.",
           structured: d,
           ts: Date.now(),
         };
@@ -234,14 +234,14 @@ export default function CampaignStudio({
       } else {
         setMessages(prev => [...prev, {
           role: "ai",
-          content: "A apărut o eroare. Încearcă din nou.",
+          content: "An error occurred. Please try again.",
           ts: Date.now(),
         }]);
       }
     } catch {
       setMessages(prev => [...prev, {
         role: "ai",
-        content: "Eroare de conexiune. Verifică internetul și încearcă din nou.",
+        content: "Connection error. Check your internet and try again.",
         ts: Date.now(),
       }]);
     } finally {
@@ -278,14 +278,14 @@ export default function CampaignStudio({
             <span className="text-sm font-bold" style={{ color: "#E8DDD0" }}>APEX — Marketing Intelligence</span>
             <span className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: GREEN }} />
-              <span className="text-[10px]" style={{ color: GREEN }}>activ</span>
+              <span className="text-[10px]" style={{ color: GREEN }}>active</span>
             </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[10px] px-2 py-1 rounded-md font-mono"
             style={{ backgroundColor: "rgba(245,215,160,0.08)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.1)" }}>
-            pas {step}/5
+            step {step}/5
           </span>
           <button type="button" onClick={() => setExpanded(v => !v)}
             className="p-1.5 rounded-lg transition-all hover:bg-amber-500/10"
@@ -371,7 +371,7 @@ export default function CampaignStudio({
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Întreabă orice despre campania ta... (Enter pentru trimite, Shift+Enter pentru linie nouă)"
+              placeholder="Ask anything about your campaign... (Enter to send, Shift+Enter for newline)"
               rows={2}
               disabled={loading}
               className="flex-1 resize-none rounded-xl px-4 py-3 text-sm focus:outline-none transition-all"
