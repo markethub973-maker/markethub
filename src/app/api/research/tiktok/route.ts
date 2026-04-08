@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
     const data = result.data || [];
     const videos = (data || []).map((v: any) => ({
       id: v.id,
-      url: `https://www.tiktok.com/@${v.authorMeta?.name || ""}/ video/${v.id}`,
+      url: v.webVideoUrl || `https://www.tiktok.com/@${v.authorMeta?.name || ""}/video/${v.id}`,
       description: v.text?.slice(0, 200),
       cover: v.covers?.default || v.covers?.origin,
       author: v.authorMeta?.name,
