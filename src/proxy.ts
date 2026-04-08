@@ -273,7 +273,14 @@ export async function proxy(request: NextRequest) {
   const ip = getClientIp(request);
 
   // ── Rate limiting ───────────────────────────────────────────────────────
-  const isAuthPath = AUTH_PATHS.some((p) => pathname.startsWith(p));
+  // Webhooks are exempt: they're already authenticated by HMAC signature
+  // verification inside the handler, and rate-limiting them would cause
+  // legitimate provider retries (Stripe, Apify) to be dropped — Stripe
+  // backs off aggressively after 429s and we'd lose events.
+  const isWebhook =
+    pathname === "/api/stripe/webhook" || pathname === "/api/apify/webhook";
+
+  const isAuthPath = !isWebhook && AUTH_PATHS.some((p) => pathname.startsWith(p));
   if (isAuthPath) {
     if (!await checkRateLimit(ip, "auth")) {
       const res = NextResponse.json(
@@ -284,7 +291,7 @@ export async function proxy(request: NextRequest) {
       applySecurityHeaders(res, csp);
       return res;
     }
-  } else if (pathname.startsWith("/api/")) {
+  } else if (!isWebhook && pathname.startsWith("/api/")) {
     if (!await checkRateLimit(ip, "api")) {
       const res = NextResponse.json(
         { error: "Rate limit exceeded." },
