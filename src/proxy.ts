@@ -203,11 +203,14 @@ function checkAdminTunnel(request: NextRequest): boolean {
   const t = request.nextUrl.searchParams.get("t") ?? "";
   if (!t) return false;
 
-  // Constant-time comparison — pure JS, safe for Edge Runtime
-  if (t.length !== tunnelSecret.length) return false;
-  let diff = 0;
-  for (let i = 0; i < t.length; i++) {
-    diff |= t.charCodeAt(i) ^ tunnelSecret.charCodeAt(i);
+  // Constant-time comparison — pure JS, safe for Edge Runtime.
+  // Iterate over max(length) regardless so timing does not leak the secret's length.
+  const maxLen = Math.max(t.length, tunnelSecret.length);
+  let diff = t.length ^ tunnelSecret.length;
+  for (let i = 0; i < maxLen; i++) {
+    const tc = i < t.length ? t.charCodeAt(i) : 0;
+    const sc = i < tunnelSecret.length ? tunnelSecret.charCodeAt(i) : 0;
+    diff |= tc ^ sc;
   }
   return diff === 0;
 }

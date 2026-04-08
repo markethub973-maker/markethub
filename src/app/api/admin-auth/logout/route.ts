@@ -7,9 +7,12 @@ export async function POST(request: Request) {
   });
 
   response.cookies.set({
-    name: "admin_session",
+    name: "admin_session_token",
     value: "",
     httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
     maxAge: 0,
   });
 

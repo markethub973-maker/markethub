@@ -19,13 +19,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Admin not configured" }, { status: 500 });
     }
 
-    // Constant-time comparison — pad to equal length to avoid length-based timing leak
+    // Constant-time comparison — pad to equal length to avoid length-based timing leak.
+    // IMPORTANT: both length check and timingSafeEqual must always execute (no short-circuit)
+    // so that timing does not reveal password length.
     const a = Buffer.from(password);
     const b = Buffer.from(adminPassword);
     const maxLen = Math.max(a.length, b.length);
     const aPad = Buffer.concat([a, Buffer.alloc(maxLen - a.length)]);
     const bPad = Buffer.concat([b, Buffer.alloc(maxLen - b.length)]);
-    const passwordMatch = a.length === b.length && crypto.timingSafeEqual(aPad, bPad);
+    const lenEqual = a.length === b.length;
+    const contentEqual = crypto.timingSafeEqual(aPad, bPad);
+    const passwordMatch = lenEqual && contentEqual;
     if (!passwordMatch) {
       await logAudit({
         action: "admin_login",

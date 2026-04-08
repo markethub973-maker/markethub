@@ -137,6 +137,9 @@ export default function AdminPage() {
   const handleLogout = async () => {
     try {
       await fetch("/api/admin-auth/logout", { method: "POST" });
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("admin_authenticated");
+      }
       router.push("/");
     } catch (error) {
       console.error("Logout error:", error);
