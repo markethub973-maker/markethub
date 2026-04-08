@@ -64,21 +64,47 @@ export default function ClientPortalPage() {
   const params = useParams();
   const token = typeof params.token === "string" ? params.token : "";
   const [portal, setPortal] = useState<PortalData | null>(null);
-  const [status, setStatus] = useState<"loading" | "error" | "expired" | "ok">("loading");
+  const [status, setStatus] = useState<"loading" | "error" | "expired" | "ok" | "password">("loading");
   const [errMsg, setErrMsg] = useState("");
+  const [passwordInput, setPasswordInput] = useState("");
+  const [passwordSubmitting, setPasswordSubmitting] = useState(false);
+  const [wrongPassword, setWrongPassword] = useState(false);
+
+  const fetchPortal = async (password?: string) => {
+    if (!token) return;
+    try {
+      const headers: Record<string, string> = {};
+      if (password) headers["x-portal-password"] = password;
+      const r = await fetch(`/api/client-portal/${token}`, { headers });
+      const json = await r.json();
+      if (r.status === 410) { setStatus("expired"); return; }
+      if (r.status === 401 && json.requires_password) {
+        if (json.wrong_password) setWrongPassword(true);
+        setStatus("password");
+        return;
+      }
+      if (!r.ok) { setErrMsg(json.error || "Unknown error"); setStatus("error"); return; }
+      setPortal(json.link as PortalData);
+      setStatus("ok");
+    } catch {
+      setErrMsg("Network error");
+      setStatus("error");
+    }
+  };
 
   useEffect(() => {
-    if (!token) return;
-    fetch(`/api/client-portal/${token}`)
-      .then(async r => {
-        const json = await r.json();
-        if (r.status === 410) { setStatus("expired"); return; }
-        if (!r.ok) { setErrMsg(json.error || "Unknown error"); setStatus("error"); return; }
-        setPortal(json.link as PortalData);
-        setStatus("ok");
-      })
-      .catch(() => { setErrMsg("Network error"); setStatus("error"); });
+    fetchPortal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
+
+  const submitPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passwordInput.trim()) return;
+    setPasswordSubmitting(true);
+    setWrongPassword(false);
+    await fetchPortal(passwordInput.trim());
+    setPasswordSubmitting(false);
+  };
 
   if (status === "loading") {
     return (
@@ -87,6 +113,48 @@ export default function ClientPortalPage() {
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
         </svg>
+      </div>
+    );
+  }
+
+  if (status === "password") {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "#FAF7F2" }}>
+        <form onSubmit={submitPassword}
+          className="w-full max-w-sm rounded-2xl p-8"
+          style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 4px 16px rgba(120,97,78,0.12)" }}>
+          <div className="text-center mb-6">
+            <p className="text-4xl mb-3">🔒</p>
+            <h1 className="text-lg font-bold" style={{ color: "#292524" }}>Protected report</h1>
+            <p className="text-xs mt-1" style={{ color: "#A8967E" }}>This report is password-protected. Ask the agency for the password.</p>
+          </div>
+          <input
+            type="password"
+            value={passwordInput}
+            onChange={e => { setPasswordInput(e.target.value); setWrongPassword(false); }}
+            placeholder="Enter password"
+            autoFocus
+            disabled={passwordSubmitting}
+            className="w-full px-4 py-3 text-sm rounded-xl focus:outline-none mb-3"
+            style={{
+              border: `1px solid ${wrongPassword ? "#DC2626" : "rgba(245,215,160,0.4)"}`,
+              backgroundColor: "#FFF8F0",
+              color: "#292524",
+            }}
+          />
+          {wrongPassword && (
+            <p className="text-xs mb-3 font-semibold" style={{ color: "#DC2626" }}>
+              Wrong password — please try again.
+            </p>
+          )}
+          <button
+            type="submit"
+            disabled={passwordSubmitting || !passwordInput.trim()}
+            className="w-full px-4 py-3 rounded-xl text-sm font-bold disabled:opacity-50"
+            style={{ backgroundColor: "#F59E0B", color: "white" }}>
+            {passwordSubmitting ? "Verifying..." : "Unlock report"}
+          </button>
+        </form>
       </div>
     );
   }

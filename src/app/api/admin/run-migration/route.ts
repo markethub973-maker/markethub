@@ -103,6 +103,17 @@ export async function POST(req: NextRequest) {
     results["client_portal_links_whitelabel"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
+  // ── 1c. client_portal_links password protection column ─────────────────
+  if (await columnExists(supa, "client_portal_links", "password_hash")) {
+    results["client_portal_links_password"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      ALTER TABLE client_portal_links
+        ADD COLUMN IF NOT EXISTS password_hash TEXT;
+    `);
+    results["client_portal_links_password"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
   // ── 2. scheduled_posts columns ───────────────────────────────────────────
   if (await columnExists(supa, "scheduled_posts", "image_url")) {
     results["scheduled_posts_image_url"] = "already_exists";

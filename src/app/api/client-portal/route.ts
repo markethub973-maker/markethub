@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { hashPassword } from "@/lib/portal/password";
 
 const FULL_FIELDS =
-  "id, token, client_name, ig_username, tt_username, view_count, expires_at, created_at, updated_at, agency_name, agency_logo_url, accent_color";
+  "id, token, client_name, ig_username, tt_username, view_count, expires_at, created_at, updated_at, agency_name, agency_logo_url, accent_color, password_hash";
 const LEGACY_FIELDS =
   "id, token, client_name, ig_username, tt_username, view_count, expires_at, created_at, updated_at";
 
 // Detect if Supabase error means a column/schema cache is missing
-// (i.e. migration for white-label columns has not been applied yet).
+// (i.e. migration for white-label/password columns has not been applied yet).
 function isSchemaCacheError(err: { message?: string; code?: string } | null): boolean {
   if (!err) return false;
   const msg = err.message ?? "";
@@ -18,6 +19,18 @@ function isSchemaCacheError(err: { message?: string; code?: string } | null): bo
     msg.includes("Could not find the") ||
     msg.includes("column")
   );
+}
+
+// Strip password_hash from outgoing rows; expose only `has_password: boolean`.
+function sanitize(row: any): any {
+  if (!row) return row;
+  const { password_hash, ...rest } = row;
+  return { ...rest, has_password: !!password_hash };
+}
+
+function sanitizeMany(rows: any[] | null): any[] {
+  if (!rows) return [];
+  return rows.map(sanitize);
 }
 
 // POST — create a live portal link for a client
@@ -36,6 +49,7 @@ export async function POST(req: NextRequest) {
     agency_name,
     agency_logo_url,
     accent_color,
+    password,
   } = body as {
     client_name: string;
     ig_username?: string;
@@ -45,6 +59,7 @@ export async function POST(req: NextRequest) {
     agency_name?: string;
     agency_logo_url?: string;
     accent_color?: string;
+    password?: string;
   };
 
   if (!client_name?.trim()) {
@@ -64,21 +79,24 @@ export async function POST(req: NextRequest) {
     expires_at,
   };
 
-  const whiteLabelRow: Record<string, unknown> = {
+  const fullRow: Record<string, unknown> = {
     ...baseRow,
     agency_name: agency_name?.trim() || null,
     agency_logo_url: agency_logo_url?.trim() || null,
     accent_color: accent_color?.trim() || null,
   };
 
+  if (password && password.trim()) {
+    fullRow.password_hash = await hashPassword(password.trim());
+  }
+
   const svc = createServiceClient();
 
-  // Try with white-label columns first; fall back to legacy schema if missing.
-  // Cast to any so retry can hold either shape — Supabase infers a narrow
-  // row type from the SELECT string and the legacy retry returns a subset.
+  // Try with full schema (white-label + password) first; fall back to legacy
+  // schema if any of those columns are missing on Supabase.
   const first = await svc
     .from("client_portal_links")
-    .insert(whiteLabelRow)
+    .insert(fullRow)
     .select(FULL_FIELDS)
     .single();
   let link: any = first.data;
@@ -95,7 +113,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json({ link });
+  return NextResponse.json({ link: sanitize(link) });
 }
 
 // GET — list all portal links for the authenticated user
@@ -125,10 +143,10 @@ export async function GET() {
   }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json({ links: links || [] });
+  return NextResponse.json({ links: sanitizeMany(links) });
 }
 
-// PATCH — update existing link: extend expiry, refresh data, or set white-label
+// PATCH — update existing link: extend expiry, refresh data, set white-label, set/clear password
 export async function PATCH(req: NextRequest) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -142,6 +160,7 @@ export async function PATCH(req: NextRequest) {
     agency_name,
     agency_logo_url,
     accent_color,
+    password,
   } = body as {
     id?: string;
     extend_days?: number;
@@ -149,6 +168,7 @@ export async function PATCH(req: NextRequest) {
     agency_name?: string | null;
     agency_logo_url?: string | null;
     accent_color?: string | null;
+    password?: string | null;
   };
 
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
@@ -183,16 +203,28 @@ export async function PATCH(req: NextRequest) {
     baseUpdate.data = data;
   }
 
-  // White-label fields go in a separate update layer so we can drop them on
+  // Full update layer (white-label + password) — fall back to baseUpdate on
   // schema-cache errors without losing the legitimate base updates.
-  const whiteLabelUpdate: Record<string, unknown> = { ...baseUpdate };
-  if (agency_name !== undefined) whiteLabelUpdate.agency_name = agency_name?.toString().trim() || null;
-  if (agency_logo_url !== undefined) whiteLabelUpdate.agency_logo_url = agency_logo_url?.toString().trim() || null;
-  if (accent_color !== undefined) whiteLabelUpdate.accent_color = accent_color?.toString().trim() || null;
+  const fullUpdate: Record<string, unknown> = { ...baseUpdate };
+  if (agency_name !== undefined) fullUpdate.agency_name = agency_name?.toString().trim() || null;
+  if (agency_logo_url !== undefined) fullUpdate.agency_logo_url = agency_logo_url?.toString().trim() || null;
+  if (accent_color !== undefined) fullUpdate.accent_color = accent_color?.toString().trim() || null;
+
+  // password === null  → clear protection
+  // password === ""    → clear protection
+  // password === "abc" → set/replace
+  // password undefined → leave unchanged
+  if (password !== undefined) {
+    if (password === null || password === "") {
+      fullUpdate.password_hash = null;
+    } else {
+      fullUpdate.password_hash = await hashPassword(password);
+    }
+  }
 
   const first = await svc
     .from("client_portal_links")
-    .update(whiteLabelUpdate)
+    .update(fullUpdate)
     .eq("id", id)
     .select(FULL_FIELDS)
     .single();
@@ -211,7 +243,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
-  return NextResponse.json({ link });
+  return NextResponse.json({ link: sanitize(link) });
 }
 
 // DELETE — remove a portal link

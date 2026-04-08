@@ -5,7 +5,7 @@ import Link from "next/link";
 import Header from "@/components/layout/Header";
 import {
   Link2, Copy, Trash2, RefreshCw, Calendar, Eye, Loader2,
-  Palette, ChevronLeft, ExternalLink, Check, X, Edit3, Plus,
+  Palette, ChevronLeft, ExternalLink, Check, X, Edit3, Plus, Lock, Unlock,
 } from "lucide-react";
 
 const cardStyle = {
@@ -27,6 +27,7 @@ type PortalLink = {
   agency_name: string | null;
   agency_logo_url: string | null;
   accent_color: string | null;
+  has_password: boolean;
 };
 
 function timeUntil(iso: string | null): { label: string; color: string } {
@@ -57,6 +58,8 @@ export default function ShareLinksPage() {
   const [formAgencyName, setFormAgencyName] = useState("");
   const [formLogoUrl, setFormLogoUrl] = useState("");
   const [formAccent, setFormAccent] = useState("");
+  const [formPassword, setFormPassword] = useState("");
+  const [formClearPassword, setFormClearPassword] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -125,20 +128,33 @@ export default function ShareLinksPage() {
     setFormAgencyName(link.agency_name || "");
     setFormLogoUrl(link.agency_logo_url || "");
     setFormAccent(link.accent_color || "");
+    setFormPassword("");
+    setFormClearPassword(false);
   };
 
   const saveEdit = async (id: string) => {
     setBusyId(id);
     try {
+      // Password semantics:
+      //   formClearPassword=true → send `null` to clear protection
+      //   formPassword has value → send to set/replace
+      //   neither               → omit the field so the server leaves it alone
+      const body: Record<string, unknown> = {
+        id,
+        agency_name: formAgencyName.trim() || null,
+        agency_logo_url: formLogoUrl.trim() || null,
+        accent_color: formAccent.trim() || null,
+      };
+      if (formClearPassword) {
+        body.password = null;
+      } else if (formPassword.trim()) {
+        body.password = formPassword.trim();
+      }
+
       const res = await fetch("/api/client-portal", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          id,
-          agency_name: formAgencyName.trim() || null,
-          agency_logo_url: formLogoUrl.trim() || null,
-          accent_color: formAccent.trim() || null,
-        }),
+        body: JSON.stringify(body),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Failed");
@@ -235,6 +251,14 @@ export default function ShareLinksPage() {
                         <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
                           style={{ backgroundColor: `${accent}15`, color: accent }}>
                           {link.agency_name}
+                        </span>
+                      )}
+                      {link.has_password && (
+                        <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-semibold"
+                          style={{ backgroundColor: "rgba(120,97,78,0.1)", color: "#78614E" }}
+                          title="Password protected">
+                          <Lock className="w-3 h-3" />
+                          Protected
                         </span>
                       )}
                     </div>
@@ -342,6 +366,48 @@ export default function ShareLinksPage() {
                     <p className="text-xs" style={{ color: "#A8967E" }}>
                       Leave any field empty to use the default MarketHub Pro branding.
                     </p>
+
+                    {/* Password protection */}
+                    <div className="pt-3" style={{ borderTop: "1px solid rgba(245,215,160,0.2)" }}>
+                      <div className="flex items-center gap-2 mb-2">
+                        {link.has_password
+                          ? <Lock className="w-3.5 h-3.5" style={{ color: "#78614E" }} />
+                          : <Unlock className="w-3.5 h-3.5" style={{ color: "#A8967E" }} />}
+                        <h4 className="text-xs font-bold uppercase tracking-wider" style={{ color: "#78614E" }}>
+                          Password protection
+                        </h4>
+                        {link.has_password && (
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: "rgba(22,163,74,0.1)", color: "#16A34A" }}>
+                            Active
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex flex-col md:flex-row gap-2">
+                        <input
+                          type="text"
+                          placeholder={link.has_password ? "Enter new password to replace" : "Set a password to enable"}
+                          value={formPassword}
+                          disabled={formClearPassword}
+                          onChange={e => setFormPassword(e.target.value)}
+                          className="flex-1 px-3 py-2 text-sm rounded-lg focus:outline-none disabled:opacity-50"
+                          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
+                        />
+                        {link.has_password && (
+                          <label className="flex items-center gap-1 text-xs font-semibold cursor-pointer px-3 py-2 rounded-lg"
+                            style={{ backgroundColor: formClearPassword ? "rgba(220,38,38,0.1)" : "rgba(245,215,160,0.15)", color: formClearPassword ? "#DC2626" : "#78614E" }}>
+                            <input type="checkbox" checked={formClearPassword}
+                              onChange={e => { setFormClearPassword(e.target.checked); if (e.target.checked) setFormPassword(""); }}
+                              className="w-3 h-3" />
+                            Remove password
+                          </label>
+                        )}
+                      </div>
+                      <p className="text-xs mt-1" style={{ color: "#A8967E" }}>
+                        Visitors will be required to enter this password before they can see the report.
+                      </p>
+                    </div>
+
                     <div className="flex gap-2">
                       <button type="button" onClick={() => saveEdit(link.id)} disabled={isBusy}
                         className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold disabled:opacity-50"
