@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { signState } from "@/lib/oauthState";
 
 export async function GET() {
   const supabase = await createClient();
@@ -23,7 +24,8 @@ export async function GET() {
     redirect_uri: redirectUri,
     scope: "user.info.basic,user.info.stats,video.list",
     response_type: "code",
-    state: user.id,
+    // HMAC-signed state — callback verifies signature AND current session. (VULN-CRIT-1)
+    state: signState(user.id),
   });
 
   return NextResponse.redirect(

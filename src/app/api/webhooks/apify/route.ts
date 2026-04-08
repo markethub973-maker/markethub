@@ -1,22 +1,59 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import crypto from "crypto";
 
 /**
- * Apify Webhook receiver
- * Configure in Apify: Actor run → Settings → Webhooks
- * URL: https://markethubpromo.com/api/webhooks/apify
- * Events: ACTOR.RUN.SUCCEEDED, ACTOR.RUN.FAILED
+ * Apify Webhook receiver (agent_runs path — different from /api/apify/webhook
+ * which is the apify_jobs path).
+ *
+ * Auth: HMAC-SHA256(rawBody, APIFY_WEBHOOK_SECRET) in the
+ *   `x-apify-webhook-signature` header (hex). Falls back to the legacy
+ *   `x-webhook-secret` header containing the raw shared secret, compared in
+ *   constant time, for Apify runs configured before HMAC was added.
+ *
+ * Fails CLOSED — if APIFY_WEBHOOK_SECRET is unset the route returns 401.
+ * (VULN-HIGH-1: previously the route accepted any request when the env var
+ *  was missing, because the guard only fired when the env var was truthy.)
  */
+function constantTimeEq(a: string, b: string): boolean {
+  const ab = Buffer.from(a);
+  const bb = Buffer.from(b);
+  if (ab.length !== bb.length) return false;
+  return crypto.timingSafeEqual(ab, bb);
+}
+
+function verifyApifyAuth(rawBody: string, req: NextRequest): boolean {
+  const secret = process.env.APIFY_WEBHOOK_SECRET;
+  if (!secret) return false; // fail closed — secret must be configured
+
+  // Preferred: HMAC-SHA256 signature over raw body
+  const sig = req.headers.get("x-apify-webhook-signature");
+  if (sig) {
+    const expected = crypto.createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
+    try {
+      return crypto.timingSafeEqual(Buffer.from(sig, "hex"), Buffer.from(expected, "hex"));
+    } catch {
+      return false;
+    }
+  }
+
+  // Legacy: shared secret in x-webhook-secret header (constant-time)
+  const legacy = req.headers.get("x-webhook-secret");
+  if (legacy) return constantTimeEq(legacy, secret);
+
+  return false;
+}
+
 export async function POST(req: NextRequest) {
-  // Verify webhook secret — header only (never accept query params to avoid secret in logs)
-  const secret = req.headers.get("x-webhook-secret");
-  if (process.env.APIFY_WEBHOOK_SECRET && secret !== process.env.APIFY_WEBHOOK_SECRET) {
+  const rawBody = await req.text();
+
+  if (!verifyApifyAuth(rawBody, req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   let body: any;
   try {
-    body = await req.json();
+    body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }

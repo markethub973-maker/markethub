@@ -1,21 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { createClient } from "@/lib/supabase/server";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
+import { verifyState } from "@/lib/oauthState";
 
 const TT_TOKEN_URL = "https://open.tiktokapis.com/v2/oauth/token/";
 const TT_USER_URL  = "https://open.tiktokapis.com/v2/user/info/";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl;
-  const code  = searchParams.get("code");
-  const state = searchParams.get("state"); // user.id
-  const error = searchParams.get("error");
+  const code       = searchParams.get("code");
+  const stateParam = searchParams.get("state");
+  const error      = searchParams.get("error");
 
-  if (error || !code || !state) {
+  if (error || !code || !stateParam) {
     return NextResponse.redirect(
       new URL(`/tiktok?error=${error ?? "missing_code"}`, req.url)
     );
   }
+
+  // ── CSRF: verify HMAC-signed state + current Supabase session (VULN-CRIT-1)
+  const verified = verifyState(stateParam);
+  if (!verified) {
+    return NextResponse.redirect(new URL("/tiktok?error=invalid_state", req.url));
+  }
+  const sessionClient = await createClient();
+  const { data: { user: sessionUser } } = await sessionClient.auth.getUser();
+  if (!sessionUser || sessionUser.id !== verified.userId) {
+    return NextResponse.redirect(new URL("/tiktok?error=session_mismatch", req.url));
+  }
+  const state = sessionUser.id;
 
   const clientKey    = process.env.TIKTOK_CLIENT_KEY;
   const clientSecret = process.env.TIKTOK_CLIENT_SECRET;

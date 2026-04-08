@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { signState } from "@/lib/oauthState";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
@@ -23,7 +24,8 @@ export async function GET(req: NextRequest) {
     ].join(" "),
     access_type: "offline",
     prompt: "consent",
-    state: user.id,
+    // HMAC-signed state — callback verifies signature AND current session. (VULN-CRIT-1)
+    state: signState(user.id),
   });
 
   return NextResponse.redirect(

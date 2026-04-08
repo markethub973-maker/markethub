@@ -1,22 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { createClient } from "@/lib/supabase/server";
 import { logAudit } from "@/lib/auditLog";
+import { verifyState } from "@/lib/oauthState";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
-  const userId = searchParams.get("state"); // passed from initiation route
+  const stateParam = searchParams.get("state");
   const error = searchParams.get("error");
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
   const redirectUri = process.env.INSTAGRAM_REDIRECT_URI
     || `${appUrl}/api/auth/instagram/callback`;
 
-  if (error || !code || !userId) {
+  if (error || !code || !stateParam) {
     return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=${error || "missing_params"}`);
   }
 
-  const supabase = createServiceClient(); // service role — no cookie auth needed
+  // ── CSRF: verify HMAC-signed state (VULN-CRIT-1) ─────────────────────────
+  const verified = verifyState(stateParam);
+  if (!verified) {
+    return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=invalid_state`);
+  }
+
+  // ── Re-verify against current Supabase session — state alone is not an
+  // identity claim. The current browser MUST be logged in as the same user
+  // that initiated the OAuth flow. This blocks the "replay victim's user_id
+  // in state" account-takeover vector.
+  const sessionClient = await createClient();
+  const { data: { user: sessionUser } } = await sessionClient.auth.getUser();
+  if (!sessionUser || sessionUser.id !== verified.userId) {
+    return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=session_mismatch`);
+  }
+  const userId = sessionUser.id;
+
+  const supabase = createServiceClient(); // service role — for cross-table writes after auth check
 
   try {
     // Step 1: Exchange code for short-lived token
