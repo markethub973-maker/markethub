@@ -87,19 +87,32 @@ async function checkRateLimit(ip: string, type: "auth" | "api"): Promise<boolean
 
   const key = `rl:${type}:${ip}`;
   const limit = LIMITS[type];
-  const headers = { Authorization: `Bearer ${redisToken}` };
 
   try {
-    // INCR the counter
-    const incrRes = await fetch(`${redisUrl}/incr/${encodeURIComponent(key)}`, { headers });
-    if (!incrRes.ok) return true;
-    const { result: count } = await incrRes.json() as { result: number };
-
-    // Set 60s TTL on first request (NX = only if key has no TTL yet)
-    if (count === 1) {
-      fetch(`${redisUrl}/expire/${encodeURIComponent(key)}/60`, { headers }).catch(() => {});
-    }
-
+    // ATOMIC pipeline: INCR + EXPIRE NX in one round-trip.
+    // Why pipeline / why NX:
+    //   Previously we did INCR followed by a fire-and-forget fetch(EXPIRE).
+    //   In Edge Runtime / serverless functions the unawaited fetch is killed
+    //   when the request handler returns, so EXPIRE often never reached
+    //   Redis. The result was rate-limit keys with TTL = -1 (no expiry) that
+    //   accumulated forever — every IP that tripped the limit once stayed
+    //   banned permanently. NX makes EXPIRE idempotent across the lifetime
+    //   of the window so subsequent calls in the same minute don't reset it.
+    const pipelineRes = await fetch(`${redisUrl}/pipeline`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${redisToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([
+        ["INCR", key],
+        ["EXPIRE", key, "60", "NX"],
+      ]),
+    });
+    if (!pipelineRes.ok) return true;
+    const results = (await pipelineRes.json()) as Array<{ result: number }>;
+    const count = results?.[0]?.result;
+    if (typeof count !== "number") return true;
     return count <= limit;
   } catch {
     return true; // network error — fail-open
