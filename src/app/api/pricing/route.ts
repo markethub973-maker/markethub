@@ -17,7 +17,7 @@ export async function GET() {
     if (data?.extra_data) savedPrices = data.extra_data as Record<string, number>;
   } catch { /* use defaults */ }
 
-  const PLAN_IDS = ["free_test", "starter", "lite", "pro", "business", "enterprise"] as const;
+  const PLAN_IDS = ["free_test", "lite", "pro", "business", "enterprise"] as const;
 
   const plans = PLAN_IDS.map(id => {
     const cfg = TOKEN_PLANS[id];

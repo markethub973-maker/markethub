@@ -20,7 +20,7 @@
  * - Intensive agent bulk: 500,000 tokens → $7.50/day ($225/month)
  */
 
-export type PlanId = "free_test" | "starter" | "lite" | "pro" | "business" | "enterprise";
+export type PlanId = "free_test" | "lite" | "pro" | "business" | "enterprise";
 
 export interface TokenPlanConfig {
   id: PlanId;
@@ -78,37 +78,10 @@ export const TOKEN_PLANS: Record<PlanId, TokenPlanConfig> = {
     sla_uptime: null,
   },
 
-  starter: {
-    id: "starter",
-    name: "Starter",
-    price: 14,                           // ↑ from $9 — now includes Calendar + TikTok
-    included_tokens_month: 15_000,       // ↑ from 10K — ~1,250 captions
-    extra_token_cost: 0.0010,            // $1.00 per 1000 tokens
-    max_monthly_tokens: -1,              // Unlimited, but pay per token
-    token_recharge_packs: [
-      { id: "starter_tokens_15k",  tokens: 15_000,  price: 18,  bonus_pct: 0  },
-      { id: "starter_tokens_30k",  tokens: 30_000,  price: 35,  bonus_pct: 10 },
-      { id: "starter_tokens_60k",  tokens: 60_000,  price: 65,  bonus_pct: 15 },
-    ],
-    tracked_channels: 5,                 // ↑ from 3
-    instagram_accounts: 1,
-    tiktok_accounts: 1,                  // ↑ from 0 — TikTok now included
-    competitor_brands: 3,                // ↑ from 2
-    team_members: 1,
-    client_accounts: 1,
-    history_days: 30,
-    has_calendar: true,                  // ✓ Calendar now included in Starter
-    has_tiktok: true,                    // ✓ TikTok now included in Starter
-    has_api_access: false,
-    has_white_label: false,
-    has_priority_support: false,
-    sla_uptime: null,
-  },
-
   lite: {
     id: "lite",
     name: "Lite",
-    price: 24,                           // ↑ from $19 — maintains clear gap over Starter
+    price: 24,                           // entry paid tier
     included_tokens_month: 60_000,       // ↑ from 50K — ~5,000 captions
     extra_token_cost: 0.0009,            // $0.90 per 1000 tokens
     max_monthly_tokens: -1,              // Unlimited

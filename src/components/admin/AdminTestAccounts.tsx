@@ -5,7 +5,6 @@ import { Users, Plus, Copy, Check, ExternalLink, RefreshCw, ChevronDown, Chevron
 
 const PLAN_LABELS: Record<string, string> = {
   free_test: "Free Trial",
-  starter: "Starter — $14/mo",
   lite: "Lite — $24/mo",
   pro: "Pro — $49/mo",
   business: "Business — $99/mo",
@@ -14,7 +13,6 @@ const PLAN_LABELS: Record<string, string> = {
 
 const PLAN_COLORS: Record<string, string> = {
   free_test: "#78614E",
-  starter: "#3B82F6",
   lite: "#F59E0B",
   pro: "#8B5CF6",
   business: "#E1306C",
@@ -23,11 +21,10 @@ const PLAN_COLORS: Record<string, string> = {
 
 const PLAN_FEATURES: Record<string, string[]> = {
   free_test: ["1,000 tokens", "3 channels", "Calendar", "TikTok"],
-  starter: ["10,000 tokens", "5 channels", "Email Reports", "Ads Library"],
-  lite: ["25,000 tokens", "12 channels", "Link in Bio", "Hashtags", "Marketing Agent", "Clients"],
-  pro: ["60,000 tokens", "30 channels", "AI Hub", "Lead Finder", "Leads CRM"],
-  business: ["150,000 tokens", "100 channels", "API Access", "Priority Support"],
-  enterprise: ["Unlimited tokens", "Unlimited channels", "White Label", "Full API"],
+  lite: ["60,000 tokens", "12 channels", "Calendar", "Marketing Agent", "Clients"],
+  pro: ["150,000 tokens", "30 channels", "AI Hub", "Lead Finder", "Leads CRM"],
+  business: ["500,000 tokens", "100 channels", "API Access", "Priority Support"],
+  enterprise: ["1.5M tokens", "Unlimited channels", "White Label", "Full API"],
 };
 
 interface TestAccount {

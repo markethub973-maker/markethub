@@ -33,8 +33,7 @@ interface Plan {
 
 const BADGES: Record<string, { label: string; color: string }> = {
   free_test:  { label: "Try Free",   color: "#78614E" },
-  starter:    { label: "Start Here", color: "#3B82F6" },
-  lite:       { label: "Popular",    color: "#F59E0B" },
+  lite:       { label: "Start Here", color: "#F59E0B" },
   pro:        { label: "Best Value", color: "#8B5CF6" },
   business:   { label: "Agency",     color: "#E1306C" },
   enterprise: { label: "Enterprise", color: "#16A34A" },

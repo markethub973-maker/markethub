@@ -6,14 +6,13 @@
  *
  *   Plan       Price   AI Budget   Ratio
  *   ──────────────────────────────────────
- *   starter    $9      $2          22.2%
- *   lite       $19     $5          26.3%
- *   pro        $39     $9          23.1%
+ *   lite       $24     $6          25.0%
+ *   pro        $49     $12         24.5%
  *   business   $99     $24         24.2%
  *   enterprise $249    $60         24.1%  ← reference
  */
 
-export type PlanId = "free_test" | "starter" | "lite" | "pro" | "business" | "enterprise";
+export type PlanId = "free_test" | "lite" | "pro" | "business" | "enterprise";
 
 export interface PlanConfig {
   id: PlanId;
@@ -62,43 +61,20 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     sla_uptime: null,
   },
 
-  starter: {
-    id: "starter",
-    name: "Starter",
-    price: 9,
-    ai_budget_usd: 2,
-    ai_credits: 2_000,
-    tracked_channels: 3,
-    instagram_accounts: 1,
-    tiktok_accounts: 0,
-    competitor_brands: 2,
-    ai_captions_month: 30,
-    team_members: 1,
-    client_accounts: 1,
-    pdf_reports_month: 0,
-    history_days: 30,
-    has_calendar: false,
-    has_tiktok: false,
-    has_api_access: false,
-    has_white_label: false,
-    has_priority_support: false,
-    sla_uptime: null,
-  },
-
   lite: {
     id: "lite",
     name: "Lite",
-    price: 19,
-    ai_budget_usd: 5,
-    ai_credits: 5_000,
-    tracked_channels: 10,
-    instagram_accounts: 1,
-    tiktok_accounts: 1,
-    competitor_brands: 5,
-    ai_captions_month: 150,
-    team_members: 1,
-    client_accounts: 1,
-    pdf_reports_month: 5,
+    price: 24,
+    ai_budget_usd: 6,
+    ai_credits: 6_000,
+    tracked_channels: 12,
+    instagram_accounts: 2,
+    tiktok_accounts: 2,
+    competitor_brands: 8,
+    ai_captions_month: 200,
+    team_members: 2,
+    client_accounts: 2,
+    pdf_reports_month: 10,
     history_days: 90,
     has_calendar: true,
     has_tiktok: true,
@@ -111,17 +87,17 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   pro: {
     id: "pro",
     name: "Pro",
-    price: 39,
-    ai_budget_usd: 9,
-    ai_credits: 9_000,
-    tracked_channels: 25,
-    instagram_accounts: 3,
-    tiktok_accounts: 3,
-    competitor_brands: 15,
-    ai_captions_month: 500,
-    team_members: 2,
-    client_accounts: 3,
-    pdf_reports_month: 20,
+    price: 49,
+    ai_budget_usd: 12,
+    ai_credits: 12_000,
+    tracked_channels: 30,
+    instagram_accounts: 4,
+    tiktok_accounts: 4,
+    competitor_brands: 20,
+    ai_captions_month: 600,
+    team_members: 3,
+    client_accounts: 5,
+    pdf_reports_month: 25,
     history_days: 365,
     has_calendar: true,
     has_tiktok: true,

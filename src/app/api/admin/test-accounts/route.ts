@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 import { createServiceClient } from "@/lib/supabase/service";
 
-const PLAN_ORDER = ["free_test", "starter", "lite", "pro", "business", "enterprise"];
+const PLAN_ORDER = ["free_test", "lite", "pro", "business", "enterprise"];
 
 export async function GET(req: NextRequest) {
   if (!isAdminAuthorized(req)) {

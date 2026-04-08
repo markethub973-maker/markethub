@@ -41,7 +41,6 @@ interface BillingData {
 
 const PLAN_LABELS: Record<string, string> = {
   free_test: "Free Trial",
-  starter: "Starter",
   lite: "Lite",
   pro: "Pro",
   business: "Business",

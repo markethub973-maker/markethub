@@ -10,7 +10,6 @@
 
 export const AI_DAILY_LIMITS: Record<string, { apex: number; research: number }> = {
   free_test:  { apex: 5,   research: 0   },
-  starter:    { apex: 10,  research: 5   },
   lite:       { apex: 20,  research: 15  },
   pro:        { apex: 50,  research: 30  },
   business:   { apex: 100, research: 80  },
@@ -71,7 +70,6 @@ export function limitExceededResponse(result: LimitResult, type: AILimitType) {
   const label = type === "apex" ? "APEX / AI" : "Research";
   const hint  =
     result.plan === "free_test" ? " Upgrade your plan for more daily requests." :
-    result.plan === "starter"   ? " Upgrade to Lite or higher for more daily requests." :
     " Resets at midnight UTC.";
   return {
     error:       `Daily ${label} limit reached (${result.limit}/day on ${result.plan} plan).${hint}`,

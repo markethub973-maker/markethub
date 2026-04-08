@@ -80,7 +80,6 @@ interface Finance {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const PLAN_COLORS: Record<string, string> = {
   free_test:  "#78614E",
-  starter:    "#3B82F6",
   lite:       "#F59E0B",
   pro:        "#8B5CF6",
   business:   "#E1306C",
@@ -88,7 +87,7 @@ const PLAN_COLORS: Record<string, string> = {
 };
 
 const PLAN_PRICES: Record<string, number> = {
-  free_test: 0, starter: 14, lite: 24, pro: 49, business: 99, enterprise: 249,
+  free_test: 0, lite: 24, pro: 49, business: 99, enterprise: 249,
 };
 
 function planBadge(plan: string) {
@@ -134,7 +133,7 @@ export default function AdminUsersPage() {
   const [actionUser, setActionUser] = useState<User | null>(null);
   const [actionType, setActionType] = useState<"block" | "unblock" | "change_plan" | null>(null);
   const [actionReason, setActionReason] = useState("");
-  const [actionPlan, setActionPlan] = useState("starter");
+  const [actionPlan, setActionPlan] = useState("lite");
   const [actionLoading, setActionLoading] = useState(false);
 
   // Edit cost modal

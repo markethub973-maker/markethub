@@ -4,7 +4,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { sendWelcomeEmail, sendOnboarding1_Welcome } from "@/lib/resend";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 
-const VALID_PLANS = ["free_test", "starter", "lite", "pro", "business", "enterprise"];
+const VALID_PLANS = ["free_test", "lite", "pro", "business", "enterprise"];
 
 // ── Email normalization (Gmail dot-trick + plus-aliasing) ─────────────────────
 function normalizeEmail(email: string): string {

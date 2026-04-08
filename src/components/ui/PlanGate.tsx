@@ -17,7 +17,7 @@ interface PlanGateProps {
   message?: string;
 }
 
-const PLAN_ORDER = ["free_test", "starter", "lite", "pro", "business", "enterprise"];
+const PLAN_ORDER = ["free_test", "lite", "pro", "business", "enterprise"];
 
 function meetsRequirement(userPlan: string, required: string): boolean {
   const userIdx = PLAN_ORDER.indexOf(userPlan);

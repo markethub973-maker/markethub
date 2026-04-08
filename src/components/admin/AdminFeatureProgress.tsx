@@ -70,10 +70,10 @@ const FEATURES: Feature[] = [
   { id: "i06", name: "Anthropic — Dual API Keys", category: "Integration", status: "done", priority: "critical", description: "ANTHROPIC_API_KEY (dev/Claude Code) + ANTHROPIC_API_KEY_APP (app features) — independent credits", addedAt: "2026-03" },
 
   // ── Payment ─────────────────────────────────────────────────────────────────
-  { id: "p01", name: "Stripe Subscriptions — 6 Plans", category: "Payment", status: "done", priority: "critical", description: "Free Trial, Starter $9, Lite $19, Pro $39, Business $99, Enterprise $249", addedAt: "2026-03" },
+  { id: "p01", name: "Stripe Subscriptions — 5 Plans", category: "Payment", status: "done", priority: "critical", description: "Free Trial, Lite $24, Pro $49, Business $99, Enterprise $249", addedAt: "2026-03" },
   { id: "p02", name: "Extra AI Credits Purchase", category: "Payment", status: "done", priority: "high", description: "Stripe one-time checkout for $10/$25/$50/$100 credit packs with bonuses", addedAt: "2026-03" },
   { id: "p03", name: "Stripe Webhook Handler", category: "Payment", status: "done", priority: "critical", description: "Handles subscription + credit pack payments, updates Supabase", addedAt: "2026-03" },
-  { id: "p04", name: "Early-Bird Pricing Strategy", category: "Payment", status: "in-progress", priority: "high", description: "Current prices are launch prices. Planned increase: Starter $9→$15, etc. with more AI credits", notes: "Activate after 1 month of launch. Update plan-config.ts" },
+  { id: "p04", name: "Early-Bird Pricing Strategy", category: "Payment", status: "done", priority: "high", description: "Lite $24, Pro $49, Business $99, Enterprise $249 — final tier pricing post-launch", notes: "Tier prices finalized 2026-04. Update plan-config.ts if changing." },
 
   // ── Security ────────────────────────────────────────────────────────────────
   { id: "s01", name: "Admin Auth — Secret URL + Password", category: "Security", status: "done", priority: "critical", description: "Private /markethub973 with localStorage token, no Supabase dependency", addedAt: "2026-02" },

@@ -23,7 +23,6 @@ const SQL = `CREATE TABLE IF NOT EXISTS discount_codes (
 );`;
 
 const PLAN_OPTIONS = [
-  { id: "starter", label: "Starter" },
   { id: "lite", label: "Lite" },
   { id: "pro", label: "Pro" },
   { id: "business", label: "Business" },

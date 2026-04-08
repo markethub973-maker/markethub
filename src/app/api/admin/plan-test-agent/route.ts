@@ -96,7 +96,7 @@ export async function GET(req: NextRequest) {
     planMatch: boolean;
   }> = {};
 
-  const ACTIVE_PLANS = PLAN_ORDER.filter(p => p !== "starter");
+  const ACTIVE_PLANS = PLAN_ORDER;
   for (const planId of ACTIVE_PLANS) {
     const email = `test.${planId}@markethubpromo.com`;
     const password = `Test${planId.charAt(0).toUpperCase() + planId.slice(1)}2026!`;
@@ -136,8 +136,8 @@ export async function GET(req: NextRequest) {
     };
   }
 
-  // Build access matrix: plan → route → expected access (exclude starter)
-  const ACTIVE_PLANS2 = PLAN_ORDER.filter(p => p !== "starter");
+  // Build access matrix: plan → route → expected access
+  const ACTIVE_PLANS2 = PLAN_ORDER;
   const matrix: Record<string, Record<string, boolean>> = {};
   for (const planId of ACTIVE_PLANS2) {
     matrix[planId] = {};
@@ -167,7 +167,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const targetPlan: string | null = body.plan ?? null; // null = all plans
 
-  const ACTIVE_PLANS = PLAN_ORDER.filter(p => p !== "starter");
+  const ACTIVE_PLANS = PLAN_ORDER;
   const plansToTest = targetPlan
     ? ACTIVE_PLANS.filter(p => p === targetPlan)
     : ACTIVE_PLANS;

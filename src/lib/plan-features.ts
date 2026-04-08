@@ -5,12 +5,11 @@
  * message shown when a user tries to access something locked.
  */
 
-export type PlanId = "free_test" | "starter" | "lite" | "pro" | "business" | "enterprise";
+export type PlanId = "free_test" | "lite" | "pro" | "business" | "enterprise";
 
 // ── Plan order (index = rank, higher = more capable) ─────────────────────────
 export const PLAN_ORDER: PlanId[] = [
   "free_test",
-  "starter",
   "lite",
   "pro",
   "business",
@@ -19,7 +18,6 @@ export const PLAN_ORDER: PlanId[] = [
 
 export const PLAN_PRICES: Record<PlanId, number> = {
   free_test:  0,
-  starter:    14,
   lite:       24,
   pro:        49,
   business:   99,
@@ -28,7 +26,6 @@ export const PLAN_PRICES: Record<PlanId, number> = {
 
 export const PLAN_LABELS: Record<PlanId, string> = {
   free_test:  "Free Trial",
-  starter:    "Starter",
   lite:       "Lite",
   pro:        "Pro",
   business:   "Business",
@@ -37,7 +34,6 @@ export const PLAN_LABELS: Record<PlanId, string> = {
 
 export const PLAN_COLORS: Record<PlanId, string> = {
   free_test:  "#78614E",
-  starter:    "#3B82F6",
   lite:       "#F59E0B",
   pro:        "#8B5CF6",
   business:   "#E1306C",
@@ -54,17 +50,6 @@ export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
     has_priority_support: false,
     tracked_channels:   2,
     competitor_brands:  1,
-    team_members:       1,
-    client_accounts:    1,
-  },
-  starter: {
-    has_calendar:       false,
-    has_tiktok:         false,
-    has_api_access:     false,
-    has_white_label:    false,
-    has_priority_support: false,
-    tracked_channels:   5,
-    competitor_brands:  3,
     team_members:       1,
     client_accounts:    1,
   },

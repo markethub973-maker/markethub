@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { TOKEN_PLANS, type PlanId } from "@/lib/token-plan-config";
 
-const PLAN_IDS: PlanId[] = ["free_test", "starter", "lite", "pro", "business", "enterprise"];
+const PLAN_IDS: PlanId[] = ["free_test", "lite", "pro", "business", "enterprise"];
 
 async function requireAdmin() {
   const supabase = await createClient();
