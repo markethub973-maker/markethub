@@ -6,7 +6,7 @@ import {
   Phone, Globe, Star, MapPin, Instagram, Facebook, Play,
   Search, Trash2, Download, RefreshCw, Loader2, AlertCircle,
   Users, Map, Hash, ExternalLink, Filter, Copy, Check,
-  CheckCircle2, Circle, StickyNote, X,
+  CheckCircle2, Circle, StickyNote, X, Youtube, MessageSquare,
 } from "lucide-react";
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -92,6 +92,8 @@ const TYPE_COLORS: Record<string, string> = {
   instagram: IG,
   tiktok: TT,
   facebook: FB,
+  youtube: "#FF0000",
+  reddit: "#FF4500",
 };
 
 const TYPE_ICONS: Record<string, React.ElementType> = {
@@ -100,6 +102,8 @@ const TYPE_ICONS: Record<string, React.ElementType> = {
   instagram: Instagram,
   tiktok: Play,
   facebook: Facebook,
+  youtube: Youtube,
+  reddit: MessageSquare,
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -108,6 +112,8 @@ const TYPE_LABELS: Record<string, string> = {
   instagram: "Instagram",
   tiktok: "TikTok",
   facebook: "Facebook",
+  youtube: "YouTube",
+  reddit: "Reddit",
 };
 
 function fmtNum(n: number) {
@@ -345,7 +351,7 @@ export default function LeadsPage() {
 
             {/* Type filter */}
             <div className="flex gap-1.5 flex-wrap">
-              {["all", "local_business", "instagram", "tiktok", "facebook", "website"].map(t => {
+              {["all", "local_business", "instagram", "tiktok", "youtube", "facebook", "reddit", "website"].map(t => {
                 const Icon = t === "all" ? Filter : TYPE_ICONS[t] || Filter;
                 const color = t === "all" ? AMBER : TYPE_COLORS[t] || AMBER;
                 return (

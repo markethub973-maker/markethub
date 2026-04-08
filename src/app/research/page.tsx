@@ -7,7 +7,7 @@ import {
   ExternalLink, ThumbsUp, MessageCircle, Share2,
   Eye, Play, Hash, User, TrendingUp, AlertCircle,
   Youtube, MessageSquare, Star, MapPin, ChevronDown,
-  ChevronUp, Phone, FileText, ShoppingBag,
+  ChevronUp, Phone, FileText, ShoppingBag, Save, Check,
 } from "lucide-react";
 import { useUserRegion } from "@/lib/useUserRegion";
 import { getLocalMarket } from "@/lib/localMarketConfig";
@@ -61,6 +61,199 @@ export default function ResearchPage() {
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [savingLeads, setSavingLeads] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<{ kind: "ok" | "err"; msg: string } | null>(null);
+
+  // Best-effort regex extractors used on already-crawled website text (no extra fetch needed)
+  const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+  const PHONE_RE = /(?:\+?\d{1,3}[\s.\-()]*)?(?:\(?\d{2,4}\)?[\s.\-]?)?\d{3,4}[\s.\-]?\d{3,4}/g;
+  const extractContactsFromText = (text: string): { emails: string[]; phones: string[] } => {
+    if (!text) return { emails: [], phones: [] };
+    const emails = [...new Set((text.match(EMAIL_RE) || []).map(e => e.toLowerCase()))]
+      .filter(e => e.length < 80 && !e.includes("sentry") && !e.includes("example."))
+      .slice(0, 5);
+    const phones = [...new Set((text.match(PHONE_RE) || []).map(s => s.trim()))]
+      .filter(s => {
+        const d = s.replace(/\D/g, "");
+        return d.length >= 8 && d.length <= 15 && !/^(19|20)\d{2}$/.test(d);
+      })
+      .slice(0, 5);
+    return { emails, phones };
+  };
+
+  const postLeads = async (leads: any[]): Promise<{ ok: boolean; count: number; error?: string }> => {
+    if (!leads.length) return { ok: false, count: 0, error: "Niciun lead de salvat" };
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leads),
+      });
+      const json = await res.json();
+      if (!res.ok) return { ok: false, count: 0, error: json?.error || `HTTP ${res.status}` };
+      return { ok: true, count: json?.count || leads.length };
+    } catch (e: any) {
+      return { ok: false, count: 0, error: e?.message || "Network error" };
+    }
+  };
+
+  const handleSaveLeads = async () => {
+    if (!results || savingLeads) return;
+    setSavingLeads(true);
+    setSaveStatus(null);
+    try {
+      let leads: any[] = [];
+
+      if (tab === "google") {
+        // Collect organic + paid URLs, scrape each for contacts, then build leads
+        const items = (results.results || []).filter((r: any) => (r.type === "organic" || r.type === "ad") && r.url);
+        const urls = items.map((r: any) => r.url).slice(0, 30);
+        let contactsByUrl: Record<string, { emails: string[]; phones: string[]; name?: string | null }> = {};
+        if (urls.length) {
+          try {
+            const res = await fetch("/api/leads/extract-from-url", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ urls }),
+            });
+            const json = await res.json();
+            for (const r of json?.results || []) {
+              contactsByUrl[r.url] = { emails: r.emails || [], phones: r.phones || [], name: r.name };
+            }
+          } catch {}
+        }
+        leads = items.map((r: any) => {
+          const c = contactsByUrl[r.url] || { emails: [], phones: [] };
+          return {
+            source: "research",
+            lead_type: "website",
+            name: r.title || c.name || r.displayedUrl,
+            website: r.url,
+            url: r.url,
+            email: c.emails[0] || null,
+            phone: c.phones[0] || null,
+            description: r.description,
+            goal: results.query,
+            extra_data: { position: r.position, displayedUrl: r.displayedUrl, ad: r.type === "ad", emails: c.emails, phones: c.phones },
+          };
+        });
+      } else if (tab === "youtube") {
+        leads = (results.videos || []).map((v: any) => ({
+          source: "research",
+          lead_type: "youtube",
+          name: v.title,
+          url: v.url,
+          website: v.url,
+          description: v.description,
+          extra_data: { views: v.views, likes: v.likes, comments: v.comments, channel: v.channel, duration: v.duration, publishedAt: v.publishedAt },
+        }));
+        if (results.channelInfo) {
+          leads.unshift({
+            source: "research",
+            lead_type: "youtube",
+            name: results.channelInfo.name,
+            url: results.channelInfo.url || null,
+            extra_data: { followers: results.channelInfo.subscribers, isChannel: true },
+          });
+        }
+      } else if (tab === "website") {
+        // results.pages have full crawled text — extract contacts inline (no extra fetch)
+        const allText = (results.pages || []).map((p: any) => p.text || "").join(" ");
+        const { emails, phones } = extractContactsFromText(allText);
+        leads = [{
+          source: "research",
+          lead_type: "website",
+          name: results.home_title || results.domain,
+          website: `https://${results.domain}`,
+          url: `https://${results.domain}`,
+          description: results.home_description,
+          email: emails[0] || null,
+          phone: phones[0] || null,
+          extra_data: { pages: results.pages?.length, emails, phones },
+        }];
+      } else if (tab === "instagram") {
+        if (results.profile) {
+          leads.push({
+            source: "research",
+            lead_type: "instagram",
+            name: `@${results.profile.username}`,
+            url: `https://www.instagram.com/${results.profile.username}/`,
+            extra_data: { followers: results.profile.followers, fullName: results.profile.fullName, isProfile: true },
+          });
+        }
+        for (const p of (results.posts || [])) {
+          leads.push({
+            source: "research",
+            lead_type: "instagram",
+            name: `@${p.ownerUsername || results.profile?.username || "—"}`,
+            url: p.url || (p.shortCode ? `https://www.instagram.com/p/${p.shortCode}/` : null),
+            description: p.caption,
+            extra_data: { likes: p.likes, comments: p.comments, engRate: p.engRate, type: p.type, views: p.videoViewCount, hashtags: p.hashtags },
+          });
+        }
+      } else if (tab === "tiktok") {
+        leads = (results.videos || []).map((v: any) => ({
+          source: "research",
+          lead_type: "tiktok",
+          name: `@${v.author}`,
+          url: v.url,
+          description: v.description,
+          extra_data: { plays: v.plays, likes: v.likes, shares: v.shares, comments: v.comments, followers: v.authorFollowers, verified: v.authorVerified, hashtags: v.hashtags, duration: v.duration },
+        }));
+      } else if (tab === "facebook") {
+        if (results.pageInfo) {
+          leads.push({
+            source: "research",
+            lead_type: "facebook",
+            name: results.pageInfo.name,
+            url: results.pageInfo.url || null,
+            extra_data: { followers: results.pageInfo.followers, isPage: true },
+          });
+        }
+        for (const p of (results.posts || [])) {
+          leads.push({
+            source: "research",
+            lead_type: "facebook",
+            name: results.pageInfo?.name || "Facebook post",
+            url: p.url || null,
+            description: p.text,
+            extra_data: { likes: p.likes, comments: p.comments, shares: p.shares, reactions: p.reactions, time: p.time },
+          });
+        }
+      } else if (tab === "reddit") {
+        leads = (results.posts || []).map((p: any) => ({
+          source: "research",
+          lead_type: "reddit",
+          name: p.title,
+          url: p.permalink,
+          description: p.text,
+          extra_data: { subreddit: p.subreddit, score: p.score, numComments: p.numComments, flair: p.flair, createdAt: p.createdAt },
+        }));
+      } else {
+        setSaveStatus({ kind: "err", msg: "Salvarea nu e disponibilă pentru acest tab" });
+        setSavingLeads(false);
+        return;
+      }
+
+      const r = await postLeads(leads);
+      if (r.ok) setSaveStatus({ kind: "ok", msg: `${r.count} lead-uri salvate în baza de date` });
+      else setSaveStatus({ kind: "err", msg: r.error || "Eroare la salvare" });
+    } catch (e: any) {
+      setSaveStatus({ kind: "err", msg: e?.message || "Eroare neașteptată" });
+    } finally {
+      setSavingLeads(false);
+      setTimeout(() => setSaveStatus(null), 5000);
+    }
+  };
+
+  const SaveLeadsButton = ({ count, color }: { count: number; color: string }) => (
+    <button type="button" onClick={handleSaveLeads} disabled={savingLeads || !count}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all disabled:opacity-50"
+      style={{ backgroundColor: `${color}15`, color, border: `1px solid ${color}40` }}>
+      {savingLeads ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+      {savingLeads ? "Salvez..." : `Salvează ca lead-uri (${count})`}
+    </button>
+  );
 
   const toggleSort = (key: string) => {
     if (sortBy === key) setSortDir(d => (d === "desc" ? "asc" : "desc"));
@@ -300,6 +493,20 @@ export default function ResearchPage() {
           </div>
         )}
 
+        {/* Save status toast */}
+        {saveStatus && (
+          <div className="flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold"
+            style={saveStatus.kind === "ok"
+              ? { backgroundColor: "rgba(29,185,84,0.08)", color: GREEN, border: "1px solid rgba(29,185,84,0.2)" }
+              : { backgroundColor: "rgba(239,68,68,0.08)", color: "#DC2626", border: "1px solid rgba(239,68,68,0.15)" }}>
+            {saveStatus.kind === "ok" ? <Check className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
+            {saveStatus.msg}
+            {saveStatus.kind === "ok" && (
+              <a href="/leads" className="ml-2 underline">Vezi în Leads Database →</a>
+            )}
+          </div>
+        )}
+
         {/* Loading */}
         {loading && (
           <div className="rounded-2xl p-12 flex flex-col items-center gap-3" style={card}>
@@ -313,7 +520,10 @@ export default function ResearchPage() {
         {/* ── GOOGLE ── */}
         {!loading && results && tab === "google" && (
           <div className="space-y-4">
-            <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} results for "{results.query}"</p>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} results for "{results.query}"</p>
+              <SaveLeadsButton color={AMBER} count={(results.results || []).filter((r: any) => r.type === "organic" || r.type === "ad").length} />
+            </div>
             {["ad", "organic", "paa", "related"].map(type => {
               const items = results.results?.filter((r: any) => r.type === type) || [];
               if (!items.length) return null;
@@ -393,14 +603,17 @@ export default function ResearchPage() {
 
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} videos</p>
-              <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
-                {(["compact", "detailed"] as const).map(v => (
-                  <button key={v} type="button" onClick={() => setListView(v)}
-                    className="px-3 py-1 rounded-md text-xs font-bold transition-all"
-                    style={listView === v ? { backgroundColor: YT, color: "white" } : { color: "#78614E" }}>
-                    {v === "compact" ? "Mai puțin" : "Mai mult"}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2">
+                <SaveLeadsButton color={YT} count={(results.videos || []).length + (results.channelInfo ? 1 : 0)} />
+                <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
+                  {(["compact", "detailed"] as const).map(v => (
+                    <button key={v} type="button" onClick={() => setListView(v)}
+                      className="px-3 py-1 rounded-md text-xs font-bold transition-all"
+                      style={listView === v ? { backgroundColor: YT, color: "white" } : { color: "#78614E" }}>
+                      {v === "compact" ? "Mai puțin" : "Mai mult"}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -483,6 +696,9 @@ export default function ResearchPage() {
         {/* ── WEBSITE ── */}
         {!loading && results && tab === "website" && (
           <div className="space-y-4">
+            <div className="flex items-center justify-end">
+              <SaveLeadsButton color="#6366F1" count={1} />
+            </div>
             <div className="rounded-xl p-4" style={{ ...card, borderColor: "rgba(99,102,241,0.3)" }}>
               <p className="font-bold" style={{ color: "#292524" }}>{results.domain}</p>
               {results.home_title && <p className="text-sm mt-0.5" style={{ color: "#78614E" }}>{results.home_title}</p>}
@@ -548,14 +764,17 @@ export default function ResearchPage() {
 
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} posts</p>
-              <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
-                {(["compact", "detailed"] as const).map(v => (
-                  <button key={v} type="button" onClick={() => setListView(v)}
-                    className="px-3 py-1 rounded-md text-xs font-bold transition-all"
-                    style={listView === v ? { backgroundColor: IG, color: "white" } : { color: "#78614E" }}>
-                    {v === "compact" ? "Mai puțin" : "Mai mult"}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2">
+                <SaveLeadsButton color={IG} count={(results.posts || []).length + (results.profile ? 1 : 0)} />
+                <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
+                  {(["compact", "detailed"] as const).map(v => (
+                    <button key={v} type="button" onClick={() => setListView(v)}
+                      className="px-3 py-1 rounded-md text-xs font-bold transition-all"
+                      style={listView === v ? { backgroundColor: IG, color: "white" } : { color: "#78614E" }}>
+                      {v === "compact" ? "Mai puțin" : "Mai mult"}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -665,16 +884,19 @@ export default function ResearchPage() {
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} videos</p>
-              <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
-                {(["compact", "detailed"] as const).map(v => (
-                  <button key={v} type="button" onClick={() => setListView(v)}
-                    className="px-3 py-1 rounded-md text-xs font-bold transition-all"
-                    style={listView === v
-                      ? { backgroundColor: TT, color: "#FFF8F0" }
-                      : { color: "#78614E" }}>
-                    {v === "compact" ? "Mai puțin" : "Mai mult"}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2">
+                <SaveLeadsButton color={TT} count={(results.videos || []).length} />
+                <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
+                  {(["compact", "detailed"] as const).map(v => (
+                    <button key={v} type="button" onClick={() => setListView(v)}
+                      className="px-3 py-1 rounded-md text-xs font-bold transition-all"
+                      style={listView === v
+                        ? { backgroundColor: TT, color: "#FFF8F0" }
+                        : { color: "#78614E" }}>
+                      {v === "compact" ? "Mai puțin" : "Mai mult"}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -798,14 +1020,17 @@ export default function ResearchPage() {
 
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} posts</p>
-              <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
-                {(["compact", "detailed"] as const).map(v => (
-                  <button key={v} type="button" onClick={() => setListView(v)}
-                    className="px-3 py-1 rounded-md text-xs font-bold transition-all"
-                    style={listView === v ? { backgroundColor: FB, color: "white" } : { color: "#78614E" }}>
-                    {v === "compact" ? "Mai puțin" : "Mai mult"}
-                  </button>
-                ))}
+              <div className="flex items-center gap-2">
+                <SaveLeadsButton color={FB} count={(results.posts || []).length + (results.pageInfo ? 1 : 0)} />
+                <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
+                  {(["compact", "detailed"] as const).map(v => (
+                    <button key={v} type="button" onClick={() => setListView(v)}
+                      className="px-3 py-1 rounded-md text-xs font-bold transition-all"
+                      style={listView === v ? { backgroundColor: FB, color: "white" } : { color: "#78614E" }}>
+                      {v === "compact" ? "Mai puțin" : "Mai mult"}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -897,7 +1122,10 @@ export default function ResearchPage() {
         {/* ── REDDIT ── */}
         {!loading && results && tab === "reddit" && (
           <div className="space-y-3">
-            <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} posts</p>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} posts</p>
+              <SaveLeadsButton color={RD} count={(results.posts || []).length} />
+            </div>
             {results.posts.map((p: any, i: number) => (
               <div key={i} className="rounded-xl p-4" style={card}>
                 <div className="flex items-start justify-between gap-2">
