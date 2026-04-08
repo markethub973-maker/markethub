@@ -1,6 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
+const FULL_FIELDS =
+  "id, token, client_name, ig_username, tt_username, data, view_count, expires_at, updated_at, agency_name, agency_logo_url, accent_color";
+const LEGACY_FIELDS =
+  "id, token, client_name, ig_username, tt_username, data, view_count, expires_at, updated_at";
+
+function isSchemaCacheError(err: { message?: string } | null): boolean {
+  if (!err) return false;
+  const msg = err.message ?? "";
+  return (
+    msg.includes("does not exist") ||
+    msg.includes("schema cache") ||
+    msg.includes("Could not find the") ||
+    msg.includes("column")
+  );
+}
+
 // GET — public endpoint, no auth required. Fetches portal data by token UUID.
 export async function GET(
   _req: NextRequest,
@@ -13,11 +29,23 @@ export async function GET(
   }
 
   const svc = createServiceClient();
-  const { data: link, error } = await svc
+  const first = await svc
     .from("client_portal_links")
-    .select("id, token, client_name, ig_username, tt_username, data, view_count, expires_at, updated_at, agency_name, agency_logo_url, accent_color")
+    .select(FULL_FIELDS)
     .eq("token", token)
     .single();
+  let link: any = first.data;
+  let error = first.error;
+
+  if (error && isSchemaCacheError(error)) {
+    const retry = await svc
+      .from("client_portal_links")
+      .select(LEGACY_FIELDS)
+      .eq("token", token)
+      .single();
+    link = retry.data;
+    error = retry.error;
+  }
 
   if (error || !link) {
     return NextResponse.json({ error: "Link not found" }, { status: 404 });

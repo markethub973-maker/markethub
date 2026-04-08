@@ -2,8 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
-const SELECT_FIELDS =
+const FULL_FIELDS =
   "id, token, client_name, ig_username, tt_username, view_count, expires_at, created_at, updated_at, agency_name, agency_logo_url, accent_color";
+const LEGACY_FIELDS =
+  "id, token, client_name, ig_username, tt_username, view_count, expires_at, created_at, updated_at";
+
+// Detect if Supabase error means a column/schema cache is missing
+// (i.e. migration for white-label columns has not been applied yet).
+function isSchemaCacheError(err: { message?: string; code?: string } | null): boolean {
+  if (!err) return false;
+  const msg = err.message ?? "";
+  return (
+    msg.includes("does not exist") ||
+    msg.includes("schema cache") ||
+    msg.includes("Could not find the") ||
+    msg.includes("column")
+  );
+}
 
 // POST — create a live portal link for a client
 export async function POST(req: NextRequest) {
@@ -40,22 +55,44 @@ export async function POST(req: NextRequest) {
     ? new Date(Date.now() + expires_days * 86400000).toISOString()
     : null;
 
+  const baseRow: Record<string, unknown> = {
+    user_id: user.id,
+    client_name: client_name.trim(),
+    ig_username: ig_username?.trim() || "",
+    tt_username: tt_username?.trim() || "",
+    data: data || {},
+    expires_at,
+  };
+
+  const whiteLabelRow: Record<string, unknown> = {
+    ...baseRow,
+    agency_name: agency_name?.trim() || null,
+    agency_logo_url: agency_logo_url?.trim() || null,
+    accent_color: accent_color?.trim() || null,
+  };
+
   const svc = createServiceClient();
-  const { data: link, error } = await svc
+
+  // Try with white-label columns first; fall back to legacy schema if missing.
+  // Cast to any so retry can hold either shape — Supabase infers a narrow
+  // row type from the SELECT string and the legacy retry returns a subset.
+  const first = await svc
     .from("client_portal_links")
-    .insert({
-      user_id: user.id,
-      client_name: client_name.trim(),
-      ig_username: ig_username?.trim() || "",
-      tt_username: tt_username?.trim() || "",
-      data: data || {},
-      expires_at,
-      agency_name: agency_name?.trim() || null,
-      agency_logo_url: agency_logo_url?.trim() || null,
-      accent_color: accent_color?.trim() || null,
-    })
-    .select(SELECT_FIELDS)
+    .insert(whiteLabelRow)
+    .select(FULL_FIELDS)
     .single();
+  let link: any = first.data;
+  let error = first.error;
+
+  if (error && isSchemaCacheError(error)) {
+    const retry = await svc
+      .from("client_portal_links")
+      .insert(baseRow)
+      .select(LEGACY_FIELDS)
+      .single();
+    link = retry.data;
+    error = retry.error;
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ link });
@@ -68,11 +105,24 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const svc = createServiceClient();
-  const { data: links, error } = await svc
+
+  const first = await svc
     .from("client_portal_links")
-    .select(SELECT_FIELDS)
+    .select(FULL_FIELDS)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
+  let links: any = first.data;
+  let error = first.error;
+
+  if (error && isSchemaCacheError(error)) {
+    const retry = await svc
+      .from("client_portal_links")
+      .select(LEGACY_FIELDS)
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false });
+    links = retry.data;
+    error = retry.error;
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ links: links || [] });
@@ -119,32 +169,46 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
+  const baseUpdate: Record<string, unknown> = { updated_at: new Date().toISOString() };
 
   if (typeof extend_days === "number" && extend_days > 0) {
-    // Extend from now() if expired, else from current expires_at
     const currentExpiry = (existing as { expires_at: string | null }).expires_at;
     const base = currentExpiry && new Date(currentExpiry) > new Date()
       ? new Date(currentExpiry)
       : new Date();
-    update.expires_at = new Date(base.getTime() + extend_days * 86400000).toISOString();
+    baseUpdate.expires_at = new Date(base.getTime() + extend_days * 86400000).toISOString();
   }
 
   if (data && typeof data === "object") {
-    update.data = data;
+    baseUpdate.data = data;
   }
 
-  // Allow explicit null to clear white-label fields
-  if (agency_name !== undefined) update.agency_name = agency_name?.toString().trim() || null;
-  if (agency_logo_url !== undefined) update.agency_logo_url = agency_logo_url?.toString().trim() || null;
-  if (accent_color !== undefined) update.accent_color = accent_color?.toString().trim() || null;
+  // White-label fields go in a separate update layer so we can drop them on
+  // schema-cache errors without losing the legitimate base updates.
+  const whiteLabelUpdate: Record<string, unknown> = { ...baseUpdate };
+  if (agency_name !== undefined) whiteLabelUpdate.agency_name = agency_name?.toString().trim() || null;
+  if (agency_logo_url !== undefined) whiteLabelUpdate.agency_logo_url = agency_logo_url?.toString().trim() || null;
+  if (accent_color !== undefined) whiteLabelUpdate.accent_color = accent_color?.toString().trim() || null;
 
-  const { data: link, error } = await svc
+  const first = await svc
     .from("client_portal_links")
-    .update(update)
+    .update(whiteLabelUpdate)
     .eq("id", id)
-    .select(SELECT_FIELDS)
+    .select(FULL_FIELDS)
     .single();
+  let link: any = first.data;
+  let error = first.error;
+
+  if (error && isSchemaCacheError(error)) {
+    const retry = await svc
+      .from("client_portal_links")
+      .update(baseUpdate)
+      .eq("id", id)
+      .select(LEGACY_FIELDS)
+      .single();
+    link = retry.data;
+    error = retry.error;
+  }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ link });
