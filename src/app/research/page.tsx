@@ -58,7 +58,26 @@ export default function ResearchPage() {
   const [error, setError] = useState("");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const [listView, setListView] = useState<"compact" | "detailed">("compact");
-  const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
+  const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+  const [sortBy, setSortBy] = useState<string | null>(null);
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+
+  const toggleSort = (key: string) => {
+    if (sortBy === key) setSortDir(d => (d === "desc" ? "asc" : "desc"));
+    else { setSortBy(key); setSortDir("desc"); }
+  };
+
+  const sortRows = <T,>(rows: T[], getter?: (r: T) => number): T[] => {
+    if (!sortBy || !getter) return rows;
+    return [...rows].sort((a, b) => {
+      const diff = getter(b) - getter(a);
+      return sortDir === "desc" ? diff : -diff;
+    });
+  };
+
+  const sortIcon = (key: string) => sortBy === key
+    ? (sortDir === "desc" ? <ChevronDown className="w-3 h-3 inline ml-0.5" /> : <ChevronUp className="w-3 h-3 inline ml-0.5" />)
+    : null;
 
   const toggleSection = (key: string) => setExpandedSections(s => ({ ...s, [key]: !s[key] }));
 
@@ -121,6 +140,7 @@ export default function ResearchPage() {
     setError("");
     setResults(null);
     setExpandedRows({});
+    setSortBy(null);
 
     try {
       let endpoint = "";
@@ -211,7 +231,7 @@ export default function ResearchPage() {
                   <span className="text-xs font-bold w-12 flex-shrink-0" style={{ color: "#C4AA8A" }}>{group}</span>
                   {groupTabs.map(({ id, label, icon: Icon, color }) => (
                     <button key={id} type="button"
-                      onClick={() => { setTab(id); setResults(null); setError(""); setQuery(""); setMode("username"); }}
+                      onClick={() => { setTab(id); setResults(null); setError(""); setQuery(""); setMode("username"); setSortBy(null); setExpandedRows({}); }}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
                       style={tab === id
                         ? { backgroundColor: color, color: id === "tiktok" ? "#FFF8F0" : "white", boxShadow: `0 2px 8px ${color}40` }
@@ -349,7 +369,15 @@ export default function ResearchPage() {
         )}
 
         {/* ── YOUTUBE ── */}
-        {!loading && results && tab === "youtube" && (
+        {!loading && results && tab === "youtube" && (() => {
+          const ytSort: Record<string, (v: any) => number> = {
+            views: v => v.views || 0,
+            likes: v => v.likes || 0,
+            comments: v => v.comments || 0,
+            posted: v => v.publishedAt ? new Date(v.publishedAt).getTime() : 0,
+          };
+          const sortedVideos = sortRows<any>(results.videos, sortBy ? ytSort[sortBy] : undefined);
+          return (
           <div className="space-y-3">
             {results.channelInfo && (
               <div className="rounded-xl p-4 flex items-center gap-3" style={{ ...card, borderColor: `${YT}30` }}>
@@ -382,12 +410,12 @@ export default function ResearchPage() {
                   <thead>
                     <tr style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#78614E" }}>
                       <th className="text-left px-3 py-2 font-bold">Titlu</th>
-                      <th className="text-right px-3 py-2 font-bold"><Eye className="w-3 h-3 inline mr-1" />Views</th>
-                      <th className="text-right px-3 py-2 font-bold"><ThumbsUp className="w-3 h-3 inline mr-1" />Likes</th>
-                      <th className="text-right px-3 py-2 font-bold">Postat</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("views")} style={sortBy === "views" ? { color: YT } : undefined}><Eye className="w-3 h-3 inline mr-1" />Views{sortIcon("views")}</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("likes")} style={sortBy === "likes" ? { color: YT } : undefined}><ThumbsUp className="w-3 h-3 inline mr-1" />Likes{sortIcon("likes")}</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("posted")} style={sortBy === "posted" ? { color: YT } : undefined}>Postat{sortIcon("posted")}</th>
                       {listView === "detailed" && (
                         <>
-                          <th className="text-right px-3 py-2 font-bold"><MessageCircle className="w-3 h-3 inline mr-1" />Comm.</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("comments")} style={sortBy === "comments" ? { color: YT } : undefined}><MessageCircle className="w-3 h-3 inline mr-1" />Comm.{sortIcon("comments")}</th>
                           <th className="text-right px-3 py-2 font-bold">Durată</th>
                           <th className="text-left px-3 py-2 font-bold">Canal</th>
                         </>
@@ -396,10 +424,11 @@ export default function ResearchPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {results.videos.map((v: any, i: number) => {
-                      const isOpen = !!expandedRows[i];
+                    {sortedVideos.map((v: any, i: number) => {
+                      const rowKey = String(v.id ?? i);
+                      const isOpen = !!expandedRows[rowKey];
                       return (
-                        <React.Fragment key={i}>
+                        <React.Fragment key={rowKey}>
                           <tr style={{ borderTop: "1px solid rgba(245,215,160,0.18)" }}>
                             <td className="px-3 py-2">
                               <div className="flex items-center gap-2 min-w-0">
@@ -418,7 +447,7 @@ export default function ResearchPage() {
                               </>
                             )}
                             <td className="px-3 py-2 text-right">
-                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [i]: !s[i] }))}
+                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                                 className="inline-flex items-center gap-0.5 font-semibold" style={{ color: YT }}>
                                 {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                 {isOpen ? "Mai puțin" : "Mai mult"}
@@ -448,7 +477,8 @@ export default function ResearchPage() {
               </div>
             </div>
           </div>
-        )}
+          );
+        })()}
 
         {/* ── WEBSITE ── */}
         {!loading && results && tab === "website" && (
@@ -491,7 +521,16 @@ export default function ResearchPage() {
         )}
 
         {/* ── INSTAGRAM ── */}
-        {!loading && results && tab === "instagram" && (
+        {!loading && results && tab === "instagram" && (() => {
+          const igSort: Record<string, (p: any) => number> = {
+            likes: p => p.likes || 0,
+            comments: p => p.comments || 0,
+            er: p => p.engRate || 0,
+            views: p => p.videoViewCount || 0,
+            posted: p => p.timestamp ? new Date(p.timestamp).getTime() : 0,
+          };
+          const sortedPosts = sortRows<any>(results.posts, sortBy ? igSort[sortBy] : undefined);
+          return (
           <div className="space-y-3">
             {results.profile && (
               <div className="rounded-xl p-4 flex items-center gap-4" style={{ ...card, borderColor: `${IG}30` }}>
@@ -526,26 +565,27 @@ export default function ResearchPage() {
                   <thead>
                     <tr style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#78614E" }}>
                       <th className="text-left px-3 py-2 font-bold">Post</th>
-                      <th className="text-right px-3 py-2 font-bold"><ThumbsUp className="w-3 h-3 inline mr-1" />Likes</th>
-                      <th className="text-right px-3 py-2 font-bold"><MessageCircle className="w-3 h-3 inline mr-1" />Comm.</th>
-                      <th className="text-right px-3 py-2 font-bold">ER</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("likes")} style={sortBy === "likes" ? { color: IG } : undefined}><ThumbsUp className="w-3 h-3 inline mr-1" />Likes{sortIcon("likes")}</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("comments")} style={sortBy === "comments" ? { color: IG } : undefined}><MessageCircle className="w-3 h-3 inline mr-1" />Comm.{sortIcon("comments")}</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("er")} style={sortBy === "er" ? { color: IG } : undefined}>ER{sortIcon("er")}</th>
                       {listView === "detailed" && (
                         <>
                           <th className="text-left px-3 py-2 font-bold">Tip</th>
-                          <th className="text-right px-3 py-2 font-bold"><Eye className="w-3 h-3 inline mr-1" />Views</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("views")} style={sortBy === "views" ? { color: IG } : undefined}><Eye className="w-3 h-3 inline mr-1" />Views{sortIcon("views")}</th>
                           <th className="text-left px-3 py-2 font-bold">Caption</th>
-                          <th className="text-right px-3 py-2 font-bold">Postat</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("posted")} style={sortBy === "posted" ? { color: IG } : undefined}>Postat{sortIcon("posted")}</th>
                         </>
                       )}
                       <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {results.posts.map((p: any, i: number) => {
-                      const isOpen = !!expandedRows[i];
+                    {sortedPosts.map((p: any, i: number) => {
+                      const rowKey = String(p.id ?? p.shortCode ?? i);
+                      const isOpen = !!expandedRows[rowKey];
                       const erColor = p.engRate != null && p.engRate >= 3 ? GREEN : AMBER;
                       return (
-                        <React.Fragment key={i}>
+                        <React.Fragment key={rowKey}>
                           <tr style={{ borderTop: "1px solid rgba(245,215,160,0.18)" }}>
                             <td className="px-3 py-2">
                               <div className="flex items-center gap-2 min-w-0">
@@ -576,7 +616,7 @@ export default function ResearchPage() {
                               </>
                             )}
                             <td className="px-3 py-2 text-right">
-                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [i]: !s[i] }))}
+                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                                 className="inline-flex items-center gap-0.5 font-semibold" style={{ color: IG }}>
                                 {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                 {isOpen ? "Mai puțin" : "Mai mult"}
@@ -607,10 +647,21 @@ export default function ResearchPage() {
               </div>
             </div>
           </div>
-        )}
+          );
+        })()}
 
         {/* ── TIKTOK ── */}
-        {!loading && results && tab === "tiktok" && (
+        {!loading && results && tab === "tiktok" && (() => {
+          const tikSort: Record<string, (v: any) => number> = {
+            plays: v => v.plays || 0,
+            likes: v => v.likes || 0,
+            shares: v => v.shares || 0,
+            comments: v => v.comments || 0,
+            followers: v => v.authorFollowers || 0,
+            posted: v => v.createTime || 0,
+          };
+          const sortedVideos = sortRows<any>(results.videos, sortBy ? tikSort[sortBy] : undefined);
+          return (
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} videos</p>
@@ -633,26 +684,27 @@ export default function ResearchPage() {
                   <thead>
                     <tr style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#78614E" }}>
                       <th className="text-left px-3 py-2 font-bold">Autor</th>
-                      <th className="text-right px-3 py-2 font-bold"><Eye className="w-3 h-3 inline mr-1" />Views</th>
-                      <th className="text-right px-3 py-2 font-bold"><ThumbsUp className="w-3 h-3 inline mr-1" />Likes</th>
-                      <th className="text-right px-3 py-2 font-bold"><Share2 className="w-3 h-3 inline mr-1" />Shares</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("plays")} style={sortBy === "plays" ? { color: TT } : undefined}><Eye className="w-3 h-3 inline mr-1" />Views{sortIcon("plays")}</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("likes")} style={sortBy === "likes" ? { color: TT } : undefined}><ThumbsUp className="w-3 h-3 inline mr-1" />Likes{sortIcon("likes")}</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("shares")} style={sortBy === "shares" ? { color: TT } : undefined}><Share2 className="w-3 h-3 inline mr-1" />Shares{sortIcon("shares")}</th>
                       {listView === "detailed" && (
                         <>
-                          <th className="text-right px-3 py-2 font-bold"><MessageCircle className="w-3 h-3 inline mr-1" />Comm.</th>
-                          <th className="text-right px-3 py-2 font-bold">Followers</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("comments")} style={sortBy === "comments" ? { color: TT } : undefined}><MessageCircle className="w-3 h-3 inline mr-1" />Comm.{sortIcon("comments")}</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("followers")} style={sortBy === "followers" ? { color: TT } : undefined}>Followers{sortIcon("followers")}</th>
                           <th className="text-left px-3 py-2 font-bold">Descriere</th>
                           <th className="text-left px-3 py-2 font-bold">Sunet</th>
-                          <th className="text-right px-3 py-2 font-bold">Postat</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("posted")} style={sortBy === "posted" ? { color: TT } : undefined}>Postat{sortIcon("posted")}</th>
                         </>
                       )}
                       <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {results.videos.map((v: any, i: number) => {
-                      const isOpen = !!expandedRows[i];
+                    {sortedVideos.map((v: any, i: number) => {
+                      const rowKey = String(v.id ?? i);
+                      const isOpen = !!expandedRows[rowKey];
                       return (
-                        <React.Fragment key={i}>
+                        <React.Fragment key={rowKey}>
                           <tr style={{ borderTop: "1px solid rgba(245,215,160,0.18)" }}>
                             <td className="px-3 py-2">
                               <div className="flex items-center gap-2 min-w-0">
@@ -682,7 +734,7 @@ export default function ResearchPage() {
                               </>
                             )}
                             <td className="px-3 py-2 text-right">
-                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [i]: !s[i] }))}
+                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                                 className="inline-flex items-center gap-0.5 font-semibold" style={{ color: TT }}>
                                 {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                 {isOpen ? "Mai puțin" : "Mai mult"}
@@ -719,10 +771,23 @@ export default function ResearchPage() {
               </div>
             </div>
           </div>
-        )}
+          );
+        })()}
 
         {/* ── FACEBOOK ── */}
-        {!loading && results && tab === "facebook" && (
+        {!loading && results && tab === "facebook" && (() => {
+          const fbReactions = (p: any): number => p.reactions && typeof p.reactions === "object"
+            ? Object.values(p.reactions).reduce((a: number, b: any) => a + (Number(b) || 0), 0)
+            : 0;
+          const fbSort: Record<string, (p: any) => number> = {
+            likes: p => p.likes || 0,
+            comments: p => p.comments || 0,
+            shares: p => p.shares || 0,
+            reactions: p => fbReactions(p),
+            posted: p => p.time ? new Date(p.time).getTime() : 0,
+          };
+          const sortedPosts = sortRows<any>(results.posts, sortBy ? fbSort[sortBy] : undefined);
+          return (
           <div className="space-y-3">
             {results.pageInfo && (
               <div className="rounded-xl p-4" style={{ ...card, borderColor: `${FB}30` }}>
@@ -750,27 +815,26 @@ export default function ResearchPage() {
                   <thead>
                     <tr style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#78614E" }}>
                       <th className="text-left px-3 py-2 font-bold">Post</th>
-                      <th className="text-right px-3 py-2 font-bold"><ThumbsUp className="w-3 h-3 inline mr-1" />Likes</th>
-                      <th className="text-right px-3 py-2 font-bold"><MessageCircle className="w-3 h-3 inline mr-1" />Comm.</th>
-                      <th className="text-right px-3 py-2 font-bold"><Share2 className="w-3 h-3 inline mr-1" />Shares</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("likes")} style={sortBy === "likes" ? { color: FB } : undefined}><ThumbsUp className="w-3 h-3 inline mr-1" />Likes{sortIcon("likes")}</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("comments")} style={sortBy === "comments" ? { color: FB } : undefined}><MessageCircle className="w-3 h-3 inline mr-1" />Comm.{sortIcon("comments")}</th>
+                      <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("shares")} style={sortBy === "shares" ? { color: FB } : undefined}><Share2 className="w-3 h-3 inline mr-1" />Shares{sortIcon("shares")}</th>
                       {listView === "detailed" && (
                         <>
-                          <th className="text-right px-3 py-2 font-bold">Reacții</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("reactions")} style={sortBy === "reactions" ? { color: FB } : undefined}>Reacții{sortIcon("reactions")}</th>
                           <th className="text-left px-3 py-2 font-bold">Text</th>
-                          <th className="text-right px-3 py-2 font-bold">Postat</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("posted")} style={sortBy === "posted" ? { color: FB } : undefined}>Postat{sortIcon("posted")}</th>
                         </>
                       )}
                       <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {results.posts.map((p: any, i: number) => {
-                      const isOpen = !!expandedRows[i];
-                      const reactionsTotal = p.reactions && typeof p.reactions === "object"
-                        ? Object.values(p.reactions).reduce((a: number, b: any) => a + (Number(b) || 0), 0)
-                        : 0;
+                    {sortedPosts.map((p: any, i: number) => {
+                      const rowKey = String(p.postId ?? i);
+                      const isOpen = !!expandedRows[rowKey];
+                      const reactionsTotal = fbReactions(p);
                       return (
-                        <React.Fragment key={i}>
+                        <React.Fragment key={rowKey}>
                           <tr style={{ borderTop: "1px solid rgba(245,215,160,0.18)" }}>
                             <td className="px-3 py-2">
                               <div className="flex items-center gap-2 min-w-0">
@@ -797,7 +861,7 @@ export default function ResearchPage() {
                               </>
                             )}
                             <td className="px-3 py-2 text-right">
-                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [i]: !s[i] }))}
+                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                                 className="inline-flex items-center gap-0.5 font-semibold" style={{ color: FB }}>
                                 {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                                 {isOpen ? "Mai puțin" : "Mai mult"}
@@ -827,7 +891,8 @@ export default function ResearchPage() {
               </div>
             </div>
           </div>
-        )}
+          );
+        })()}
 
         {/* ── REDDIT ── */}
         {!loading && results && tab === "reddit" && (
