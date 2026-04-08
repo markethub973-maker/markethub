@@ -20,18 +20,26 @@ export async function POST(req: Request) {
     { cookies: { getAll: () => [], setAll: () => {} } }
   );
 
-  // Idempotency: each Stripe event_id may only be processed once
+  // Idempotency: each Stripe event_id may only be processed once.
+  // Tolerant to missing table — if the migration hasn't been applied yet,
+  // degrade gracefully (idempotency disabled with warning) instead of 500.
   const { error: idemErr } = await supabase
     .from("stripe_webhook_events")
     .insert({ event_id: event.id, event_type: event.type });
   if (idemErr) {
-    // Code 23505 = unique violation = already processed → return success
-    if ((idemErr as any).code === "23505") {
+    const code = (idemErr as { code?: string }).code;
+    // 23505 = unique violation = already processed → return success
+    if (code === "23505") {
       return NextResponse.json({ received: true, replay: true });
     }
-    // Any other error: fail closed so Stripe will retry
-    console.error("[stripe webhook] idempotency insert failed:", idemErr);
-    return NextResponse.json({ error: "internal" }, { status: 500 });
+    // PGRST205 / 42P01 = table missing → migration pending, degrade gracefully
+    if (code === "PGRST205" || code === "42P01") {
+      console.warn("[stripe webhook] stripe_webhook_events table missing — idempotency disabled until migration is applied");
+    } else {
+      // Any other error: fail closed so Stripe will retry
+      console.error("[stripe webhook] idempotency insert failed:", idemErr);
+      return NextResponse.json({ error: "internal" }, { status: 500 });
+    }
   }
 
   if (event.type === "checkout.session.completed") {
@@ -52,8 +60,35 @@ export async function POST(req: Request) {
         p_amount: creditsUsd,
       });
       if (rpcErr) {
-        console.error("[stripe webhook] add_ai_credits_atomic failed:", rpcErr);
-        return NextResponse.json({ error: "credit insert failed" }, { status: 500 });
+        const code = (rpcErr as { code?: string }).code;
+        // PGRST202 = function missing → fall back to non-atomic SELECT+UPDATE
+        // (lost-update race possible but acceptable until migration is applied)
+        if (code === "PGRST202") {
+          console.warn("[stripe webhook] add_ai_credits_atomic RPC missing — falling back to non-atomic upsert");
+          const { data: existing } = await supabase
+            .from("ai_credits")
+            .select("credits_usd")
+            .eq("user_id", userId)
+            .eq("month_year", currentMonth)
+            .maybeSingle();
+          const newTotal = (existing?.credits_usd ?? 0) + creditsUsd;
+          const fallbackErr = existing
+            ? (await supabase
+                .from("ai_credits")
+                .update({ credits_usd: newTotal })
+                .eq("user_id", userId)
+                .eq("month_year", currentMonth)).error
+            : (await supabase
+                .from("ai_credits")
+                .insert({ user_id: userId, month_year: currentMonth, credits_usd: creditsUsd })).error;
+          if (fallbackErr) {
+            console.error("[stripe webhook] fallback credit upsert failed:", fallbackErr);
+            return NextResponse.json({ error: "credit insert failed" }, { status: 500 });
+          }
+        } else {
+          console.error("[stripe webhook] add_ai_credits_atomic failed:", rpcErr);
+          return NextResponse.json({ error: "credit insert failed" }, { status: 500 });
+        }
       }
     }
 
