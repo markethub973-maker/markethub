@@ -52,7 +52,8 @@ export default function AdminAuditLog() {
       const params = new URLSearchParams({ limit: "80" });
       if (filter !== "all") params.set("action", filter);
       const res  = await fetch(`/api/admin/audit-logs?${params}`);
-      if (res.status === 401 || res.status === 403) {
+      // 404 = proxy tunnel cloak (no cookie + no t= query); 401/403 = invalid cookie
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
         setSessionExpired(true);
         setLogs([]);
         setTotal(0);

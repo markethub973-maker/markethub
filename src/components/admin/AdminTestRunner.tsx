@@ -171,7 +171,8 @@ export default function AdminTestRunner() {
         credentials: "include",
         body: JSON.stringify({}),
       });
-      if (res.status === 401 || res.status === 403) {
+      // 404 = proxy tunnel cloak (no cookie + no t= query); 401/403 = invalid cookie
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
         setSessionExpired(true);
         return;
       }

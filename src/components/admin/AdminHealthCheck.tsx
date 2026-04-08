@@ -45,7 +45,8 @@ export default function AdminHealthCheck() {
     setSessionExpired(false);
     try {
       const res = await fetch("/api/admin/health-check");
-      if (res.status === 401 || res.status === 403) {
+      // 404 = proxy tunnel cloak (no cookie + no t= query); 401/403 = invalid cookie
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
         setSessionExpired(true);
         setData(null);
         return;
