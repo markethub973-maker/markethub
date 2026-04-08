@@ -31,6 +31,7 @@ export default function AdminRestorePanel() {
   const [healthLogs, setHealthLogs] = useState<HealthCheck[]>([]);
   const [loadingHealth, setLoadingHealth] = useState(false);
   const [activeTab, setActiveTab] = useState<"restore" | "health">("health");
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const loadDeployments = async () => {
     setLoadingDeploys(true);
@@ -71,8 +72,14 @@ export default function AdminRestorePanel() {
 
   const loadHealthLogs = async () => {
     setLoadingHealth(true);
+    setSessionExpired(false);
     try {
       const res = await fetch("/api/cron/health-monitor", { credentials: "include" });
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true);
+        setHealthLogs([]);
+        return;
+      }
       const data = await res.json();
       // Fresh check result as first entry
       setHealthLogs([{
@@ -139,6 +146,18 @@ export default function AdminRestorePanel() {
               {loadingHealth ? <Loader2 size={14} className="animate-spin" /> : <Activity size={14} />}
               {loadingHealth ? "Se verifică..." : "Run Health Check Now"}
             </button>
+
+            {sessionExpired && (
+              <div className="rounded-xl p-4 text-xs space-y-1"
+                style={{ background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", color: "#DC2626" }}>
+                <p className="font-semibold">Sesiune admin expirată</p>
+                <p style={{ color: "#A8967E" }}>
+                  Re-loghează-te la{" "}
+                  <a href="/markethub973" className="underline" style={{ color: "#6366F1" }}>/markethub973</a>{" "}
+                  apoi rerulează health check-ul.
+                </p>
+              </div>
+            )}
 
             {healthLogs.map((log, i) => (
               <div key={i} className="rounded-xl p-4 space-y-2" style={{

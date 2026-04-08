@@ -38,18 +38,26 @@ export default function AdminHealthCheck() {
   const [data, setData] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastRun, setLastRun] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const runCheck = async () => {
     setLoading(true);
+    setSessionExpired(false);
     try {
       const res = await fetch("/api/admin/health-check");
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true);
+        setData(null);
+        return;
+      }
       const json = await res.json();
       setData(json);
       setLastRun(new Date().toLocaleTimeString("en-US"));
     } catch {
       setData(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => { runCheck(); }, []);
@@ -73,8 +81,14 @@ export default function AdminHealthCheck() {
           </div>
           <div>
             <p className="font-bold text-base" style={{ color: "#292524" }}>Health Check Agent</p>
-            <p className="text-xs" style={{ color: "#A8967E" }}>
-              {loading ? "Testez toate serviciile…" : data ? `${okCount}/${totalCount} servicii funcționale` : "Apasă Run pentru a testa"}
+            <p className="text-xs" style={{ color: sessionExpired ? RED : "#A8967E" }}>
+              {loading
+                ? "Testez toate serviciile…"
+                : sessionExpired
+                ? "Sesiune admin expirată"
+                : data
+                ? `${okCount}/${totalCount} servicii funcționale`
+                : "Apasă Run pentru a testa"}
             </p>
           </div>
         </div>
@@ -92,6 +106,19 @@ export default function AdminHealthCheck() {
           </button>
         </div>
       </div>
+
+      {/* Session expired notice */}
+      {!loading && sessionExpired && (
+        <div className="rounded-xl p-4 text-sm space-y-1"
+          style={{ backgroundColor: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", color: "#DC2626" }}>
+          <p className="font-semibold">Cookie-ul admin a expirat (8h max).</p>
+          <p style={{ color: "#A8967E" }}>
+            Re-loghează-te la{" "}
+            <a href="/markethub973" className="underline" style={{ color: "#D97706" }}>/markethub973</a>{" "}
+            apoi apasă Run Check.
+          </p>
+        </div>
+      )}
 
       {/* Overall status bar */}
       {!loading && data && (

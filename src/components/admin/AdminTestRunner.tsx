@@ -158,10 +158,12 @@ export default function AdminTestRunner() {
   const [data, setData] = useState<RunTestsResponse | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const run = async () => {
     setRunning(true);
     setError(null);
+    setSessionExpired(false);
     try {
       const res = await fetch("/api/admin/run-tests", {
         method: "POST",
@@ -169,6 +171,10 @@ export default function AdminTestRunner() {
         credentials: "include",
         body: JSON.stringify({}),
       });
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true);
+        return;
+      }
       const json = await res.json();
       if (!res.ok) {
         setError(json.error || "Failed to run tests");
@@ -233,8 +239,20 @@ export default function AdminTestRunner() {
         </div>
       )}
 
+      {/* Session expired */}
+      {sessionExpired && (
+        <div className="rounded-xl px-4 py-3 mb-4 text-sm space-y-1" style={{ background: "rgba(239,68,68,0.1)", color: "#F87171", border: "1px solid rgba(239,68,68,0.2)" }}>
+          <p className="font-semibold">Sesiune admin expirată</p>
+          <p style={{ color: "#A0A0A0" }}>
+            Cookie-ul admin a expirat (8h max). Re-loghează-te la{" "}
+            <a href="/markethub973" className="underline" style={{ color: "#F59E0B" }}>/markethub973</a>{" "}
+            apoi apasă din nou Run Tests.
+          </p>
+        </div>
+      )}
+
       {/* Error */}
-      {error && (
+      {error && !sessionExpired && (
         <div className="rounded-xl px-4 py-3 mb-4 text-sm" style={{ background: "rgba(239,68,68,0.1)", color: "#F87171", border: "1px solid rgba(239,68,68,0.2)" }}>
           {error}
         </div>

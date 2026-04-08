@@ -43,13 +43,21 @@ export default function AdminAuditLog() {
   const [total, setTotal]     = useState(0);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter]   = useState("all");
+  const [sessionExpired, setSessionExpired] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setSessionExpired(false);
     try {
       const params = new URLSearchParams({ limit: "80" });
       if (filter !== "all") params.set("action", filter);
       const res  = await fetch(`/api/admin/audit-logs?${params}`);
+      if (res.status === 401 || res.status === 403) {
+        setSessionExpired(true);
+        setLogs([]);
+        setTotal(0);
+        return;
+      }
       const data = await res.json();
       setLogs(data.logs ?? []);
       setTotal(data.total ?? 0);
@@ -98,9 +106,20 @@ export default function AdminAuditLog() {
 
       {loading && logs.length === 0 ? (
         <div className="text-center py-8 text-sm" style={{ color: "#A8967E" }}>Loading audit log...</div>
+      ) : sessionExpired ? (
+        <div className="text-center py-8 text-sm space-y-2" style={{ color: "#DC2626" }}>
+          <p className="font-semibold">Sesiune admin expirată</p>
+          <p style={{ color: "#A8967E" }}>
+            Cookie-ul admin a expirat (8h max). Re-loghează-te la{" "}
+            <a href="/markethub973" className="underline" style={{ color: "#D97706" }}>
+              /markethub973
+            </a>{" "}
+            și revino aici.
+          </p>
+        </div>
       ) : logs.length === 0 ? (
         <div className="text-center py-8 text-sm" style={{ color: "#A8967E" }}>
-          No audit events yet. Run the migration first to create the audit_logs table.
+          No audit events yet.
         </div>
       ) : (
         <div className="space-y-1 max-h-96 overflow-y-auto pr-1">
