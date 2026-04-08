@@ -17,19 +17,14 @@ export const stripe = new Proxy({} as Stripe, {
 });
 
 export const PLANS = {
-  starter: {
-    name: "Starter",
-    price: "$9/mo",
-    priceId: process.env.STRIPE_STARTER_PRICE_ID!,
-  },
   lite: {
     name: "Lite",
-    price: "$19/mo",
+    price: "$24/mo",
     priceId: process.env.STRIPE_LITE_PRICE_ID!,
   },
   pro: {
     name: "Pro",
-    price: "$39/mo",
+    price: "$49/mo",
     priceId: process.env.STRIPE_PRO_PRICE_ID!,
   },
   business: {
