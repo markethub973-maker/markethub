@@ -381,14 +381,27 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
-  // ── Profile query — only columns that exist in the current schema ──────────
-  // NOTE: subscription_plan, subscription_status, trial_expires_at, is_blocked,
-  // blocked_reason are pending migration. Only query what's confirmed to exist.
+  // ── Profile query ──────────────────────────────────────────────────────────
   const { data: profile } = await supabase
     .from("profiles")
-    .select("plan, is_admin")
+    .select("plan, is_admin, is_blocked")
     .eq("id", user.id)
     .single();
+
+  // Block check — admins are exempt so they can never lock themselves out.
+  if (profile && (profile as any).is_blocked && !(profile as any).is_admin) {
+    if (pathname.startsWith("/api/")) {
+      const blocked = NextResponse.json({ error: "Account blocked" }, { status: 403 });
+      applySecurityHeaders(corsResponse(request, blocked), csp);
+      return blocked;
+    }
+    if (pathname !== "/blocked") {
+      const blockedUrl = new URL("/blocked", request.url);
+      const redirect = NextResponse.redirect(blockedUrl);
+      applySecurityHeaders(redirect, csp);
+      return redirect;
+    }
+  }
 
   if (profile) {
     // "free" (legacy value) is rank 0, same as "free_test"

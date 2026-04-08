@@ -3,7 +3,11 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 
-// Run raw SQL via Supabase pg-meta API (no custom RPC function needed)
+// Run raw SQL via the public.exec_sql(sql) RPC. This RPC must exist on the
+// Supabase project — without it every step in this runner is a no-op. The
+// pg-meta fallback below is not exposed on Supabase Cloud projects so it
+// cannot rescue you. If exec_sql is missing, run the DDL via the Supabase
+// CLI (`supabase db query --linked --file ...`) or the SQL Editor instead.
 async function runSQL(sql: string): Promise<{ ok: boolean; error?: string }> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -429,38 +433,7 @@ export async function POST(req: NextRequest) {
     results["api_cost_logs_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
-  // ── 17. platform_settings — markup % and value-based fee configs ──────────
-  if (await tableExists(supa, "platform_settings")) {
-    // Ensure new value-fee keys exist even if table already existed
-    await runSQL(`
-      INSERT INTO platform_settings (key, value) VALUES
-        ('api_markup_percent',        '20'),
-        ('value_fee_percent',         '10'),
-        ('value_fee_min_usd',         '5'),
-        ('value_fee_max_usd',         '500'),
-        ('value_fee_enabled',         'true')
-      ON CONFLICT (key) DO NOTHING;
-    `);
-    results["platform_settings_table"] = "already_exists";
-  } else {
-    const r = await runSQL(`
-      CREATE TABLE IF NOT EXISTS platform_settings (
-        key TEXT PRIMARY KEY,
-        value TEXT NOT NULL,
-        updated_at TIMESTAMPTZ DEFAULT now()
-      );
-      INSERT INTO platform_settings (key, value) VALUES
-        ('api_markup_percent',        '20'),
-        ('value_fee_percent',         '10'),
-        ('value_fee_min_usd',         '5'),
-        ('value_fee_max_usd',         '500'),
-        ('value_fee_enabled',         'true')
-      ON CONFLICT (key) DO NOTHING;
-    `);
-    results["platform_settings_table"] = r.ok ? "applied" : `error: ${r.error}`;
-  }
-
-  // ── 18. youtube_connections — multi-account YouTube ─────────────────────
+  // ── 17. youtube_connections — multi-account YouTube ─────────────────────
   if (await tableExists(supa, "youtube_connections")) {
     results["youtube_connections"] = "already_exists";
   } else {
