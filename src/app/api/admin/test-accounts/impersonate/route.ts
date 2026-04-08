@@ -44,12 +44,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No access token returned" }, { status: 500 });
   }
 
+  // Nonce forwarded by proxy middleware via x-nonce header
+  const nonce = req.headers.get("x-nonce") ?? "";
+  const nonceAttr = nonce ? ` nonce="${nonce}"` : "";
+
   // Return an HTML page that sets the Supabase tokens in localStorage/cookies and redirects
   const html = `<!DOCTYPE html>
 <html>
 <head><title>Logging in...</title></head>
 <body>
-<script>
+<script${nonceAttr}>
   // Set Supabase session in localStorage (same key Supabase JS client uses)
   const key = "sb-kashohhwsxyhyhhppvik-auth-token";
   localStorage.setItem(key, JSON.stringify({

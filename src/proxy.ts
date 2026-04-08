@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { canAccessRoute } from "@/lib/plan-features";
 
-// ── Security headers applied to every response ─────────────────────────────
-const SECURITY_HEADERS: Record<string, string> = {
+// ── Security headers applied to every response (CSP is dynamic — see buildCsp) ─
+const BASE_SECURITY_HEADERS: Record<string, string> = {
   "X-Frame-Options": "DENY",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
@@ -12,9 +12,21 @@ const SECURITY_HEADERS: Record<string, string> = {
   "X-DNS-Prefetch-Control": "off",
   "X-Download-Options": "noopen",
   "X-Permitted-Cross-Domain-Policies": "none",
-  "Content-Security-Policy": [
+};
+
+/**
+ * Build a nonce-based CSP per request.
+ * - script-src uses 'nonce-{nonce}' + 'strict-dynamic' → no 'unsafe-inline' in production
+ * - style-src keeps 'unsafe-inline' because the app uses inline style attributes extensively
+ * - 'unsafe-eval' is included only in development (React uses eval for stack traces)
+ */
+function buildCsp(nonce: string): string {
+  const isDev = process.env.NODE_ENV === "development";
+  return [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com",
+    // 'strict-dynamic' propagates trust to scripts loaded by nonce-trusted scripts
+    // js.stripe.com kept as allowlist fallback for older browsers
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""} https://js.stripe.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https: blob:",
     "font-src 'self' data:",
@@ -23,8 +35,8 @@ const SECURITY_HEADERS: Record<string, string> = {
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-  ].join("; "),
-};
+  ].join("; ");
+}
 
 // ── CORS allowed origins ────────────────────────────────────────────────────
 const ALLOWED_ORIGINS = [
@@ -102,10 +114,11 @@ function getClientIp(req: NextRequest): string {
   );
 }
 
-function applySecurityHeaders(res: NextResponse): NextResponse {
-  for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
+function applySecurityHeaders(res: NextResponse, csp: string): NextResponse {
+  for (const [key, value] of Object.entries(BASE_SECURITY_HEADERS)) {
     res.headers.set(key, value);
   }
+  res.headers.set("Content-Security-Policy", csp);
   return res;
 }
 
@@ -200,10 +213,14 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // ── Generate per-request nonce for CSP ───────────────────────────────────
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const csp   = buildCsp(nonce);
+
   // Handle CORS preflight
   if (request.method === "OPTIONS") {
     const preflightRes = new NextResponse(null, { status: 204 });
-    applySecurityHeaders(corsResponse(request, preflightRes));
+    applySecurityHeaders(corsResponse(request, preflightRes), csp);
     return preflightRes;
   }
 
@@ -218,7 +235,7 @@ export async function proxy(request: NextRequest) {
         { error: "Request body too large. Maximum 50 KB allowed." },
         { status: 413 },
       );
-      applySecurityHeaders(res);
+      applySecurityHeaders(res, csp);
       return res;
     }
   }
@@ -235,7 +252,7 @@ export async function proxy(request: NextRequest) {
   if (isAdminPath && !checkAdminTunnel(request)) {
     // Return 404 — don't reveal that an admin panel exists
     const res = new NextResponse(null, { status: 404 });
-    applySecurityHeaders(res);
+    applySecurityHeaders(res, csp);
     return res;
   }
 
@@ -250,7 +267,7 @@ export async function proxy(request: NextRequest) {
         { status: 429 }
       );
       res.headers.set("Retry-After", "60");
-      applySecurityHeaders(res);
+      applySecurityHeaders(res, csp);
       return res;
     }
   } else if (pathname.startsWith("/api/")) {
@@ -260,7 +277,7 @@ export async function proxy(request: NextRequest) {
         { status: 429 }
       );
       res.headers.set("Retry-After", "60");
-      applySecurityHeaders(res);
+      applySecurityHeaders(res, csp);
       return res;
     }
   }
@@ -269,12 +286,15 @@ export async function proxy(request: NextRequest) {
   const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
   if (isPublic) {
     const res = NextResponse.next();
-    applySecurityHeaders(corsResponse(request, res));
+    applySecurityHeaders(corsResponse(request, res), csp);
     return res;
   }
 
   // ── Build Supabase client that reads/writes cookies ────────────────────
-  let response = NextResponse.next({ request });
+  // Forward nonce to route handlers via x-nonce request header
+  const reqWithNonce = new Headers(request.headers);
+  reqWithNonce.set("x-nonce", nonce);
+  let response = NextResponse.next({ request: { headers: reqWithNonce } });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -286,7 +306,7 @@ export async function proxy(request: NextRequest) {
         },
         setAll(toSet) {
           toSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({ request });
+          response = NextResponse.next({ request: { headers: reqWithNonce } });
           toSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -302,14 +322,14 @@ export async function proxy(request: NextRequest) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     const redirect = NextResponse.redirect(loginUrl);
-    applySecurityHeaders(redirect);
+    applySecurityHeaders(redirect, csp);
     return redirect;
   }
 
   // Skip plan check for upgrade-related paths
   const isUpgradePath = UPGRADE_PATHS.some((p) => pathname.startsWith(p));
   if (isUpgradePath) {
-    applySecurityHeaders(corsResponse(request, response));
+    applySecurityHeaders(corsResponse(request, response), csp);
     return response;
   }
 
@@ -336,12 +356,12 @@ export async function proxy(request: NextRequest) {
       const upgradeUrl = new URL("/upgrade-required", request.url);
       upgradeUrl.searchParams.set("feature", pathname);
       const redirect = NextResponse.redirect(upgradeUrl);
-      applySecurityHeaders(redirect);
+      applySecurityHeaders(redirect, csp);
       return redirect;
     }
   }
 
-  applySecurityHeaders(corsResponse(request, response));
+  applySecurityHeaders(corsResponse(request, response), csp);
   return response;
 }
 
