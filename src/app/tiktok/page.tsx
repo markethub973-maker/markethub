@@ -6,7 +6,8 @@ import TrendingSoundsCard from "@/components/ui/TrendingSoundsCard";
 import GlobalTrendingPanel from "@/components/ui/GlobalTrendingPanel";
 import {
   Search, ExternalLink, Clock, TrendingUp, Heart, MessageCircle, Share2,
-  Play, Eye, User, Hash, Loader2, Bookmark, BookmarkCheck, X
+  Play, Eye, User, Hash, Loader2, Bookmark, BookmarkCheck, X,
+  Star, Trash2, Link2, CheckCircle2
 } from "lucide-react";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -32,6 +33,10 @@ type TikTokUser = {
 };
 type Hashtag = { name: string; views: number; videos: number };
 type SearchEntry = { query: string; timestamp: number };
+type TikTokAccount = {
+  id: string; tiktok_open_id: string; display_name: string; username: string | null;
+  avatar_url: string | null; follower_count: number; is_primary: boolean; connected_at: string;
+};
 
 function formatNum(n: number) {
   if (!n) return "0";
@@ -52,12 +57,26 @@ export default function TikTokPage() {
   const [history, setHistory] = useState<SearchEntry[]>([]);
   const [savedUsers, setSavedUsers] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<"videos" | "creators" | "hashtags">("videos");
+  const [accounts, setAccounts] = useState<TikTokAccount[]>([]);
+  const [acctLoading, setAcctLoading] = useState(false);
+  const [justConnected, setJustConnected] = useState(false);
 
   useEffect(() => {
     const h = localStorage.getItem("mh_tt_history");
     if (h) setHistory(JSON.parse(h));
     const s = localStorage.getItem("mh_tt_saved");
     if (s) setSavedUsers(JSON.parse(s));
+    // Check URL for connected=1
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("connected") === "1") {
+      setJustConnected(true);
+      window.history.replaceState({}, "", "/tiktok");
+    }
+    // Load connected accounts
+    fetch("/api/tiktok/accounts")
+      .then(r => r.json())
+      .then(d => setAccounts(d.accounts ?? []))
+      .catch(() => {});
   }, []);
 
   const saveHistory = (entries: SearchEntry[]) => {
@@ -108,10 +127,89 @@ export default function TikTokPage() {
 
   const clearHistory = () => { setHistory([]); localStorage.removeItem("mh_tt_history"); };
 
+  const acctAction = async (tiktok_open_id: string, action: string) => {
+    setAcctLoading(true);
+    await fetch("/api/tiktok/accounts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tiktok_open_id, action }),
+    });
+    const d = await fetch("/api/tiktok/accounts").then(r => r.json());
+    setAccounts(d.accounts ?? []);
+    setAcctLoading(false);
+  };
+
   return (
     <div>
       <Header title="TikTok Analytics" subtitle="Search creators, videos and TikTok trends in real time" />
       <div className="p-6 space-y-5">
+
+        {/* Connected accounts panel */}
+        <div className="rounded-2xl p-5" style={cardStyle}>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <Link2 className="w-4 h-4" style={{ color: TT2 }} />
+              <span className="font-semibold text-sm" style={{ color: "#292524" }}>Connected TikTok Accounts</span>
+            </div>
+            <a
+              href="/api/auth/tiktok"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+              style={{ background: `linear-gradient(135deg, ${TT}, ${TT2})`, color: "white" }}
+            >
+              + Connect Account
+            </a>
+          </div>
+
+          {justConnected && (
+            <div className="flex items-center gap-2 text-sm mb-3 px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(34,197,94,0.08)", color: "#16a34a" }}>
+              <CheckCircle2 className="w-4 h-4" /> TikTok account connected successfully!
+            </div>
+          )}
+
+          {accounts.length === 0 ? (
+            <p className="text-sm" style={{ color: "#A8967E" }}>No TikTok accounts connected yet. Click &quot;Connect Account&quot; to link your TikTok profile.</p>
+          ) : (
+            <div className="space-y-3">
+              {accounts.map(acc => (
+                <div key={acc.id} className="flex items-center gap-3 p-3 rounded-xl" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.2)" }}>
+                  <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0" style={{ backgroundColor: `${TT2}15` }}>
+                    {acc.avatar_url ? (
+                      <img src={acc.avatar_url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <User className="w-4 h-4" style={{ color: TT2 }} />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-semibold truncate" style={{ color: "#292524" }}>{acc.display_name}</p>
+                      {acc.is_primary && (
+                        <span className="text-xs px-1.5 py-0.5 rounded-full font-semibold" style={{ backgroundColor: `${TT2}15`, color: TT2 }}>Primary</span>
+                      )}
+                    </div>
+                    {acc.username && <p className="text-xs" style={{ color: "#A8967E" }}>@{acc.username}</p>}
+                    <p className="text-xs" style={{ color: "#A8967E" }}>{acc.follower_count.toLocaleString()} followers</p>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {!acc.is_primary && (
+                      <button type="button" title="Set as primary" disabled={acctLoading}
+                        onClick={() => acctAction(acc.tiktok_open_id, "set_primary")}
+                        className="p-1.5 rounded-lg transition-colors hover:bg-amber-50">
+                        <Star className="w-4 h-4" style={{ color: "#F59E0B" }} />
+                      </button>
+                    )}
+                    <button type="button" title="Disconnect" disabled={acctLoading}
+                      onClick={() => acctAction(acc.tiktok_open_id, "disconnect")}
+                      className="p-1.5 rounded-lg transition-colors hover:bg-red-50">
+                      <Trash2 className="w-4 h-4" style={{ color: "#dc2626" }} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Search */}
         <div className="rounded-xl p-5" style={cardStyle}>

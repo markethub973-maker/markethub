@@ -91,6 +91,37 @@ export async function POST(req: Request) {
     }
   }
 
+  // Handles plan upgrades, downgrades, and cancel_at_period_end changes
+  if (event.type === "customer.subscription.updated") {
+    const sub = event.data.object as any;
+    const customerId = sub.customer as string;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("stripe_customer_id", customerId)
+      .single();
+
+    if (profile) {
+      // Determine new plan from price ID
+      const priceId = sub.items?.data?.[0]?.price?.id as string | undefined;
+
+      const { PLANS } = await import("@/lib/stripe");
+      const matchedPlan = Object.entries(PLANS).find(
+        ([, p]) => p.priceId === priceId
+      )?.[0];
+
+      const updates: Record<string, unknown> = {
+        subscription_status: sub.status,
+        stripe_subscription_id: sub.id,
+      };
+
+      if (matchedPlan) updates.subscription_plan = matchedPlan;
+
+      await supabase.from("profiles").update(updates).eq("id", profile.id);
+    }
+  }
+
   if (event.type === "invoice.payment_failed") {
     const invoice = event.data.object as any;
     const customerId = invoice.customer as string;

@@ -26,7 +26,8 @@ export type AuditAction =
   | "discount_code_deleted"
   | "pricing_updated"
   | "feature_flag_updated"
-  | "youtube_connected";
+  | "youtube_connected"
+  | "tiktok_connected";
 
 export interface AuditEntry {
   action:       AuditAction;

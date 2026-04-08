@@ -459,6 +459,34 @@ export async function POST(req: NextRequest) {
     results["youtube_connections"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
+  // ── 19. tiktok_connections — multi-account TikTok ─────────────────────
+  if (await tableExists(supa, "tiktok_connections")) {
+    results["tiktok_connections"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS tiktok_connections (
+        id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id          UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+        tiktok_open_id   TEXT NOT NULL,
+        display_name     TEXT NOT NULL,
+        username         TEXT,
+        avatar_url       TEXT,
+        follower_count   BIGINT DEFAULT 0,
+        following_count  BIGINT DEFAULT 0,
+        likes_count      BIGINT DEFAULT 0,
+        video_count      BIGINT DEFAULT 0,
+        is_primary       BOOLEAN DEFAULT FALSE,
+        access_token     TEXT,
+        refresh_token    TEXT,
+        token_expires_at TIMESTAMPTZ,
+        connected_at     TIMESTAMPTZ DEFAULT now(),
+        UNIQUE(user_id, tiktok_open_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_tiktok_conn_user ON tiktok_connections(user_id);
+    `);
+    results["tiktok_connections"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
   await logAudit({
     action: "migration_run",
     actor_id: "admin",

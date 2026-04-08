@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
-import { CreditCard, Download, CheckCircle, XCircle, Clock, AlertTriangle, Zap } from "lucide-react";
+import { CreditCard, Download, CheckCircle, XCircle, Clock, AlertTriangle, Zap, ExternalLink, Ban } from "lucide-react";
 import Link from "next/link";
 
 interface Invoice {
@@ -78,6 +78,8 @@ function StatusBadge({ status }: { status: string | null }) {
 export default function BillingPage() {
   const [data, setData] = useState<BillingData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionMsg, setActionMsg] = useState("");
 
   useEffect(() => {
     fetch("/api/billing")
@@ -85,6 +87,60 @@ export default function BillingPage() {
       .then(setData)
       .finally(() => setLoading(false));
   }, []);
+
+  const openPortal = async () => {
+    setActionLoading(true);
+    setActionMsg("");
+    try {
+      const res = await fetch("/api/stripe/portal", { method: "POST" });
+      const d = await res.json();
+      if (d.url) window.location.href = d.url;
+      else setActionMsg(d.error ?? "Could not open portal.");
+    } catch {
+      setActionMsg("Network error.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const cancelSubscription = async () => {
+    if (!confirm("Are you sure you want to cancel? Your plan stays active until the end of the current billing period.")) return;
+    setActionLoading(true);
+    setActionMsg("");
+    try {
+      const res = await fetch("/api/stripe/cancel", { method: "POST" });
+      const d = await res.json();
+      if (d.ok) {
+        setData((prev) => prev ? { ...prev, subscription: prev.subscription ? { ...prev.subscription, cancel_at_period_end: true } : null } : prev);
+        setActionMsg("Subscription will cancel at the end of the current period.");
+      } else {
+        setActionMsg(d.error ?? "Could not cancel subscription.");
+      }
+    } catch {
+      setActionMsg("Network error.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const reactivateSubscription = async () => {
+    setActionLoading(true);
+    setActionMsg("");
+    try {
+      const res = await fetch("/api/stripe/cancel", { method: "DELETE" });
+      const d = await res.json();
+      if (d.ok) {
+        setData((prev) => prev ? { ...prev, subscription: prev.subscription ? { ...prev.subscription, cancel_at_period_end: false } : null } : prev);
+        setActionMsg("Subscription reactivated — will renew as normal.");
+      } else {
+        setActionMsg(d.error ?? "Could not reactivate.");
+      }
+    } catch {
+      setActionMsg("Network error.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const plan = data?.plan ?? "free_test";
   const isExpired = plan === "expired" || data?.status === "expired";
@@ -153,14 +209,61 @@ export default function BillingPage() {
                 </p>
               )}
 
-              <Link
-                href="/upgrade"
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-                style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
-              >
-                <Zap className="w-4 h-4" />
-                {isExpired ? "Reactivate" : isTrial ? "Upgrade Now" : "Change Plan"}
-              </Link>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  href="/upgrade"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+                  style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+                >
+                  <Zap className="w-4 h-4" />
+                  {isExpired ? "Reactivate" : isTrial ? "Upgrade Now" : "Change Plan"}
+                </Link>
+
+                {!isTrial && !isExpired && (
+                  <button
+                    type="button"
+                    onClick={openPortal}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
+                    style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Manage Payment
+                  </button>
+                )}
+
+                {!isTrial && !isExpired && data?.subscription && !data.subscription.cancel_at_period_end && (
+                  <button
+                    type="button"
+                    onClick={cancelSubscription}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
+                    style={{ backgroundColor: "rgba(239,68,68,0.06)", color: "#dc2626", border: "1px solid rgba(239,68,68,0.2)" }}
+                  >
+                    <Ban className="w-4 h-4" />
+                    Cancel Plan
+                  </button>
+                )}
+
+                {!isTrial && !isExpired && data?.subscription?.cancel_at_period_end && (
+                  <button
+                    type="button"
+                    onClick={reactivateSubscription}
+                    disabled={actionLoading}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-80 disabled:opacity-50"
+                    style={{ backgroundColor: "rgba(34,197,94,0.08)", color: "#16a34a", border: "1px solid rgba(34,197,94,0.25)" }}
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Reactivate Plan
+                  </button>
+                )}
+              </div>
+
+              {actionMsg && (
+                <p className="mt-3 text-sm" style={{ color: actionMsg.includes("cancel") || actionMsg.includes("error") || actionMsg.includes("Could") ? "#dc2626" : "#16a34a" }}>
+                  {actionMsg}
+                </p>
+              )}
             </div>
 
             {/* Payment method */}
