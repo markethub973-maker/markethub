@@ -317,8 +317,18 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // Not authenticated → redirect to login
+  // Not authenticated:
+  //   - API routes → respond with JSON 401 (so programmatic clients see a real error)
+  //   - Page routes → redirect to /login?next=<pathname>
   if (!user) {
+    if (pathname.startsWith("/api/")) {
+      const unauth = NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 },
+      );
+      applySecurityHeaders(corsResponse(request, unauth), csp);
+      return unauth;
+    }
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);
     const redirect = NextResponse.redirect(loginUrl);
