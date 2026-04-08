@@ -278,7 +278,9 @@ export async function proxy(request: NextRequest) {
   // legitimate provider retries (Stripe, Apify) to be dropped — Stripe
   // backs off aggressively after 429s and we'd lose events.
   const isWebhook =
-    pathname === "/api/stripe/webhook" || pathname === "/api/apify/webhook";
+    pathname === "/api/stripe/webhook" ||
+    pathname === "/api/apify/webhook" ||
+    pathname === "/api/webhooks/apify";
 
   const isAuthPath = !isWebhook && AUTH_PATHS.some((p) => pathname.startsWith(p));
   if (isAuthPath) {
