@@ -143,15 +143,17 @@ export async function GET(req: NextRequest) {
   {
     const t = Date.now();
     const supa = createServiceClient();
-    // Token is stored in instagram_connections, not profiles
+    // Token is stored on profiles (plaintext or enc:v1: encrypted) — instagram_connections
+    // only holds metadata (username, page_id, etc.). Find any profile with a token set.
     const { data } = await supa
-      .from("instagram_connections")
-      .select("access_token, enc_access_token, instagram_username")
+      .from("profiles")
+      .select("instagram_access_token, enc_instagram_access_token, instagram_username")
+      .or("instagram_access_token.not.is.null,enc_instagram_access_token.not.is.null")
       .limit(1)
-      .single();
+      .maybeSingle();
     // Prefer encrypted token; fall back to plaintext (legacy)
-    let token = (data as any)?.access_token as string | undefined;
-    const encToken = (data as any)?.enc_access_token as string | undefined;
+    let token = (data as any)?.instagram_access_token as string | undefined;
+    const encToken = (data as any)?.enc_instagram_access_token as string | undefined;
     if (encToken?.startsWith("enc:v1:")) {
       try {
         const { decryptField } = await import("@/lib/fieldCrypto");
