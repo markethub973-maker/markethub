@@ -487,6 +487,49 @@ export async function POST(req: NextRequest) {
     results["tiktok_connections"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
+  // ── 20. stripe_webhook_events — idempotency for Stripe webhook ──────────
+  if (await tableExists(supa, "stripe_webhook_events")) {
+    results["stripe_webhook_events_table"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS stripe_webhook_events (
+        event_id    TEXT PRIMARY KEY,
+        event_type  TEXT NOT NULL,
+        processed_at TIMESTAMPTZ DEFAULT now()
+      );
+      CREATE INDEX IF NOT EXISTS idx_stripe_webhook_events_type ON stripe_webhook_events(event_type);
+    `);
+    results["stripe_webhook_events_table"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
+  // ── 21. ai_credits atomic upsert RPC (prevents lost-update race) ────────
+  {
+    // Add UNIQUE constraint first (ON CONFLICT target), then the RPC function.
+    // Wrapped in DO block so re-runs are safe. If dupes exist, ALTER fails and
+    // runSQL returns the error string into results for admin visibility.
+    const r = await runSQL(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'ai_credits_user_month_unique'
+        ) THEN
+          ALTER TABLE ai_credits ADD CONSTRAINT ai_credits_user_month_unique UNIQUE (user_id, month_year);
+        END IF;
+      END$$;
+
+      CREATE OR REPLACE FUNCTION add_ai_credits_atomic(p_user UUID, p_month TEXT, p_amount NUMERIC)
+      RETURNS void AS $$
+      BEGIN
+        INSERT INTO ai_credits (user_id, month_year, credits_usd, purchased_at)
+        VALUES (p_user, p_month, p_amount, now())
+        ON CONFLICT (user_id, month_year)
+        DO UPDATE SET credits_usd = ai_credits.credits_usd + EXCLUDED.credits_usd;
+      END;
+      $$ LANGUAGE plpgsql;
+    `);
+    results["ai_credits_atomic_rpc"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
   await logAudit({
     action: "migration_run",
     actor_id: "admin",

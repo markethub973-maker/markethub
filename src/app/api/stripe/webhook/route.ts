@@ -20,6 +20,20 @@ export async function POST(req: Request) {
     { cookies: { getAll: () => [], setAll: () => {} } }
   );
 
+  // Idempotency: each Stripe event_id may only be processed once
+  const { error: idemErr } = await supabase
+    .from("stripe_webhook_events")
+    .insert({ event_id: event.id, event_type: event.type });
+  if (idemErr) {
+    // Code 23505 = unique violation = already processed → return success
+    if ((idemErr as any).code === "23505") {
+      return NextResponse.json({ received: true, replay: true });
+    }
+    // Any other error: fail closed so Stripe will retry
+    console.error("[stripe webhook] idempotency insert failed:", idemErr);
+    return NextResponse.json({ error: "internal" }, { status: 500 });
+  }
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as any;
     const userId = session.metadata?.user_id;
@@ -31,26 +45,15 @@ export async function POST(req: Request) {
       const creditsUsd = parseFloat(session.metadata?.credits_usd ?? "0");
       const currentMonth = new Date().toISOString().substring(0, 7);
 
-      // Upsert into ai_credits table (add to existing balance for this month)
-      const { data: existing } = await supabase
-        .from("ai_credits")
-        .select("id, credits_usd")
-        .eq("user_id", userId)
-        .eq("month_year", currentMonth)
-        .maybeSingle();
-
-      if (existing) {
-        await supabase
-          .from("ai_credits")
-          .update({ credits_usd: existing.credits_usd + creditsUsd })
-          .eq("id", existing.id);
-      } else {
-        await supabase.from("ai_credits").insert({
-          user_id: userId,
-          month_year: currentMonth,
-          credits_usd: creditsUsd,
-          purchased_at: new Date().toISOString(),
-        });
+      // Atomic upsert via Postgres function — no lost updates
+      const { error: rpcErr } = await supabase.rpc("add_ai_credits_atomic", {
+        p_user: userId,
+        p_month: currentMonth,
+        p_amount: creditsUsd,
+      });
+      if (rpcErr) {
+        console.error("[stripe webhook] add_ai_credits_atomic failed:", rpcErr);
+        return NextResponse.json({ error: "credit insert failed" }, { status: 500 });
       }
     }
 
