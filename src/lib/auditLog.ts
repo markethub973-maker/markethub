@@ -25,7 +25,8 @@ export type AuditAction =
   | "discount_code_created"
   | "discount_code_deleted"
   | "pricing_updated"
-  | "feature_flag_updated";
+  | "feature_flag_updated"
+  | "youtube_connected";
 
 export interface AuditEntry {
   action:       AuditAction;

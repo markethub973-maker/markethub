@@ -433,6 +433,32 @@ export async function POST(req: NextRequest) {
     results["platform_settings_table"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
+  // ── 18. youtube_connections — multi-account YouTube ─────────────────────
+  if (await tableExists(supa, "youtube_connections")) {
+    results["youtube_connections"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      CREATE TABLE IF NOT EXISTS youtube_connections (
+        id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id         UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+        channel_id      TEXT NOT NULL,
+        channel_name    TEXT NOT NULL,
+        channel_handle  TEXT,
+        thumbnail_url   TEXT,
+        subscriber_count BIGINT DEFAULT 0,
+        account_label   TEXT,
+        is_primary      BOOLEAN DEFAULT FALSE,
+        access_token    TEXT,
+        refresh_token   TEXT,
+        token_expires_at TIMESTAMPTZ,
+        connected_at    TIMESTAMPTZ DEFAULT now(),
+        UNIQUE(user_id, channel_id)
+      );
+      CREATE INDEX IF NOT EXISTS idx_youtube_conn_user ON youtube_connections(user_id);
+    `);
+    results["youtube_connections"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
   await logAudit({
     action: "migration_run",
     actor_id: "admin",
