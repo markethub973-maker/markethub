@@ -15,7 +15,7 @@ export async function GET(
   const svc = createServiceClient();
   const { data: link, error } = await svc
     .from("client_portal_links")
-    .select("id, token, client_name, ig_username, tt_username, data, view_count, expires_at, updated_at")
+    .select("id, token, client_name, ig_username, tt_username, data, view_count, expires_at, updated_at, agency_name, agency_logo_url, accent_color")
     .eq("token", token)
     .single();
 

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import Header from "@/components/layout/Header";
 import WeeklyDigestPanel from "@/components/ui/WeeklyDigestPanel";
 import {
   Users, Plus, Trash2, Instagram, ChevronDown, ChevronUp,
   BarChart3, TrendingUp, Heart, MessageCircle, Eye, Video,
   ArrowUpDown, ExternalLink, Loader2, X, RefreshCw,
-  ShieldCheck, Image, Bookmark, BookmarkCheck, Zap, Lock
+  ShieldCheck, Image, Bookmark, BookmarkCheck, Zap, Lock, Link2
 } from "lucide-react";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -298,6 +299,12 @@ export default function ClientsPage() {
             ))}
           </div>
           <div className="ml-auto flex gap-2">
+            <Link href="/clients/share-links"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
+              style={{ ...cardStyle, color: "#78614E" }}>
+              <Link2 className="w-3.5 h-3.5" />
+              Manage Share Links
+            </Link>
             {clients.length > 0 && (
               <button type="button" onClick={refreshAll} disabled={refreshingId !== null}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold" style={{ ...cardStyle, color: "#78614E" }}>

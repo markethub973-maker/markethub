@@ -8,6 +8,9 @@ interface PortalData {
   ig_username: string;
   tt_username: string;
   updated_at: string;
+  agency_name?: string | null;
+  agency_logo_url?: string | null;
+  accent_color?: string | null;
   data: {
     // Instagram
     ig_followers?: number;
@@ -119,7 +122,10 @@ export default function ClientPortalPage() {
   }
 
   const d = portal.data || {};
-  const engColor = (d.ig_engagement || 0) >= 5 ? "#16A34A" : (d.ig_engagement || 0) >= 3 ? "#F59E0B" : "#DC2626";
+  const accent = portal.accent_color || "#F59E0B";
+  const agencyName = portal.agency_name || "MarketHub Pro";
+  const agencyLogo = portal.agency_logo_url || "";
+  const engColor = (d.ig_engagement || 0) >= 5 ? "#16A34A" : (d.ig_engagement || 0) >= 3 ? accent : "#DC2626";
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAF7F2" }}>
@@ -127,9 +133,17 @@ export default function ClientPortalPage() {
       <div style={{ background: "linear-gradient(135deg,#292524,#3D2E1E)", padding: "14px 24px" }}
         className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm"
-            style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>M</div>
-          <span className="font-semibold text-sm" style={{ color: "#F5D7A0" }}>MarketHub Pro</span>
+          {agencyLogo ? (
+            <img
+              src={`/api/image-proxy?url=${encodeURIComponent(agencyLogo)}`}
+              alt={agencyName}
+              className="w-7 h-7 rounded-lg object-cover"
+            />
+          ) : (
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm"
+              style={{ backgroundColor: accent, color: "#1C1814" }}>{agencyName.charAt(0).toUpperCase()}</div>
+          )}
+          <span className="font-semibold text-sm" style={{ color: "#F5D7A0" }}>{agencyName}</span>
         </div>
         <span className="text-xs" style={{ color: "#78614E" }}>Live analytics report</span>
       </div>
@@ -260,8 +274,7 @@ export default function ClientPortalPage() {
           <div className="h-px" style={{ backgroundColor: "rgba(245,215,160,0.3)" }} />
           <p className="text-xs pt-3" style={{ color: "#C4AA8A" }}>
             Live report by{" "}
-            <a href="https://markethubpromo.com" target="_blank" rel="noopener noreferrer"
-              className="font-semibold" style={{ color: "#F59E0B" }}>MarketHub Pro</a>
+            <span className="font-semibold" style={{ color: accent }}>{agencyName}</span>
             {" "}· Updated {timeAgo(portal.updated_at)} · For questions, contact your agency
           </p>
         </div>

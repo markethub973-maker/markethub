@@ -78,6 +78,9 @@ export async function POST(req: NextRequest) {
         data JSONB DEFAULT '{}',
         view_count INTEGER DEFAULT 0,
         expires_at TIMESTAMPTZ,
+        agency_name TEXT,
+        agency_logo_url TEXT,
+        accent_color TEXT,
         created_at TIMESTAMPTZ DEFAULT now(),
         updated_at TIMESTAMPTZ DEFAULT now()
       );
@@ -85,6 +88,19 @@ export async function POST(req: NextRequest) {
       CREATE INDEX IF NOT EXISTS idx_portal_links_user ON client_portal_links(user_id);
     `);
     results["client_portal_links_table"] = r.ok ? "applied" : `error: ${r.error}`;
+  }
+
+  // ── 1b. client_portal_links white-label columns (additive for existing tables) ─
+  if (await columnExists(supa, "client_portal_links", "agency_name")) {
+    results["client_portal_links_whitelabel"] = "already_exists";
+  } else {
+    const r = await runSQL(`
+      ALTER TABLE client_portal_links
+        ADD COLUMN IF NOT EXISTS agency_name TEXT,
+        ADD COLUMN IF NOT EXISTS agency_logo_url TEXT,
+        ADD COLUMN IF NOT EXISTS accent_color TEXT;
+    `);
+    results["client_portal_links_whitelabel"] = r.ok ? "applied" : `error: ${r.error}`;
   }
 
   // ── 2. scheduled_posts columns ───────────────────────────────────────────

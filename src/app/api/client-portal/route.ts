@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
+const SELECT_FIELDS =
+  "id, token, client_name, ig_username, tt_username, view_count, expires_at, created_at, updated_at, agency_name, agency_logo_url, accent_color";
+
 // POST — create a live portal link for a client
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -9,12 +12,24 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json().catch(() => ({}));
-  const { client_name, ig_username, tt_username, data, expires_days } = body as {
+  const {
+    client_name,
+    ig_username,
+    tt_username,
+    data,
+    expires_days,
+    agency_name,
+    agency_logo_url,
+    accent_color,
+  } = body as {
     client_name: string;
     ig_username?: string;
     tt_username?: string;
     data?: Record<string, unknown>;
     expires_days?: number;
+    agency_name?: string;
+    agency_logo_url?: string;
+    accent_color?: string;
   };
 
   if (!client_name?.trim()) {
@@ -35,8 +50,11 @@ export async function POST(req: NextRequest) {
       tt_username: tt_username?.trim() || "",
       data: data || {},
       expires_at,
+      agency_name: agency_name?.trim() || null,
+      agency_logo_url: agency_logo_url?.trim() || null,
+      accent_color: accent_color?.trim() || null,
     })
-    .select("id, token, client_name, ig_username, tt_username, expires_at, created_at")
+    .select(SELECT_FIELDS)
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
@@ -44,7 +62,7 @@ export async function POST(req: NextRequest) {
 }
 
 // GET — list all portal links for the authenticated user
-export async function GET(req: NextRequest) {
+export async function GET() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -52,12 +70,84 @@ export async function GET(req: NextRequest) {
   const svc = createServiceClient();
   const { data: links, error } = await svc
     .from("client_portal_links")
-    .select("id, token, client_name, ig_username, tt_username, view_count, expires_at, created_at, updated_at")
+    .select(SELECT_FIELDS)
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ links: links || [] });
+}
+
+// PATCH — update existing link: extend expiry, refresh data, or set white-label
+export async function PATCH(req: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const body = await req.json().catch(() => ({}));
+  const {
+    id,
+    extend_days,
+    data,
+    agency_name,
+    agency_logo_url,
+    accent_color,
+  } = body as {
+    id?: string;
+    extend_days?: number;
+    data?: Record<string, unknown>;
+    agency_name?: string | null;
+    agency_logo_url?: string | null;
+    accent_color?: string | null;
+  };
+
+  if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
+
+  const svc = createServiceClient();
+
+  // Verify ownership before mutating
+  const { data: existing, error: fetchErr } = await svc
+    .from("client_portal_links")
+    .select("id, user_id, expires_at")
+    .eq("id", id)
+    .single();
+
+  if (fetchErr || !existing) {
+    return NextResponse.json({ error: "Link not found" }, { status: 404 });
+  }
+  if ((existing as { user_id: string }).user_id !== user.id) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
+
+  if (typeof extend_days === "number" && extend_days > 0) {
+    // Extend from now() if expired, else from current expires_at
+    const currentExpiry = (existing as { expires_at: string | null }).expires_at;
+    const base = currentExpiry && new Date(currentExpiry) > new Date()
+      ? new Date(currentExpiry)
+      : new Date();
+    update.expires_at = new Date(base.getTime() + extend_days * 86400000).toISOString();
+  }
+
+  if (data && typeof data === "object") {
+    update.data = data;
+  }
+
+  // Allow explicit null to clear white-label fields
+  if (agency_name !== undefined) update.agency_name = agency_name?.toString().trim() || null;
+  if (agency_logo_url !== undefined) update.agency_logo_url = agency_logo_url?.toString().trim() || null;
+  if (accent_color !== undefined) update.accent_color = accent_color?.toString().trim() || null;
+
+  const { data: link, error } = await svc
+    .from("client_portal_links")
+    .update(update)
+    .eq("id", id)
+    .select(SELECT_FIELDS)
+    .single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+  return NextResponse.json({ link });
 }
 
 // DELETE — remove a portal link
