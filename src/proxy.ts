@@ -152,6 +152,8 @@ const PUBLIC_PATHS = [
   "/login",
   "/register",
   "/pricing",
+  "/privacy",
+  "/terms",
   "/upgrade-required",
   "/auth/callback",
   "/api/auth",
