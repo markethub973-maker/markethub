@@ -504,30 +504,45 @@ export async function POST(req: NextRequest) {
 
   // ── 21. ai_credits atomic upsert RPC (prevents lost-update race) ────────
   {
-    // Add UNIQUE constraint first (ON CONFLICT target), then the RPC function.
-    // Wrapped in DO block so re-runs are safe. If dupes exist, ALTER fails and
-    // runSQL returns the error string into results for admin visibility.
-    const r = await runSQL(`
-      DO $$
-      BEGIN
-        IF NOT EXISTS (
-          SELECT 1 FROM pg_constraint WHERE conname = 'ai_credits_user_month_unique'
-        ) THEN
-          ALTER TABLE ai_credits ADD CONSTRAINT ai_credits_user_month_unique UNIQUE (user_id, month_year);
-        END IF;
-      END$$;
+    // Probe whether the RPC already exists by calling it with a no-op payload.
+    // PGRST202 = function missing. 23503 (FK violation on dummy user) means
+    // the function exists and reached the INSERT — both confirm presence and
+    // let us skip a runSQL() call that would no-op anyway since exec_sql is
+    // not exposed on this Supabase project.
+    const probe = await supa.rpc("add_ai_credits_atomic" as any, {
+      p_user: "00000000-0000-0000-0000-000000000000",
+      p_month: "0000-00",
+      p_amount: 0,
+    });
+    const probeCode = (probe.error as { code?: string } | null)?.code;
+    if (!probe.error || probeCode === "23503") {
+      results["ai_credits_atomic_rpc"] = "already_exists";
+    } else {
+      // Add UNIQUE constraint first (ON CONFLICT target), then the RPC function.
+      // Wrapped in DO block so re-runs are safe. If dupes exist, ALTER fails and
+      // runSQL returns the error string into results for admin visibility.
+      const r = await runSQL(`
+        DO $$
+        BEGIN
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_constraint WHERE conname = 'ai_credits_user_month_unique'
+          ) THEN
+            ALTER TABLE ai_credits ADD CONSTRAINT ai_credits_user_month_unique UNIQUE (user_id, month_year);
+          END IF;
+        END$$;
 
-      CREATE OR REPLACE FUNCTION add_ai_credits_atomic(p_user UUID, p_month TEXT, p_amount NUMERIC)
-      RETURNS void AS $$
-      BEGIN
-        INSERT INTO ai_credits (user_id, month_year, credits_usd, purchased_at)
-        VALUES (p_user, p_month, p_amount, now())
-        ON CONFLICT (user_id, month_year)
-        DO UPDATE SET credits_usd = ai_credits.credits_usd + EXCLUDED.credits_usd;
-      END;
-      $$ LANGUAGE plpgsql;
-    `);
-    results["ai_credits_atomic_rpc"] = r.ok ? "applied" : `error: ${r.error}`;
+        CREATE OR REPLACE FUNCTION add_ai_credits_atomic(p_user UUID, p_month TEXT, p_amount NUMERIC)
+        RETURNS void AS $$
+        BEGIN
+          INSERT INTO ai_credits (user_id, month_year, credits_usd, purchased_at)
+          VALUES (p_user, p_month, p_amount, now())
+          ON CONFLICT (user_id, month_year)
+          DO UPDATE SET credits_usd = ai_credits.credits_usd + EXCLUDED.credits_usd;
+        END;
+        $$ LANGUAGE plpgsql;
+      `);
+      results["ai_credits_atomic_rpc"] = r.ok ? "applied" : `error: ${r.error}`;
+    }
   }
 
   await logAudit({
