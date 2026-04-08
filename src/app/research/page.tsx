@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Header from "@/components/layout/Header";
 import {
   Search, Instagram, Facebook, Globe, Loader2,
@@ -57,6 +57,8 @@ export default function ResearchPage() {
   const [results, setResults] = useState<any>(null);
   const [error, setError] = useState("");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
+  const [listView, setListView] = useState<"compact" | "detailed">("compact");
+  const [expandedRows, setExpandedRows] = useState<Record<number, boolean>>({});
 
   const toggleSection = (key: string) => setExpandedSections(s => ({ ...s, [key]: !s[key] }));
 
@@ -118,6 +120,7 @@ export default function ResearchPage() {
     setLoading(true);
     setError("");
     setResults(null);
+    setExpandedRows({});
 
     try {
       let endpoint = "";
@@ -347,7 +350,7 @@ export default function ResearchPage() {
 
         {/* ── YOUTUBE ── */}
         {!loading && results && tab === "youtube" && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {results.channelInfo && (
               <div className="rounded-xl p-4 flex items-center gap-3" style={{ ...card, borderColor: `${YT}30` }}>
                 <Play className="w-8 h-8" style={{ color: YT }} />
@@ -359,32 +362,90 @@ export default function ResearchPage() {
                 </div>
               </div>
             )}
-            <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} videos</p>
-            <div className="space-y-3">
-              {results.videos.map((v: any, i: number) => (
-                <a key={i} href={v.url} target="_blank" rel="noopener noreferrer"
-                  className="flex gap-4 rounded-xl p-4 hover:opacity-90 transition-opacity" style={card}>
-                  {v.thumbnail && <img src={v.thumbnail} alt="" className="w-32 h-20 rounded-lg object-cover flex-shrink-0" />}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold line-clamp-2" style={{ color: "#292524" }}>{v.title}</p>
-                    <p className="text-xs mt-1" style={{ color: "#A8967E" }}>{v.channel}</p>
-                    <div className="flex gap-4 mt-2">
-                      <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: YT }}>
-                        <Eye className="w-3 h-3" />{fmtNum(v.views)}
-                      </span>
-                      <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                        <ThumbsUp className="w-3 h-3" />{fmtNum(v.likes)}
-                      </span>
-                      <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                        <MessageCircle className="w-3 h-3" />{fmtNum(v.comments)}
-                      </span>
-                      {v.publishedAt && (
-                        <span className="text-xs ml-auto" style={{ color: "#C4AA8A" }}>{timeAgo(v.publishedAt)}</span>
+
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} videos</p>
+              <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
+                {(["compact", "detailed"] as const).map(v => (
+                  <button key={v} type="button" onClick={() => setListView(v)}
+                    className="px-3 py-1 rounded-md text-xs font-bold transition-all"
+                    style={listView === v ? { backgroundColor: YT, color: "white" } : { color: "#78614E" }}>
+                    {v === "compact" ? "Mai puțin" : "Mai mult"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-xl overflow-hidden" style={card}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#78614E" }}>
+                      <th className="text-left px-3 py-2 font-bold">Titlu</th>
+                      <th className="text-right px-3 py-2 font-bold"><Eye className="w-3 h-3 inline mr-1" />Views</th>
+                      <th className="text-right px-3 py-2 font-bold"><ThumbsUp className="w-3 h-3 inline mr-1" />Likes</th>
+                      <th className="text-right px-3 py-2 font-bold">Postat</th>
+                      {listView === "detailed" && (
+                        <>
+                          <th className="text-right px-3 py-2 font-bold"><MessageCircle className="w-3 h-3 inline mr-1" />Comm.</th>
+                          <th className="text-right px-3 py-2 font-bold">Durată</th>
+                          <th className="text-left px-3 py-2 font-bold">Canal</th>
+                        </>
                       )}
-                    </div>
-                  </div>
-                </a>
-              ))}
+                      <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {results.videos.map((v: any, i: number) => {
+                      const isOpen = !!expandedRows[i];
+                      return (
+                        <React.Fragment key={i}>
+                          <tr style={{ borderTop: "1px solid rgba(245,215,160,0.18)" }}>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {v.thumbnail && <img src={v.thumbnail} alt="" className="w-16 h-10 rounded object-cover flex-shrink-0" />}
+                                <p className="font-semibold line-clamp-2" style={{ color: "#292524" }}>{v.title}</p>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: YT }}>{fmtNum(v.views)}</td>
+                            <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(v.likes)}</td>
+                            <td className="px-3 py-2 text-right" style={{ color: "#C4AA8A" }}>{v.publishedAt ? timeAgo(v.publishedAt) : "—"}</td>
+                            {listView === "detailed" && (
+                              <>
+                                <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(v.comments)}</td>
+                                <td className="px-3 py-2 text-right" style={{ color: "#78614E" }}>{v.duration || "—"}</td>
+                                <td className="px-3 py-2 max-w-[10rem]"><p className="truncate" style={{ color: "#A8967E" }}>{v.channel || "—"}</p></td>
+                              </>
+                            )}
+                            <td className="px-3 py-2 text-right">
+                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [i]: !s[i] }))}
+                                className="inline-flex items-center gap-0.5 font-semibold" style={{ color: YT }}>
+                                {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                {isOpen ? "Mai puțin" : "Mai mult"}
+                              </button>
+                            </td>
+                          </tr>
+                          {isOpen && (
+                            <tr style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
+                              <td colSpan={listView === "detailed" ? 8 : 5} className="px-4 py-3">
+                                <div className="space-y-1">
+                                  {v.description && <p style={{ color: "#292524" }}>{v.description}</p>}
+                                  {v.url && (
+                                    <a href={v.url} target="_blank" rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 font-semibold" style={{ color: YT }}>
+                                      <ExternalLink className="w-3 h-3" />Deschide pe YouTube
+                                    </a>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -431,7 +492,7 @@ export default function ResearchPage() {
 
         {/* ── INSTAGRAM ── */}
         {!loading && results && tab === "instagram" && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {results.profile && (
               <div className="rounded-xl p-4 flex items-center gap-4" style={{ ...card, borderColor: `${IG}30` }}>
                 {results.profile.profilePic && (
@@ -445,50 +506,105 @@ export default function ResearchPage() {
                 </div>
               </div>
             )}
-            <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} posts</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {results.posts.map((p: any, i: number) => (
-                <a key={i} href={p.url || `https://www.instagram.com/p/${p.shortCode}/`}
-                  target="_blank" rel="noopener noreferrer" className="rounded-xl overflow-hidden group" style={card}>
-                  <div className="relative aspect-square bg-gray-100">
-                    {p.thumbnail
-                      ? <img src={p.thumbnail} alt="" className="w-full h-full object-cover" />
-                      : <div className="w-full h-full flex items-center justify-center">
-                          <Instagram className="w-8 h-8" style={{ color: "#C4AA8A" }} />
-                        </div>}
-                    <div className="absolute inset-0 flex items-end opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}>
-                      <div className="p-2 flex gap-3 w-full">
-                        <span className="flex items-center gap-1 text-white text-xs font-bold">
-                          <ThumbsUp className="w-3 h-3" />{fmtNum(p.likes)}
-                        </span>
-                        <span className="flex items-center gap-1 text-white text-xs font-bold">
-                          <MessageCircle className="w-3 h-3" />{fmtNum(p.comments)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-2.5">
-                    {p.ownerUsername && <p className="text-xs font-semibold" style={{ color: IG }}>@{p.ownerUsername}</p>}
-                    {p.caption && <p className="text-xs mt-1 line-clamp-2" style={{ color: "#78614E" }}>{p.caption}</p>}
-                    <div className="flex items-center justify-between mt-2">
-                      <div className="flex gap-2">
-                        <span className="flex items-center gap-0.5 text-xs" style={{ color: "#A8967E" }}>
-                          <ThumbsUp className="w-3 h-3" />{fmtNum(p.likes)}
-                        </span>
-                        <span className="flex items-center gap-0.5 text-xs" style={{ color: "#A8967E" }}>
-                          <MessageCircle className="w-3 h-3" />{fmtNum(p.comments)}
-                        </span>
-                      </div>
-                      {p.engRate != null && (
-                        <span className="text-xs font-bold" style={{ color: p.engRate >= 3 ? GREEN : AMBER }}>
-                          {p.engRate}% ER
-                        </span>
+
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} posts</p>
+              <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
+                {(["compact", "detailed"] as const).map(v => (
+                  <button key={v} type="button" onClick={() => setListView(v)}
+                    className="px-3 py-1 rounded-md text-xs font-bold transition-all"
+                    style={listView === v ? { backgroundColor: IG, color: "white" } : { color: "#78614E" }}>
+                    {v === "compact" ? "Mai puțin" : "Mai mult"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-xl overflow-hidden" style={card}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#78614E" }}>
+                      <th className="text-left px-3 py-2 font-bold">Post</th>
+                      <th className="text-right px-3 py-2 font-bold"><ThumbsUp className="w-3 h-3 inline mr-1" />Likes</th>
+                      <th className="text-right px-3 py-2 font-bold"><MessageCircle className="w-3 h-3 inline mr-1" />Comm.</th>
+                      <th className="text-right px-3 py-2 font-bold">ER</th>
+                      {listView === "detailed" && (
+                        <>
+                          <th className="text-left px-3 py-2 font-bold">Tip</th>
+                          <th className="text-right px-3 py-2 font-bold"><Eye className="w-3 h-3 inline mr-1" />Views</th>
+                          <th className="text-left px-3 py-2 font-bold">Caption</th>
+                          <th className="text-right px-3 py-2 font-bold">Postat</th>
+                        </>
                       )}
-                    </div>
-                  </div>
-                </a>
-              ))}
+                      <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {results.posts.map((p: any, i: number) => {
+                      const isOpen = !!expandedRows[i];
+                      const erColor = p.engRate != null && p.engRate >= 3 ? GREEN : AMBER;
+                      return (
+                        <React.Fragment key={i}>
+                          <tr style={{ borderTop: "1px solid rgba(245,215,160,0.18)" }}>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {p.thumbnail
+                                  ? <img src={p.thumbnail} alt="" className="w-10 h-10 rounded object-cover flex-shrink-0" />
+                                  : <div className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "rgba(225,48,108,0.08)" }}>
+                                      <Instagram className="w-4 h-4" style={{ color: IG }} />
+                                    </div>}
+                                <div className="min-w-0">
+                                  <p className="font-bold truncate" style={{ color: IG }}>@{p.ownerUsername || "—"}</p>
+                                  {listView === "compact" && p.caption && (
+                                    <p className="text-[10px] truncate" style={{ color: "#A8967E" }}>{p.caption.slice(0, 40)}…</p>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: "#292524" }}>{fmtNum(p.likes)}</td>
+                            <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(p.comments)}</td>
+                            <td className="px-3 py-2 text-right font-bold tabular-nums" style={{ color: erColor }}>{p.engRate != null ? `${p.engRate}%` : "—"}</td>
+                            {listView === "detailed" && (
+                              <>
+                                <td className="px-3 py-2" style={{ color: "#78614E" }}>{p.type || "—"}</td>
+                                <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{p.videoViewCount > 0 ? fmtNum(p.videoViewCount) : "—"}</td>
+                                <td className="px-3 py-2 max-w-xs">
+                                  <p className="line-clamp-2" style={{ color: "#78614E" }}>{p.caption || "—"}</p>
+                                </td>
+                                <td className="px-3 py-2 text-right" style={{ color: "#C4AA8A" }}>{p.timestamp ? timeAgo(p.timestamp) : "—"}</td>
+                              </>
+                            )}
+                            <td className="px-3 py-2 text-right">
+                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [i]: !s[i] }))}
+                                className="inline-flex items-center gap-0.5 font-semibold" style={{ color: IG }}>
+                                {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                {isOpen ? "Mai puțin" : "Mai mult"}
+                              </button>
+                            </td>
+                          </tr>
+                          {isOpen && (
+                            <tr style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
+                              <td colSpan={listView === "detailed" ? 9 : 5} className="px-4 py-3">
+                                <div className="space-y-1">
+                                  {p.caption && <p style={{ color: "#292524" }}>{p.caption}</p>}
+                                  {p.hashtags?.length > 0 && (
+                                    <p style={{ color: "#A8967E" }}>{p.hashtags.map((h: string) => `#${h}`).join(" ")}</p>
+                                  )}
+                                  <a href={p.url || `https://www.instagram.com/p/${p.shortCode}/`} target="_blank" rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 font-semibold" style={{ color: IG }}>
+                                    <ExternalLink className="w-3 h-3" />Deschide pe Instagram
+                                  </a>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
@@ -496,69 +612,219 @@ export default function ResearchPage() {
         {/* ── TIKTOK ── */}
         {!loading && results && tab === "tiktok" && (
           <div className="space-y-3">
-            <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} videos</p>
-            {results.videos.map((v: any, i: number) => (
-              <div key={i} className="rounded-xl p-4 flex gap-4" style={card}>
-                {v.cover && <img src={v.cover} alt="" className="w-20 h-28 rounded-lg object-cover flex-shrink-0" />}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold" style={{ color: "#292524" }}>@{v.author}</p>
-                  {v.authorFollowers > 0 && <p className="text-xs" style={{ color: "#A8967E" }}>{fmtNum(v.authorFollowers)} followers</p>}
-                  {v.description && <p className="text-xs mt-1 line-clamp-2" style={{ color: "#78614E" }}>{v.description}</p>}
-                  <div className="flex gap-4 mt-2">
-                    <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: "#292524" }}>
-                      <Eye className="w-3 h-3" />{fmtNum(v.plays)}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                      <ThumbsUp className="w-3 h-3" />{fmtNum(v.likes)}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                      <Share2 className="w-3 h-3" />{fmtNum(v.shares)}
-                    </span>
-                  </div>
-                  {v.music && <p className="text-xs mt-1" style={{ color: "#A8967E" }}>♪ {v.music.name} — {v.music.author}</p>}
-                </div>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} videos</p>
+              <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
+                {(["compact", "detailed"] as const).map(v => (
+                  <button key={v} type="button" onClick={() => setListView(v)}
+                    className="px-3 py-1 rounded-md text-xs font-bold transition-all"
+                    style={listView === v
+                      ? { backgroundColor: TT, color: "#FFF8F0" }
+                      : { color: "#78614E" }}>
+                    {v === "compact" ? "Mai puțin" : "Mai mult"}
+                  </button>
+                ))}
               </div>
-            ))}
+            </div>
+
+            <div className="rounded-xl overflow-hidden" style={card}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#78614E" }}>
+                      <th className="text-left px-3 py-2 font-bold">Autor</th>
+                      <th className="text-right px-3 py-2 font-bold"><Eye className="w-3 h-3 inline mr-1" />Views</th>
+                      <th className="text-right px-3 py-2 font-bold"><ThumbsUp className="w-3 h-3 inline mr-1" />Likes</th>
+                      <th className="text-right px-3 py-2 font-bold"><Share2 className="w-3 h-3 inline mr-1" />Shares</th>
+                      {listView === "detailed" && (
+                        <>
+                          <th className="text-right px-3 py-2 font-bold"><MessageCircle className="w-3 h-3 inline mr-1" />Comm.</th>
+                          <th className="text-right px-3 py-2 font-bold">Followers</th>
+                          <th className="text-left px-3 py-2 font-bold">Descriere</th>
+                          <th className="text-left px-3 py-2 font-bold">Sunet</th>
+                          <th className="text-right px-3 py-2 font-bold">Postat</th>
+                        </>
+                      )}
+                      <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {results.videos.map((v: any, i: number) => {
+                      const isOpen = !!expandedRows[i];
+                      return (
+                        <React.Fragment key={i}>
+                          <tr style={{ borderTop: "1px solid rgba(245,215,160,0.18)" }}>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {v.cover && <img src={v.cover} alt="" className="w-9 h-12 rounded object-cover flex-shrink-0" />}
+                                <div className="min-w-0">
+                                  <p className="font-bold truncate" style={{ color: "#292524" }}>@{v.author}</p>
+                                  {listView === "compact" && v.authorFollowers > 0 && (
+                                    <p className="text-[10px]" style={{ color: "#A8967E" }}>{fmtNum(v.authorFollowers)} followers</p>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: "#292524" }}>{fmtNum(v.plays)}</td>
+                            <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(v.likes)}</td>
+                            <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(v.shares)}</td>
+                            {listView === "detailed" && (
+                              <>
+                                <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(v.comments)}</td>
+                                <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{v.authorFollowers > 0 ? fmtNum(v.authorFollowers) : "—"}</td>
+                                <td className="px-3 py-2 max-w-xs">
+                                  <p className="line-clamp-2" style={{ color: "#78614E" }}>{v.description || "—"}</p>
+                                </td>
+                                <td className="px-3 py-2 max-w-[12rem]">
+                                  {v.music ? <p className="truncate" style={{ color: "#A8967E" }}>♪ {v.music.name}</p> : <span style={{ color: "#C4AA8A" }}>—</span>}
+                                </td>
+                                <td className="px-3 py-2 text-right" style={{ color: "#C4AA8A" }}>{v.createTime ? timeAgo(v.createTime) : "—"}</td>
+                              </>
+                            )}
+                            <td className="px-3 py-2 text-right">
+                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [i]: !s[i] }))}
+                                className="inline-flex items-center gap-0.5 font-semibold" style={{ color: TT }}>
+                                {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                {isOpen ? "Mai puțin" : "Mai mult"}
+                              </button>
+                            </td>
+                          </tr>
+                          {isOpen && (
+                            <tr style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
+                              <td colSpan={listView === "detailed" ? 10 : 6} className="px-4 py-3">
+                                <div className="space-y-1">
+                                  {v.description && <p style={{ color: "#292524" }}>{v.description}</p>}
+                                  {v.music && <p style={{ color: "#A8967E" }}>♪ {v.music.name} — {v.music.author}</p>}
+                                  {v.hashtags?.length > 0 && (
+                                    <p style={{ color: "#A8967E" }}>{v.hashtags.map((h: string) => `#${h}`).join(" ")}</p>
+                                  )}
+                                  <div className="flex gap-4 pt-1">
+                                    {v.duration > 0 && <span style={{ color: "#A8967E" }}>{v.duration}s</span>}
+                                    {v.url && (
+                                      <a href={v.url} target="_blank" rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 font-semibold" style={{ color: TT }}>
+                                        <ExternalLink className="w-3 h-3" />Deschide pe TikTok
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
 
         {/* ── FACEBOOK ── */}
         {!loading && results && tab === "facebook" && (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {results.pageInfo && (
               <div className="rounded-xl p-4" style={{ ...card, borderColor: `${FB}30` }}>
                 <p className="font-bold" style={{ color: "#292524" }}>{results.pageInfo.name}</p>
                 {results.pageInfo.followers > 0 && <p className="text-xs font-semibold mt-0.5" style={{ color: FB }}>{fmtNum(results.pageInfo.followers)} followers</p>}
               </div>
             )}
-            <div className="space-y-3">
-              {results.posts.map((p: any, i: number) => (
-                <div key={i} className="rounded-xl p-4" style={card}>
-                  <div className="flex gap-4">
-                    {p.media && <img src={p.media} alt="" className="w-20 h-16 rounded-lg object-cover flex-shrink-0" />}
-                    <div className="flex-1 min-w-0">
-                      {p.text && <p className="text-sm line-clamp-3" style={{ color: "#292524" }}>{p.text}</p>}
-                      <div className="flex gap-4 mt-2">
-                        <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: FB }}>
-                          <ThumbsUp className="w-3 h-3" />{fmtNum(p.likes)}
-                        </span>
-                        <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                          <MessageCircle className="w-3 h-3" />{fmtNum(p.comments)}
-                        </span>
-                        <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                          <Share2 className="w-3 h-3" />{fmtNum(p.shares)}
-                        </span>
-                        {p.url && (
-                          <a href={p.url} target="_blank" rel="noopener noreferrer"
-                            className="ml-auto flex items-center gap-1 text-xs font-semibold" style={{ color: FB }}>
-                            <ExternalLink className="w-3 h-3" />View
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} posts</p>
+              <div className="flex gap-1 p-1 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)", border: "1px solid rgba(245,215,160,0.25)" }}>
+                {(["compact", "detailed"] as const).map(v => (
+                  <button key={v} type="button" onClick={() => setListView(v)}
+                    className="px-3 py-1 rounded-md text-xs font-bold transition-all"
+                    style={listView === v ? { backgroundColor: FB, color: "white" } : { color: "#78614E" }}>
+                    {v === "compact" ? "Mai puțin" : "Mai mult"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-xl overflow-hidden" style={card}>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#78614E" }}>
+                      <th className="text-left px-3 py-2 font-bold">Post</th>
+                      <th className="text-right px-3 py-2 font-bold"><ThumbsUp className="w-3 h-3 inline mr-1" />Likes</th>
+                      <th className="text-right px-3 py-2 font-bold"><MessageCircle className="w-3 h-3 inline mr-1" />Comm.</th>
+                      <th className="text-right px-3 py-2 font-bold"><Share2 className="w-3 h-3 inline mr-1" />Shares</th>
+                      {listView === "detailed" && (
+                        <>
+                          <th className="text-right px-3 py-2 font-bold">Reacții</th>
+                          <th className="text-left px-3 py-2 font-bold">Text</th>
+                          <th className="text-right px-3 py-2 font-bold">Postat</th>
+                        </>
+                      )}
+                      <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {results.posts.map((p: any, i: number) => {
+                      const isOpen = !!expandedRows[i];
+                      const reactionsTotal = p.reactions && typeof p.reactions === "object"
+                        ? Object.values(p.reactions).reduce((a: number, b: any) => a + (Number(b) || 0), 0)
+                        : 0;
+                      return (
+                        <React.Fragment key={i}>
+                          <tr style={{ borderTop: "1px solid rgba(245,215,160,0.18)" }}>
+                            <td className="px-3 py-2">
+                              <div className="flex items-center gap-2 min-w-0">
+                                {p.media
+                                  ? <img src={p.media} alt="" className="w-10 h-10 rounded object-cover flex-shrink-0" />
+                                  : <div className="w-10 h-10 rounded flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "rgba(24,119,242,0.08)" }}>
+                                      <Facebook className="w-4 h-4" style={{ color: FB }} />
+                                    </div>}
+                                <div className="min-w-0">
+                                  <p className="line-clamp-2" style={{ color: "#292524" }}>{p.text || "—"}</p>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: FB }}>{fmtNum(p.likes)}</td>
+                            <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(p.comments)}</td>
+                            <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(p.shares)}</td>
+                            {listView === "detailed" && (
+                              <>
+                                <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{reactionsTotal > 0 ? fmtNum(reactionsTotal) : "—"}</td>
+                                <td className="px-3 py-2 max-w-xs">
+                                  <p className="line-clamp-2" style={{ color: "#78614E" }}>{p.text || "—"}</p>
+                                </td>
+                                <td className="px-3 py-2 text-right" style={{ color: "#C4AA8A" }}>{p.time ? timeAgo(p.time) : "—"}</td>
+                              </>
+                            )}
+                            <td className="px-3 py-2 text-right">
+                              <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [i]: !s[i] }))}
+                                className="inline-flex items-center gap-0.5 font-semibold" style={{ color: FB }}>
+                                {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                                {isOpen ? "Mai puțin" : "Mai mult"}
+                              </button>
+                            </td>
+                          </tr>
+                          {isOpen && (
+                            <tr style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
+                              <td colSpan={listView === "detailed" ? 8 : 5} className="px-4 py-3">
+                                <div className="space-y-1">
+                                  {p.text && <p style={{ color: "#292524" }}>{p.text}</p>}
+                                  {p.url && (
+                                    <a href={p.url} target="_blank" rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 font-semibold" style={{ color: FB }}>
+                                      <ExternalLink className="w-3 h-3" />Deschide pe Facebook
+                                    </a>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         )}
