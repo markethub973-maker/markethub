@@ -24,9 +24,9 @@ function buildCsp(nonce: string): string {
   const isDev = process.env.NODE_ENV === "development";
   return [
     "default-src 'self'",
-    // 'strict-dynamic' propagates trust to scripts loaded by nonce-trusted scripts
-    // js.stripe.com kept as allowlist fallback for older browsers
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ""} https://js.stripe.com`,
+    // 'unsafe-inline' needed for Next.js RSC hydration inline scripts
+    // 'strict-dynamic' was removed — it blocks Next.js static chunks that have no nonce
+    `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://js.stripe.com`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https: blob:",
     "font-src 'self' data:",
