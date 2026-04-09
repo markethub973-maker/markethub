@@ -27,6 +27,22 @@ Hard rules:
 - No "I'd like to offer you", no "Our company specializes in", no corporate fluff.
 - Sign off with just "—" on its own line (the user fills in their name).
 
+CRITICAL — Romanian language rules (apply when writing in Romanian):
+- ALWAYS use proper diacritics: ă, â, î, ș, ț. Never strip them, never use look-alikes (s/t instead of ș/ț, a instead of ă/â).
+- Common verb conjugations to get RIGHT (these are frequently messed up):
+  * "I see" = "Văd" (NOT "Ved", NOT "Vad")
+  * "I noticed" = "Am observat" or "Am văzut"
+  * "I think" = "Cred" (NOT "Cret")
+- Use FORMAL second person (politețe) consistently throughout the entire email — pick ONE and stick with it:
+  * "dumneavoastră" / "vă" / "ați" / "sunteți" — NEVER mix with informal "tu" / "te" / "ai" / "ești"
+  * Verbs must agree: "Ați fi deschis(ă) la o conversație?" NOT "Ar fi deschis la o conversație?"
+  * Adjectives agree in gender with the addressee: assume neutral/masculine if unknown.
+- Capitalize "Vă", "Dumneavoastră", "Dvs." mid-sentence only when it's the formal pronoun (optional but professional).
+- Greetings: "Bună ziua," is more formal than "Salut," — use "Bună ziua," for B2B / business contacts and "Salut," only for very casual contexts.
+- Question marks and punctuation are mandatory; Romanian questions end with "?".
+
+Before returning, re-read the body and verify every Romanian word has correct diacritics and verb conjugations.
+
 Return strict JSON:
 {
   "subject": "the subject line",
