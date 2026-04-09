@@ -2,6 +2,7 @@
 
 import Header from "@/components/layout/Header";
 import OnboardingChecklist from "@/components/ui/OnboardingChecklist";
+import ProfitStatsCard from "@/components/ui/ProfitStatsCard";
 import StatCard from "@/components/ui/StatCard";
 import PlatformBadge from "@/components/ui/PlatformBadge";
 import ViewsChart from "@/components/charts/ViewsChart";
@@ -31,6 +32,7 @@ export default function DashboardPage() {
   const [fbData, setFbData] = useState<any>(null);
   const [fbError, setFbError] = useState<string | null>(null);
   const [ytVideos, setYtVideos] = useState<any[]>([]);
+  const [premiumActionsUsed, setPremiumActionsUsed] = useState(0);
   const [sortCol, setSortCol] = useState<"views" | "likes" | "er" | "publishedAt">("views");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
 
@@ -73,6 +75,11 @@ export default function DashboardPage() {
     fetch("/api/youtube/trending?region=RO&max=12")
       .then(r => r.json())
       .then(d => { if (Array.isArray(d)) setYtVideos(d); })
+      .catch(() => {});
+
+    fetch("/api/profile/stats")
+      .then(r => r.json())
+      .then(d => { if (d.premium_actions_used != null) setPremiumActionsUsed(d.premium_actions_used); })
       .catch(() => {});
   }, []);
 
@@ -129,6 +136,7 @@ export default function DashboardPage() {
 
       <div className="p-6 space-y-6">
         <OnboardingChecklist />
+        <ProfitStatsCard actionsCount={premiumActionsUsed} />
         {/* Stats Row — computed from YouTube trending data */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
