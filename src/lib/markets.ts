@@ -258,13 +258,21 @@ export const RO_LANGUAGE_RULES = `CRITICAL — Romanian language rules (apply to
   * "I see" = "Văd" (NEVER "Ved", NEVER "Vad")
   * "I noticed" = "Am observat" or "Am văzut"
   * "I think" = "Cred" (NEVER "Cret")
+- GENDER-AWARE marriage verbs (one of the most common AI mistakes — be very careful):
+  * For a MAN getting married: "te însori" / "se însoară" / "vă însurați" (NEVER "te măriți", NEVER "te măritezi")
+  * For a WOMAN getting married: "te măriți" / "se mărită" / "vă măritați" (NEVER "te măritezi" — that word DOES NOT EXIST in Romanian)
+  * Gender-neutral safe form (use when name/gender is unclear): "te căsătorești" / "se căsătorește" / "vă căsătoriți" — works for both, NEVER wrong
+  * Detect gender from the lead's name when possible (Mihai/Andrei/Cristian/Bogdan/Vlad/Răzvan/Alexandru/Ionuț/George/Florin = M; Maria/Ana/Elena/Ioana/Andreea/Bianca/Cristina/Diana/Alexandra = F). If uncertain, use the neutral "te căsătorești" form — never guess.
+  * "Mariaj" is a noun, not a verb — never conjugate it.
 - Use FORMAL second person (politețe) consistently throughout the entire text — pick ONE register and stick with it:
   * "dumneavoastră" / "vă" / "ați" / "sunteți" — NEVER mix with informal "tu" / "te" / "ai" / "ești"
   * Verbs must agree with the formal pronoun: "Ați fi deschis(ă) la o conversație?" NOT "Ar fi deschis la o conversație?"
   * Adjectives agree in gender with the addressee: assume neutral/masculine if unknown.
+  * EXCEPTION — casual platforms (Reddit, Facebook Groups for couples planning weddings/baptisms, Instagram DM): the informal "tu/te" register is more natural. Pick the register that matches the platform context, then stick with it.
+- DO NOT INVENT music/tech/marketing jargon. When describing the offer to a prospect, use the EXACT terms the user provided in the offer description. NEVER invent compound adjectives like "live bilingv", "live trilingv", "audio premium", "experiență multilingvă" if those words are not in the offer description. Use the user's own phrasing verbatim. Example: if the offer says "cover internațional, cover românesc, muzică grecească", write exactly "cover internațional, cover românesc și un program grecesc" — not "live bilingv" or "muzică multilingvă". Similarly, do not paraphrase technical equipment names: if the offer says "mașină fum greu (gheață carbonică)", say "mașină de fum greu cu gheață carbonică", not "efecte ceață premium".
 - Greetings: "Bună ziua," is the formal B2B greeting. Use "Salut," only for explicitly casual contexts.
 - Question marks and Romanian punctuation are mandatory.
-Before returning, re-read every Romanian sentence and verify diacritics + verb agreement.`;
+Before returning, re-read every Romanian sentence and verify: (1) diacritics, (2) verb agreement, (3) gender-correct marriage verbs (or neutral "căsătorești"), (4) zero invented jargon — only the user's own phrasing for offer details.`;
 
 /**
  * Builds the language enforcement block to inject in every system prompt.
