@@ -272,7 +272,6 @@ export async function POST(req: NextRequest) {
       ALTER TABLE profiles ADD COLUMN IF NOT EXISTS registration_ip TEXT DEFAULT NULL;
       ALTER TABLE profiles ADD COLUMN IF NOT EXISTS normalized_email TEXT DEFAULT NULL;
       ALTER TABLE profiles ADD COLUMN IF NOT EXISTS device_fingerprint TEXT DEFAULT NULL;
-      ALTER TABLE profiles ADD COLUMN IF NOT EXISTS tokens_used_month INTEGER DEFAULT 0;
       CREATE INDEX IF NOT EXISTS idx_profiles_ip ON profiles(registration_ip);
       CREATE INDEX IF NOT EXISTS idx_profiles_norm_email ON profiles(normalized_email);
       CREATE INDEX IF NOT EXISTS idx_profiles_device ON profiles(device_fingerprint);

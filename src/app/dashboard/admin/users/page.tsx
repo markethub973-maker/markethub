@@ -24,7 +24,6 @@ interface User {
   registration_ip: string | null;
   normalized_email: string | null;
   device_fingerprint: string | null;
-  tokens_used_month: number;
   monthly_revenue: number;
   ai_cost_month: number;
   net_per_user: number;
@@ -398,9 +397,6 @@ export default function AdminUsersPage() {
                       {/* AI cost */}
                       <td className="px-4 py-3 text-xs" style={{ color: "#F59E0B" }}>
                         {u.ai_cost_month > 0 ? `$${u.ai_cost_month.toFixed(3)}` : "—"}
-                        {u.tokens_used_month > 0 && (
-                          <div style={{ color: "#A8967E" }}>{u.tokens_used_month.toLocaleString()} tok</div>
-                        )}
                       </td>
 
                       {/* Net */}

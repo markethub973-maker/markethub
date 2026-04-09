@@ -36,7 +36,7 @@ export async function GET(req: NextRequest) {
       `id, email, name, full_name, subscription_plan, subscription_status,
        trial_expires_at, is_admin, is_blocked, blocked_reason,
        registration_ip, normalized_email,
-       tokens_used_month, created_at`
+       created_at`
     )
     .order("created_at", { ascending: false });
 
@@ -87,7 +87,6 @@ export async function GET(req: NextRequest) {
       blocked_reason: p.blocked_reason || null,
       registration_ip: p.registration_ip || null,
       normalized_email: p.normalized_email || null,
-      tokens_used_month: p.tokens_used_month || 0,
       monthly_revenue: planPrice,
       ai_cost_month: parseFloat(aiCost.toFixed(4)),
       net_per_user: parseFloat((planPrice - aiCost).toFixed(4)),
