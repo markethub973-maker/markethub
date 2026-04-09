@@ -355,7 +355,7 @@ CRITICAL INSTRUCTIONS:
     return safeAnthropic(() =>
       anthropic.messages.create({
         model:      MODEL,
-        max_tokens: 1800,
+        max_tokens: 3000,
         system:     SYSTEM,
         messages:   [
           { role: "user",      content: prompt + extraHint },
