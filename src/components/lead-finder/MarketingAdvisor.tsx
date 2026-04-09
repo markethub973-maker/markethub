@@ -25,6 +25,11 @@ interface Props {
   location: string;
   budgetRange?: string;
   context?: Record<string, unknown>;
+  /** Structured market context — when provided, the API will force the
+   *  output language and bias platform recommendations toward this market. */
+  country?: string;
+  contentLanguage?: string;
+  marketScope?: string;
 }
 
 const STEP_LABELS: Record<number, string> = {
@@ -43,7 +48,7 @@ const STEP_HINTS: Record<number, string> = {
   5: "Which channel, when to send and what format to use",
 };
 
-export default function MarketingAdvisor({ step, offerType, offerDescription, audienceType, location, budgetRange, context }: Props) {
+export default function MarketingAdvisor({ step, offerType, offerDescription, audienceType, location, budgetRange, context, country, contentLanguage, marketScope }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<AdvisorResult | null>(null);
@@ -68,6 +73,9 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
           budget_range: budgetRange,
           context,
           question: q || undefined,
+          country,
+          content_language: contentLanguage,
+          market_scope: marketScope,
         }),
       });
       const data = await res.json();

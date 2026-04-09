@@ -8,6 +8,12 @@ import CostMeter from "@/components/lead-finder/CostMeter";
 import AdjacentServicesPanel from "@/components/lead-finder/AdjacentServicesPanel";
 import CampaignStudio from "@/components/lead-finder/CampaignStudio";
 import {
+  COUNTRIES, CONTINENTS, LANGUAGES,
+  buildLocationLabel, getCountryByCode, getContinentByCode, getLanguageByCode,
+  countriesForContinent,
+  type MarketScope,
+} from "@/lib/markets";
+import {
   Wand2, Search, Users, Globe, Zap, ArrowRight, ArrowLeft,
   Check, X, Plus, Loader2, Star, Flame, Snowflake, Copy,
   MessageSquare, RefreshCw, MapPin, Building2, User, Package,
@@ -214,9 +220,25 @@ export default function LeadFinderPage() {
   const [offerType, setOfferType] = useState("service");
   const [offerText, setOfferText] = useState("");
 
-  // Step 2 — Audience
+  // Step 2 — Audience + structured target market
   const [audienceType, setAudienceType] = useState("both");
-  const [location, setLocation] = useState("");
+  const [marketScope, setMarketScope] = useState<MarketScope>("country");
+  const [marketCountry, setMarketCountry] = useState<string>("RO");
+  const [marketCountries, setMarketCountries] = useState<string[]>([]);
+  const [marketContinent, setMarketContinent] = useState<string>("EU");
+  const [marketRegion, setMarketRegion] = useState<string>("");
+  // Auto-derive language from country selection unless the user overrides it.
+  const [contentLanguage, setContentLanguage] = useState<string>("ro");
+  const [languageOverridden, setLanguageOverridden] = useState(false);
+  // Free-text label kept in sync with the structured selection — used by
+  // legacy components and the existing API contract that still ships `location`.
+  const location = buildLocationLabel({
+    scope: marketScope,
+    country: marketCountry,
+    countries: marketCountries,
+    continent: marketContinent,
+    region: marketRegion,
+  });
   const [budgetRange, setBudgetRange] = useState("mid");
   // Campaign value — for value-based platform fee (Pro+)
   const [campaignValue, setCampaignValue] = useState("");
@@ -266,6 +288,49 @@ export default function LeadFinderPage() {
   const [copiedCampaign, setCopiedCampaign] = useState<string | null>(null);
   const [showContactForm, setShowContactForm] = useState(false);
 
+  // Auto-update content language when the structured market changes — but
+  // only if the user hasn't explicitly overridden it via the language pills.
+  const pickCountry = (code: string) => {
+    setMarketCountry(code);
+    if (!languageOverridden) {
+      const lang = getCountryByCode(code)?.language;
+      if (lang) setContentLanguage(lang);
+    }
+  };
+  const pickContinent = (code: string) => {
+    setMarketContinent(code);
+    if (!languageOverridden) {
+      const def = getContinentByCode(code)?.defaultLanguage;
+      if (def) setContentLanguage(def);
+    }
+  };
+  const pickScope = (scope: MarketScope) => {
+    setMarketScope(scope);
+    if (!languageOverridden) {
+      if (scope === "country") {
+        const lang = getCountryByCode(marketCountry)?.language;
+        if (lang) setContentLanguage(lang);
+      } else if (scope === "continent") {
+        const def = getContinentByCode(marketContinent)?.defaultLanguage;
+        if (def) setContentLanguage(def);
+      } else if (scope === "worldwide") {
+        setContentLanguage("en");
+      }
+    }
+  };
+  const toggleMarketCountry = (code: string) =>
+    setMarketCountries(prev => prev.includes(code) ? prev.filter(c => c !== code) : [...prev, code]);
+
+  // Bundle of fields all 4 AI endpoints accept — keeps call sites short.
+  const marketPayload = () => ({
+    market_scope: marketScope,
+    country: marketScope === "country" ? marketCountry : undefined,
+    countries: marketScope === "multi_country" ? marketCountries : undefined,
+    continent: marketScope === "continent" ? marketContinent : undefined,
+    region: marketRegion || undefined,
+    content_language: contentLanguage,
+  });
+
   const handleAnalyze = async () => {
     setAnalyzing(true);
     setAnalyzeError("");
@@ -273,7 +338,7 @@ export default function LeadFinderPage() {
     const res = await fetch("/api/find-clients/analyze", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-cost-session": sessionId },
-      body: JSON.stringify({ offer_type: offerType, offer_description: offerText, audience_type: audienceType, location, budget_range: budgetRange }),
+      body: JSON.stringify({ offer_type: offerType, offer_description: offerText, audience_type: audienceType, location, budget_range: budgetRange, ...marketPayload() }),
     });
     const data = await res.json();
     setAnalyzing(false);
@@ -385,7 +450,7 @@ export default function LeadFinderPage() {
     const res = await fetch("/api/find-clients/message", {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-cost-session": sessionId },
-      body: JSON.stringify({ lead, offer_summary: suggestion?.offer_summary, outreach_hook: suggestion?.outreach_hook }),
+      body: JSON.stringify({ lead, offer_summary: suggestion?.offer_summary, outreach_hook: suggestion?.outreach_hook, ...marketPayload() }),
     });
     const data = await res.json();
     setGeneratingMsg(false);
@@ -428,6 +493,7 @@ export default function LeadFinderPage() {
           whatsapp: contactWhatsapp,
         },
         targeting: { location, event_types: campaignEventTypes, audience_type: audienceType },
+        ...marketPayload(),
       }),
     });
     const data = await res.json();
@@ -500,7 +566,9 @@ export default function LeadFinderPage() {
             location={location} budgetRange={budgetRange} leadsCount={0} />
           {offerText.trim().length > 10 && (
             <MarketingAdvisor step={1} offerType={offerType} offerDescription={offerText}
-              audienceType={audienceType} location={location} budgetRange={budgetRange} />
+              audienceType={audienceType} location={location} budgetRange={budgetRange}
+              country={marketScope === "country" ? marketCountry : undefined}
+              contentLanguage={contentLanguage} marketScope={marketScope} />
           )}
           </div>
         )}
@@ -530,12 +598,126 @@ export default function LeadFinderPage() {
                 ))}
               </div>
             </div>
-            <div>
-              <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Target location</p>
-              <input value={location} onChange={e => setLocation(e.target.value)}
-                placeholder="e.g. London, UK or Europe — leave empty for global"
-                className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
-                style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+            {/* ── Target market — structured selector ───────────────────── */}
+            <div className="space-y-3">
+              <p className="text-xs font-bold" style={{ color: "#78614E" }}>Target market</p>
+              {/* Scope picker */}
+              <div className="flex gap-2 flex-wrap">
+                {([
+                  { id: "country",       label: "Single country",  icon: "🏳️" },
+                  { id: "multi_country", label: "Multiple countries", icon: "🌐" },
+                  { id: "continent",     label: "Whole continent", icon: "🗺️" },
+                  { id: "worldwide",     label: "Worldwide",       icon: "🌍" },
+                ] as const).map(({ id, label, icon }) => (
+                  <button key={id} type="button" onClick={() => pickScope(id as MarketScope)}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all"
+                    style={marketScope === id
+                      ? { backgroundColor: `${AMBER}15`, color: AMBER, border: `2px solid ${AMBER}` }
+                      : { backgroundColor: "rgba(245,215,160,0.06)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
+                    <span>{icon}</span>{label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Single country */}
+              {marketScope === "country" && (
+                <div className="space-y-2">
+                  <select aria-label="Target country" title="Target country"
+                    value={marketCountry} onChange={e => pickCountry(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
+                    style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }}>
+                    {COUNTRIES.map(c => (
+                      <option key={c.code} value={c.code}>{c.flag} {c.name} {c.nativeName && c.nativeName !== c.name ? `(${c.nativeName})` : ""}</option>
+                    ))}
+                  </select>
+                  <input value={marketRegion} onChange={e => setMarketRegion(e.target.value)}
+                    placeholder="Optional — city, region, or area (e.g. București, Sector 2)"
+                    className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none"
+                    style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                </div>
+              )}
+
+              {/* Multi-country */}
+              {marketScope === "multi_country" && (
+                <div className="space-y-2">
+                  <p className="text-xs" style={{ color: "#A8967E" }}>Pick the countries you want to reach (tap to toggle):</p>
+                  <div className="flex flex-wrap gap-1.5 max-h-44 overflow-y-auto p-2 rounded-xl"
+                    style={{ border: `1px solid ${AMBER}20`, backgroundColor: "rgba(245,215,160,0.04)" }}>
+                    {COUNTRIES.map(c => {
+                      const on = marketCountries.includes(c.code);
+                      return (
+                        <button key={c.code} type="button" onClick={() => toggleMarketCountry(c.code)}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+                          style={on
+                            ? { backgroundColor: `${AMBER}20`, color: AMBER, border: `1px solid ${AMBER}50` }
+                            : { backgroundColor: "rgba(245,215,160,0.06)", color: "#78614E", border: "1px solid rgba(245,215,160,0.15)" }}>
+                          <span>{c.flag}</span>{c.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {marketCountries.length > 0 && (
+                    <p className="text-xs font-semibold" style={{ color: GREEN }}>
+                      ✓ {marketCountries.length} {marketCountries.length === 1 ? "country" : "countries"} selected
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Continent */}
+              {marketScope === "continent" && (
+                <select aria-label="Target continent" title="Target continent"
+                  value={marketContinent} onChange={e => pickContinent(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
+                  style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }}>
+                  {CONTINENTS.map(c => (
+                    <option key={c.code} value={c.code}>{c.flag} {c.name}</option>
+                  ))}
+                </select>
+              )}
+
+              {/* Worldwide */}
+              {marketScope === "worldwide" && (
+                <p className="text-xs italic" style={{ color: "#A8967E" }}>
+                  Targeting global audience — recommendations and copy will use the language picked below.
+                </p>
+              )}
+
+              {/* Content language — auto-derived, with override */}
+              <div className="rounded-xl p-3 space-y-2"
+                style={{ backgroundColor: "rgba(245,215,160,0.05)", border: "1px solid rgba(245,215,160,0.2)" }}>
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <p className="text-xs font-bold" style={{ color: "#78614E" }}>
+                    Content language {languageOverridden ? "(manual)" : "(auto from market)"}
+                  </p>
+                  {languageOverridden && (
+                    <button type="button"
+                      onClick={() => {
+                        setLanguageOverridden(false);
+                        const auto =
+                          marketScope === "country"   ? getCountryByCode(marketCountry)?.language :
+                          marketScope === "continent" ? getContinentByCode(marketContinent)?.defaultLanguage :
+                          "en";
+                        if (auto) setContentLanguage(auto);
+                      }}
+                      className="text-xs underline" style={{ color: AMBER }}>
+                      Reset to auto
+                    </button>
+                  )}
+                </div>
+                <select aria-label="Content language" title="Content language"
+                  value={contentLanguage}
+                  onChange={e => { setContentLanguage(e.target.value); setLanguageOverridden(true); }}
+                  className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
+                  style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }}>
+                  {LANGUAGES.map(l => (
+                    <option key={l.code} value={l.code}>{l.nativeName} — {l.name}</option>
+                  ))}
+                </select>
+                <p className="text-xs" style={{ color: "#A8967E" }}>
+                  All AI-generated copy (sources, message, campaign, APEX advisor) will be written in {getLanguageByCode(contentLanguage)?.nativeName || "English"}.
+                </p>
+              </div>
             </div>
             <div>
               <p className="text-xs font-bold mb-2" style={{ color: "#78614E" }}>Customer budget estimate</p>
@@ -609,7 +791,9 @@ export default function LeadFinderPage() {
           <StepGuide step={2} offerType={offerType} offerText={offerText} audienceType={audienceType}
             location={location} budgetRange={budgetRange} leadsCount={0} />
           <MarketingAdvisor step={2} offerType={offerType} offerDescription={offerText}
-            audienceType={audienceType} location={location} budgetRange={budgetRange} />
+            audienceType={audienceType} location={location} budgetRange={budgetRange}
+            country={marketScope === "country" ? marketCountry : undefined}
+            contentLanguage={contentLanguage} marketScope={marketScope} />
           </div>
         )}
 
@@ -745,6 +929,8 @@ export default function LeadFinderPage() {
             </div>
           <MarketingAdvisor step={3} offerType={offerType} offerDescription={offerText}
             audienceType={audienceType} location={location} budgetRange={budgetRange}
+            country={marketScope === "country" ? marketCountry : undefined}
+            contentLanguage={contentLanguage} marketScope={marketScope}
             context={{ sources: suggestion?.sources, keywords: suggestion?.keywords }} />
           </div>
         )}
@@ -917,6 +1103,8 @@ export default function LeadFinderPage() {
             {!searching && !scoring && (
               <MarketingAdvisor step={4} offerType={offerType} offerDescription={offerText}
                 audienceType={audienceType} location={location} budgetRange={budgetRange}
+                country={marketScope === "country" ? marketCountry : undefined}
+                contentLanguage={contentLanguage} marketScope={marketScope}
                 context={{ leads_found: leads.length, hot: leads.filter(l => l.label === "hot").length }} />
             )}
           </div>
@@ -1043,6 +1231,8 @@ export default function LeadFinderPage() {
             {outreach && !generatingMsg && (
               <MarketingAdvisor step={5} offerType={offerType} offerDescription={offerText}
                 audienceType={audienceType} location={location} budgetRange={budgetRange}
+                country={marketScope === "country" ? marketCountry : undefined}
+                contentLanguage={contentLanguage} marketScope={marketScope}
                 context={{ selected_lead: selectedLead, best_platform: outreach?.best_platform }} />
             )}
 
@@ -1425,6 +1615,9 @@ export default function LeadFinderPage() {
         offerSummary={suggestion?.offer_summary}
         activeLead={selectedLead ?? undefined}
         campaignDone={!!campaign}
+        country={marketScope === "country" ? marketCountry : undefined}
+        contentLanguage={contentLanguage}
+        marketScope={marketScope}
       />
 
       {/* ── Cost Meter (visible to client) ────────────────────────────────── */}

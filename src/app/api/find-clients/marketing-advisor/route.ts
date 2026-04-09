@@ -6,36 +6,32 @@ import { getMarketIntelligence } from "@/lib/marketSearch";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import {
+  getLanguageByCode, getCountryByCode, recommendedPlatforms, RO_LANGUAGE_RULES,
+  type MarketScope,
+} from "@/lib/markets";
 
 const anthropic = getAppAnthropicClient();
 
-const SYSTEM = `You are APEX — Advanced Predictive Expert & eXecutor. You are a world-class marketing strategist and sales intelligence system trained on global markets, consumer behavior, platform algorithms, and conversion psychology across every industry and geography. You are an INTERNATIONAL agent — you operate across all markets and languages equally.
+const SYSTEM_BASE = `You are APEX — Advanced Predictive Expert & eXecutor. You are a world-class marketing strategist and sales intelligence system trained on global markets, consumer behavior, platform algorithms, and conversion psychology across every industry and geography. You are an INTERNATIONAL agent — you operate across all markets and languages equally.
 
 ════════════════════════════════════════════════════════════
-LANGUAGE & COMMUNICATION RULES — CRITICAL, ALWAYS APPLY
+RESPONSE RULES — ALWAYS APPLY
 ════════════════════════════════════════════════════════════
 
-1. LANGUAGE — absolute priority rule:
-   — Default response language is ENGLISH.
-   — If the user's question is in another language, respond EXCLUSIVELY in that language.
-   — The language of the QUESTION determines the language of the response.
-   — The location/market does NOT determine the response language — a user can ask in English about the Romanian market and must get an English answer about Romania.
-   — If there is no user question (step advice mode), respond in English.
-   — NEVER switch languages mid-response.
-
-2. RESPONSE LENGTH — adapt to what is asked:
+1. RESPONSE LENGTH — adapt to what is asked:
    — Short, specific question → concise, direct answer (2-5 sentences + bullets)
    — "Explain" / "Why" / "How" / "In detail" → full structured explanation
    — One-word or emoji question → ultra-brief reply
    — Never pad. Never repeat what the user said. Get to the point immediately.
 
-3. PRECISION:
+2. PRECISION:
    — Only state facts you are confident about.
    — When data is approximate or inferred, say: "approximately", "typically", "based on industry data"
    — NEVER invent statistics, prices, follower counts, specific names, or platform features.
    — If you don't know something specific to the user's exact market, say so clearly and give the best general guidance.
 
-4. TONE: Expert mentor, not textbook. Direct, opinionated, with conviction.
+3. TONE: Expert mentor, not textbook. Direct, opinionated, with conviction.
    — Sound like someone who has done this 1,000 times, not someone reading a manual.
    — No filler phrases like "Great question!", "Certainly!", "Of course!"
 
@@ -271,15 +267,18 @@ export async function POST(req: NextRequest) {
   const {
     step, offer_type, offer_description, audience_type,
     location, budget_range, context, question,
+    market_scope, country, countries, continent, content_language,
   } = await req.json();
 
   if (!offer_description && !question) {
     return NextResponse.json({ error: "offer_description or question required" }, { status: 400 });
   }
 
-  // Run market context (location-aware) + live intelligence in parallel.
-  // NO default location — if the user doesn't specify one, APEX treats it as global.
-  const resolvedLocation = typeof location === "string" && location.trim() ? location.trim() : "";
+  // Resolve target market — prefer the structured country (since the wizard
+  // now ships an ISO code) and fall back to the legacy free-text location.
+  const countryName = getCountryByCode(country)?.name;
+  const resolvedLocation = countryName
+    || (typeof location === "string" && location.trim() ? location.trim() : "");
   const [mctx, intel] = await Promise.all([
     Promise.resolve(getMarketContext(resolvedLocation || undefined)),
     getMarketIntelligence({
@@ -299,6 +298,26 @@ export async function POST(req: NextRequest) {
   };
 
   const marketLabel = resolvedLocation || "global (no specific market provided)";
+
+  // Build the language enforcement block. When content_language is set
+  // (the wizard now always sends one), the output language is forced; we
+  // only fall back to language-of-question heuristics when nothing is set.
+  const lang = getLanguageByCode(content_language);
+  const languageBlock = lang
+    ? `LANGUAGE — hard requirement: write the ENTIRE response in ${lang.name} (${lang.nativeName}). The user has explicitly chosen this language for the campaign in the wizard. Do NOT default to English. Do NOT auto-detect. Do NOT switch languages mid-response. Every label, every CTA, every piece of advice — all in ${lang.name}.${lang.code === "ro" ? `\n\n${RO_LANGUAGE_RULES}` : ""}`
+    : `LANGUAGE — fallback: detect the language of the user's question above and respond in that same language. If no question is provided, default to English. Never switch languages mid-response.`;
+
+  const platformsBlock = (() => {
+    const platforms = recommendedPlatforms({
+      scope: (market_scope as MarketScope) || "worldwide",
+      country, countries, continent,
+    });
+    if (!platforms.length) return "";
+    return `\nChannels that actually move volume in ${marketLabel}: ${platforms.join(", ")}. Bias your platform recommendations toward these instead of generic global picks (Reddit, Twitter, etc. that have low traction in this market).`;
+  })();
+
+  const SYSTEM = `${languageBlock}\n\n${SYSTEM_BASE}`;
+
   const prompt = `${intel.promptBlock ? `=== LIVE WEB INTELLIGENCE (fetched now from NewsAPI + YouTube) ===\n${intel.promptBlock}\n` : ""}=== REAL-TIME CONTEXT ===
 Current date/time: ${mctx.dayOfWeek}, ${mctx.timeOfDay} (timezone: ${mctx.timezone})
 Season: ${mctx.season} (${mctx.hemisphere === "S" ? "Southern" : "Northern"} hemisphere)
@@ -313,15 +332,15 @@ Wizard step: ${step} — ${stepLabels[step] || "unknown"}
 Offer type: ${offer_type || "unknown"}
 Offer: ${offer_description || ""}
 Audience: ${audience_type || "b2c"}
-Location/market: ${marketLabel}
-Budget: ${budget_range || "unknown"}
+Location/market: ${marketLabel}${countryName ? ` (ISO ${country})` : ""}
+Output language: ${lang ? `${lang.name} (${lang.nativeName})` : "auto-detected from question"}
+Budget: ${budget_range || "unknown"}${platformsBlock}
 ${context ? `\nAdditional context:\n${JSON.stringify(context, null, 2)}` : ""}
 
 ${question ? `User question: ${question}` : `Provide expert APEX advice for step ${step}.`}
 
 CRITICAL INSTRUCTIONS:
-- LANGUAGE RULE — absolute priority: detect the language of the user's question above ("User question:") and respond EXCLUSIVELY in that language. The language of the question OVERRIDES the location's language. If the question is in English, respond in English even if the market is Romania / France / Japan. NEVER switch languages mid-response.
-- If no user question is provided (step advice mode), default to English.
+- Respect the language requirement defined in the system prompt — do NOT switch languages.
 - Adapt platform recommendations, timing, examples, and cultural references to the market: ${marketLabel}.
 - If no specific market is provided, give globally-applicable guidance and say so.
 - Be specific to this exact market. If you don't have specific local data, say so and give best global guidance.

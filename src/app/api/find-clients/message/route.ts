@@ -4,10 +4,11 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import { buildLanguageInstruction, getCountryByCode } from "@/lib/markets";
 
 const anthropic = getAppAnthropicClient();
 
-const SYSTEM = `You are an international expert copywriter for outreach messages. Detect the language of the lead's info and the user's input — write all messages in that same language. Write SHORT, NATURAL, non-salesy messages.
+const SYSTEM_BASE = `You are an international expert copywriter for outreach messages. Write SHORT, NATURAL, non-salesy messages.
 
 Rules:
 - Max 3 sentences
@@ -40,8 +41,11 @@ export async function POST(req: NextRequest) {
   const limitCheck = await checkAndIncrDailyLimit(user.id, userPlan, "apex");
   if (!limitCheck.allowed) return NextResponse.json(limitExceededResponse(limitCheck, "apex"), { status: 429 });
 
-  const { lead, offer_summary, outreach_hook } = await req.json();
+  const { lead, offer_summary, outreach_hook, country, content_language } = await req.json();
   if (!lead || !offer_summary) return NextResponse.json({ error: "lead and offer_summary required" }, { status: 400 });
+
+  const SYSTEM = `${buildLanguageInstruction(content_language)}\n\n${SYSTEM_BASE}`;
+  const countryName = getCountryByCode(country)?.name;
 
   const prompt = `
 Lead info:
@@ -50,6 +54,7 @@ Lead info:
 - What they posted/searched: ${(lead.description || lead.text || "").slice(0, 300)}
 - Intent signals: ${(lead.signals || []).join(", ")}
 - Score: ${lead.score}/10
+${countryName ? `- Target market: ${countryName}` : ""}
 
 Offer: ${offer_summary}
 Suggested opening hook: ${outreach_hook || ""}

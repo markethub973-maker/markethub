@@ -4,11 +4,14 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import {
+  buildLanguageInstruction, getCountryByCode, recommendedPlatforms,
+  type MarketScope,
+} from "@/lib/markets";
 
 const anthropic = getAppAnthropicClient();
 
-const SYSTEM = `You are an expert marketing copywriter and campaign strategist.
-Detect the language from the offer and lead info — write ALL copy in that exact language.
+const SYSTEM_BASE = `You are an expert marketing copywriter and campaign strategist.
 
 Given an offer, a target lead, the seller's contact details, and targeting filters,
 generate a COMPLETE marketing campaign kit with all assets formatted for their specific channel.
@@ -104,8 +107,18 @@ export async function POST(req: NextRequest) {
   const limitCheck = await checkAndIncrDailyLimit(user.id, userPlan, "apex");
   if (!limitCheck.allowed) return NextResponse.json(limitExceededResponse(limitCheck, "apex"), { status: 429 });
 
-  const { offer_summary, outreach_hook, lead, contact, targeting } = await req.json();
+  const {
+    offer_summary, outreach_hook, lead, contact, targeting,
+    market_scope, country, countries, continent, content_language,
+  } = await req.json();
   if (!offer_summary || !lead) return NextResponse.json({ error: "offer_summary and lead required" }, { status: 400 });
+
+  const SYSTEM = `${buildLanguageInstruction(content_language)}\n\n${SYSTEM_BASE}`;
+  const platforms = recommendedPlatforms({
+    scope: (market_scope as MarketScope) || "worldwide",
+    country, countries, continent,
+  });
+  const countryName = getCountryByCode(country)?.name;
 
   // Build contact block — only include fields that have values
   const contactLines = [
@@ -133,9 +146,9 @@ Seller contact info:
 ${contactLines || "(no contact info provided — omit contact details from all copy)"}
 
 Targeting:
-- Location: ${targeting?.location || "global (no specific market provided)"}
+- Location: ${targeting?.location || countryName || "global (no specific market provided)"}${countryName ? `\n- Country: ${countryName} (ISO ${country})` : ""}
 - Event types: ${eventTypes}
-- Audience: ${targeting?.audience_type || "b2c"}
+- Audience: ${targeting?.audience_type || "b2c"}${platforms.length ? `\n- Channels that actually move volume in this market: ${platforms.join(", ")} (favour these when shaping each asset's tone and CTAs).` : ""}
 
 Generate the complete campaign kit for this offer targeting this specific lead profile.`;
 

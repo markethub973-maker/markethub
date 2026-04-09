@@ -3,10 +3,14 @@ import { createClient } from "@/lib/supabase/server";
 import { safeAnthropic } from "@/lib/serviceGuard";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import {
+  buildLanguageInstruction, getCountryByCode, recommendedPlatforms,
+  type MarketScope,
+} from "@/lib/markets";
 
 const anthropic = getAppAnthropicClient();
 
-const SYSTEM = `You are an international lead generation strategist. Detect the language of the user's input and respond in that same language. Given an offer description and target audience, you must:
+const SYSTEM_BASE = `You are an international lead generation strategist. Given an offer description and target audience, you must:
 1. Extract the best keywords to find people who NEED this offer right now
 2. Recommend the best platforms/sources to find these prospects
 3. For each source, generate the exact search query to use
@@ -55,15 +59,32 @@ export async function POST(req: NextRequest) {
   const limitCheck = await checkAndIncrDailyLimit(user.id, userPlan, "apex");
   if (!limitCheck.allowed) return NextResponse.json(limitExceededResponse(limitCheck, "apex"), { status: 429 });
 
-  const { offer_type, offer_description, audience_type, location, budget_range } = await req.json();
+  const {
+    offer_type, offer_description, audience_type, location, budget_range,
+    market_scope, country, countries, continent, content_language,
+  } = await req.json();
   if (!offer_description?.trim()) return NextResponse.json({ error: "Offer description required" }, { status: 400 });
+
+  // Build the language enforcement prefix — when content_language is set
+  // we hard-force the output language; otherwise we fall back to legacy
+  // auto-detect behaviour so existing callers stay unchanged.
+  const SYSTEM = `${buildLanguageInstruction(content_language)}\n\n${SYSTEM_BASE}`;
+
+  const platforms = recommendedPlatforms({
+    scope: (market_scope as MarketScope) || "worldwide",
+    country, countries, continent,
+  });
+  const platformHint = platforms.length
+    ? `\n\nIMPORTANT — channels that actually work in this market (use them when picking sources): ${platforms.join(", ")}.`
+    : "";
+  const countryName = getCountryByCode(country)?.name;
 
   const prompt = `
 Offer type: ${offer_type || "service"}
 Description: ${offer_description}
 Target audience: ${audience_type || "both individuals and businesses"}
-Location: ${location || "worldwide"}
-Client budget range: ${budget_range || "unknown"}
+Location: ${location || countryName || "worldwide"}${countryName ? `\nCountry (ISO): ${country} — ${countryName}` : ""}
+Client budget range: ${budget_range || "unknown"}${platformHint}
 
 Generate the optimal lead generation strategy for this offer.`;
 

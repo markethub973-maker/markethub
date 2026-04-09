@@ -36,6 +36,11 @@ interface Props {
   offerSummary?: string;
   activeLead?: { title?: string; score?: number; label?: string };
   campaignDone?: boolean;
+  /** Structured target market — when provided, every APEX call is forced
+   *  into the matching language and biased toward this market's channels. */
+  country?: string;
+  contentLanguage?: string;
+  marketScope?: string;
 }
 
 // Quick action chips per step
@@ -161,6 +166,7 @@ function AIResponseCard({ msg }: { msg: Message }) {
 export default function CampaignStudio({
   sessionId, step, offerType, offerText, audienceType, location, budgetRange,
   offerSummary, activeLead, campaignDone,
+  country, contentLanguage, marketScope,
 }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -219,6 +225,9 @@ export default function CampaignStudio({
           budget_range: budgetRange,
           context: offerSummary || "",
           question: trimmed,
+          country,
+          content_language: contentLanguage,
+          market_scope: marketScope,
         }),
       });
 
@@ -247,7 +256,7 @@ export default function CampaignStudio({
     } finally {
       setLoading(false);
     }
-  }, [loading, sessionId, step, offerType, offerText, audienceType, location, budgetRange, offerSummary]);
+  }, [loading, sessionId, step, offerType, offerText, audienceType, location, budgetRange, offerSummary, country, contentLanguage, marketScope]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
