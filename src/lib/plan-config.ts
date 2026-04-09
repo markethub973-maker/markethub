@@ -1,15 +1,23 @@
 /**
  * Single source of truth for all plan limits.
  *
- * AI Budget logic — Enterprise $249 = $60 AI cap (24.1% of price).
- * All other plans scaled proportionally so limits are honest/fair.
+ * Pricing model: monthly subscription with included "Premium AI Actions".
+ * Basic AI (Haiku, captions, drafts) is unlimited on every paid plan.
+ * Premium Actions (Lead Scoring, Outreach Personalizat, Full Campaign,
+ * Marketing Advisor / APEX) are metered per month and reset on the 1st
+ * of each month UTC via the consume_premium_action() RPC.
  *
- *   Plan       Price   AI Budget   Ratio
- *   ──────────────────────────────────────
- *   lite       $24     $6          25.0%
- *   pro        $49     $12         24.5%
- *   business   $99     $24         24.2%
- *   enterprise $249    $60         24.1%  ← reference
+ *   Plan       Price   Premium Actions/mo   Basic AI
+ *   ─────────────────────────────────────────────────
+ *   free_test  $0      5                    unlimited
+ *   lite       $24     20                   unlimited
+ *   pro        $49     50                   unlimited
+ *   business   $99     200                  unlimited
+ *   enterprise $249    1000                 unlimited
+ *
+ * The legacy ai_budget_usd / ai_credits fields are kept for the admin
+ * finance dashboard which still tracks raw API spend, but they no longer
+ * gate user requests — premium_actions_per_month is the source of truth.
  */
 
 export type PlanId = "free_test" | "lite" | "pro" | "business" | "enterprise";
@@ -18,8 +26,9 @@ export interface PlanConfig {
   id: PlanId;
   name: string;
   price: number;           // $/month
-  ai_budget_usd: number;   // max Claude API spend per month ($)
-  ai_credits: number;      // display credits (1 credit = $0.001)
+  premium_actions_per_month: number;  // -1 = unlimited
+  ai_budget_usd: number;   // legacy — admin finance tracking only
+  ai_credits: number;      // legacy — admin finance tracking only
   tracked_channels: number;
   instagram_accounts: number;
   tiktok_accounts: number;
@@ -42,6 +51,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     id: "free_test",
     name: "Free Trial",
     price: 0,
+    premium_actions_per_month: 5,
     ai_budget_usd: 1,
     ai_credits: 1_000,
     tracked_channels: 3,
@@ -65,6 +75,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     id: "lite",
     name: "Lite",
     price: 24,
+    premium_actions_per_month: 20,
     ai_budget_usd: 6,
     ai_credits: 6_000,
     tracked_channels: 12,
@@ -88,6 +99,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     id: "pro",
     name: "Pro",
     price: 49,
+    premium_actions_per_month: 50,
     ai_budget_usd: 12,
     ai_credits: 12_000,
     tracked_channels: 30,
@@ -111,6 +123,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     id: "business",
     name: "Business",
     price: 99,
+    premium_actions_per_month: 200,
     ai_budget_usd: 24,
     ai_credits: 24_000,
     tracked_channels: 100,
@@ -134,6 +147,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     id: "enterprise",
     name: "Enterprise",
     price: 249,
+    premium_actions_per_month: 1000,
     ai_budget_usd: 60,       // ← hard cap, extra credits purchaseable
     ai_credits: 60_000,
     tracked_channels: -1,    // unlimited

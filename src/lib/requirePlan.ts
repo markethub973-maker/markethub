@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { canAccessRoute } from "@/lib/plan-features";
+import { consumePremiumAction } from "@/lib/premiumActions";
 
 // ── Per-plan daily API call limits for protected routes ───────────────────────
 // free_test gets TikTok + Instagram but with strict daily caps (max 50 calls/day)
@@ -96,4 +97,59 @@ export async function requirePlan(
   }
 
   return { userId: user.id, userPlan };
+}
+
+export interface PremiumActionContext {
+  userId: string;
+  userPlan: string;
+  premiumAction: {
+    used: number;
+    remaining: number;
+    resets_at: string;
+  };
+}
+
+/**
+ * Like requirePlan(), but additionally consumes one Premium AI Action via the
+ * `consume_premium_action` RPC. Use this on routes that should debit the
+ * monthly quota (Lead Scoring, Outreach Personalization, Full Campaign,
+ * Marketing Advisor / APEX).
+ *
+ * On quota exhausted, returns a 402 NextResponse:
+ *   { error: "LIMIT_REACHED", current, limit, resetDate }
+ *
+ * On success, returns { userId, userPlan, premiumAction: { used, remaining, resets_at } }.
+ * Routes should surface `remaining` and `resets_at` in their response meta so
+ * the UI can render the "Mai ai N credite luna aceasta" banner.
+ */
+export async function requirePremiumAction(
+  req: NextRequest,
+  route: string
+): Promise<PremiumActionContext | NextResponse> {
+  const base = await requirePlan(req, route);
+  if (base instanceof NextResponse) return base;
+
+  const result = await consumePremiumAction(base.userId, base.userPlan);
+
+  if (!result.allowed) {
+    return NextResponse.json(
+      {
+        error: "LIMIT_REACHED",
+        current: result.used,
+        limit: result.used, // quota exhausted ⇒ used == limit
+        resetDate: result.resets_at,
+      },
+      { status: 402 }
+    );
+  }
+
+  return {
+    userId: base.userId,
+    userPlan: base.userPlan,
+    premiumAction: {
+      used: result.used,
+      remaining: result.remaining,
+      resets_at: result.resets_at,
+    },
+  };
 }

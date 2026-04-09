@@ -7,6 +7,7 @@ import StepGuide from "@/components/lead-finder/StepGuide";
 import CostMeter from "@/components/lead-finder/CostMeter";
 import AdjacentServicesPanel from "@/components/lead-finder/AdjacentServicesPanel";
 import CampaignStudio from "@/components/lead-finder/CampaignStudio";
+import UpgradePromptModal, { type LimitReachedPayload } from "@/components/lead-finder/UpgradePromptModal";
 import {
   COUNTRIES, CONTINENTS, LANGUAGES,
   buildLocationLabel, getCountryByCode, getContinentByCode, getLanguageByCode,
@@ -306,6 +307,11 @@ export default function LeadFinderPage() {
   const [copiedCampaign, setCopiedCampaign] = useState<string | null>(null);
   const [showContactForm, setShowContactForm] = useState(false);
 
+  // Premium AI Action quota — populated by `meta` on every successful score/message/campaign
+  // call, or by the 402 LIMIT_REACHED payload when the monthly counter is exhausted.
+  const [premiumActionRemaining, setPremiumActionRemaining] = useState<number | null>(null);
+  const [limitReached, setLimitReached] = useState<LimitReachedPayload | null>(null);
+
   // Auto-update content language when the structured market changes — but
   // only if the user hasn't explicitly overridden it via the language pills.
   const pickCountry = (code: string) => {
@@ -433,7 +439,12 @@ export default function LeadFinderPage() {
         body: JSON.stringify({ results: allResults, offer_summary: suggestion.offer_summary, intent_signals: suggestion.intent_signals, content_language: contentLanguage }),
       });
       const scoreData = await res.json();
-      if (scoreData.scored) {
+      if (res.status === 402 && scoreData?.error === "LIMIT_REACHED") {
+        setLimitReached({ current: scoreData.current, limit: scoreData.limit, resetDate: scoreData.resetDate });
+      } else if (scoreData.scored) {
+        if (scoreData.meta?.premium_action_consumed) {
+          setPremiumActionRemaining(scoreData.meta.remaining);
+        }
         const merged: Lead[] = scoreData.scored.map((s: any) => ({ ...s, ...(allResults[s.index] || {}) }));
         merged.sort((a, b) => b.score - a.score);
         setLeads(merged);
@@ -472,7 +483,14 @@ export default function LeadFinderPage() {
     });
     const data = await res.json();
     setGeneratingMsg(false);
+    if (res.status === 402 && data?.error === "LIMIT_REACHED") {
+      setLimitReached({ current: data.current, limit: data.limit, resetDate: data.resetDate });
+      return;
+    }
     if (!res.ok) return;
+    if (data.meta?.premium_action_consumed) {
+      setPremiumActionRemaining(data.meta.remaining);
+    }
     setOutreach(data);
     setActivePlatform(data.best_platform || "generic");
     setCostRefresh(n => n + 1);
@@ -516,7 +534,14 @@ export default function LeadFinderPage() {
     });
     const data = await res.json();
     setGeneratingCampaign(false);
+    if (res.status === 402 && data?.error === "LIMIT_REACHED") {
+      setLimitReached({ current: data.current, limit: data.limit, resetDate: data.resetDate });
+      return;
+    }
     if (!res.ok) { setCampaignError(data.error || "Campaign generation error"); return; }
+    if (data.meta?.premium_action_consumed) {
+      setPremiumActionRemaining(data.meta.remaining);
+    }
     setCampaign(data);
     setActiveCampaignTab("sms");
     setCostRefresh(n => n + 1);
@@ -539,6 +564,24 @@ export default function LeadFinderPage() {
       <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-6">
 
         <Stepper step={step} />
+
+        {premiumActionRemaining !== null && premiumActionRemaining !== -1 && (
+          <div
+            className="rounded-xl px-4 py-2.5 flex items-center gap-2 text-xs font-semibold"
+            style={{
+              backgroundColor: "rgba(245,158,11,0.08)",
+              border: "1px solid rgba(245,158,11,0.25)",
+              color: "#78614E",
+            }}
+          >
+            <Zap className="w-3.5 h-3.5" style={{ color: "#F59E0B" }} />
+            <span>
+              1 Premium AI Action consumed —{" "}
+              <strong style={{ color: "#1C1814" }}>{premiumActionRemaining}</strong>{" "}
+              remaining this month
+            </span>
+          </div>
+        )}
 
         {/* ══ STEP 1 — Offer ═══════════════════════════════════════════════ */}
         {step === 1 && (
@@ -586,7 +629,8 @@ export default function LeadFinderPage() {
             <MarketingAdvisor step={1} offerType={offerType} offerDescription={offerText}
               audienceType={audienceType} location={location} budgetRange={budgetRange}
               country={marketScope === "country" ? marketCountry : undefined}
-              contentLanguage={contentLanguage} marketScope={marketScope} />
+              contentLanguage={contentLanguage} marketScope={marketScope}
+              onLimitReached={setLimitReached} onPremiumActionConsumed={setPremiumActionRemaining} />
           )}
           </div>
         )}
@@ -811,7 +855,8 @@ export default function LeadFinderPage() {
           <MarketingAdvisor step={2} offerType={offerType} offerDescription={offerText}
             audienceType={audienceType} location={location} budgetRange={budgetRange}
             country={marketScope === "country" ? marketCountry : undefined}
-            contentLanguage={contentLanguage} marketScope={marketScope} />
+            contentLanguage={contentLanguage} marketScope={marketScope}
+            onLimitReached={setLimitReached} onPremiumActionConsumed={setPremiumActionRemaining} />
           </div>
         )}
 
@@ -968,6 +1013,7 @@ export default function LeadFinderPage() {
             audienceType={audienceType} location={location} budgetRange={budgetRange}
             country={marketScope === "country" ? marketCountry : undefined}
             contentLanguage={contentLanguage} marketScope={marketScope}
+            onLimitReached={setLimitReached} onPremiumActionConsumed={setPremiumActionRemaining}
             context={{ sources: suggestion?.sources, keywords: suggestion?.keywords }} />
           </div>
         )}
@@ -1142,6 +1188,7 @@ export default function LeadFinderPage() {
                 audienceType={audienceType} location={location} budgetRange={budgetRange}
                 country={marketScope === "country" ? marketCountry : undefined}
                 contentLanguage={contentLanguage} marketScope={marketScope}
+                onLimitReached={setLimitReached} onPremiumActionConsumed={setPremiumActionRemaining}
                 context={{ leads_found: leads.length, hot: leads.filter(l => l.label === "hot").length }} />
             )}
           </div>
@@ -1283,6 +1330,7 @@ export default function LeadFinderPage() {
                 audienceType={audienceType} location={location} budgetRange={budgetRange}
                 country={marketScope === "country" ? marketCountry : undefined}
                 contentLanguage={contentLanguage} marketScope={marketScope}
+                onLimitReached={setLimitReached} onPremiumActionConsumed={setPremiumActionRemaining}
                 context={{ selected_lead: selectedLead, best_platform: outreach?.best_platform }} />
             )}
 
@@ -1668,6 +1716,8 @@ export default function LeadFinderPage() {
         country={marketScope === "country" ? marketCountry : undefined}
         contentLanguage={contentLanguage}
         marketScope={marketScope}
+        onLimitReached={setLimitReached}
+        onPremiumActionConsumed={setPremiumActionRemaining}
       />
 
       {/* ── Cost Meter (visible to client) ────────────────────────────────── */}
@@ -1677,6 +1727,8 @@ export default function LeadFinderPage() {
       <AdjacentServicesPanel offerType={offerType} />
 
       </div>
+
+      <UpgradePromptModal payload={limitReached} onClose={() => setLimitReached(null)} />
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import { consumePremiumAction } from "@/lib/premiumActions";
+import { getPlanConfig } from "@/lib/plan-config";
 import { buildLanguageInstruction, getCountryByCode } from "@/lib/markets";
 
 const anthropic = getAppAnthropicClient();
@@ -62,6 +64,20 @@ export async function POST(req: NextRequest) {
 
   const { lead, offer_summary, outreach_hook, country, content_language } = await req.json();
   if (!lead || !offer_summary) return NextResponse.json({ error: "lead and offer_summary required" }, { status: 400 });
+
+  // Premium AI Action — atomic monthly quota debit (validates BEFORE the AI call)
+  const premium = await consumePremiumAction(user.id, userPlan);
+  if (!premium.allowed) {
+    return NextResponse.json(
+      {
+        error: "LIMIT_REACHED",
+        current: premium.used,
+        limit: getPlanConfig(userPlan).premium_actions_per_month,
+        resetDate: premium.resets_at,
+      },
+      { status: 402 }
+    );
+  }
 
   const SYSTEM = `${buildLanguageInstruction(content_language)}\n\n${SYSTEM_BASE}`;
   const countryName = getCountryByCode(country)?.name;
@@ -127,7 +143,15 @@ Write personalized outreach messages for this specific lead.`;
         sanitized += ch;
       }
     }
-    return NextResponse.json(JSON.parse(sanitized));
+    const parsed = JSON.parse(sanitized);
+    return NextResponse.json({
+      ...parsed,
+      meta: {
+        premium_action_consumed: true,
+        remaining: premium.remaining,
+        resets_at: premium.resets_at,
+      },
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

@@ -4,6 +4,8 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import { consumePremiumAction } from "@/lib/premiumActions";
+import { getPlanConfig } from "@/lib/plan-config";
 import { buildLanguageInstruction } from "@/lib/markets";
 
 const anthropic = getAppAnthropicClient();
@@ -55,6 +57,20 @@ export async function POST(req: NextRequest) {
   const { results, offer_summary, intent_signals, content_language } = await req.json();
   if (!results?.length) return NextResponse.json({ error: "Results required" }, { status: 400 });
 
+  // Premium AI Action — atomic monthly quota debit (validates BEFORE the AI call)
+  const premium = await consumePremiumAction(user.id, userPlan);
+  if (!premium.allowed) {
+    return NextResponse.json(
+      {
+        error: "LIMIT_REACHED",
+        current: premium.used,
+        limit: getPlanConfig(userPlan).premium_actions_per_month,
+        resetDate: premium.resets_at,
+      },
+      { status: 402 }
+    );
+  }
+
   // Inject language pack so the "why" / "signals" fields and any RU/AR/EL/RO etc.
   // text the model emits respects the user's chosen content language and grammar rules.
   const SYSTEM = `${buildLanguageInstruction(content_language)}\n\n${SYSTEM_BASE}`;
@@ -97,7 +113,14 @@ Platform: ${r.platform || ""}
     const text = result.data.content[0].type === "text" ? result.data.content[0].text : "";
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (!jsonMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
-    return NextResponse.json({ scored: JSON.parse(jsonMatch[0]) });
+    return NextResponse.json({
+      scored: JSON.parse(jsonMatch[0]),
+      meta: {
+        premium_action_consumed: true,
+        remaining: premium.remaining,
+        resets_at: premium.resets_at,
+      },
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

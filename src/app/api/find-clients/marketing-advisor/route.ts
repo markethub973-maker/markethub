@@ -6,6 +6,8 @@ import { getMarketIntelligence } from "@/lib/marketSearch";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import { consumePremiumAction } from "@/lib/premiumActions";
+import { getPlanConfig } from "@/lib/plan-config";
 import {
   getLanguageByCode, getCountryByCode, recommendedPlatforms, buildLanguageInstruction,
   type MarketScope,
@@ -274,6 +276,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "offer_description or question required" }, { status: 400 });
   }
 
+  // Premium AI Action — atomic monthly quota debit (validates BEFORE the AI call)
+  const premium = await consumePremiumAction(user.id, userPlan);
+  if (!premium.allowed) {
+    return NextResponse.json(
+      {
+        error: "LIMIT_REACHED",
+        current: premium.used,
+        limit: getPlanConfig(userPlan).premium_actions_per_month,
+        resetDate: premium.resets_at,
+      },
+      { status: 402 }
+    );
+  }
+
   // Resolve target market — prefer the structured country (since the wizard
   // now ships an ISO code) and fall back to the legacy free-text location.
   const countryName = getCountryByCode(country)?.name;
@@ -395,9 +411,25 @@ CRITICAL INSTRUCTIONS:
       const retryText = "{" + (result.data.content[0].type === "text" ? result.data.content[0].text : "");
       const retryMatch = retryText.match(/\{[\s\S]*\}/);
       if (!retryMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
-      return NextResponse.json(JSON.parse(sanitizeJson(retryMatch[0])));
+      const retryParsed = JSON.parse(sanitizeJson(retryMatch[0]));
+      return NextResponse.json({
+        ...retryParsed,
+        meta: {
+          premium_action_consumed: true,
+          remaining: premium.remaining,
+          resets_at: premium.resets_at,
+        },
+      });
     }
-    return NextResponse.json(JSON.parse(sanitizeJson(jsonMatch[0])));
+    const parsed = JSON.parse(sanitizeJson(jsonMatch[0]));
+    return NextResponse.json({
+      ...parsed,
+      meta: {
+        premium_action_consumed: true,
+        remaining: premium.remaining,
+        resets_at: premium.resets_at,
+      },
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

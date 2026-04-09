@@ -30,6 +30,12 @@ interface Props {
   country?: string;
   contentLanguage?: string;
   marketScope?: string;
+  /** Called when the API returns 402 LIMIT_REACHED so the parent page
+   *  can render a single, shared UpgradePromptModal. */
+  onLimitReached?: (payload: { current: number; limit: number; resetDate: string }) => void;
+  /** Called with the latest remaining count after a successful Premium
+   *  AI Action so the parent page can render the credits banner. */
+  onPremiumActionConsumed?: (remaining: number) => void;
 }
 
 const STEP_LABELS: Record<number, string> = {
@@ -48,7 +54,7 @@ const STEP_HINTS: Record<number, string> = {
   5: "Which channel, when to send and what format to use",
 };
 
-export default function MarketingAdvisor({ step, offerType, offerDescription, audienceType, location, budgetRange, context, country, contentLanguage, marketScope }: Props) {
+export default function MarketingAdvisor({ step, offerType, offerDescription, audienceType, location, budgetRange, context, country, contentLanguage, marketScope, onLimitReached, onPremiumActionConsumed }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [advice, setAdvice] = useState<AdvisorResult | null>(null);
@@ -79,7 +85,14 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
         }),
       });
       const data = await res.json();
+      if (res.status === 402 && data?.error === "LIMIT_REACHED") {
+        onLimitReached?.({ current: data.current, limit: data.limit, resetDate: data.resetDate });
+        return;
+      }
       if (!res.ok) { setError(data.error || "Error"); return; }
+      if (data.meta?.premium_action_consumed) {
+        onPremiumActionConsumed?.(data.meta.remaining);
+      }
       setAdvice(data);
       setActiveTab("tips");
       setQuestion("");

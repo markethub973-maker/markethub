@@ -13,12 +13,13 @@ const plans = [
     duration: "7 Days",
     price: "$0",
     priceNum: 0,
-    tokens: "1,000",
+    premiumActions: "5",
     description: "Test the platform for free",
     cta: "Start Free",
     popular: false,
     features: [
-      "1,000 tokens",
+      "5 Premium AI Actions",
+      "Unlimited Basic AI (captions, drafts)",
       "1 social account",
       "YouTube analytics",
       "TikTok analytics (50 req/day)",
@@ -26,7 +27,7 @@ const plans = [
       "Basic dashboard",
       "1 competitor brand",
     ],
-    missing: ["Content calendar", "AI Hub", "Leads CRM", "API access"],
+    missing: ["Content calendar", "Lead Finder & CRM", "API access"],
   },
   {
     id: "lite",
@@ -34,12 +35,13 @@ const plans = [
     duration: "/ month",
     price: "$24",
     priceNum: 24,
-    tokens: "50,000",
-    description: "Everything a creator needs",
+    premiumActions: "20",
+    description: "For solo creators",
     cta: "Get Lite",
     popular: true,
     features: [
-      "50,000 monthly tokens",
+      "20 Premium AI Actions / month",
+      "Unlimited Basic AI (captions, drafts)",
       "2 social accounts",
       "Instagram analytics (full)",
       "TikTok analytics",
@@ -49,11 +51,10 @@ const plans = [
       "Link in Bio pages",
       "Hashtag manager",
       "Campaigns",
-      "Marketing agent",
       "8 competitor brands",
       "12 tracked channels",
     ],
-    missing: ["AI Hub", "Leads CRM", "API access"],
+    missing: ["Lead Finder & CRM", "API access"],
   },
   {
     id: "pro",
@@ -61,16 +62,16 @@ const plans = [
     duration: "/ month",
     price: "$49",
     priceNum: 49,
-    tokens: "150,000",
+    premiumActions: "50",
     description: "For agencies & professionals",
     cta: "Get Pro",
     popular: false,
     features: [
-      "150,000 monthly tokens",
+      "50 Premium AI Actions / month",
+      "Unlimited Basic AI (captions, drafts)",
       "5 client accounts",
       "Everything in Lite",
-      "AI Hub agents",
-      "Lead finder & CRM",
+      "Lead Finder & CRM",
       "3 team members",
       "20 competitor brands",
       "30 tracked channels",
@@ -84,20 +85,21 @@ const plans = [
     duration: "/ month",
     price: "$99",
     priceNum: 99,
-    tokens: "500,000",
+    premiumActions: "200",
     description: "For digital marketing agencies",
     cta: "Get Business",
     popular: false,
     features: [
-      "500,000 monthly tokens",
-      "10 client accounts",
+      "200 Premium AI Actions / month",
+      "Unlimited Basic AI (captions, drafts)",
+      "20 client accounts",
       "Everything in Pro",
-      "2 team members",
-      "25 competitor brands",
+      "5 team members",
+      "50 competitor brands",
       "10 Instagram/TikTok accounts",
       "API access",
       "99.5% SLA uptime",
-      "1 year data history",
+      "2 years data history",
     ],
     missing: ["White label"],
   },
@@ -107,20 +109,21 @@ const plans = [
     duration: "/ month",
     price: "$249",
     priceNum: 249,
-    tokens: "1.5M",
+    premiumActions: "1,000",
     description: "For large-scale operations",
     cta: "Contact Sales",
     popular: false,
     features: [
-      "1,500,000 monthly tokens",
-      "20 client accounts",
-      "5 team members",
-      "50 competitor brands",
+      "1,000 Premium AI Actions / month",
+      "Unlimited Basic AI (captions, drafts)",
+      "Unlimited client accounts",
+      "Unlimited team members",
+      "Unlimited competitor brands",
       "Unlimited Instagram/TikTok",
       "White label",
+      "Dedicated Account Manager",
       "API access",
       "99.9% SLA uptime",
-      "2 years data history",
     ],
     missing: [],
   },
@@ -225,13 +228,14 @@ export default function PricingPage() {
       {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 pt-14 pb-10 text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.3)" }}>
-          <Zap className="w-3 h-3" /> Token-based pricing — no waste
+          <Zap className="w-3 h-3" /> Premium AI Actions · Basic AI unlimited
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 leading-tight" style={{ color: "#1C1814" }}>
           Simple, transparent<br className="hidden sm:block" /> pricing
         </h1>
         <p className="text-lg max-w-xl mx-auto" style={{ color: "#78614E" }}>
-          Pay only for what you use. Tokens carry over — no unused credits lost.
+          Unlimited captions, drafts, and quick AI on every paid plan. Premium AI Actions
+          (Lead Scoring, Outreach, Full Campaign, APEX Advisor) reset on the 1st of each month.
         </p>
       </div>
 
@@ -274,7 +278,9 @@ export default function PricingPage() {
                   </div>
                   <div className="flex items-center gap-1 mt-1">
                     <Zap className="w-3.5 h-3.5 text-blue-500" />
-                    <span className="text-xs font-semibold text-blue-600">{plan.tokens} tokens/month</span>
+                    <span className="text-xs font-semibold text-blue-600">
+                      {plan.premiumActions} Premium AI Actions{plan.id === "free_test" ? " (trial)" : "/month"}
+                    </span>
                   </div>
                 </div>
 
@@ -345,10 +351,14 @@ export default function PricingPage() {
             <tbody>
               {[
                 {
-                  category: "Tokens & Usage",
+                  category: "AI Premium Actions",
                   rows: [
-                    { label: "Monthly tokens", values: ["1,000", "50,000", "150,000", "500,000", "1,500,000"] },
-                    { label: "Extra token packs", values: [false, true, true, true, true] },
+                    { label: "Premium Actions / month", values: ["5", "20", "50", "200", "1,000"] },
+                    { label: "Basic AI (captions, drafts)", values: ["Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited"] },
+                    { label: "Lead Scoring", values: [true, true, true, true, true] },
+                    { label: "Outreach Personalization", values: [true, true, true, true, true] },
+                    { label: "Full Campaign Generator", values: [true, true, true, true, true] },
+                    { label: "APEX Marketing Advisor", values: [true, true, true, true, true] },
                   ],
                 },
                 {
@@ -431,19 +441,19 @@ export default function PricingPage() {
         </div>
       </div>
 
-      {/* Token info */}
+      {/* Premium Actions info */}
       <div className="max-w-6xl mx-auto px-4 pb-16">
         <div className="rounded-2xl p-6 sm:p-8" style={{ background: "linear-gradient(135deg, #EFF6FF, #F5F3FF)", border: "1px solid rgba(99,102,241,0.2)" }}>
           <div className="flex items-center gap-2 mb-4">
             <Zap className="w-5 h-5 text-blue-600" />
-            <h3 className="font-bold text-lg" style={{ color: "#1E40AF" }}>How tokens work</h3>
+            <h3 className="font-bold text-lg" style={{ color: "#1E40AF" }}>How Premium AI Actions work</h3>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: "1 Caption", cost: "~800 tokens" },
-              { label: "1 Analysis", cost: "~2,000 tokens" },
-              { label: "1 PDF Report", cost: "~5,000 tokens" },
-              { label: "Agent Chat", cost: "~10,000 tokens" },
+              { label: "Lead Scoring", cost: "1 Action" },
+              { label: "Outreach Message", cost: "1 Action" },
+              { label: "Full Campaign", cost: "1 Action" },
+              { label: "APEX Advisor", cost: "1 Action" },
             ].map((item) => (
               <div key={item.label} className="bg-white rounded-xl p-3 text-center" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
                 <p className="text-xs font-semibold mb-1" style={{ color: "#1E40AF" }}>{item.label}</p>
@@ -452,7 +462,8 @@ export default function PricingPage() {
             ))}
           </div>
           <p className="text-sm mt-4" style={{ color: "#3730A3" }}>
-            Tokens never expire. Buy extra packs at any time — from $15 for 10K tokens.
+            Captions, drafts, and quick AI helpers are <strong>unlimited</strong> on every paid plan.
+            Premium Actions reset on the 1st of each month — only the four heavy AI workflows above debit your monthly counter.
           </p>
         </div>
       </div>
@@ -462,10 +473,10 @@ export default function PricingPage() {
         <h2 className="text-2xl font-bold text-center mb-8" style={{ color: "#1C1814" }}>Frequently asked questions</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {[
-            { q: "Do unused tokens carry over?", a: "Yes! All tokens are credited to your account and valid until used. No expiration." },
+            { q: "What counts as a Premium AI Action?", a: "Only the four heavy workflows: Lead Scoring, Outreach Personalization, Full Campaign Generator, and APEX Marketing Advisor. Captions, drafts, and quick AI are unlimited." },
+            { q: "When do Premium Actions reset?", a: "On the 1st of every month (UTC). Unused actions don't carry over — but they don't run out mid-month either, you start each month with a full counter." },
             { q: "Can I cancel anytime?", a: "Absolutely. No long-term contracts. Cancel from your account settings at any time." },
-            { q: "What if I run out of tokens?", a: "You'll be notified at 80% usage. Buy extra token packs instantly without changing your plan." },
-            { q: "Is there a money-back guarantee?", a: "Yes — 30-day money-back guarantee. Unused tokens are fully refundable." },
+            { q: "What if I run out of Premium Actions?", a: "Heavy workflows are paused until next month's reset, or you can upgrade to a higher plan instantly. Basic AI keeps working unlimited." },
           ].map((item) => (
             <div key={item.q} className="bg-white rounded-xl p-5" style={{ border: "1px solid rgba(245,215,160,0.4)" }}>
               <h4 className="font-semibold mb-2" style={{ color: "#1C1814" }}>{item.q}</h4>

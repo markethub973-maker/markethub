@@ -4,6 +4,8 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import { consumePremiumAction } from "@/lib/premiumActions";
+import { getPlanConfig } from "@/lib/plan-config";
 import {
   buildLanguageInstruction, getCountryByCode, recommendedPlatforms,
   type MarketScope,
@@ -113,6 +115,20 @@ export async function POST(req: NextRequest) {
   } = await req.json();
   if (!offer_summary || !lead) return NextResponse.json({ error: "offer_summary and lead required" }, { status: 400 });
 
+  // Premium AI Action — atomic monthly quota debit (validates BEFORE the AI call)
+  const premium = await consumePremiumAction(user.id, userPlan);
+  if (!premium.allowed) {
+    return NextResponse.json(
+      {
+        error: "LIMIT_REACHED",
+        current: premium.used,
+        limit: getPlanConfig(userPlan).premium_actions_per_month,
+        resetDate: premium.resets_at,
+      },
+      { status: 402 }
+    );
+  }
+
   const SYSTEM = `${buildLanguageInstruction(content_language)}\n\n${SYSTEM_BASE}`;
   const platforms = recommendedPlatforms({
     scope: (market_scope as MarketScope) || "worldwide",
@@ -178,7 +194,15 @@ Generate the complete campaign kit for this offer targeting this specific lead p
     const text = result.data.content[0].type === "text" ? result.data.content[0].text : "";
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
-    return NextResponse.json(JSON.parse(sanitizeJson(jsonMatch[0])));
+    const parsed = JSON.parse(sanitizeJson(jsonMatch[0]));
+    return NextResponse.json({
+      ...parsed,
+      meta: {
+        premium_action_consumed: true,
+        remaining: premium.remaining,
+        resets_at: premium.resets_at,
+      },
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

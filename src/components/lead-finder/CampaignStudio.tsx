@@ -41,6 +41,12 @@ interface Props {
   country?: string;
   contentLanguage?: string;
   marketScope?: string;
+  /** Called when the API returns 402 LIMIT_REACHED so the parent page
+   *  can render a single, shared UpgradePromptModal. */
+  onLimitReached?: (payload: { current: number; limit: number; resetDate: string }) => void;
+  /** Called with the latest remaining count after a successful Premium
+   *  AI Action so the parent page can render the credits banner. */
+  onPremiumActionConsumed?: (remaining: number) => void;
 }
 
 // Quick action chips per step
@@ -167,6 +173,7 @@ export default function CampaignStudio({
   sessionId, step, offerType, offerText, audienceType, location, budgetRange,
   offerSummary, activeLead, campaignDone,
   country, contentLanguage, marketScope,
+  onLimitReached, onPremiumActionConsumed,
 }: Props) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -231,8 +238,18 @@ export default function CampaignStudio({
         }),
       });
 
-      if (res.ok) {
-        const d = await res.json();
+      const d = await res.json();
+      if (res.status === 402 && d?.error === "LIMIT_REACHED") {
+        onLimitReached?.({ current: d.current, limit: d.limit, resetDate: d.resetDate });
+        setMessages(prev => [...prev, {
+          role: "ai",
+          content: "You've reached your monthly Premium AI Actions limit. See the upgrade options.",
+          ts: Date.now(),
+        }]);
+      } else if (res.ok) {
+        if (d.meta?.premium_action_consumed) {
+          onPremiumActionConsumed?.(d.meta.remaining);
+        }
         const aiMsg: Message = {
           role: "ai",
           content: d.main_insight || "I've analyzed your request.",
@@ -256,7 +273,7 @@ export default function CampaignStudio({
     } finally {
       setLoading(false);
     }
-  }, [loading, sessionId, step, offerType, offerText, audienceType, location, budgetRange, offerSummary, country, contentLanguage, marketScope]);
+  }, [loading, sessionId, step, offerType, offerText, audienceType, location, budgetRange, offerSummary, country, contentLanguage, marketScope, onLimitReached, onPremiumActionConsumed]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
