@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { TOKEN_PLANS, type PlanId } from "@/lib/token-plan-config";
+import { PLANS, type PlanId } from "@/lib/plan-config";
 
 const PLAN_IDS: PlanId[] = ["free_test", "lite", "pro", "business", "enterprise"];
 
@@ -31,8 +31,8 @@ export async function GET() {
 
   const plans = PLAN_IDS.map(id => ({
     id,
-    name: TOKEN_PLANS[id].name,
-    price: saved[id] ?? TOKEN_PLANS[id].price,
+    name: PLANS[id].name,
+    price: saved[id] ?? PLANS[id].price,
     period: id === "free_test" ? "7_days" : "monthly",
   }));
 
@@ -68,7 +68,7 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     success: true,
-    message: `${TOKEN_PLANS[plan as PlanId].name} updated to $${price}/month`,
+    message: `${PLANS[plan as PlanId].name} updated to $${price}/month`,
     updated_plan: { id: plan, price, period: plan === "free_test" ? "7_days" : "monthly" },
   });
 }

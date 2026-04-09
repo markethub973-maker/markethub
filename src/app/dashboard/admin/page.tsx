@@ -15,7 +15,6 @@ import AdminCredentials from "@/components/admin/AdminCredentials";
 import AdminPlatformConnect from "@/components/admin/AdminPlatformConnect";
 import AdminAnthropicUsage from "@/components/admin/AdminAnthropicUsage";
 import AdminTokenStatus from "@/components/admin/AdminTokenStatus";
-import AdminTokensPanel from "@/components/admin/AdminTokensPanel";
 import AdminFeatureFlagsPanel from "@/components/admin/AdminFeatureFlagsPanel";
 import AdminDiscountCodesPanel from "@/components/admin/AdminDiscountCodesPanel";
 import AdminHealthCheck from "@/components/admin/AdminHealthCheck";
@@ -344,11 +343,6 @@ export default function AdminPage() {
         {/* Pricing Management */}
         <ModuleBoundary name="Pricing Panel" minimal>
           <AdminPricingPanel />
-        </ModuleBoundary>
-
-        {/* Token Allocation per Plan */}
-        <ModuleBoundary name="Tokens Panel" minimal>
-          <AdminTokensPanel />
         </ModuleBoundary>
 
         {/* Feature Flags per Plan */}

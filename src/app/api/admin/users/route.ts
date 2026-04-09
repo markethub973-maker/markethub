@@ -9,7 +9,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
-import { TOKEN_PLANS } from "@/lib/token-plan-config";
 
 const PLAN_PRICES: Record<string, number> = {
   free_test:  0,

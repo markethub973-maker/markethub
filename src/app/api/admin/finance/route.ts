@@ -15,7 +15,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 
-// ── Plan prices (must match token-plan-config.ts) ────────────────────────────
+// ── Plan prices (must match plan-config.ts) ──────────────────────────────────
 const PLAN_PRICES: Record<string, number> = {
   free_test:  0,
   lite:       24,

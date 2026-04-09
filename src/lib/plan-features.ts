@@ -40,7 +40,7 @@ export const PLAN_COLORS: Record<PlanId, string> = {
   enterprise: "#16A34A",
 };
 
-// ── Plan feature flags (mirrors token-plan-config.ts) ────────────────────────
+// ── Plan feature flags (runtime route gating; limits mirror plan-config.ts) ──
 export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
   free_test: {
     has_calendar:       false,
