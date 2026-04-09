@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { getPlanConfig } from "@/lib/plan-config";
 
 export interface Notification {
   id: string;
@@ -33,7 +34,7 @@ export async function GET(req: NextRequest) {
   // ── 1. Trial expiry ───────────────────────────────────────────────────────
   const { data: profile } = await supabase
     .from("profiles")
-    .select("subscription_plan, plan, trial_expires_at, is_admin, subscription_status")
+    .select("subscription_plan, plan, trial_expires_at, is_admin, subscription_status, premium_actions_used, premium_actions_reset_at")
     .eq("id", user.id)
     .single();
 
@@ -160,7 +161,44 @@ export async function GET(req: NextRequest) {
     } catch { /* ignore */ }
   }
 
-  // ── 4. Welcome / onboarding tip ──────────────────────────────────────────
+  // ── 4. Premium Actions low / exhausted ───────────────────────────────────
+  try {
+    const planConfig = getPlanConfig(currentPlan);
+    const limit = planConfig.premium_actions_per_month;
+    const used = profile?.premium_actions_used ?? 0;
+    const resetAt = profile?.premium_actions_reset_at;
+
+    if (limit !== -1) {
+      const remaining = Math.max(0, limit - used);
+      const resetDate = resetAt ? new Date(resetAt).toLocaleDateString("ro-RO", { day: "numeric", month: "long" }) : "";
+
+      if (remaining === 0) {
+        notifications.push({
+          id: "premium_actions_exhausted",
+          type: "error",
+          title: "Premium AI Actions epuizate",
+          message: `Ai folosit toate cele ${limit} acțiuni premium ale lunii.${resetDate ? ` Se resetează pe ${resetDate}.` : ""} Upgrade pentru mai multe.`,
+          action_url: "/pricing",
+          action_label: "Upgrade Plan",
+          created_at: now,
+          read: false,
+        });
+      } else if (remaining <= 5 || remaining <= Math.ceil(limit * 0.2)) {
+        notifications.push({
+          id: "premium_actions_low",
+          type: "warning",
+          title: `Mai ai ${remaining} Premium Action${remaining === 1 ? "" : "s"}`,
+          message: `Ai consumat ${used} din ${limit} acțiuni premium ale lunii.${resetDate ? ` Resetare pe ${resetDate}.` : ""}`,
+          action_url: "/pricing",
+          action_label: "Upgrade Plan",
+          created_at: now,
+          read: false,
+        });
+      }
+    }
+  } catch { /* ignore */ }
+
+  // ── 5. Welcome / onboarding tip ──────────────────────────────────────────
   if (notifications.length === 0) {
     notifications.push({
       id: "welcome",
