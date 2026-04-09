@@ -232,14 +232,15 @@ export default function LeadsPage() {
   };
 
   const handleEnrich = async () => {
-    // Pick selected social leads, or all visible social leads if nothing selected.
-    const ENRICHABLE = new Set(["instagram", "youtube"]);
+    // Pick selected enrichable leads, or all visible enrichable leads if nothing selected.
+    // website → HTML scraper (tel:/email regex), instagram/youtube → Apify actors.
+    const ENRICHABLE = new Set(["instagram", "youtube", "website"]);
     const pool = filtered.filter(l => ENRICHABLE.has(l.lead_type));
     const targets = selected.size > 0
       ? pool.filter(l => selected.has(l.id))
       : pool;
     if (!targets.length) {
-      setEnrichMsg("Niciun lead Instagram/YouTube selectat");
+      setEnrichMsg("Niciun lead enrichable (Instagram/YouTube/Website)");
       setTimeout(() => setEnrichMsg(null), 4000);
       return;
     }

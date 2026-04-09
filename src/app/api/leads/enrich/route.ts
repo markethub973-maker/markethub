@@ -3,12 +3,15 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { requirePlan } from "@/lib/requirePlan";
 import { safeApify } from "@/lib/serviceGuard";
+import { fetchAndExtract } from "@/lib/leadScraper";
 import { parsePhoneNumberFromString, type CountryCode } from "libphonenumber-js";
 
-// Enrich social leads (Instagram, YouTube) by hitting the same Apify actors
-// the research tabs already use. Pulls profile bio + business email/phone
-// from the platform and writes them back into the lead row. Capped to 10
-// leads per call so a single click can't drain the user's Apify quota.
+// Enrich leads with platform-specific scrapers:
+// - instagram/youtube → Apify actors (profile bio + business email/phone)
+// - website           → HTML scraper from lib/leadScraper (tel: hrefs + email regex)
+// Writes results back to the lead row, only filling empty fields so user
+// edits are preserved. Capped to 10 leads per call so a single click can't
+// drain the user's Apify quota.
 
 const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 
@@ -49,6 +52,20 @@ async function enrichInstagram(url: string): Promise<{ email?: string; phone?: s
   };
 }
 
+async function enrichWebsite(url: string): Promise<{ email?: string; phone?: string; bio?: string; name?: string } | null> {
+  // Reuses the same fetch+parse pipeline as the bulk Google save flow.
+  // libphonenumber validates phones against TLD-derived country context, so
+  // .ro sites get RO context, .de sites get DE context, etc.
+  const r = await fetchAndExtract(url);
+  if (!r.ok) return null;
+  return {
+    email: r.emails[0] || undefined,
+    phone: r.phones[0] || undefined,
+    bio: r.description || undefined,
+    name: r.name || undefined,
+  };
+}
+
 async function enrichYouTube(url: string): Promise<{ email?: string; phone?: string; bio?: string; followers?: number } | null> {
   // streamers/youtube-scraper accepts channel URLs and returns video items
   // with channelDescription on the first item. Channel "About" descriptions
@@ -85,7 +102,7 @@ export async function POST(req: NextRequest) {
   const supa = createServiceClient();
   const { data: leads, error } = await supa
     .from("research_leads")
-    .select("id, lead_type, url, website, email, phone, extra_data")
+    .select("id, lead_type, url, website, email, phone, name, extra_data")
     .in("id", capped)
     .eq("user_id", user.id);
   if (error) return NextResponse.json({ error: "fetch failed" }, { status: 500 });
@@ -100,6 +117,7 @@ export async function POST(req: NextRequest) {
     try {
       if (lead.lead_type === "instagram") enriched = await enrichInstagram(target);
       else if (lead.lead_type === "youtube") enriched = await enrichYouTube(target);
+      else if (lead.lead_type === "website") enriched = await enrichWebsite(target);
       else { results.push({ id: lead.id, status: "skipped", reason: `unsupported: ${lead.lead_type}` }); continue; }
     } catch (e: any) {
       results.push({ id: lead.id, status: "error", reason: e?.message || "exception" });
@@ -115,10 +133,11 @@ export async function POST(req: NextRequest) {
     const patch: Record<string, any> = {};
     if (!lead.email && enriched.email) patch.email = enriched.email;
     if (!lead.phone && enriched.phone) patch.phone = enriched.phone;
+    if (!lead.name && "name" in enriched && enriched.name) patch.name = enriched.name;
 
     const newExtra = { ...(lead.extra_data || {}) };
     if (enriched.bio) newExtra.bio = enriched.bio;
-    if (enriched.followers && !newExtra.followers) newExtra.followers = enriched.followers;
+    if ("followers" in enriched && enriched.followers && !newExtra.followers) newExtra.followers = enriched.followers;
     if ("externalUrl" in enriched && enriched.externalUrl) newExtra.externalUrl = enriched.externalUrl;
     newExtra.enrichedAt = new Date().toISOString();
     patch.extra_data = newExtra;
