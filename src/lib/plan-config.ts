@@ -27,6 +27,7 @@ export interface PlanConfig {
   name: string;
   price: number;           // $/month
   premium_actions_per_month: number;  // -1 = unlimited
+  premium_action_model: string;       // Anthropic model used for the 4 premium routes
   ai_budget_usd: number;   // legacy — admin finance tracking only
   ai_credits: number;      // legacy — admin finance tracking only
   tracked_channels: number;
@@ -52,6 +53,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     name: "Free Trial",
     price: 0,
     premium_actions_per_month: 5,
+    premium_action_model: "claude-haiku-4-5-20251001",
     ai_budget_usd: 1,
     ai_credits: 1_000,
     tracked_channels: 3,
@@ -76,6 +78,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     name: "Lite",
     price: 24,
     premium_actions_per_month: 20,
+    premium_action_model: "claude-haiku-4-5-20251001",
     ai_budget_usd: 6,
     ai_credits: 6_000,
     tracked_channels: 12,
@@ -100,6 +103,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     name: "Pro",
     price: 49,
     premium_actions_per_month: 50,
+    premium_action_model: "claude-sonnet-4-6",
     ai_budget_usd: 12,
     ai_credits: 12_000,
     tracked_channels: 30,
@@ -124,6 +128,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     name: "Business",
     price: 99,
     premium_actions_per_month: 200,
+    premium_action_model: "claude-sonnet-4-6",
     ai_budget_usd: 24,
     ai_credits: 24_000,
     tracked_channels: 100,
@@ -148,6 +153,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     name: "Enterprise",
     price: 249,
     premium_actions_per_month: 1000,
+    premium_action_model: "claude-sonnet-4-6",
     ai_budget_usd: 60,       // ← hard cap, extra credits purchaseable
     ai_credits: 60_000,
     tracked_channels: -1,    // unlimited

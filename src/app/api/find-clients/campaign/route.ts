@@ -168,9 +168,10 @@ Targeting:
 
 Generate the complete campaign kit for this offer targeting this specific lead profile.`;
 
+  const MODEL_C = getPlanConfig(userPlan).premium_action_model;
   const result = await safeAnthropic(() =>
     anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: MODEL_C,
       max_tokens: 3000,
       system: SYSTEM,
       messages: [{ role: "user", content: prompt }],
@@ -181,7 +182,7 @@ Generate the complete campaign kit for this offer targeting this specific lead p
     return NextResponse.json({ error: result.error, service: "anthropic", degraded: true }, { status: 503 });
   }
 
-  const MODEL_C = "claude-haiku-4-5-20251001";
+
   const usageC = result.data.usage;
   void logApiCost({
     userId: user.id, sessionId: req.headers.get("x-cost-session") || "unknown",

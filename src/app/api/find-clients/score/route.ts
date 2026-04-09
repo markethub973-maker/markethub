@@ -87,9 +87,10 @@ URL: ${r.url || r.profile_url || ""}
 Platform: ${r.platform || ""}
 `).join("\n")}`;
 
+  const MODEL_S = getPlanConfig(userPlan).premium_action_model;
   const result = await safeAnthropic(() =>
     anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: MODEL_S,
       max_tokens: 2500,
       system: SYSTEM,
       messages: [{ role: "user", content: prompt }],
@@ -100,7 +101,7 @@ Platform: ${r.platform || ""}
     return NextResponse.json({ error: result.error, service: "anthropic", degraded: true }, { status: 503 });
   }
 
-  const MODEL_S = "claude-haiku-4-5-20251001";
+
   const usageS = result.data.usage;
   void logApiCost({
     userId: user.id, sessionId: req.headers.get("x-cost-session") || "unknown",

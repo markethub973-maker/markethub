@@ -96,9 +96,10 @@ Suggested opening hook: ${outreach_hook || ""}
 
 Write personalized outreach messages for this specific lead.`;
 
+  const MODEL_M = getPlanConfig(userPlan).premium_action_model;
   const result = await safeAnthropic(() =>
     anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: MODEL_M,
       max_tokens: 1200,
       system: SYSTEM,
       messages: [{ role: "user", content: prompt }],
@@ -109,7 +110,7 @@ Write personalized outreach messages for this specific lead.`;
     return NextResponse.json({ error: result.error, service: "anthropic", degraded: true }, { status: 503 });
   }
 
-  const MODEL_M = "claude-haiku-4-5-20251001";
+
   const usageM = result.data.usage;
   void logApiCost({
     userId: user.id, sessionId: req.headers.get("x-cost-session") || "unknown",

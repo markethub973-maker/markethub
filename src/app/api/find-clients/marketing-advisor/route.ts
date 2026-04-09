@@ -363,7 +363,7 @@ CRITICAL INSTRUCTIONS:
 - Match response length to question complexity — concise for simple questions, detailed for complex ones.
 - NEVER invent data. Use only real, verifiable information.`;
 
-  const MODEL = "claude-haiku-4-5-20251001";
+  const MODEL = getPlanConfig(userPlan).premium_action_model;
   const sessionId = req.headers.get("x-cost-session") || "unknown";
 
   // Retry once if JSON is not returned (Haiku occasionally skips format)
