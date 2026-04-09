@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Header from "@/components/layout/Header";
 import {
   Search, Instagram, Facebook, Globe, Loader2,
@@ -64,6 +64,30 @@ export default function ResearchPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [savingLeads, setSavingLeads] = useState(false);
   const [saveStatus, setSaveStatus] = useState<{ kind: "ok" | "err"; msg: string } | null>(null);
+  // Pending deep-link from a `?tab=&q=` URL — captured on mount, fired once
+  // we have a valid handleSearch reference. Cleared after the first run so a
+  // browser back/forward doesn't re-trigger the same query.
+  const pendingDeepLinkRef = useRef<{ tab: string; query: string; mode?: string } | null>(null);
+  const deepLinkFiredRef = useRef(false);
+
+  // On first mount, look for `?tab=...&q=...&mode=...` in the URL (used by
+  // the Lead Finder "Caută acum în Research Hub" deep link). Set tab/query/mode
+  // immediately and stash the request in a ref so a second effect can fire
+  // handleSearch as soon as it's available.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get("tab");
+    const qParam = params.get("q");
+    const modeParam = params.get("mode");
+    if (tabParam && qParam) {
+      setTab(tabParam);
+      setQuery(qParam);
+      if (modeParam) setMode(modeParam as any);
+      pendingDeepLinkRef.current = { tab: tabParam, query: qParam, mode: modeParam || undefined };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Best-effort regex extractors used on already-crawled website text (no extra fetch needed)
   const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
@@ -495,6 +519,19 @@ export default function ResearchPage() {
     }
     setLoading(false);
   };
+
+  // Fire the deep-linked search exactly once, after the state from
+  // `?tab=&q=` has settled. Guarded by deepLinkFiredRef so changing the tab
+  // manually after the first auto-search does not re-trigger anything.
+  useEffect(() => {
+    const pending = pendingDeepLinkRef.current;
+    if (!pending || deepLinkFiredRef.current) return;
+    if (tab === pending.tab && query === pending.query) {
+      deepLinkFiredRef.current = true;
+      handleSearch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, query]);
 
   const modes = getModes();
   const currentTab = allTabs.find(t => t.id === tab) ?? allTabs[0];

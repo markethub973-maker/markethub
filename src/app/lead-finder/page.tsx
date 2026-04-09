@@ -19,6 +19,7 @@ import {
   MessageSquare, RefreshCw, MapPin, Building2, User, Package,
   Link, ShoppingCart, Target, ChevronDown, ChevronUp,
   ToggleLeft, ToggleRight, AlertCircle, Pencil, Bookmark, BookmarkCheck,
+  ExternalLink,
 } from "lucide-react";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -80,6 +81,21 @@ const PLATFORM_ICONS: Record<string, string> = {
   google: "🔍", google_maps: "🗺️", reddit: "🟠",
   facebook_groups: "👥", instagram_hashtag: "📸",
   tiktok_hashtag: "🎵", olx: "🛒", reviews: "⭐",
+};
+
+// Map AI source ids to Research Hub tab ids so we can deep-link from each
+// suggested source straight into the corresponding Research Hub tab with the
+// query pre-filled. Returns null when there is no real Research Hub equivalent.
+const RESEARCH_TAB_MAP: Record<string, { tab: string; mode?: string }> = {
+  google:            { tab: "google" },
+  google_maps:       { tab: "reviews" },
+  reddit:            { tab: "reddit",    mode: "keyword" },
+  facebook_groups:   { tab: "fb_groups" },
+  instagram_hashtag: { tab: "instagram", mode: "hashtag" },
+  tiktok_hashtag:    { tab: "tiktok",    mode: "hashtag" },
+  olx:               { tab: "olx" },
+  classifieds:       { tab: "olx" },
+  reviews:           { tab: "reviews" },
 };
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -893,6 +909,25 @@ export default function LeadFinderPage() {
                             </button>
                           )}
                           <p className="text-xs mt-1" style={{ color: "#A8967E" }}>{src.why}</p>
+                          {(() => {
+                            const map = RESEARCH_TAB_MAP[src.id];
+                            if (!map) return null;
+                            const q = sourceQueries[src.id] || src.query;
+                            const params = new URLSearchParams({ tab: map.tab, q });
+                            if (map.mode) params.set("mode", map.mode);
+                            return (
+                              <a
+                                href={`/research?${params.toString()}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs font-semibold mt-2 hover:underline"
+                                style={{ color: AMBER }}
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                Caută acum în Research Hub
+                              </a>
+                            );
+                          })()}
                         </div>
                       </div>
                     </div>
