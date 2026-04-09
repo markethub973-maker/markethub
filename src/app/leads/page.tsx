@@ -82,9 +82,22 @@ type Lead = {
   goal?: string;
   contacted?: boolean;
   notes?: string;
+  pipeline_status?: string;
   extra_data?: any;
   created_at: string;
 };
+
+// Pipeline stages — keep order, the UI cycles through this list and stage
+// filter pills follow the same sequence so the user reads it as a funnel.
+const PIPELINE_STAGES: { key: string; label: string; color: string }[] = [
+  { key: "new", label: "New", color: "#A8967E" },
+  { key: "contacted", label: "Contacted", color: "#F59E0B" },
+  { key: "replied", label: "Replied", color: "#3B82F6" },
+  { key: "interested", label: "Interested", color: "#8B5CF6" },
+  { key: "client", label: "Client", color: "#1DB954" },
+  { key: "lost", label: "Lost", color: "#DC2626" },
+];
+const STAGE_BY_KEY = Object.fromEntries(PIPELINE_STAGES.map(s => [s.key, s]));
 
 const TYPE_COLORS: Record<string, string> = {
   local_business: "#34A853",
@@ -147,15 +160,16 @@ export default function LeadsPage() {
   const [editingNote, setEditingNote] = useState<string | null>(null); // lead id
   const [noteText, setNoteText] = useState("");
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [stageFilter, setStageFilter] = useState<string>("all");
 
-  const handleToggleContacted = async (lead: Lead) => {
+  const handleSetStage = async (lead: Lead, stage: string) => {
     setTogglingId(lead.id);
     await fetch("/api/leads", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: lead.id, contacted: !lead.contacted }),
+      body: JSON.stringify({ id: lead.id, pipeline_status: stage }),
     });
-    setLeads(ls => ls.map(l => l.id === lead.id ? { ...l, contacted: !l.contacted } : l));
+    setLeads(ls => ls.map(l => l.id === lead.id ? { ...l, pipeline_status: stage } : l));
     setTogglingId(null);
   };
 
@@ -191,10 +205,17 @@ export default function LeadsPage() {
 
   const filtered = leads.filter(l => {
     const matchType = filter === "all" || l.lead_type === filter;
+    const matchStage = stageFilter === "all" || (l.pipeline_status || "new") === stageFilter;
     const matchSearch = !search || [l.name, l.address, l.city, l.phone, l.category, l.goal]
       .some(v => v?.toLowerCase().includes(search.toLowerCase()));
-    return matchType && matchSearch;
+    return matchType && matchStage && matchSearch;
   });
+
+  const stageCounts = leads.reduce((acc, l) => {
+    const k = l.pipeline_status || "new";
+    acc[k] = (acc[k] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
   const toggleSelect = (id: string) => {
     const s = new Set(selected);
@@ -221,12 +242,14 @@ export default function LeadsPage() {
   const exportCSV = () => {
     const toExport = filtered.filter(l => selected.size === 0 || selected.has(l.id));
     const rows = [
-      ["Source", "Name", "Category", "Address", "City", "Phone", "Website", "Email", "Rating", "URL", "Goal", "Date"],
+      ["Source", "Stage", "Name", "Category", "Address", "City", "Phone", "Website", "Email", "Rating", "URL", "Goal", "Notes", "Date"],
       ...toExport.map(l => [
-        TYPE_LABELS[l.lead_type] || l.lead_type, l.name, l.category || "",
+        TYPE_LABELS[l.lead_type] || l.lead_type,
+        STAGE_BY_KEY[l.pipeline_status || "new"]?.label || "New",
+        l.name, l.category || "",
         l.address || "", l.city || "", l.phone || "", l.website || "",
         l.email || "", l.rating?.toString() || "", l.url || "",
-        l.goal || "", new Date(l.created_at).toLocaleDateString(),
+        l.goal || "", l.notes || "", new Date(l.created_at).toLocaleDateString(),
       ]),
     ];
     const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
@@ -342,11 +365,35 @@ export default function LeadsPage() {
               <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>With email</p>
             </div>
             <div className="rounded-xl p-4" style={card}>
-              <p className="text-2xl font-bold" style={{ color: IG }}>
-                {leads.filter(l => l.contacted).length}
+              <p className="text-2xl font-bold" style={{ color: STAGE_BY_KEY.client.color }}>
+                {stageCounts.client || 0}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Contacted</p>
+              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Clients converted</p>
             </div>
+          </div>
+        )}
+
+        {/* Pipeline funnel — counts per stage in order, click to filter */}
+        {!tablesMissing && leads.length > 0 && (
+          <div className="rounded-xl p-3 flex items-center gap-2 flex-wrap" style={card}>
+            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#A8967E" }}>Pipeline:</span>
+            <button type="button" onClick={() => setStageFilter("all")}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+              style={stageFilter === "all"
+                ? { backgroundColor: AMBER + "20", color: AMBER, border: `1px solid ${AMBER}40` }
+                : { backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.2)" }}>
+              All ({leads.length})
+            </button>
+            {PIPELINE_STAGES.map(s => (
+              <button key={s.key} type="button" onClick={() => setStageFilter(s.key)}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+                style={stageFilter === s.key
+                  ? { backgroundColor: s.color + "20", color: s.color, border: `1px solid ${s.color}40` }
+                  : { backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.2)" }}>
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
+                {s.label} ({stageCounts[s.key] || 0})
+              </button>
+            ))}
           </div>
         )}
 
@@ -511,22 +558,32 @@ export default function LeadsPage() {
                       <p className="text-xs" style={{ color: "#C4AA8A" }}>
                         {new Date(lead.created_at).toLocaleDateString("en", { day: "2-digit", month: "short" })}
                       </p>
-                      {/* Contacted toggle */}
-                      <button type="button"
-                        onClick={() => handleToggleContacted(lead)}
-                        disabled={togglingId === lead.id}
-                        className="flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg transition-all"
-                        style={{
-                          backgroundColor: lead.contacted ? "rgba(29,185,84,0.1)" : "rgba(245,215,160,0.1)",
-                          color: lead.contacted ? GREEN : "#A8967E",
-                        }}>
-                        {togglingId === lead.id
-                          ? <Loader2 className="w-3 h-3 animate-spin" />
-                          : lead.contacted
-                          ? <CheckCircle2 className="w-3 h-3" />
-                          : <Circle className="w-3 h-3" />}
-                        {lead.contacted ? "Contacted" : "Mark"}
-                      </button>
+                      {/* Pipeline stage selector — native select styled as a colored badge */}
+                      {(() => {
+                        const stage = STAGE_BY_KEY[lead.pipeline_status || "new"] || STAGE_BY_KEY.new;
+                        return (
+                          <div className="relative">
+                            <select
+                              value={lead.pipeline_status || "new"}
+                              onChange={e => handleSetStage(lead, e.target.value)}
+                              disabled={togglingId === lead.id}
+                              aria-label={`Pipeline stage for ${lead.name || "lead"}`}
+                              title="Pipeline stage"
+                              className="text-xs font-bold px-2 py-1 pr-6 rounded-lg appearance-none cursor-pointer transition-all focus:outline-none"
+                              style={{
+                                backgroundColor: stage.color + "15",
+                                color: stage.color,
+                                border: `1px solid ${stage.color}40`,
+                              }}>
+                              {PIPELINE_STAGES.map(s => (
+                                <option key={s.key} value={s.key}>{s.label}</option>
+                              ))}
+                            </select>
+                            <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[8px]" style={{ color: stage.color }}>▼</span>
+                            {togglingId === lead.id && <Loader2 className="absolute right-5 top-1/2 -translate-y-1/2 w-3 h-3 animate-spin" style={{ color: stage.color }} />}
+                          </div>
+                        );
+                      })()}
                       {/* Notes */}
                       <button type="button"
                         onClick={() => { setEditingNote(lead.id); setNoteText(lead.notes || ""); }}

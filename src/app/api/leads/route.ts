@@ -130,12 +130,22 @@ export async function PATCH(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { id, contacted, notes } = await req.json();
+  const { id, contacted, notes, pipeline_status } = await req.json();
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
+
+  // Whitelist accepted pipeline stages so the API can't be used to scribble
+  // arbitrary text into the column from the client.
+  const VALID_STAGES = new Set(["new", "contacted", "replied", "interested", "client", "lost"]);
 
   const update: Record<string, any> = {};
   if (contacted !== undefined) update.contacted = contacted;
   if (notes !== undefined) update.notes = notes;
+  if (pipeline_status !== undefined) {
+    if (!VALID_STAGES.has(pipeline_status)) {
+      return NextResponse.json({ error: "invalid pipeline_status" }, { status: 400 });
+    }
+    update.pipeline_status = pipeline_status;
+  }
 
   const supa = createServiceClient();
   const { error } = await supa
