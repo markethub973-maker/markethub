@@ -9,7 +9,9 @@ import { requirePlan } from "@/lib/requirePlan";
 function normalizeLeadUrl(u: string | null | undefined): string {
   if (!u) return "";
   try {
-    const url = new URL(u.startsWith("http") ? u : "https://" + u);
+    // Case-insensitive scheme check — Google sometimes returns uppercase URLs
+    const hasScheme = /^https?:\/\//i.test(u);
+    const url = new URL(hasScheme ? u : "https://" + u);
     const host = url.hostname.toLowerCase().replace(/^www\./, "").replace(/^m\./, "");
     const path = url.pathname.replace(/\/+$/, "").toLowerCase();
     return host + path;
