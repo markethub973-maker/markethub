@@ -122,6 +122,18 @@ function fmtNum(n: number) {
   return String(Math.round(n));
 }
 
+// Extract bare domain (e.g. "youtube.com", "mellamusicproduction.ro") from any URL
+// so the user can see WHERE the lead actually points without clicking it.
+function hostnameOf(u: string | null | undefined): string {
+  if (!u) return "";
+  try {
+    const url = u.startsWith("http") ? new URL(u) : new URL("https://" + u);
+    return url.hostname.replace(/^www\./, "");
+  } catch {
+    return u;
+  }
+}
+
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -468,14 +480,14 @@ export default function LeadsPage() {
                         )}
                         {lead.website && (
                           <a href={lead.website} target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                            <Globe className="w-3 h-3" />website
+                            className="flex items-center gap-1 text-xs font-semibold hover:underline" style={{ color: "#6366F1" }}>
+                            <Globe className="w-3 h-3" />{hostnameOf(lead.website)}
                           </a>
                         )}
                         {lead.url && !lead.website && (
                           <a href={lead.url} target="_blank" rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-xs" style={{ color: color }}>
-                            <ExternalLink className="w-3 h-3" />profile
+                            className="flex items-center gap-1 text-xs font-semibold hover:underline" style={{ color }}>
+                            <ExternalLink className="w-3 h-3" />{hostnameOf(lead.url)}
                           </a>
                         )}
                       </div>
