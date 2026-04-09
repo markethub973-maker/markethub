@@ -9,6 +9,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 
 export interface Notification {
   id: string;
@@ -103,9 +104,13 @@ export async function GET(req: NextRequest) {
   } catch { /* table may not exist */ }
 
   // ── 3. Admin-only: abuse flags ────────────────────────────────────────────
+  // abuse_flags + cron_logs are now RLS-protected (vul2 migration). Admin
+  // notifications need to read all rows across users, so we use the service
+  // client which bypasses RLS. The is_admin check above gates this branch.
   if (profile?.is_admin) {
+    const svc = createServiceClient();
     try {
-      const { data: flags } = await supabase
+      const { data: flags } = await svc
         .from("abuse_flags")
         .select("id, user_id, reason, severity, detected_at")
         .eq("resolved", false)
@@ -129,7 +134,7 @@ export async function GET(req: NextRequest) {
 
     // Admin: cron health
     try {
-      const { data: cronLogs } = await supabase
+      const { data: cronLogs } = await svc
         .from("cron_logs")
         .select("job, ran_at, result")
         .order("ran_at", { ascending: false })
