@@ -91,7 +91,7 @@ Generate the optimal lead generation strategy for this offer.`;
   const result = await safeAnthropic(() =>
     anthropic.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 1500,
+      max_tokens: 3000,
       system: SYSTEM,
       messages: [{ role: "user", content: prompt }],
     })
