@@ -1256,7 +1256,7 @@ export default function LeadFinderPage() {
                   <div className="relative">
                     <textarea value={outreach.messages[activePlatform as keyof typeof outreach.messages] || ""}
                       onChange={() => {}} readOnly rows={5}
-                      className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                      className="w-full pl-4 pr-24 py-3 rounded-xl text-sm resize-none focus:outline-none"
                       style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                     <button type="button"
                       onClick={() => copyMessage(outreach.messages[activePlatform as keyof typeof outreach.messages] || "")}
@@ -1394,7 +1394,7 @@ export default function LeadFinderPage() {
                           <p className="text-xs font-bold" style={{ color: "#78614E" }}>📱 SMS message — max 160 characters</p>
                           <div className="relative">
                             <textarea value={campaign.sms.text} readOnly rows={3}
-                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              className="w-full pl-4 pr-24 py-3 rounded-xl text-sm resize-none focus:outline-none"
                               style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                             <button type="button" onClick={() => copyCampaign("sms", campaign.sms.text)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
@@ -1414,7 +1414,7 @@ export default function LeadFinderPage() {
                           </div>
                           <div className="relative">
                             <textarea value={campaign.email.body} readOnly rows={8}
-                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              className="w-full pl-4 pr-24 py-3 rounded-xl text-sm resize-none focus:outline-none"
                               style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                             <button type="button" onClick={() => copyCampaign("email", `Subject: ${campaign.email.subject}\n\n${campaign.email.body}`)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
@@ -1430,7 +1430,7 @@ export default function LeadFinderPage() {
                           <p className="text-xs font-bold" style={{ color: "#78614E" }}>💬 WhatsApp message</p>
                           <div className="relative">
                             <textarea value={campaign.whatsapp.text} readOnly rows={4}
-                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              className="w-full pl-4 pr-24 py-3 rounded-xl text-sm resize-none focus:outline-none"
                               style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                             <button type="button" onClick={() => copyCampaign("whatsapp", campaign.whatsapp.text)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
@@ -1446,7 +1446,7 @@ export default function LeadFinderPage() {
                           <p className="text-xs font-bold" style={{ color: "#78614E" }}>👥 Facebook post</p>
                           <div className="relative">
                             <textarea value={campaign.facebook_post.text} readOnly rows={5}
-                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              className="w-full pl-4 pr-24 py-3 rounded-xl text-sm resize-none focus:outline-none"
                               style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                             <button type="button" onClick={() => copyCampaign("fb", campaign.facebook_post.text)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
@@ -1466,7 +1466,7 @@ export default function LeadFinderPage() {
                           <p className="text-xs font-bold" style={{ color: "#78614E" }}>📸 Instagram caption</p>
                           <div className="relative">
                             <textarea value={campaign.instagram_post.caption} readOnly rows={4}
-                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              className="w-full pl-4 pr-24 py-3 rounded-xl text-sm resize-none focus:outline-none"
                               style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                             <button type="button" onClick={() => copyCampaign("ig", campaign.instagram_post.caption)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
@@ -1508,7 +1508,7 @@ export default function LeadFinderPage() {
                           <p className="text-xs font-bold" style={{ color: "#78614E" }}>📝 Voiceover script</p>
                           <div className="relative">
                             <textarea value={campaign.tiktok.script} readOnly rows={6}
-                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              className="w-full pl-4 pr-24 py-3 rounded-xl text-sm resize-none focus:outline-none"
                               style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                             <button type="button" onClick={() => copyCampaign("tiktok", `HOOK: ${campaign.tiktok.hook}\n\n${campaign.tiktok.script}\n\nCTA: ${campaign.tiktok.cta}`)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
@@ -1525,7 +1525,7 @@ export default function LeadFinderPage() {
                           <p className="text-xs font-bold" style={{ color: "#78614E" }}>Caption + hashtags</p>
                           <div className="relative">
                             <textarea value={campaign.tiktok.caption} readOnly rows={2}
-                              className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
+                              className="w-full pl-4 pr-24 py-3 rounded-xl text-sm resize-none focus:outline-none"
                               style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                             <button type="button" onClick={() => copyCampaign("tiktok_cap", campaign.tiktok.caption)}
                               className="absolute top-2 right-2 flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold"
