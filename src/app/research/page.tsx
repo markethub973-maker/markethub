@@ -383,8 +383,44 @@ export default function ResearchPage() {
 
   const toggleSection = (key: string) => setExpandedSections(s => ({ ...s, [key]: !s[key] }));
 
-  const { preferred_region, local_market_enabled } = useUserRegion();
+  const { preferred_region, local_market_enabled, loading: regionLoading, refresh: refreshRegion } = useUserRegion();
   const localMarket = local_market_enabled ? getLocalMarket(preferred_region) : null;
+
+  // One-click activation banner for Romanian market tools (OLX, Pagini Aurii,
+  // Storia, Autovit). Hidden when already enabled, while loading, or after the
+  // user dismisses it (persisted in localStorage so it doesn't nag).
+  const [marketBannerDismissed, setMarketBannerDismissed] = useState(false);
+  const [activatingMarket, setActivatingMarket] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setMarketBannerDismissed(localStorage.getItem("ro_market_banner_dismissed") === "1");
+  }, []);
+  const dismissMarketBanner = () => {
+    setMarketBannerDismissed(true);
+    if (typeof window !== "undefined") localStorage.setItem("ro_market_banner_dismissed", "1");
+  };
+  const activateRomanianMarket = async () => {
+    setActivatingMarket(true);
+    try {
+      const res = await fetch("/api/settings/region", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ preferred_region: "RO", local_market_enabled: true }),
+      });
+      if (res.ok) {
+        refreshRegion();
+        setSaveStatus({ kind: "ok", msg: "🇷🇴 Local Market Mode activat — tab-urile OLX, Pagini Aurii, Storia, Autovit sunt acum vizibile" });
+        setTimeout(() => setSaveStatus(null), 4000);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setSaveStatus({ kind: "err", msg: data.error || "Activarea a eșuat" });
+      }
+    } catch (e) {
+      setSaveStatus({ kind: "err", msg: "Activarea a eșuat" });
+    } finally {
+      setActivatingMarket(false);
+    }
+  };
   const localActorTabs = localMarket?.actors.map(a => ({
     id: a.id,
     label: a.label,
@@ -540,6 +576,34 @@ export default function ResearchPage() {
     <div>
       <Header title="Research Hub" subtitle="Google · YouTube · Instagram · TikTok · Facebook · Reddit · Website · Reviews" />
       <div className="p-6 space-y-5">
+
+        {/* Romanian market activation banner — 1-click enable for OLX/Pagini Aurii/Storia/Autovit */}
+        {!regionLoading && !local_market_enabled && !marketBannerDismissed && (
+          <div className="rounded-2xl p-4 flex items-center gap-4"
+            style={{ background: "linear-gradient(135deg, rgba(0,43,127,0.08) 0%, rgba(252,209,22,0.10) 50%, rgba(206,17,38,0.08) 100%)", border: "1px solid rgba(0,43,127,0.25)" }}>
+            <span className="text-3xl flex-shrink-0">🇷🇴</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-bold" style={{ color: "#292524" }}>
+                Activează Local Market Mode pentru România
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
+                Adaugă 4 tab-uri noi în Research Hub: <strong>OLX.ro</strong> (scraper real cu preț, oraș, vânzător), <strong>Pagini Aurii</strong>, <strong>Storia.ro</strong>, <strong>Autovit.ro</strong> — gratis, 1 click.
+              </p>
+            </div>
+            <button type="button" onClick={activateRomanianMarket} disabled={activatingMarket}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 transition-all flex-shrink-0"
+              style={{ backgroundColor: "#002B7F", color: "white", boxShadow: "0 2px 8px rgba(0,43,127,0.3)" }}>
+              {activatingMarket ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+              {activatingMarket ? "Activare…" : "Activează"}
+            </button>
+            <button type="button" onClick={dismissMarketBanner}
+              className="text-xs px-2 py-1 rounded-lg flex-shrink-0 hover:underline"
+              style={{ color: "#A8967E" }}
+              aria-label="Închide banner">
+              Mai târziu
+            </button>
+          </div>
+        )}
 
         {/* Tab selector grouped */}
         <div className="rounded-2xl p-5 space-y-4" style={card}>
