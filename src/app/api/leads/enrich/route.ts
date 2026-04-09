@@ -52,10 +52,11 @@ async function enrichInstagram(url: string): Promise<{ email?: string; phone?: s
   };
 }
 
-async function enrichWebsite(url: string): Promise<{ email?: string; phone?: string; bio?: string; name?: string } | null> {
+async function enrichWebsite(url: string): Promise<{ email?: string; phone?: string; bio?: string; name?: string; address?: string } | null> {
   // Reuses the same fetch+parse pipeline as the bulk Google save flow.
   // libphonenumber validates phones against TLD-derived country context, so
   // .ro sites get RO context, .de sites get DE context, etc.
+  // Address comes from JSON-LD PostalAddress, <address> tag, or RO/EN street regex.
   const r = await fetchAndExtract(url);
   if (!r.ok) return null;
   return {
@@ -63,6 +64,7 @@ async function enrichWebsite(url: string): Promise<{ email?: string; phone?: str
     phone: r.phones[0] || undefined,
     bio: r.description || undefined,
     name: r.name || undefined,
+    address: r.address || undefined,
   };
 }
 
@@ -102,7 +104,7 @@ export async function POST(req: NextRequest) {
   const supa = createServiceClient();
   const { data: leads, error } = await supa
     .from("research_leads")
-    .select("id, lead_type, url, website, email, phone, name, extra_data")
+    .select("id, lead_type, url, website, email, phone, name, address, extra_data")
     .in("id", capped)
     .eq("user_id", user.id);
   if (error) return NextResponse.json({ error: "fetch failed" }, { status: 500 });
@@ -134,6 +136,7 @@ export async function POST(req: NextRequest) {
     if (!lead.email && enriched.email) patch.email = enriched.email;
     if (!lead.phone && enriched.phone) patch.phone = enriched.phone;
     if (!lead.name && "name" in enriched && enriched.name) patch.name = enriched.name;
+    if (!lead.address && "address" in enriched && enriched.address) patch.address = enriched.address;
 
     const newExtra = { ...(lead.extra_data || {}) };
     if (enriched.bio) newExtra.bio = enriched.bio;

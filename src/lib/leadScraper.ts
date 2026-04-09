@@ -79,6 +79,63 @@ function validatePhone(raw: string, defaultCountry?: CountryCode): string | null
   return null;
 }
 
+// Address extraction — three strategies tried in order (best signal first):
+//   1. JSON-LD schema.org PostalAddress (used by professional sites with SEO)
+//   2. <address> HTML element (semantic HTML, used by some CMS templates)
+//   3. RO/EN street-prefix regex on stripped text (fallback for hand-built sites)
+// Returns the first non-empty match. Capped at 200 chars for sanity.
+
+function extractAddressFromJsonLd(html: string): string | null {
+  const blocks = html.match(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi) || [];
+  for (const block of blocks) {
+    const inner = block.replace(/<script[^>]*>/i, "").replace(/<\/script>/i, "").trim();
+    let parsed: any;
+    try { parsed = JSON.parse(inner); } catch { continue; }
+    // JSON-LD can be a single object, an array, or have @graph wrapping
+    const items: any[] = Array.isArray(parsed)
+      ? parsed
+      : Array.isArray(parsed?.["@graph"]) ? parsed["@graph"] : [parsed];
+    for (const item of items) {
+      const addr = item?.address;
+      if (!addr) continue;
+      if (typeof addr === "string") return addr.trim().slice(0, 200);
+      if (typeof addr === "object") {
+        const parts = [addr.streetAddress, addr.addressLocality, addr.addressRegion, addr.postalCode, addr.addressCountry]
+          .filter(p => typeof p === "string" && p.trim());
+        if (parts.length) return parts.join(", ").slice(0, 200);
+      }
+    }
+  }
+  return null;
+}
+
+function extractAddressFromTag(html: string): string | null {
+  const m = html.match(/<address[^>]*>([\s\S]{5,500}?)<\/address>/i);
+  if (!m) return null;
+  const cleaned = stripTags(m[1]);
+  return cleaned ? cleaned.slice(0, 200) : null;
+}
+
+// Street-prefix heuristic. Tolerant on RO orthography (Soseaua/Soseua/Sos.,
+// Bulevardul/B-dul/Bd., Strada/Str., Calea, Aleea, Splaiul, Piața/Piata).
+// Optional Nr. + sector + city tail. Falls back to EN street types.
+const RO_ADDRESS_RE = /(?:Strada|Str\.|Soseaua|Soseua|Sos\.|Bulevardul|B[- ]?dul|Bd\.|Calea|Aleea|Splaiul|Piața|Piata)\s+[A-Za-zŞŢÂÎĂşţâîă][^,\n]{2,60}(?:,\s*Nr\.?\s*\d+[A-Za-z]?)?(?:,\s*Sector(?:ul)?\s*\d)?(?:,\s*(?:Bucureşti|Bucuresti|București|[A-ZŞŢÂÎĂ][a-zşţâîă]+))?/i;
+const EN_ADDRESS_RE = /\d+\s+[A-Z][a-zA-Z]{2,}(?:\s+[A-Z][a-zA-Z]+){0,3}\s+(?:Street|St\.?|Avenue|Ave\.?|Road|Rd\.?|Boulevard|Blvd\.?|Lane|Ln\.?|Drive|Dr\.?)(?:,\s*[A-Z][a-zA-Z]+)?(?:,\s*[A-Z]{2}\s*\d{4,6})?/;
+
+function extractAddressFromText(text: string): string | null {
+  const ro = text.match(RO_ADDRESS_RE);
+  if (ro) return ro[0].trim().slice(0, 200);
+  const en = text.match(EN_ADDRESS_RE);
+  if (en) return en[0].trim().slice(0, 200);
+  return null;
+}
+
+function extractAddress(html: string, text: string): string | null {
+  return extractAddressFromJsonLd(html)
+    || extractAddressFromTag(html)
+    || extractAddressFromText(text);
+}
+
 function extractPhones(text: string, html: string, url: string): string[] {
   const country = guessCountryFromUrl(url);
   const collected: string[] = [];
@@ -104,6 +161,7 @@ export interface ScrapeResult {
   ok: boolean;
   name?: string | null;
   description?: string | null;
+  address?: string | null;
   emails: string[];
   phones: string[];
   error?: string;
@@ -165,8 +223,9 @@ export async function fetchAndExtract(url: string, timeoutMs = 8000): Promise<Sc
     const emails = uniq(rawEmails).slice(0, 5);
 
     const phones = extractPhones(text, html, url);
+    const address = extractAddress(html, text);
 
-    return { url, ok: true, name, description, emails, phones };
+    return { url, ok: true, name, description, address, emails, phones };
   } catch (err: any) {
     clearTimeout(timer);
     return { url, ok: false, emails: [], phones: [], error: err?.name === "AbortError" ? "timeout" : "fetch_failed" };
