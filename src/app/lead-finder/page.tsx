@@ -122,6 +122,8 @@ interface OutreachResult {
   messages: { reddit: string; email: string; facebook: string; generic: string };
   subject_line: string;
   best_platform: string;
+  lead_kind?: "customer" | "business" | "unknown";
+  warning?: string;
 }
 
 interface CampaignResult {
@@ -1216,6 +1218,19 @@ export default function LeadFinderPage() {
                 <div className="flex items-center gap-2 py-6 justify-center">
                   <Loader2 className="w-5 h-5 animate-spin" style={{ color: AMBER }} />
                   <p className="text-sm" style={{ color: "#A8967E" }}>AI writing message…</p>
+                </div>
+              )}
+
+              {outreach && !generatingMsg && (outreach.warning || outreach.lead_kind === "business") && (
+                <div className="rounded-xl px-4 py-3 flex items-start gap-2"
+                  style={{ backgroundColor: "rgba(245,158,11,0.1)", border: `1px solid ${AMBER}40` }}>
+                  <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: AMBER }} />
+                  <div className="text-xs leading-relaxed" style={{ color: "#78614E" }}>
+                    <p className="font-bold mb-1" style={{ color: AMBER }}>
+                      ⚠ Lead detectat ca {outreach.lead_kind === "business" ? "competitor (alt furnizor)" : "neclar"}
+                    </p>
+                    <p>{outreach.warning || "Acest lead pare să ofere servicii similare cu ale tale, nu să caute. Verifică sursa și alege un lead din Facebook Groups sau Reddit unde oamenii cer recomandări."}</p>
+                  </div>
                 </div>
               )}
 

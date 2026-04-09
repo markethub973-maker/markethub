@@ -15,6 +15,15 @@ For each result evaluate:
 - Is the timing good (recent post/activity)?
 - Can they afford it?
 
+CRITICAL — DEMAND vs SUPPLY filter:
+You MUST distinguish between DEMAND-side leads (people who NEED the offer) and SUPPLY-side listings (other businesses that already OFFER the same thing).
+- DEMAND examples: "caut DJ pentru nunta mea", "looking for a recording studio", "any recommendations for a wedding photographer?", "need a plumber in Bucharest" — these are HOT/WARM prospects (score 6-10).
+- SUPPLY examples: another DJ company's website, a competitor studio's Google Maps listing, a directory page like "Top 10 DJs in Bucharest", a PR press release about an event agency, a "services / pachete / tarife" landing page — these are COMPETITORS, NOT customers. Score them 1-2 ("cold") and write in "why": "supply-side competitor listing — not a buyer".
+- Detection signals for SUPPLY/competitor: business name with "SRL"/"PFA"/"Studio"/"Events"/"Agency", URL paths like /servicii/, /pachete/, /tarife/, /portfolio/, /about-us/, Google Maps business listings, directory aggregators (top10, recomandari, reviews of providers), price lists, "contact us to book" CTAs.
+- Detection signals for DEMAND: first-person language ("caut", "am nevoie", "looking for", "anyone know"), question marks, mentions of personal events ("nunta mea", "for my wedding"), specific dates in the future, budget mentions framed as buyer not seller, posts in customer-side communities (FB groups for couples planning weddings, Reddit r/<niche>, classified ads from individuals).
+
+When in doubt between demand and supply, prefer the LOWER score — false positives on competitors waste the user's outreach effort and lead to embarrassing B2B-pitched-as-B2C messages.
+
 Return ONLY valid JSON array:
 [
   {
@@ -23,12 +32,14 @@ Return ONLY valid JSON array:
     "label": "hot",
     "signals": ["Actively searching", "Budget mentioned", "Specific event"],
     "contact_hint": "name or handle if visible",
+    "lead_kind": "customer",
     "why": "one sentence why this is a good lead"
   }
 ]
 
 score: 1-10 (10 = perfect prospect, 1 = not relevant)
-label: "hot" (8-10), "warm" (5-7), "cold" (1-4)`;
+label: "hot" (8-10), "warm" (5-7), "cold" (1-4)
+lead_kind: "customer" (someone who needs the offer) | "business" (a competitor offering the same thing) | "unknown"`;
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -58,7 +69,7 @@ Platform: ${r.platform || ""}
   const result = await safeAnthropic(() =>
     anthropic.messages.create({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 2000,
+      max_tokens: 2500,
       system: SYSTEM,
       messages: [{ role: "user", content: prompt }],
     })
