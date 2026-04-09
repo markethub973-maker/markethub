@@ -2,9 +2,22 @@
 
 import { useState, useEffect } from "react";
 import { FlaskConical, Play, RefreshCw, CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { PLANS } from "@/lib/plan-config";
 
 const PLAN_ORDER = ["free_test", "lite", "pro", "business", "enterprise"] as const;
 type PlanId = typeof PLAN_ORDER[number];
+
+// Format helpers — keep matrix display in sync with plan-config (single source of truth)
+const fmtNum = (n: number) => (n === -1 ? "Unlimited" : n.toLocaleString("en-US"));
+const fmtDays = (d: number) => {
+  if (d === -1) return "Unlimited";
+  if (d < 30) return `${d} zile`;
+  if (d < 365) return `${Math.round(d / 30)} luni`;
+  if (d === 365) return "1 an";
+  if (d === 730) return "2 ani";
+  return `${Math.round(d / 365)} ani`;
+};
+const fmtSla = (s: number | null) => (s === null ? "—" : `${s}%`);
 
 const PLAN_LABELS: Record<PlanId, string> = {
   free_test: "Free Trial",
@@ -217,19 +230,20 @@ export default function AdminPlanTestAgent() {
                       <span className="text-xs font-bold uppercase tracking-wider text-gray-500">Limite plan</span>
                     </td>
                   </tr>
-                  {[
-                    { label: "Tokens/lună",         values: ["1,000",  "50,000",  "150,000",  "500,000",   "1,500,000"] },
-                    { label: "Conturi sociale",      values: ["1",      "2",       "5",        "10",        "Unlimited"] },
-                    { label: "Competitor brands",    values: ["1",      "8",       "20",       "25",        "50"] },
-                    { label: "Tracked channels",     values: ["2",      "12",      "30",       "100",       "Unlimited"] },
-                    { label: "Team members",         values: ["1",      "1",       "3",        "2",         "5"] },
-                    { label: "Client accounts",      values: ["1",      "2",       "5",        "10",        "20"] },
-                    { label: "Istoric date",         values: ["7 zile", "90 zile", "1 an",     "1 an",      "2 ani"] },
-                    { label: "API access",           values: [false,    false,     false,      true,        true] },
-                    { label: "White label",          values: [false,    false,     false,      false,       true] },
-                    { label: "Priority support",     values: [false,    false,     true,       true,        true] },
-                    { label: "SLA uptime",           values: ["—",      "—",       "—",        "99.5%",     "99.9%"] },
-                  ].map(({ label, values }) => (
+                  {([
+                    { label: "Premium AI Actions/lună", values: PLAN_ORDER.map(p => fmtNum(PLANS[p].premium_actions_per_month)) },
+                    { label: "Basic AI (Haiku)",        values: PLAN_ORDER.map(() => "Unlimited") },
+                    { label: "Conturi sociale (IG/TT)", values: PLAN_ORDER.map(p => fmtNum(PLANS[p].instagram_accounts)) },
+                    { label: "Competitor brands",       values: PLAN_ORDER.map(p => fmtNum(PLANS[p].competitor_brands)) },
+                    { label: "Tracked channels",        values: PLAN_ORDER.map(p => fmtNum(PLANS[p].tracked_channels)) },
+                    { label: "Team members",            values: PLAN_ORDER.map(p => fmtNum(PLANS[p].team_members)) },
+                    { label: "Client accounts",         values: PLAN_ORDER.map(p => fmtNum(PLANS[p].client_accounts)) },
+                    { label: "Istoric date",            values: PLAN_ORDER.map(p => fmtDays(PLANS[p].history_days)) },
+                    { label: "API access",              values: PLAN_ORDER.map(p => PLANS[p].has_api_access) },
+                    { label: "White label",             values: PLAN_ORDER.map(p => PLANS[p].has_white_label) },
+                    { label: "Priority support",        values: PLAN_ORDER.map(p => PLANS[p].has_priority_support) },
+                    { label: "SLA uptime",              values: PLAN_ORDER.map(p => fmtSla(PLANS[p].sla_uptime)) },
+                  ] as Array<{ label: string; values: Array<string | boolean> }>).map(({ label, values }) => (
                     <tr key={label} className="hover:bg-white/2">
                       <td className="py-2 pr-4">
                         <span className="text-white text-xs font-medium">{label}</span>
