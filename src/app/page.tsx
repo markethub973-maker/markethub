@@ -1,6 +1,7 @@
 "use client";
 
 import Header from "@/components/layout/Header";
+import OnboardingChecklist from "@/components/ui/OnboardingChecklist";
 import StatCard from "@/components/ui/StatCard";
 import PlatformBadge from "@/components/ui/PlatformBadge";
 import ViewsChart from "@/components/charts/ViewsChart";
@@ -127,6 +128,7 @@ export default function DashboardPage() {
       />
 
       <div className="p-6 space-y-6">
+        <OnboardingChecklist />
         {/* Stats Row — computed from YouTube trending data */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
