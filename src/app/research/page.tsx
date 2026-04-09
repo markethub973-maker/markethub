@@ -122,19 +122,30 @@ export default function ResearchPage() {
             }
           } catch {}
         }
+        // Google sometimes returns Maps snippet rows with title="Hartă" / "Map" /
+        // "Maps" / "Imagini" — useless as a lead name. Same for empty titles or
+        // generic "Untitled". Fall back to scraper name → displayedUrl → hostname.
+        const GENERIC_TITLES = new Set(["hartă", "harta", "map", "maps", "imagini", "images", "videoclipuri", "videos", "untitled", "—"]);
+        const cleanGoogleName = (r: any, c: { name?: string | null }): string => {
+          const t = (r.title || "").trim();
+          if (t && !GENERIC_TITLES.has(t.toLowerCase())) return t;
+          if (c.name && c.name.trim()) return c.name.trim();
+          if (r.displayedUrl) return r.displayedUrl;
+          try { return new URL(r.url).hostname.replace(/^www\./, ""); } catch { return r.url; }
+        };
         leads = items.map((r: any) => {
           const c = contactsByUrl[r.url] || { emails: [], phones: [] };
           return {
             source: "research",
             lead_type: "website",
-            name: r.title || c.name || r.displayedUrl,
+            name: cleanGoogleName(r, c),
             website: r.url,
             url: r.url,
             email: c.emails[0] || null,
             phone: c.phones[0] || null,
             description: r.description,
             goal: results.query,
-            extra_data: { position: r.position, displayedUrl: r.displayedUrl, ad: r.type === "ad", emails: c.emails, phones: c.phones },
+            extra_data: { position: r.position, displayedUrl: r.displayedUrl, ad: r.type === "ad", emails: c.emails, phones: c.phones, originalTitle: r.title },
           };
         });
       } else if (tab === "youtube") {

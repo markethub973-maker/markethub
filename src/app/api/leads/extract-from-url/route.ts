@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { parsePhoneNumberFromString, findPhoneNumbersInText, type CountryCode } from "libphonenumber-js";
 
 // Best-effort scraper: fetch URL → extract email/phone/name from HTML.
-// No external service needed; uses native fetch + regex on the body.
+// Phone validation uses libphonenumber-js (Google's i18n phone library) so we
+// only accept numbers that pass per-country length/prefix rules — no more
+// false positives like "1001-5000" employee ranges or random 4-4 digit pairs.
 // Per-URL timeout 8s, total batch capped to 30 URLs to avoid runaway.
 
 const EMAIL_RE = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-// Matches international and local phone formats (loose). Filters out years/IDs after.
-const PHONE_RE = /(?:\+?\d{1,3}[\s.\-()]*)?(?:\(?\d{2,4}\)?[\s.\-]?)?\d{3,4}[\s.\-]?\d{3,4}/g;
 
 const COMMON_TLDS = new Set([
   "com", "ro", "net", "org", "io", "co", "eu", "uk", "de", "fr", "es", "it", "nl", "pl",
@@ -43,15 +44,68 @@ function extractMeta(html: string, name: string): string | null {
   return m ? decodeEntities(m[1].trim()).slice(0, 300) : null;
 }
 
-function looksLikePhone(s: string): boolean {
-  const digits = s.replace(/\D/g, "");
-  if (digits.length < 8 || digits.length > 15) return false;
-  // Filter out years (e.g. 1999-2024) and pure numeric ids
-  if (/^(19|20)\d{2}$/.test(digits)) return false;
-  return true;
+function uniq<T>(arr: T[]): T[] { return [...new Set(arr)]; }
+
+// Guess default country from TLD so libphonenumber can validate national-format
+// numbers (e.g. "0751135167" needs RO context to be recognized as +40751135167).
+function guessCountryFromUrl(url: string): CountryCode | undefined {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.toLowerCase();
+    const tld = host.split(".").pop();
+    const TLD_TO_COUNTRY: Record<string, CountryCode> = {
+      ro: "RO", uk: "GB", de: "DE", fr: "FR", es: "ES", it: "IT", nl: "NL",
+      pl: "PL", be: "BE", at: "AT", ch: "CH", pt: "PT", gr: "GR", hu: "HU",
+      cz: "CZ", sk: "SK", se: "SE", no: "NO", dk: "DK", fi: "FI", ie: "IE",
+      bg: "BG", hr: "HR", si: "SI", lt: "LT", lv: "LV", ee: "EE", md: "MD",
+      ua: "UA", rs: "RS", us: "US", ca: "CA", au: "AU", nz: "NZ", in: "IN",
+      jp: "JP", br: "BR", mx: "MX", ar: "AR", za: "ZA", tr: "TR", il: "IL",
+    };
+    return tld ? TLD_TO_COUNTRY[tld] : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
-function uniq<T>(arr: T[]): T[] { return [...new Set(arr)]; }
+// Validate one candidate number with libphonenumber. Returns E.164 string if
+// valid, otherwise null. Trying both as-is (international) and with default
+// country fallback catches both `+40 751 135 167` and `0751 135 167`.
+function validatePhone(raw: string, defaultCountry?: CountryCode): string | null {
+  if (!raw) return null;
+  try {
+    // First try parsing as-is (handles `+40...` international format)
+    const direct = parsePhoneNumberFromString(raw);
+    if (direct?.isValid()) return direct.number;
+    // Then try with country context (handles national `0751...`)
+    if (defaultCountry) {
+      const national = parsePhoneNumberFromString(raw, defaultCountry);
+      if (national?.isValid()) return national.number;
+    }
+  } catch {}
+  return null;
+}
+
+function extractPhones(text: string, html: string, url: string): string[] {
+  const country = guessCountryFromUrl(url);
+  const collected: string[] = [];
+
+  // 1. tel: hrefs are gold — they're explicitly marked as phone numbers
+  for (const m of html.matchAll(/href=["']tel:([^"']+)["']/gi)) {
+    const validated = validatePhone(m[1].trim(), country);
+    if (validated) collected.push(validated);
+  }
+
+  // 2. Use libphonenumber's text scanner — only matches things that look like
+  //    phone numbers in proper context (no false positives on 1001-5000 ranges)
+  try {
+    const found = findPhoneNumbersInText(text, country);
+    for (const f of found) {
+      if (f.number?.isValid()) collected.push(f.number.number);
+    }
+  } catch {}
+
+  return uniq(collected).slice(0, 5);
+}
 
 async function fetchAndExtract(url: string): Promise<{
   url: string;
@@ -117,14 +171,10 @@ async function fetchAndExtract(url: string): Promise<{
       });
     const emails = uniq(rawEmails).slice(0, 5);
 
-    // Phones: search for tel: hrefs first (very reliable), then loose match
-    const telLinks = uniq(
-      Array.from(html.matchAll(/href=["']tel:([^"']+)["']/gi)).map(m => m[1].trim())
-    );
-    const phoneCandidates = telLinks.length > 0
-      ? telLinks
-      : uniq((text.match(PHONE_RE) || []).map(s => s.trim()).filter(looksLikePhone));
-    const phones = phoneCandidates.slice(0, 5);
+    // Phones: validated through libphonenumber-js with TLD-derived country context.
+    // Returns E.164 format (e.g. "+40751135167") only for numbers that pass the
+    // per-country length/prefix rules. False positives like "1001-5000" are rejected.
+    const phones = extractPhones(text, html, url);
 
     return { url, ok: true, name, description, emails, phones };
   } catch (err: any) {
