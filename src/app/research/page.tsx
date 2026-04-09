@@ -1412,7 +1412,9 @@ export default function ResearchPage() {
           <div className="space-y-3">
             {(() => {
               const actor = localMarket!.actors.find(a => a.id === tab)!;
-              const items: any[] = Array.isArray(results) ? results : results.results || results.items || [];
+              const items: any[] = Array.isArray(results)
+                ? results
+                : results.listings || results.results || results.items || [];
               return (
                 <>
                   <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>
@@ -1423,17 +1425,61 @@ export default function ResearchPage() {
                       <p className="text-sm" style={{ color: "#A8967E" }}>No results found</p>
                     </div>
                   )}
-                  {items.map((item: any, i: number) => (
-                    <div key={i} className="rounded-xl p-4 space-y-1.5" style={card}>
-                      {item.title && <p className="font-semibold text-sm" style={{ color: "#292524" }}>{item.title}</p>}
-                      {item.name && <p className="font-semibold text-sm" style={{ color: "#292524" }}>{item.name}</p>}
-                      {item.price && <p className="text-sm font-bold" style={{ color: localMarket!.color }}>{item.price} {localMarket!.currency}</p>}
-                      {item.address && <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}><MapPin className="w-3 h-3" />{item.address}</p>}
-                      {item.phone && <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}><Phone className="w-3 h-3" />{item.phone}</p>}
-                      {item.url && <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-xs flex items-center gap-1" style={{ color: localMarket!.color }}><ExternalLink className="w-3 h-3" />Open</a>}
-                      {item.description && <p className="text-xs" style={{ color: "#A8967E" }}>{item.description.slice(0, 200)}{item.description.length > 200 ? "…" : ""}</p>}
-                    </div>
-                  ))}
+                  {items.map((item: any, i: number) => {
+                    const cityLine = [item.city, item.district, item.region].filter(Boolean).join(", ");
+                    return (
+                      <div key={i} className="rounded-xl p-4 space-y-1.5" style={card}>
+                        <div className="flex items-start gap-3">
+                          {item.photo && (
+                            <img src={item.photo} alt="" className="w-16 h-16 rounded object-cover flex-shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0 space-y-1">
+                            {item.title && <p className="font-semibold text-sm" style={{ color: "#292524" }}>{item.title}{item.isPromoted && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${localMarket!.color}15`, color: localMarket!.color }}>PROMOVAT</span>}</p>}
+                            {item.name && !item.title && <p className="font-semibold text-sm" style={{ color: "#292524" }}>{item.name}</p>}
+                            {item.price !== undefined && item.price !== null && (
+                              <p className="text-sm font-bold" style={{ color: localMarket!.color }}>
+                                {item.price} {item.currency || localMarket!.currency}
+                                {item.negotiable && <span className="ml-1 text-[10px] font-normal" style={{ color: "#A8967E" }}>(negociabil)</span>}
+                              </p>
+                            )}
+                            {cityLine && (
+                              <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}>
+                                <MapPin className="w-3 h-3" />{cityLine}
+                              </p>
+                            )}
+                            {item.address && (
+                              <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}>
+                                <MapPin className="w-3 h-3" />{item.address}
+                              </p>
+                            )}
+                            {item.sellerName && (
+                              <p className="text-xs" style={{ color: "#A8967E" }}>
+                                Vânzător: <span className="font-semibold" style={{ color: "#78614E" }}>{item.sellerName}</span>
+                                {item.sellerType && ` · ${item.sellerType}`}
+                              </p>
+                            )}
+                            {item.phone && (
+                              <p className="text-xs flex items-center gap-1" style={{ color: "#78614E" }}>
+                                <Phone className="w-3 h-3" />{item.phone}
+                              </p>
+                            )}
+                            {item.description && (
+                              <p className="text-xs" style={{ color: "#A8967E" }}>
+                                {item.description.slice(0, 200)}{item.description.length > 200 ? "…" : ""}
+                              </p>
+                            )}
+                            {item.url && (
+                              <a href={item.url} target="_blank" rel="noopener noreferrer"
+                                className="text-xs inline-flex items-center gap-1 font-semibold"
+                                style={{ color: localMarket!.color }}>
+                                <ExternalLink className="w-3 h-3" />Deschide pe {actor.label}
+                              </a>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </>
               );
             })()}
