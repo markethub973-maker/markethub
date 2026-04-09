@@ -105,9 +105,47 @@ export default function ResearchPage() {
       let leads: any[] = [];
 
       if (tab === "google") {
-        // Collect organic + paid URLs, scrape each for contacts, then build leads
+        // Collect organic + paid URLs, dedupe by normalized URL, detect destination
+        // platform per row (so a youtube.com link gets lead_type=youtube, not "website"),
+        // then scrape only real websites for contacts (social URLs are JS-rendered shells).
         const items = (results.results || []).filter((r: any) => (r.type === "organic" || r.type === "ad") && r.url);
-        const urls = items.map((r: any) => r.url).slice(0, 30);
+
+        // Normalize to dedupe Google's repeated organic/featured snippet rows pointing
+        // to the same destination (e.g. youtube.com/@channel listed twice in 20 results).
+        const normalizeUrl = (u: string): string => {
+          try {
+            const url = new URL(u);
+            const host = url.hostname.toLowerCase().replace(/^www\./, "").replace(/^m\./, "");
+            return host + url.pathname.replace(/\/$/, "").toLowerCase();
+          } catch { return u; }
+        };
+        const seen = new Set<string>();
+        const dedupedItems = items.filter((r: any) => {
+          const key = normalizeUrl(r.url);
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+
+        // Map hostname → real lead_type so the source pill in /leads shows the actual
+        // destination platform (YouTube/Instagram/Facebook/etc.) instead of all rows
+        // collapsing into a generic "Website" bucket.
+        const detectPlatform = (url: string): string => {
+          try {
+            const h = new URL(url).hostname.toLowerCase().replace(/^www\./, "").replace(/^m\./, "");
+            if (h === "youtu.be" || h.endsWith("youtube.com")) return "youtube";
+            if (h.endsWith("instagram.com")) return "instagram";
+            if (h.endsWith("facebook.com") || h === "fb.com" || h.endsWith(".fb.com")) return "facebook";
+            if (h.endsWith("tiktok.com")) return "tiktok";
+            if (h.endsWith("reddit.com")) return "reddit";
+            return "website";
+          } catch { return "website"; }
+        };
+
+        // Only scrape real websites — social platform URLs return JS-rendered shells
+        // or robots.txt blocks, so contact extraction would only burn time and rate limits.
+        const websiteItems = dedupedItems.filter((r: any) => detectPlatform(r.url) === "website");
+        const urls = websiteItems.map((r: any) => r.url).slice(0, 30);
         let contactsByUrl: Record<string, { emails: string[]; phones: string[]; name?: string | null }> = {};
         if (urls.length) {
           try {
@@ -133,19 +171,28 @@ export default function ResearchPage() {
           if (r.displayedUrl) return r.displayedUrl;
           try { return new URL(r.url).hostname.replace(/^www\./, ""); } catch { return r.url; }
         };
-        leads = items.map((r: any) => {
+        leads = dedupedItems.map((r: any) => {
           const c = contactsByUrl[r.url] || { emails: [], phones: [] };
+          const platform = detectPlatform(r.url);
           return {
             source: "research",
-            lead_type: "website",
+            lead_type: platform,
             name: cleanGoogleName(r, c),
-            website: r.url,
+            website: platform === "website" ? r.url : null,
             url: r.url,
             email: c.emails[0] || null,
             phone: c.phones[0] || null,
             description: r.description,
             goal: results.query,
-            extra_data: { position: r.position, displayedUrl: r.displayedUrl, ad: r.type === "ad", emails: c.emails, phones: c.phones, originalTitle: r.title },
+            extra_data: {
+              position: r.position,
+              displayedUrl: r.displayedUrl,
+              ad: r.type === "ad",
+              emails: c.emails,
+              phones: c.phones,
+              originalTitle: r.title,
+              discoveredVia: "google",
+            },
           };
         });
       } else if (tab === "youtube") {

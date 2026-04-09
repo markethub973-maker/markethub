@@ -108,7 +108,7 @@ const TYPE_ICONS: Record<string, React.ElementType> = {
 
 const TYPE_LABELS: Record<string, string> = {
   local_business: "Google Maps",
-  website: "Google Search",
+  website: "Website",
   instagram: "Instagram",
   tiktok: "TikTok",
   facebook: "Facebook",
