@@ -7,7 +7,7 @@ import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
 import {
-  getLanguageByCode, getCountryByCode, recommendedPlatforms, RO_LANGUAGE_RULES,
+  getLanguageByCode, getCountryByCode, recommendedPlatforms, buildLanguageInstruction,
   type MarketScope,
 } from "@/lib/markets";
 
@@ -299,13 +299,13 @@ export async function POST(req: NextRequest) {
 
   const marketLabel = resolvedLocation || "global (no specific market provided)";
 
-  // Build the language enforcement block. When content_language is set
-  // (the wizard now always sends one), the output language is forced; we
-  // only fall back to language-of-question heuristics when nothing is set.
+  // Build the language enforcement block via the shared helper. When
+  // content_language is set (the wizard now always sends one), the output
+  // language is forced AND the per-language vocabulary pack is injected
+  // (RO marriage verbs, EL Greek alphabet, DE Sie capitalization, etc.).
+  // When nothing is set, falls back to auto-detect.
   const lang = getLanguageByCode(content_language);
-  const languageBlock = lang
-    ? `LANGUAGE — hard requirement: write the ENTIRE response in ${lang.name} (${lang.nativeName}). The user has explicitly chosen this language for the campaign in the wizard. Do NOT default to English. Do NOT auto-detect. Do NOT switch languages mid-response. Every label, every CTA, every piece of advice — all in ${lang.name}.${lang.code === "ro" ? `\n\n${RO_LANGUAGE_RULES}` : ""}`
-    : `LANGUAGE — fallback: detect the language of the user's question above and respond in that same language. If no question is provided, default to English. Never switch languages mid-response.`;
+  const languageBlock = buildLanguageInstruction(content_language);
 
   const platformsBlock = (() => {
     const platforms = recommendedPlatforms({

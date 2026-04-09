@@ -430,7 +430,7 @@ export default function LeadFinderPage() {
       const res = await fetch("/api/find-clients/score", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-cost-session": sessionId },
-        body: JSON.stringify({ results: allResults, offer_summary: suggestion.offer_summary, intent_signals: suggestion.intent_signals }),
+        body: JSON.stringify({ results: allResults, offer_summary: suggestion.offer_summary, intent_signals: suggestion.intent_signals, content_language: contentLanguage }),
       });
       const scoreData = await res.json();
       if (scoreData.scored) {

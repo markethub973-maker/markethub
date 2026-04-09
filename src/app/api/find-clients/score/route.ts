@@ -4,10 +4,11 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import { buildLanguageInstruction } from "@/lib/markets";
 
 const anthropic = getAppAnthropicClient();
 
-const SYSTEM = `You are a sales qualification expert. Given a list of search results and an offer, score each result as a potential lead.
+const SYSTEM_BASE = `You are a sales qualification expert. Given a list of search results and an offer, score each result as a potential lead.
 
 For each result evaluate:
 - Are they actively looking for this type of offer? (intent)
@@ -51,8 +52,12 @@ export async function POST(req: NextRequest) {
   const limitCheck = await checkAndIncrDailyLimit(user.id, userPlan, "apex");
   if (!limitCheck.allowed) return NextResponse.json(limitExceededResponse(limitCheck, "apex"), { status: 429 });
 
-  const { results, offer_summary, intent_signals } = await req.json();
+  const { results, offer_summary, intent_signals, content_language } = await req.json();
   if (!results?.length) return NextResponse.json({ error: "Results required" }, { status: 400 });
+
+  // Inject language pack so the "why" / "signals" fields and any RU/AR/EL/RO etc.
+  // text the model emits respects the user's chosen content language and grammar rules.
+  const SYSTEM = `${buildLanguageInstruction(content_language)}\n\n${SYSTEM_BASE}`;
 
   const prompt = `
 Offer: ${offer_summary}

@@ -6,6 +6,7 @@ import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
 import { getAppAnthropicClient } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
+import { LANGUAGE_RULES } from "@/lib/markets";
 
 // Generates a personalized cold email (subject + body) for a single lead.
 // Anthropic call goes through the user-facing app key + APEX daily limiter.
@@ -17,7 +18,15 @@ const anthropic = getAppAnthropicClient();
 
 const MODEL = "claude-haiku-4-5-20251001";
 
-const SYSTEM = `You write SHORT, NATURAL cold outreach emails for marketing agencies contacting potential clients. Detect the language of the lead's info (name, bio, address, hostname) and write the entire email in that same language — Romanian if anything looks Romanian, otherwise English.
+// Per-language packs from the shared platform-wide vocabulary system.
+// We inject ALL packs at once and tell the model: detect language from
+// the lead's info, then apply the matching pack. This way every supported
+// market gets correct grammar without needing the caller to pre-detect.
+const ALL_LANGUAGE_PACKS = Object.entries(LANGUAGE_RULES)
+  .map(([code, rules]) => `=== ${code.toUpperCase()} PACK ===\n${rules}`)
+  .join("\n\n");
+
+const SYSTEM = `You write SHORT, NATURAL cold outreach emails for marketing agencies contacting potential clients. Detect the language of the lead's info (name, bio, address, hostname) and write the entire email in that same language. Default to English if no other language is clearly indicated.
 
 Hard rules:
 - Subject: max 60 chars, specific to them, NEVER generic ("Quick question", "Hello").
@@ -27,21 +36,11 @@ Hard rules:
 - No "I'd like to offer you", no "Our company specializes in", no corporate fluff.
 - Sign off with just "—" on its own line (the user fills in their name).
 
-CRITICAL — Romanian language rules (apply when writing in Romanian):
-- ALWAYS use proper diacritics: ă, â, î, ș, ț. Never strip them, never use look-alikes (s/t instead of ș/ț, a instead of ă/â).
-- Common verb conjugations to get RIGHT (these are frequently messed up):
-  * "I see" = "Văd" (NOT "Ved", NOT "Vad")
-  * "I noticed" = "Am observat" or "Am văzut"
-  * "I think" = "Cred" (NOT "Cret")
-- Use FORMAL second person (politețe) consistently throughout the entire email — pick ONE and stick with it:
-  * "dumneavoastră" / "vă" / "ați" / "sunteți" — NEVER mix with informal "tu" / "te" / "ai" / "ești"
-  * Verbs must agree: "Ați fi deschis(ă) la o conversație?" NOT "Ar fi deschis la o conversație?"
-  * Adjectives agree in gender with the addressee: assume neutral/masculine if unknown.
-- Capitalize "Vă", "Dumneavoastră", "Dvs." mid-sentence only when it's the formal pronoun (optional but professional).
-- Greetings: "Bună ziua," is more formal than "Salut," — use "Bună ziua," for B2B / business contacts and "Salut," only for very casual contexts.
-- Question marks and punctuation are mandatory; Romanian questions end with "?".
+LANGUAGE VOCABULARY PACKS — apply the pack matching the language you detected. Each pack is mandatory for its language; ignore the others.
 
-Before returning, re-read the body and verify every Romanian word has correct diacritics and verb conjugations.
+${ALL_LANGUAGE_PACKS}
+
+Before returning, re-read the body and verify it follows the matching language pack — diacritics, register consistency, gender-aware verbs, no invented jargon.
 
 Return strict JSON:
 {
