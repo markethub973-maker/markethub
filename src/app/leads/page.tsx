@@ -7,6 +7,7 @@ import {
   Search, Trash2, Download, RefreshCw, Loader2, AlertCircle,
   Users, Map, Hash, ExternalLink, Filter, Copy, Check,
   CheckCircle2, Circle, StickyNote, X, Youtube, MessageSquare,
+  Sparkles,
 } from "lucide-react";
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -161,6 +162,8 @@ export default function LeadsPage() {
   const [noteText, setNoteText] = useState("");
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [stageFilter, setStageFilter] = useState<string>("all");
+  const [enriching, setEnriching] = useState(false);
+  const [enrichMsg, setEnrichMsg] = useState<string | null>(null);
 
   const handleSetStage = async (lead: Lead, stage: string) => {
     setTogglingId(lead.id);
@@ -226,6 +229,44 @@ export default function LeadsPage() {
   const selectAll = () => {
     if (selected.size === filtered.length) setSelected(new Set());
     else setSelected(new Set(filtered.map(l => l.id)));
+  };
+
+  const handleEnrich = async () => {
+    // Pick selected social leads, or all visible social leads if nothing selected.
+    const ENRICHABLE = new Set(["instagram", "youtube"]);
+    const pool = filtered.filter(l => ENRICHABLE.has(l.lead_type));
+    const targets = selected.size > 0
+      ? pool.filter(l => selected.has(l.id))
+      : pool;
+    if (!targets.length) {
+      setEnrichMsg("Niciun lead Instagram/YouTube selectat");
+      setTimeout(() => setEnrichMsg(null), 4000);
+      return;
+    }
+    setEnriching(true);
+    setEnrichMsg(null);
+    try {
+      const res = await fetch("/api/leads/enrich", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: targets.slice(0, 10).map(l => l.id) }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setEnrichMsg(json?.error || `HTTP ${res.status}`);
+      } else {
+        const parts = [`${json.enriched} îmbogățite`];
+        if (json.skipped) parts.push(`${json.skipped} sărite`);
+        if (json.errors) parts.push(`${json.errors} erori`);
+        setEnrichMsg(parts.join(" • "));
+        await fetchLeads();
+      }
+    } catch (e: any) {
+      setEnrichMsg(e?.message || "Network error");
+    } finally {
+      setEnriching(false);
+      setTimeout(() => setEnrichMsg(null), 6000);
+    }
   };
 
   const handleDelete = async () => {
@@ -434,6 +475,13 @@ export default function LeadsPage() {
                   <Trash2 className="w-3 h-3" />Delete ({selected.size})
                 </button>
               )}
+              <button type="button" onClick={handleEnrich} disabled={enriching}
+                title="Îmbogățește lead-uri Instagram/YouTube cu bio + email + telefon"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50"
+                style={{ backgroundColor: "rgba(139,92,246,0.1)", color: "#8B5CF6" }}>
+                {enriching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                Enrich {selected.size > 0 ? `(${selected.size})` : ""}
+              </button>
               <button type="button" onClick={exportCSV}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
                 style={{ backgroundColor: "rgba(29,185,84,0.1)", color: GREEN }}>
@@ -444,6 +492,14 @@ export default function LeadsPage() {
                 <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               </button>
             </div>
+          </div>
+        )}
+
+        {enrichMsg && (
+          <div className="rounded-xl p-3 text-xs font-semibold flex items-center gap-2"
+            style={{ backgroundColor: "rgba(139,92,246,0.08)", color: "#8B5CF6", border: "1px solid rgba(139,92,246,0.2)" }}>
+            <Sparkles className="w-3.5 h-3.5" />
+            {enrichMsg}
           </div>
         )}
 
