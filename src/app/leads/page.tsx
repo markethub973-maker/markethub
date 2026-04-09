@@ -209,9 +209,9 @@ export default function LeadsPage() {
   const exportCSV = () => {
     const toExport = filtered.filter(l => selected.size === 0 || selected.has(l.id));
     const rows = [
-      ["Name", "Type", "Category", "Address", "City", "Phone", "Website", "Email", "Rating", "URL", "Goal", "Date"],
+      ["Source", "Name", "Category", "Address", "City", "Phone", "Website", "Email", "Rating", "URL", "Goal", "Date"],
       ...toExport.map(l => [
-        l.name, TYPE_LABELS[l.lead_type] || l.lead_type, l.category || "",
+        TYPE_LABELS[l.lead_type] || l.lead_type, l.name, l.category || "",
         l.address || "", l.city || "", l.phone || "", l.website || "",
         l.email || "", l.rating?.toString() || "", l.url || "",
         l.goal || "", new Date(l.created_at).toLocaleDateString(),
@@ -434,24 +434,19 @@ export default function LeadsPage() {
                       onChange={() => toggleSelect(lead.id)}
                       className="w-3.5 h-3.5 rounded mt-1 flex-shrink-0" />
 
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
-                      style={{ backgroundColor: color + "15" }}>
-                      <Icon className="w-3.5 h-3.5" style={{ color }} />
-                    </div>
-
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 flex-wrap">
-                        <div>
-                          <p className="text-sm font-bold" style={{ color: "#292524" }}>{lead.name || "—"}</p>
-                          {lead.category && (
-                            <p className="text-xs" style={{ color: "#A8967E" }}>{lead.category}</p>
-                          )}
-                        </div>
-                        <span className="text-xs px-2 py-0.5 rounded-full font-semibold flex-shrink-0"
-                          style={{ backgroundColor: color + "15", color }}>
+                      {/* Source label is the FIRST visible element in the title row, then the lead name */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider flex-shrink-0"
+                          style={{ backgroundColor: color, color: lead.lead_type === "tiktok" ? "#FFF8F0" : "white" }}>
+                          <Icon className="w-2.5 h-2.5" />
                           {TYPE_LABELS[lead.lead_type] || lead.lead_type}
                         </span>
+                        <p className="text-sm font-bold" style={{ color: "#292524" }}>{lead.name || "—"}</p>
                       </div>
+                      {lead.category && (
+                        <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{lead.category}</p>
+                      )}
 
                       <div className="flex items-center gap-4 mt-1.5 flex-wrap">
                         {lead.address && (
