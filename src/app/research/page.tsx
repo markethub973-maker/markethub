@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import {
   Search, Instagram, Facebook, Globe, Loader2,
   ExternalLink, ThumbsUp, MessageCircle, Share2,
-  Eye, Play, Hash, User, TrendingUp, AlertCircle,
+  Eye, Play, Hash, User, Users, TrendingUp, AlertCircle,
   Youtube, MessageSquare, Star, MapPin, ChevronDown,
   ChevronUp, Phone, FileText, ShoppingBag, Save, Check,
 } from "lucide-react";
@@ -45,6 +45,7 @@ const TABS: { id: Tab; label: string; icon: React.ElementType; color: string; gr
   { id: "instagram",label: "Instagram", icon: Instagram,     color: IG,    group: "Social" },
   { id: "tiktok",   label: "TikTok",    icon: Play,          color: TT,    group: "Social" },
   { id: "facebook", label: "Facebook",  icon: Facebook,      color: FB,    group: "Social" },
+  { id: "fb_groups",label: "FB Groups", icon: Users,         color: FB,    group: "Social" },
   { id: "reddit",   label: "Reddit",    icon: MessageSquare, color: RD,    group: "Social" },
   { id: "reviews",  label: "Reviews",   icon: Star,          color: GREEN, group: "Local" },
 ];
@@ -278,6 +279,27 @@ export default function ResearchPage() {
             extra_data: { likes: p.likes, comments: p.comments, shares: p.shares, reactions: p.reactions, time: p.time },
           });
         }
+      } else if (tab === "fb_groups") {
+        for (const p of (results.posts || [])) {
+          leads.push({
+            source: "research",
+            lead_type: "facebook",
+            name: p.author || results.groupInfo?.name || "FB group post",
+            url: p.url || null,
+            description: p.text,
+            extra_data: {
+              group: results.groupInfo?.name,
+              groupUrl: results.groupInfo?.url,
+              likes: p.likes,
+              comments: p.comments,
+              shares: p.shares,
+              reactionsTotal: p.reactionsTotal,
+              time: p.time,
+              authorId: p.authorId,
+              fromGroup: true,
+            },
+          });
+        }
       } else if (tab === "reddit") {
         leads = (results.posts || []).map((p: any) => ({
           source: "research",
@@ -359,6 +381,7 @@ export default function ResearchPage() {
       case "instagram": return mode === "username" ? "@username (ex: @nike)" : "#hashtag (ex: marketing)";
       case "tiktok": return mode === "username" ? "@username (ex: @khaby.lame)" : "#hashtag (ex: business)";
       case "facebook": return "Page name (ex: Nike)";
+      case "fb_groups": return "URL grup public (https://www.facebook.com/groups/...)";
       case "reddit": return mode === "subreddit" ? "subreddit (ex: Entrepreneur)" : "Keyword (ex: wedding DJ tips)";
       case "reviews": return "Place name or Google Maps URL";
       default: {
@@ -432,6 +455,10 @@ export default function ResearchPage() {
         case "facebook":
           endpoint = "/api/research/facebook";
           body = { page: query.trim(), limit: 10 };
+          break;
+        case "fb_groups":
+          endpoint = "/api/research/facebook-groups";
+          body = { groupUrl: query.trim(), limit: 20 };
           break;
         case "reddit":
           endpoint = "/api/research/reddit";
@@ -1177,6 +1204,100 @@ export default function ResearchPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+          );
+        })()}
+
+        {/* ── FB GROUPS ── */}
+        {!loading && results && tab === "fb_groups" && (() => {
+          const fgSort: Record<string, (p: any) => number> = {
+            likes: p => p.likes || 0,
+            comments: p => p.comments || 0,
+            shares: p => p.shares || 0,
+            reactions: p => p.reactionsTotal || 0,
+            posted: p => p.time ? new Date(p.time).getTime() : 0,
+          };
+          const sortedPosts = sortRows<any>(results.posts || [], sortBy ? fgSort[sortBy] : undefined);
+          return (
+          <div className="space-y-3">
+            {results.groupInfo?.name && (
+              <div className="rounded-xl p-4" style={{ ...card, borderColor: `${FB}30` }}>
+                <div className="flex items-center gap-2">
+                  <Users className="w-4 h-4" style={{ color: FB }} />
+                  <p className="font-bold" style={{ color: "#292524" }}>Grup: {results.groupInfo.name}</p>
+                </div>
+                {results.groupInfo.url && (
+                  <a href={results.groupInfo.url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-semibold mt-1" style={{ color: FB }}>
+                    <ExternalLink className="w-3 h-3" />Deschide grupul
+                  </a>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} postări</p>
+              <SaveLeadsButton color={FB} count={(results.posts || []).length} />
+            </div>
+
+            <div className="space-y-3">
+              {sortedPosts.map((p: any, i: number) => {
+                const rowKey = String(p.postId ?? i);
+                const isOpen = !!expandedRows[rowKey];
+                return (
+                  <div key={rowKey} className="rounded-xl p-4" style={card}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          {p.author && (
+                            <span className="text-xs font-bold" style={{ color: FB }}>{p.author}</span>
+                          )}
+                          {p.time && (
+                            <span className="text-xs" style={{ color: "#C4AA8A" }}>{timeAgo(p.time)}</span>
+                          )}
+                        </div>
+                        <p className="text-sm" style={{ color: "#292524" }}>
+                          {isOpen ? p.text : (p.text || "").slice(0, 220) + ((p.text || "").length > 220 ? "…" : "")}
+                        </p>
+                        <div className="flex gap-4 mt-2 flex-wrap">
+                          <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: FB }}>
+                            <ThumbsUp className="w-3 h-3" />{fmtNum(p.likes)}
+                          </span>
+                          <span className="flex items-center gap-1 text-xs" style={{ color: "#78614E" }}>
+                            <MessageCircle className="w-3 h-3" />{fmtNum(p.comments)}
+                          </span>
+                          <span className="flex items-center gap-1 text-xs" style={{ color: "#78614E" }}>
+                            <Share2 className="w-3 h-3" />{fmtNum(p.shares)}
+                          </span>
+                          {p.url && (
+                            <a href={p.url} target="_blank" rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs font-semibold" style={{ color: FB }}>
+                              <ExternalLink className="w-3 h-3" />Postare
+                            </a>
+                          )}
+                        </div>
+                        {p.topComments?.length > 0 && (
+                          <div className="mt-2 space-y-1">
+                            {p.topComments.map((c: any, j: number) => (
+                              <div key={j} className="px-3 py-2 rounded-lg text-xs" style={{ backgroundColor: "rgba(24,119,242,0.04)", borderLeft: `2px solid ${FB}30` }}>
+                                {c.author && <span className="font-bold" style={{ color: FB }}>{c.author}: </span>}
+                                <span style={{ color: "#78614E" }}>{c.text}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      {(p.text || "").length > 220 && (
+                        <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
+                          className="text-xs font-semibold flex-shrink-0" style={{ color: FB }}>
+                          {isOpen ? "Mai puțin" : "Mai mult"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
           );
