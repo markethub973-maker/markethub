@@ -189,6 +189,11 @@ export default function Sidebar() {
   const [lockedModal, setLockedModal] = useState<string | null>(null);
 
   useEffect(() => {
+    // Admin sessions use cookie auth, not Supabase auth — grant enterprise access directly
+    if (typeof window !== "undefined" && localStorage.getItem("admin_authenticated") === "true") {
+      setProfile({ plan: "enterprise", subscription_plan: "enterprise", is_admin: true });
+      return;
+    }
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
