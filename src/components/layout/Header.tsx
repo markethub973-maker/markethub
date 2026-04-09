@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client";
 interface HeaderProps {
   title: string;
   subtitle?: string;
+  rightExtra?: React.ReactNode;
 }
 
 interface Notification {
@@ -47,7 +48,7 @@ const NOTIF_BG: Record<string, string> = {
   success: "rgba(22,163,74,0.08)",
 };
 
-export default function Header({ title, subtitle }: HeaderProps) {
+export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
@@ -162,6 +163,9 @@ export default function Header({ title, subtitle }: HeaderProps) {
             />
           </div>
         )}
+
+        {/* Extra right content (e.g. admin logout button) */}
+        {rightExtra}
 
         {/* Notifications Bell */}
         <div className="relative" ref={notifRef}>

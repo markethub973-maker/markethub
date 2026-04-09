@@ -167,26 +167,20 @@ export default function AdminPage() {
       <Header
         title="Admin Dashboard"
         subtitle="Manage users, subscriptions, and pricing"
+        rightExtra={
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors"
+            style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#EF4444" }}
+            onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.2)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.1)"; }}
+          >
+            <LogOut size={18} />
+            Logout Admin
+          </button>
+        }
       />
-      <div className="absolute top-6 right-6 z-30">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors"
-          style={{
-            backgroundColor: "rgba(239,68,68,0.1)",
-            color: "#EF4444",
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.2)";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.1)";
-          }}
-        >
-          <LogOut size={18} />
-          Logout Admin
-        </button>
-      </div>
       <div className="p-6 space-y-8">
 
         {/* ── Audit Log ────────────────────────────────────────────────── */}
