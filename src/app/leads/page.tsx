@@ -7,7 +7,7 @@ import {
   Search, Trash2, Download, RefreshCw, Loader2, AlertCircle,
   Users, Map, Hash, ExternalLink, Filter, Copy, Check,
   CheckCircle2, Circle, StickyNote, X, Youtube, MessageSquare,
-  Sparkles,
+  Sparkles, Mail, Send,
 } from "lucide-react";
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -164,6 +164,12 @@ export default function LeadsPage() {
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [enriching, setEnriching] = useState(false);
   const [enrichMsg, setEnrichMsg] = useState<string | null>(null);
+  // Email composer state — modal opens when emailingLead is set.
+  const [emailingLead, setEmailingLead] = useState<Lead | null>(null);
+  const [emailGoal, setEmailGoal] = useState("");
+  const [emailDraft, setEmailDraft] = useState<{ subject: string; body: string; to: string } | null>(null);
+  const [generatingEmail, setGeneratingEmail] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const handleSetStage = async (lead: Lead, stage: string) => {
     setTogglingId(lead.id);
@@ -268,6 +274,74 @@ export default function LeadsPage() {
       setEnriching(false);
       setTimeout(() => setEnrichMsg(null), 6000);
     }
+  };
+
+  const handleOpenEmail = (lead: Lead) => {
+    setEmailingLead(lead);
+    setEmailGoal("");
+    setEmailDraft(null);
+    setEmailError(null);
+  };
+
+  const handleCloseEmail = () => {
+    setEmailingLead(null);
+    setEmailGoal("");
+    setEmailDraft(null);
+    setEmailError(null);
+    setGeneratingEmail(false);
+  };
+
+  const handleGenerateEmail = async () => {
+    if (!emailingLead) return;
+    setGeneratingEmail(true);
+    setEmailError(null);
+    setEmailDraft(null);
+    try {
+      const res = await fetch("/api/leads/email/draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lead_id: emailingLead.id, goal: emailGoal.trim() || undefined }),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setEmailError(json?.error || `HTTP ${res.status}`);
+      } else {
+        setEmailDraft({ subject: json.subject || "", body: json.body || "", to: json.to || emailingLead.email || "" });
+      }
+    } catch (e: any) {
+      setEmailError(e?.message || "Network error");
+    } finally {
+      setGeneratingEmail(false);
+    }
+  };
+
+  const handleOpenInGmail = async () => {
+    if (!emailingLead || !emailDraft) return;
+    // Zero-OAuth Gmail compose URL — opens a new tab with subject & body pre-filled.
+    // The user reviews and clicks Send themselves.
+    const params = new URLSearchParams({
+      view: "cm",
+      fs: "1",
+      to: emailDraft.to,
+      su: emailDraft.subject,
+      body: emailDraft.body,
+    });
+    const url = `https://mail.google.com/mail/?${params.toString()}`;
+    window.open(url, "_blank", "noopener,noreferrer");
+
+    // Auto-bump pipeline_status to "contacted" if still in "new" — best-effort,
+    // we don't block the Gmail tab if the PATCH fails.
+    if ((emailingLead.pipeline_status || "new") === "new") {
+      try {
+        await fetch("/api/leads", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: emailingLead.id, pipeline_status: "contacted" }),
+        });
+        setLeads(ls => ls.map(l => l.id === emailingLead.id ? { ...l, pipeline_status: "contacted" } : l));
+      } catch {}
+    }
+    handleCloseEmail();
   };
 
   const handleDelete = async () => {
@@ -641,14 +715,27 @@ export default function LeadsPage() {
                           </div>
                         );
                       })()}
-                      {/* Notes */}
-                      <button type="button"
-                        onClick={() => { setEditingNote(lead.id); setNoteText(lead.notes || ""); }}
-                        className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
-                        style={{ color: lead.notes ? AMBER : "#C4AA8A", backgroundColor: lead.notes ? `${AMBER}10` : "transparent" }}>
-                        <StickyNote className="w-3 h-3" />
-                        {lead.notes ? "Note" : "+ Note"}
-                      </button>
+                      <div className="flex items-center gap-1">
+                        {/* Email composer — only shown if the lead actually has an email */}
+                        {lead.email && (
+                          <button type="button"
+                            onClick={() => handleOpenEmail(lead)}
+                            title="Compose AI email and open in Gmail"
+                            className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
+                            style={{ color: "#6366F1", backgroundColor: "rgba(99,102,241,0.1)" }}>
+                            <Mail className="w-3 h-3" />
+                            Email
+                          </button>
+                        )}
+                        {/* Notes */}
+                        <button type="button"
+                          onClick={() => { setEditingNote(lead.id); setNoteText(lead.notes || ""); }}
+                          className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg"
+                          style={{ color: lead.notes ? AMBER : "#C4AA8A", backgroundColor: lead.notes ? `${AMBER}10` : "transparent" }}>
+                          <StickyNote className="w-3 h-3" />
+                          {lead.notes ? "Note" : "+ Note"}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -693,6 +780,132 @@ export default function LeadsPage() {
         )}
 
       </div>
+
+      {/* Email composer modal — opens when emailingLead is set.
+          Generates subject + body via Anthropic, then opens Gmail compose
+          in a new tab with the draft pre-filled (zero-OAuth path). */}
+      {emailingLead && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(28,24,20,0.6)" }}
+          onClick={handleCloseEmail}>
+          <div className="w-full max-w-2xl rounded-2xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+            style={{ ...card, boxShadow: "0 20px 50px rgba(120,97,78,0.3)" }}
+            onClick={e => e.stopPropagation()}>
+
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ backgroundColor: "rgba(99,102,241,0.1)" }}>
+                  <Mail className="w-4 h-4" style={{ color: "#6366F1" }} />
+                </div>
+                <div>
+                  <p className="font-bold text-sm" style={{ color: "#292524" }}>AI Email Composer</p>
+                  <p className="text-xs" style={{ color: "#A8967E" }}>
+                    To: <span className="font-mono">{emailingLead.email}</span>
+                    {emailingLead.name ? ` · ${emailingLead.name}` : ""}
+                  </p>
+                </div>
+              </div>
+              <button type="button" onClick={handleCloseEmail}
+                title="Close email composer" aria-label="Close email composer"
+                className="p-1.5 rounded-lg" style={{ color: "#A8967E" }}>
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Goal input */}
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold" style={{ color: "#78614E" }}>
+                What do you want to achieve with this email?
+              </label>
+              <textarea
+                value={emailGoal}
+                onChange={e => setEmailGoal(e.target.value)}
+                rows={3}
+                placeholder="Ex: Vreau să le propun o colaborare pentru promovarea unui produs nou. Sau: Pitch pentru un pachet de marketing pe Instagram."
+                className="w-full text-xs px-3 py-2 rounded-xl resize-none focus:outline-none"
+                style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "#292524" }}
+              />
+              <p className="text-[10px]" style={{ color: "#C4AA8A" }}>
+                Lasă gol pentru un mesaj generic de prezentare. AI-ul va folosi numele, bio-ul și nișa lead-ului.
+              </p>
+            </div>
+
+            {/* Generate button */}
+            {!emailDraft && (
+              <button type="button"
+                onClick={handleGenerateEmail}
+                disabled={generatingEmail}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50"
+                style={{ backgroundColor: "#6366F1", color: "white" }}>
+                {generatingEmail
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Generez email-ul...</>
+                  : <><Sparkles className="w-4 h-4" /> Generează cu AI</>}
+              </button>
+            )}
+
+            {emailError && (
+              <div className="rounded-xl p-3 text-xs flex items-center gap-2"
+                style={{ backgroundColor: "rgba(220,38,38,0.08)", color: "#DC2626", border: "1px solid rgba(220,38,38,0.2)" }}>
+                <AlertCircle className="w-3.5 h-3.5" />
+                {emailError}
+              </div>
+            )}
+
+            {/* Generated draft preview */}
+            {emailDraft && (
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold" style={{ color: "#78614E" }}>Subject</label>
+                  <input
+                    type="text"
+                    value={emailDraft.subject}
+                    onChange={e => setEmailDraft(d => d ? { ...d, subject: e.target.value } : d)}
+                    title="Email subject"
+                    placeholder="Email subject"
+                    className="w-full text-sm px-3 py-2 rounded-xl focus:outline-none"
+                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "#292524" }}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold" style={{ color: "#78614E" }}>Body</label>
+                  <textarea
+                    value={emailDraft.body}
+                    onChange={e => setEmailDraft(d => d ? { ...d, body: e.target.value } : d)}
+                    rows={10}
+                    title="Email body"
+                    placeholder="Email body"
+                    className="w-full text-xs px-3 py-2 rounded-xl resize-y focus:outline-none font-mono"
+                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "#292524" }}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <button type="button"
+                    onClick={handleGenerateEmail}
+                    disabled={generatingEmail}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold disabled:opacity-50"
+                    style={{ backgroundColor: "rgba(139,92,246,0.1)", color: "#8B5CF6" }}>
+                    {generatingEmail
+                      ? <Loader2 className="w-3 h-3 animate-spin" />
+                      : <RefreshCw className="w-3 h-3" />}
+                    Regenerează
+                  </button>
+                  <button type="button"
+                    onClick={handleOpenInGmail}
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-bold"
+                    style={{ backgroundColor: GREEN, color: "white" }}>
+                    <Send className="w-3.5 h-3.5" />
+                    Deschide în Gmail
+                  </button>
+                </div>
+                <p className="text-[10px] text-center" style={{ color: "#C4AA8A" }}>
+                  Se va deschide Gmail Compose într-un tab nou cu draft-ul pre-completat. Lead-ul trece automat în &quot;Contacted&quot;.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
