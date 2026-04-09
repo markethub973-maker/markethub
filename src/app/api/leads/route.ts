@@ -3,6 +3,21 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { requirePlan } from "@/lib/requirePlan";
 
+// Normalize a URL so that the same destination written in different ways
+// (https vs http, www vs m vs bare, trailing slash, query params, fragments)
+// collapses to the same dedup key. Used to skip duplicate leads on insert.
+function normalizeLeadUrl(u: string | null | undefined): string {
+  if (!u) return "";
+  try {
+    const url = new URL(u.startsWith("http") ? u : "https://" + u);
+    const host = url.hostname.toLowerCase().replace(/^www\./, "").replace(/^m\./, "");
+    const path = url.pathname.replace(/\/+$/, "").toLowerCase();
+    return host + path;
+  } catch {
+    return u.toLowerCase();
+  }
+}
+
 export async function POST(req: NextRequest) {
   const check = await requirePlan(req, "/leads");
   if (check instanceof NextResponse) return check;
@@ -46,9 +61,48 @@ export async function POST(req: NextRequest) {
   }));
 
   const supa = createServiceClient();
+
+  // Cross-search dedup: pull every existing lead URL/website for this user, build
+  // a set of normalized keys, then drop incoming rows whose URL is already there.
+  // We also dedupe within the incoming batch itself (same URL twice in one POST).
+  const { data: existing } = await supa
+    .from("research_leads")
+    .select("url, website")
+    .eq("user_id", user.id);
+
+  const seen = new Set<string>();
+  for (const e of existing || []) {
+    const k1 = normalizeLeadUrl(e.url);
+    const k2 = normalizeLeadUrl(e.website);
+    if (k1) seen.add(k1);
+    if (k2) seen.add(k2);
+  }
+
+  const toInsert: typeof rows = [];
+  const skipped: { url: string | null; reason: "duplicate" }[] = [];
+  for (const row of rows) {
+    const key = normalizeLeadUrl(row.url) || normalizeLeadUrl(row.website);
+    if (key && seen.has(key)) {
+      skipped.push({ url: row.url, reason: "duplicate" });
+      continue;
+    }
+    if (key) seen.add(key); // also dedup within batch
+    toInsert.push(row);
+  }
+
+  if (!toInsert.length) {
+    return NextResponse.json({
+      success: true,
+      ids: [],
+      count: 0,
+      skipped: skipped.length,
+      message: skipped.length ? `Toate ${skipped.length} lead-urile sunt deja în baza de date` : "Niciun lead de salvat",
+    });
+  }
+
   const { data, error } = await supa
     .from("research_leads")
-    .insert(rows)
+    .insert(toInsert)
     .select("id");
 
   if (error) {
@@ -58,7 +112,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, ids: data?.map(r => r.id) || [], count: rows.length });
+  return NextResponse.json({
+    success: true,
+    ids: data?.map(r => r.id) || [],
+    count: toInsert.length,
+    skipped: skipped.length,
+  });
 }
 
 export async function PATCH(req: NextRequest) {

@@ -81,8 +81,8 @@ export default function ResearchPage() {
     return { emails, phones };
   };
 
-  const postLeads = async (leads: any[]): Promise<{ ok: boolean; count: number; error?: string }> => {
-    if (!leads.length) return { ok: false, count: 0, error: "Niciun lead de salvat" };
+  const postLeads = async (leads: any[]): Promise<{ ok: boolean; count: number; skipped: number; error?: string }> => {
+    if (!leads.length) return { ok: false, count: 0, skipped: 0, error: "Niciun lead de salvat" };
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
@@ -90,10 +90,10 @@ export default function ResearchPage() {
         body: JSON.stringify(leads),
       });
       const json = await res.json();
-      if (!res.ok) return { ok: false, count: 0, error: json?.error || `HTTP ${res.status}` };
-      return { ok: true, count: json?.count || leads.length };
+      if (!res.ok) return { ok: false, count: 0, skipped: 0, error: json?.error || `HTTP ${res.status}` };
+      return { ok: true, count: json?.count || 0, skipped: json?.skipped || 0 };
     } catch (e: any) {
-      return { ok: false, count: 0, error: e?.message || "Network error" };
+      return { ok: false, count: 0, skipped: 0, error: e?.message || "Network error" };
     }
   };
 
@@ -294,8 +294,13 @@ export default function ResearchPage() {
       }
 
       const r = await postLeads(leads);
-      if (r.ok) setSaveStatus({ kind: "ok", msg: `${r.count} lead-uri salvate în baza de date` });
-      else setSaveStatus({ kind: "err", msg: r.error || "Eroare la salvare" });
+      if (r.ok) {
+        const parts = [`${r.count} lead-uri salvate`];
+        if (r.skipped) parts.push(`${r.skipped} sărite (deja în DB)`);
+        setSaveStatus({ kind: "ok", msg: parts.join(" • ") });
+      } else {
+        setSaveStatus({ kind: "err", msg: r.error || "Eroare la salvare" });
+      }
     } catch (e: any) {
       setSaveStatus({ kind: "err", msg: e?.message || "Eroare neașteptată" });
     } finally {
