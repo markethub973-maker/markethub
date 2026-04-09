@@ -13,9 +13,8 @@ interface Plan {
   name: string;
   price: number;
   period: string;
-  tokens: number;
-  extra_token_cost: number;
-  max_monthly_tokens: number;
+  premium_actions_per_month: number;
+  basic_ai_unlimited: boolean;
   tracked_channels: number;
   instagram_accounts: number;
   tiktok_accounts: number;
@@ -38,12 +37,6 @@ const BADGES: Record<string, { label: string; color: string }> = {
   business:   { label: "Agency",     color: "#E1306C" },
   enterprise: { label: "Enterprise", color: "#16A34A" },
 };
-
-function fmtTokens(n: number) {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(0) + "K";
-  return String(n);
-}
 
 function fmtVal(n: number, suffix = "") {
   if (n === -1) return "Unlimited";
@@ -204,14 +197,15 @@ export default function RegisterPage() {
                         )}
                       </div>
                       <p className="text-xs mb-5 font-semibold" style={{ color: "#A8967E" }}>
-                        {isFree ? "7-day trial · No card required" : `${fmtTokens(plan.tokens)} AI tokens/month included`}
+                        {isFree
+                          ? "7-day trial · No card required"
+                          : `${fmtVal(plan.premium_actions_per_month)} Premium AI Actions/month`}
                       </p>
 
                       {/* ── AI & Usage ── */}
-                      <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: badge.color }}>AI & Usage</p>
-                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="AI tokens/month" value={fmtTokens(plan.tokens)} />
-                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="Extra tokens (per 1K)" value={`$${plan.extra_token_cost.toFixed(4)}`} />
-                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="Token cap" value={plan.max_monthly_tokens === -1 ? "Unlimited" : fmtTokens(plan.max_monthly_tokens)} />
+                      <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: badge.color }}>AI &amp; Usage</p>
+                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="Premium AI Actions/month" value={fmtVal(plan.premium_actions_per_month)} />
+                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="Basic AI (Haiku)" value="Unlimited" />
 
                       {/* ── Accounts & Channels ── */}
                       <p className="text-xs font-bold uppercase tracking-wide mt-4 mb-1" style={{ color: badge.color }}>Accounts & Channels</p>
@@ -277,7 +271,7 @@ export default function RegisterPage() {
                     <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>Selected plan</p>
                     <p className="text-lg font-bold" style={{ color: "#292524" }}>{currentPlan.name}</p>
                     <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
-                      {fmtTokens(currentPlan.tokens)} tokens · {fmtVal(currentPlan.instagram_accounts)} Instagram · {fmtDays(currentPlan.history_days)} history
+                      {fmtVal(currentPlan.premium_actions_per_month)} Premium Actions · {fmtVal(currentPlan.instagram_accounts)} Instagram · {fmtDays(currentPlan.history_days)} history
                     </p>
                   </div>
                   <div className="text-right">

@@ -13,14 +13,14 @@ const plans = [
     name: "Free Trial",
     duration: "7 Days",
     price: "$0",
-    tokens: "1,000",
+    premiumActions: "5",
     description: "Test the platform for free",
     cta: "Start Free Trial",
     popular: false,
     features: [
-      { name: "Monthly Tokens", value: "1,000", included: true },
+      { name: "Premium AI Actions", value: "5", included: true },
+      { name: "Basic AI", value: "Unlimited", included: true },
       { name: "Social Accounts", value: "1", included: true },
-      { name: "Can Recharge", included: false },
       { name: "API Access", included: false },
       { name: "Priority Support", included: false },
       { name: "White Label", included: false },
@@ -31,14 +31,14 @@ const plans = [
     name: "Lite",
     duration: "Monthly",
     price: "$24",
-    tokens: "60,000",
-    description: "For growing businesses",
+    premiumActions: "20",
+    description: "For solo creators",
     cta: "Choose Lite",
     popular: false,
     features: [
-      { name: "Monthly Tokens", value: "60,000", included: true },
-      { name: "Extra Tokens", value: "$0.90/1K", included: true },
-      { name: "Social Accounts", value: "4", included: true },
+      { name: "Premium AI Actions", value: "20 / month", included: true },
+      { name: "Basic AI", value: "Unlimited", included: true },
+      { name: "Social Accounts", value: "2", included: true },
       { name: "TikTok Access", included: true },
       { name: "Email Reports", included: true },
       { name: "Calendar", included: true },
@@ -49,14 +49,14 @@ const plans = [
     name: "Pro",
     duration: "Monthly",
     price: "$49",
-    tokens: "150,000",
+    premiumActions: "50",
     description: "For agencies & professionals",
     cta: "Choose Pro",
     popular: true,
     features: [
-      { name: "Monthly Tokens", value: "150,000", included: true },
-      { name: "Extra Tokens", value: "$0.80/1K", included: true },
-      { name: "Social Accounts", value: "8", included: true },
+      { name: "Premium AI Actions", value: "50 / month", included: true },
+      { name: "Basic AI", value: "Unlimited", included: true },
+      { name: "Social Accounts", value: "4", included: true },
       { name: "Team Members", value: "3", included: true },
       { name: "Competitor Tracking", value: "20", included: true },
       { name: "Priority Support", included: true },
@@ -67,13 +67,13 @@ const plans = [
     name: "Business",
     duration: "Monthly",
     price: "$99",
-    tokens: "500,000",
+    premiumActions: "200",
     description: "For digital marketing agencies",
     cta: "Choose Business",
     popular: false,
     features: [
-      { name: "Monthly Tokens", value: "500,000", included: true },
-      { name: "Extra Tokens", value: "$0.70/1K", included: true },
+      { name: "Premium AI Actions", value: "200 / month", included: true },
+      { name: "Basic AI", value: "Unlimited", included: true },
       { name: "Team Members", value: "5", included: true },
       { name: "Client Accounts", value: "20", included: true },
       { name: "API Access", included: true },
@@ -85,13 +85,13 @@ const plans = [
     name: "Enterprise",
     duration: "Monthly",
     price: "$249",
-    tokens: "1.5M",
+    premiumActions: "1,000",
     description: "For large-scale operations",
     cta: "Contact Sales",
     popular: false,
     features: [
-      { name: "Monthly Tokens", value: "1,500,000", included: true },
-      { name: "Extra Tokens", value: "$0.60/1K", included: true },
+      { name: "Premium AI Actions", value: "1,000 / month", included: true },
+      { name: "Basic AI", value: "Unlimited", included: true },
       { name: "Team Members", value: "Unlimited", included: true },
       { name: "API Access", included: true },
       { name: "White Label", included: true },
@@ -142,7 +142,7 @@ export default function UpgradePage() {
 
   return (
     <div>
-      <Header title="Upgrade Plan" subtitle="Token-based pricing — pay only for what you use" />
+      <Header title="Upgrade Plan" subtitle="Premium AI Actions monthly · Basic AI unlimited" />
 
       <div className="p-6 space-y-10">
         {/* Manage subscription banner */}
@@ -158,21 +158,21 @@ export default function UpgradePage() {
           </div>
         )}
 
-        {/* How tokens work */}
+        {/* How Premium AI Actions work */}
         <div className="rounded-xl p-6 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200">
           <div className="flex items-start gap-3">
             <Zap className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
             <div>
-              <h3 className="font-semibold mb-2" style={{ color: "#1E40AF" }}>How Token Pricing Works</h3>
+              <h3 className="font-semibold mb-2" style={{ color: "#1E40AF" }}>How Premium AI Actions Work</h3>
               <p className="text-sm" style={{ color: "#1E3A8A" }}>
-                Each plan includes monthly tokens for AI features (captions, analysis, reports, agents). Need more? Buy additional tokens at discounted rates. Extra tokens carry over — no unused credits lost!
+                Each plan includes a monthly quota of <strong>Premium AI Actions</strong> for advanced features like Lead Scoring, Outreach Generator, Full Campaign Builder and APEX Marketing Advisor. <strong>Basic AI</strong> (captions, drafts, Haiku-powered helpers) stays unlimited on every paid plan. Quotas reset on the 1st of each month.
               </p>
               <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
                 {[
-                  ["1 Caption", "~800 tokens"],
-                  ["1 Analysis", "~2,000 tokens"],
-                  ["1 PDF Report", "~5,000 tokens"],
-                  ["Agent Chat", "~10,000 tokens"],
+                  ["Lead Scoring", "1 Action"],
+                  ["Outreach Message", "1 Action"],
+                  ["Full Campaign", "1 Action"],
+                  ["APEX Advisor", "1 Action"],
                 ].map(([label, val]) => (
                   <div key={label}>
                     <span style={{ color: "#1E40AF" }} className="font-semibold">{label}:</span>
@@ -234,7 +234,7 @@ export default function UpgradePage() {
                   <p className="text-4xl font-bold mb-1" style={{ color: "#F59E0B" }}>{plan.price}</p>
                   <div className="flex items-center gap-1.5">
                     <Zap className="w-4 h-4 text-blue-600" />
-                    <p className="text-sm font-semibold" style={{ color: "#1E40AF" }}>{plan.tokens} tokens/month</p>
+                    <p className="text-sm font-semibold" style={{ color: "#1E40AF" }}>{plan.premiumActions} Premium AI Actions/month</p>
                   </div>
                 </div>
 

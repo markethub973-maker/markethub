@@ -20,11 +20,11 @@ const PLAN_COLORS: Record<string, string> = {
 };
 
 const PLAN_FEATURES: Record<string, string[]> = {
-  free_test: ["1,000 tokens", "3 channels", "Calendar", "TikTok"],
-  lite: ["60,000 tokens", "12 channels", "Calendar", "Marketing Agent", "Clients"],
-  pro: ["150,000 tokens", "30 channels", "AI Hub", "Lead Finder", "Leads CRM"],
-  business: ["500,000 tokens", "100 channels", "API Access", "Priority Support"],
-  enterprise: ["1.5M tokens", "Unlimited channels", "White Label", "Full API"],
+  free_test: ["5 Premium Actions", "Basic AI unlimited", "3 channels", "TikTok"],
+  lite:      ["20 Premium Actions", "Basic AI unlimited", "12 channels", "Calendar", "Marketing Agent", "Clients"],
+  pro:       ["50 Premium Actions", "Basic AI unlimited", "30 channels", "AI Hub", "Lead Finder", "Leads CRM"],
+  business:  ["200 Premium Actions", "Basic AI unlimited", "100 channels", "API Access", "Priority Support"],
+  enterprise:["1,000 Premium Actions", "Basic AI unlimited", "Unlimited channels", "White Label", "Full API"],
 };
 
 interface TestAccount {

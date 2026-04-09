@@ -13,9 +13,8 @@ interface Plan {
   name: string;
   price: number;
   period: string;
-  tokens: number;
-  extra_token_cost: number;
-  max_monthly_tokens: number;
+  premium_actions_per_month: number;
+  basic_ai_unlimited: boolean;
   tracked_channels: number;
   instagram_accounts: number;
   tiktok_accounts: number;
@@ -47,12 +46,6 @@ const PLAN_ICONS: Record<string, React.ReactNode> = {
 
 function fmtVal(n: number) {
   if (n === -1) return "Unlimited";
-  return String(n);
-}
-
-function fmtTokens(n: number) {
-  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-  if (n >= 1_000) return (n / 1_000).toFixed(0) + "K";
   return String(n);
 }
 
@@ -203,12 +196,20 @@ export default function UpgradeRequiredPage() {
 
                 {/* Features */}
                 <div className="space-y-2 flex-1 mb-5">
-                  {/* AI Tokens */}
+                  {/* Premium AI Actions */}
                   <div className="flex items-center gap-2">
                     <Bot className="w-3.5 h-3.5 flex-shrink-0"
                       style={{ color: isPopular ? "rgba(255,255,255,0.8)" : color }} />
                     <span className="text-xs" style={{ color: isPopular ? "rgba(255,255,255,0.9)" : "#5C4A35" }}>
-                      {fmtTokens(plan.tokens)} AI tokens/mo
+                      {fmtVal(plan.premium_actions_per_month)} Premium AI Actions/mo
+                    </span>
+                  </div>
+                  {/* Basic AI unlimited */}
+                  <div className="flex items-center gap-2">
+                    <Bot className="w-3.5 h-3.5 flex-shrink-0"
+                      style={{ color: isPopular ? "rgba(255,255,255,0.8)" : color }} />
+                    <span className="text-xs" style={{ color: isPopular ? "rgba(255,255,255,0.9)" : "#5C4A35" }}>
+                      Basic AI: unlimited
                     </span>
                   </div>
 
