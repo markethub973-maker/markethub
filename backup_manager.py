@@ -378,7 +378,6 @@ git push origin main  # Vercel deploy automat
     # Also create complete backup with node_modules + .next (like MarketHub Pro COMPLECT)
     print("\n📦 TOTAL COMPLET — inclusiv node_modules + .next (~177MB)")
     complete_path = BACKUP_DIR / f"backup_total_complet_{TIMESTAMP}.zip"
-    import subprocess
     subprocess.run([
         "zip", "-r", str(complete_path),
         str(PROJECT_ROOT),
