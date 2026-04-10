@@ -288,6 +288,16 @@ export async function proxy(request: NextRequest) {
 
   const ip = getClientIp(request);
 
+  // ── Extra rate limit on admin tunnel access (brute-force protection) ────
+  // Limit ?t=<secret> probing to 5 requests/min per IP regardless of token validity
+  if (isAdminPath && request.nextUrl.searchParams.has("t")) {
+    if (!await checkRateLimit(ip, "auth")) {
+      const res = new NextResponse(null, { status: 404 }); // 404 not 429 — hide existence
+      applySecurityHeaders(res, csp);
+      return res;
+    }
+  }
+
   // ── Rate limiting ───────────────────────────────────────────────────────
   // Webhooks are exempt: they're already authenticated by HMAC signature
   // verification inside the handler, and rate-limiting them would cause

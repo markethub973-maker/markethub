@@ -44,23 +44,11 @@ export function verifyAdminSession(req: NextRequest): boolean {
   return safeCompare(expected, token);
 }
 
-/** Returns true if the request carries a valid Bearer token in Authorization header. */
-export function verifyAdminBearer(req: NextRequest): boolean {
-  let expected: string;
-  try {
-    expected = generateAdminToken();
-  } catch {
-    return false;
-  }
-  const header = req.headers.get("authorization") ?? "";
-  const token = header.startsWith("Bearer ") ? header.slice(7) : "";
-  return safeCompare(expected, token);
-}
-
 /**
- * Unified admin auth check — accepts cookie OR Bearer token.
- * Use this in all admin API routes.
+ * Unified admin auth check — cookie only.
+ * Bearer token support removed (VULN-003: arbitrary Bearer bypass).
+ * The admin tunnel (proxy.ts) already blocks non-cookie access before routes are reached.
  */
 export function isAdminAuthorized(req: NextRequest): boolean {
-  return verifyAdminSession(req) || verifyAdminBearer(req);
+  return verifyAdminSession(req);
 }

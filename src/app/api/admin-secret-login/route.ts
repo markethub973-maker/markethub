@@ -27,9 +27,10 @@ export async function POST(request: Request) {
     const maxLen = Math.max(a.length, b.length);
     const aPad = Buffer.concat([a, Buffer.alloc(maxLen - a.length)]);
     const bPad = Buffer.concat([b, Buffer.alloc(maxLen - b.length)]);
-    const lenEqual = a.length === b.length;
-    const contentEqual = crypto.timingSafeEqual(aPad, bPad);
-    const passwordMatch = lenEqual && contentEqual;
+    const lenEqual = a.length === b.length ? 1 : 0;
+    const contentEqual = crypto.timingSafeEqual(aPad, bPad) ? 1 : 0;
+    // Bitwise AND — both operands ALWAYS evaluated, no short-circuit timing leak
+    const passwordMatch = (lenEqual & contentEqual) === 1;
     if (!passwordMatch) {
       await logAudit({
         action: "admin_login",
