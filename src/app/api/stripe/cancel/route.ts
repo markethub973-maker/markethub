@@ -1,17 +1,19 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
+import { requireAuth } from "@/lib/route-helpers";
 
 // POST — schedule subscription cancellation at period end
 export async function POST() {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("stripe_subscription_id")
-    .eq("id", user.id)
+    .eq("id", auth.userId)
     .single();
 
   if (!profile?.stripe_subscription_id) {
@@ -34,14 +36,13 @@ export async function POST() {
 
 // DELETE — undo the scheduled cancellation (reactivate)
 export async function DELETE() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const { data: profile } = await supabase
     .from("profiles")
     .select("stripe_subscription_id")
-    .eq("id", user.id)
+    .eq("id", auth.userId)
     .single();
 
   if (!profile?.stripe_subscription_id) {

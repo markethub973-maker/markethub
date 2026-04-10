@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { Resend } from "resend";
+import { requireAuth } from "@/lib/route-helpers";
 
 const FROM = "MarketHub Pro <noreply@markethubpromo.com>";
 
@@ -117,9 +118,9 @@ function buildDigestHtml(digest: DigestResult, weekLabel: string, clientName?: s
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return NextResponse.json({ error: "Email not configured" }, { status: 500 });

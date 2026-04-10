@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { requireAuth } from "@/lib/route-helpers";
 
 // Currency conversion to USD (approximate)
 const TO_USD: Record<string, number> = { USD: 1, EUR: 1.08, RON: 0.22 };
@@ -37,9 +38,9 @@ function calcValueFee(params: {
 }
 
 export async function GET(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const { searchParams } = req.nextUrl;
   const sessionId     = searchParams.get("session_id");
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
   const { data: lines } = await supa
     .from("api_cost_logs" as any)
     .select("operation, service, model, cost_usd, input_tokens, output_tokens, created_at")
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .eq("session_id", sessionId)
     .order("created_at", { ascending: true });
 

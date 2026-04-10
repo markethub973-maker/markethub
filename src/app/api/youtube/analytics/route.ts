@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { encryptField, decryptField } from "@/lib/fieldCrypto";
+import { requireAuth } from "@/lib/route-helpers";
 
 const ANALYTICS_BASE = "https://youtubeanalytics.googleapis.com/v2/reports";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -40,15 +41,16 @@ async function analyticsGet(
 }
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   // Fetch stored tokens (prefer encrypted column, fall back to plaintext)
   const { data: profile } = await supabase
     .from("profiles")
     .select("youtube_access_token, youtube_refresh_token, youtube_token_expires_at, youtube_channel_id, enc_youtube_access_token, enc_youtube_refresh_token")
-    .eq("id", user.id)
+    .eq("id", auth.userId)
     .single();
 
   const rawRefresh = decryptField(profile?.enc_youtube_refresh_token) ?? profile?.youtube_refresh_token;
@@ -76,7 +78,7 @@ export async function GET(req: NextRequest) {
         youtube_token_expires_at: newExpiry,
         enc_youtube_access_token: encryptField(newToken),
       })
-      .eq("id", user.id);
+      .eq("id", auth.userId);
   }
 
   const channelId = profile?.youtube_channel_id as string | null;

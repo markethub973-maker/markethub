@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { requirePlan } from "@/lib/requirePlan";
+import { requireAuth } from "@/lib/route-helpers";
 
 // Normalize a URL so that the same destination written in different ways
 // (https vs http, www vs m vs bare, trailing slash, query params, fragments)
@@ -24,16 +25,17 @@ export async function POST(req: NextRequest) {
   const check = await requirePlan(req, "/leads");
   if (check instanceof NextResponse) return check;
 
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
 
   // Single lead or batch
   const leads = Array.isArray(body) ? body : [body];
   const rows = leads.map((l: any) => ({
-    user_id: user.id,
+    user_id: auth.userId,
     agent_session_id: l.agent_session_id || null,
     goal: l.goal || null,
     source: l.source || l.platform || "lead_wizard",
@@ -70,7 +72,7 @@ export async function POST(req: NextRequest) {
   const { data: existing } = await supa
     .from("research_leads")
     .select("url, website")
-    .eq("user_id", user.id);
+    .eq("user_id", auth.userId);
 
   const seen = new Set<string>();
   for (const e of existing || []) {
@@ -126,9 +128,8 @@ export async function PATCH(req: NextRequest) {
   const check = await requirePlan(req, "/leads");
   if (check instanceof NextResponse) return check;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const { id, contacted, notes, pipeline_status } = await req.json();
   if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
@@ -152,7 +153,7 @@ export async function PATCH(req: NextRequest) {
     .from("research_leads")
     .update(update)
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", auth.userId);
 
   if (error) return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   return NextResponse.json({ success: true });
@@ -162,9 +163,8 @@ export async function GET(req: NextRequest) {
   const check = await requirePlan(req, "/leads");
   if (check instanceof NextResponse) return check;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const supa = createServiceClient();
   const VALID_SOURCES = new Set(["lead_wizard", "research", "google", "google_maps", "instagram", "tiktok", "youtube", "facebook", "reddit", "olx", "manual", "website"]);
@@ -181,7 +181,7 @@ export async function GET(req: NextRequest) {
   let query = supa
     .from("research_leads")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .order("created_at", { ascending: false })
     .limit(limit);
 
@@ -199,9 +199,8 @@ export async function DELETE(req: NextRequest) {
   const check = await requirePlan(req, "/leads");
   if (check instanceof NextResponse) return check;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const { ids } = await req.json();
   if (!Array.isArray(ids)) return NextResponse.json({ error: "ids array required" }, { status: 400 });
@@ -211,7 +210,7 @@ export async function DELETE(req: NextRequest) {
     .from("research_leads")
     .delete()
     .in("id", ids)
-    .eq("user_id", user.id);
+    .eq("user_id", auth.userId);
 
   if (error) return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   return NextResponse.json({ success: true });

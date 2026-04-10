@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/route-helpers";
 
 const RAPIDAPI_HOST = "instagram-public-bulk-scraper.p.rapidapi.com";
 
@@ -8,9 +9,9 @@ const RAPIDAPI_HOST = "instagram-public-bulk-scraper.p.rapidapi.com";
  * Uses Instagram Public Bulk Scraper API (BASIC plan)
  */
 export async function GET(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const username = req.nextUrl.searchParams.get("username")?.trim().replace(/^@/, "");
   if (!username) return NextResponse.json({ error: "Username is required" }, { status: 400 });

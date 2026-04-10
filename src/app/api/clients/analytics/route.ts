@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/route-helpers";
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const clientId = req.nextUrl.searchParams.get("id");
   if (!clientId) return NextResponse.json({ error: "Client ID required" }, { status: 400 });
@@ -14,7 +16,7 @@ export async function GET(req: NextRequest) {
     .from("client_accounts")
     .select("*")
     .eq("id", clientId)
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .single();
 
   if (error || !client) {

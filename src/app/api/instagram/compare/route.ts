@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { decryptField } from "@/lib/fieldCrypto";
+import { requireAuth } from "@/lib/route-helpers";
 
 async function fetchIGProfile(igId: string, token: string) {
   const res = await fetch(
@@ -21,14 +22,15 @@ async function fetchIGMedia(igId: string, token: string) {
 }
 
 export async function GET() {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data: connections } = await supabase
     .from("instagram_connections")
     .select("id, instagram_id, instagram_username, instagram_name, account_label, is_primary, access_token, enc_access_token")
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .order("is_primary", { ascending: false });
 
   if (!connections?.length) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/route-helpers";
 
 // Industry-standard defaults when not enough data yet (by platform)
 const DEFAULTS: Record<string, { day: number; hours: number[] }[]> = {
@@ -60,9 +61,10 @@ const DEFAULTS: Record<string, { day: number; hours: number[] }[]> = {
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const platform = req.nextUrl.searchParams.get("platform") || "instagram";
 
@@ -70,7 +72,7 @@ export async function GET(req: NextRequest) {
   const { data: posts } = await supabase
     .from("scheduled_posts")
     .select("date, time, platform")
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .eq("status", "published")
     .eq("platform", platform)
     .limit(200);

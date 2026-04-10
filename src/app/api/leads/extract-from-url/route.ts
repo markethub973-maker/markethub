@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { fetchAndExtract } from "@/lib/leadScraper";
+import { requireAuth } from "@/lib/route-helpers";
 
 // Bulk scraper used by Research Hub when saving Google search results.
 // The actual fetch + parse + libphonenumber validation lives in lib/leadScraper.ts
@@ -8,9 +9,9 @@ import { fetchAndExtract } from "@/lib/leadScraper";
 // Per-URL timeout 8s, total batch capped to 30 URLs to avoid runaway.
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const body = await req.json();
   const urls: string[] = Array.isArray(body?.urls) ? body.urls : [];

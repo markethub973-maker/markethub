@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/route-helpers";
 
 const BASE = "https://www.googleapis.com/youtube/v3";
 
@@ -10,9 +11,9 @@ const BASE = "https://www.googleapis.com/youtube/v3";
  * Returns: { categories: Array<{ id, name, avgViews, avgLikes, avgComments, videoCount }> }
  */
 export async function GET(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const key = process.env.YOUTUBE_API_KEY;
   if (!key) return NextResponse.json({ error: "YOUTUBE_API_KEY not set" }, { status: 500 });

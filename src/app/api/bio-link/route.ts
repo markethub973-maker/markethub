@@ -1,17 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { requireAuth } from "@/lib/route-helpers";
 
 // GET — fetch user's bio link page
 export async function GET() {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data, error } = await supabase
     .from("bio_links")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .single();
 
   if (error && error.code !== "PGRST116") {
@@ -22,9 +24,8 @@ export async function GET() {
 
 // POST — create or update bio link page
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const body = await req.json().catch(() => ({}));
   const { slug, title, description, avatar_url, bg_color, accent_color, links } = body as {
@@ -40,13 +41,13 @@ export async function POST(req: NextRequest) {
       .select("user_id")
       .eq("slug", slug)
       .single();
-    if (existing && existing.user_id !== user.id) {
+    if (existing && existing.user_id !== auth.userId) {
       return NextResponse.json({ error: "This URL is already taken. Choose another." }, { status: 409 });
     }
   }
 
   const payload: Record<string, unknown> = {
-    user_id: user.id,
+    user_id: auth.userId,
     updated_at: new Date().toISOString(),
   };
   if (slug !== undefined) payload.slug = slug?.toLowerCase().replace(/[^a-z0-9_-]/g, "") || null;

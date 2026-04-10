@@ -11,6 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { getPlanConfig } from "@/lib/plan-config";
+import { requireAuth } from "@/lib/route-helpers";
 
 export interface Notification {
   id: string;
@@ -24,9 +25,10 @@ export interface Notification {
 }
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const notifications: Notification[] = [];
   const now = new Date().toISOString();
@@ -35,7 +37,7 @@ export async function GET(req: NextRequest) {
   const { data: profile } = await supabase
     .from("profiles")
     .select("subscription_plan, plan, trial_expires_at, is_admin, subscription_status, premium_actions_used, premium_actions_reset_at")
-    .eq("id", user.id)
+    .eq("id", auth.userId)
     .single();
 
   const currentPlan = profile?.subscription_plan || profile?.plan || "free_test";
@@ -85,7 +87,7 @@ export async function GET(req: NextRequest) {
     const { data: triggeredAlerts } = await supabase
       .from("alert_rules")
       .select("id, name, last_triggered_at, last_value")
-      .eq("user_id", user.id)
+      .eq("user_id", auth.userId)
       .eq("status", "triggered")
       .order("last_triggered_at", { ascending: false })
       .limit(3);

@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/route-helpers";
 
 // GET — list all client accounts for this user
 export async function GET() {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data, error } = await supabase
     .from("client_accounts")
     .select("id, client_name, instagram_username, instagram_user_id, created_at, notes")
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .order("created_at", { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
@@ -19,9 +21,8 @@ export async function GET() {
 
 // POST — add a new client account
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const body = await req.json().catch(() => ({}));
   const { client_name, instagram_username, instagram_user_id, instagram_access_token, notes } = body;
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { error } = await supabase.from("client_accounts").insert({
-    user_id: user.id,
+    user_id: auth.userId,
     client_name: client_name.trim(),
     instagram_username: verifyData.username || instagram_username?.trim() || "",
     instagram_user_id: instagram_user_id.trim(),
@@ -76,9 +77,8 @@ CREATE POLICY "Users manage own clients" ON client_accounts FOR ALL USING (auth.
 
 // DELETE — remove a client account
 export async function DELETE(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const id = req.nextUrl.searchParams.get("id");
   if (!id) return NextResponse.json({ error: "ID missing" }, { status: 400 });
@@ -87,7 +87,7 @@ export async function DELETE(req: NextRequest) {
     .from("client_accounts")
     .delete()
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", auth.userId);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ success: true });

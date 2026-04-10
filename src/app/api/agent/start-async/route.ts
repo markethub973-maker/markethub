@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { requireAuth } from "@/lib/route-helpers";
 
 /**
  * Start an Apify actor run ASYNCHRONOUSLY.
@@ -78,9 +79,9 @@ function buildInput(actor: string, params: Record<string, unknown>): Record<stri
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const token = process.env.APIFY_TOKEN;
   if (!token) return NextResponse.json({ error: "Apify not configured" }, { status: 500 });
@@ -135,7 +136,7 @@ export async function POST(req: NextRequest) {
     const { data: savedRun } = await supa
       .from("agent_runs")
       .insert({
-        user_id: user.id,
+        user_id: auth.userId,
         session_id: session_id || null,
         goal: goal || null,
         step_label: step_label || null,

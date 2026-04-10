@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/route-helpers";
 
 const RAPIDAPI_HOST = "tiktok-trend-analysis-api.p.rapidapi.com";
 
@@ -12,9 +13,9 @@ const REGION_QUERIES: Record<string, string> = {
 };
 
 export async function GET(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const apiKey = process.env.RAPIDAPI_KEY;
   if (!apiKey) return NextResponse.json({ error: "RapidAPI key not configured" }, { status: 500 });

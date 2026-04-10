@@ -4,11 +4,13 @@ import Anthropic from "@anthropic-ai/sdk";
 import { getAnthropicErrorResponse } from "@/lib/anthropic-errors";
 import { getPlanConfig, getRemainingBudget, AI_ACTION_COSTS } from "@/lib/plan-config";
 import { getAppApiKey } from "@/lib/anthropic-client";
+import { requireAuth } from "@/lib/route-helpers";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   let apiKey: string;
   try {
@@ -19,11 +21,11 @@ export async function POST(req: NextRequest) {
 
   // ── Pre-check AI budget before calling Claude ────────────────────────────
   const currentMonth = new Date().toISOString().substring(0, 7);
-  const { data: profileData } = await supabase.from("profiles").select("subscription_plan").eq("id", user.id).single();
+  const { data: profileData } = await supabase.from("profiles").select("subscription_plan").eq("id", auth.userId).single();
   const planConfig = getPlanConfig(profileData?.subscription_plan);
-  const { data: spendData } = await supabase.from("usage_tracking").select("cost_usd").eq("user_id", user.id).eq("month_year", currentMonth);
+  const { data: spendData } = await supabase.from("usage_tracking").select("cost_usd").eq("user_id", auth.userId).eq("month_year", currentMonth);
   const extraResult = await Promise.resolve(
-    supabase.from("ai_credits").select("credits_usd").eq("user_id", user.id).eq("month_year", currentMonth).maybeSingle()
+    supabase.from("ai_credits").select("credits_usd").eq("user_id", auth.userId).eq("month_year", currentMonth).maybeSingle()
   ).catch(() => ({ data: null }));
   const extraData = extraResult?.data ?? null;
   const spent = spendData?.reduce((s, r) => s + (r.cost_usd ?? 0), 0) ?? 0;
@@ -103,7 +105,7 @@ Do not include any other text, explanations or markdown. Just the JSON array.`;
     const outputTokens = message.usage?.output_tokens ?? 1500;
     const actualCost   = (inputTokens * 3 + outputTokens * 15) / 1_000_000;
     await supabase.from("usage_tracking").insert({
-      user_id: user.id,
+      user_id: auth.userId,
       feature: "ai_captions",
       api_name: "anthropic",
       cost_usd: parseFloat(actualCost.toFixed(6)),

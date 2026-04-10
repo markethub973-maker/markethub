@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/route-helpers";
 
 const YT_BASE = "https://www.googleapis.com/youtube/v3";
 const API_KEY = process.env.YOUTUBE_API_KEY;
@@ -99,9 +100,10 @@ async function fetchChannelStats(channelId: string): Promise<ChannelStats | null
 }
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   if (!API_KEY) return NextResponse.json({ error: "YOUTUBE_API_KEY not configured" }, { status: 503 });
 
@@ -109,7 +111,7 @@ export async function GET(req: NextRequest) {
   const { data: accounts } = await supabase
     .from("youtube_connections" as any)
     .select("channel_id, channel_name, channel_handle, thumbnail_url, account_label, is_primary")
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .order("is_primary", { ascending: false })
     .limit(5);
 

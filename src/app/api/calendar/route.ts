@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { requirePlan } from "@/lib/requirePlan";
+import { requireAuth } from "@/lib/route-helpers";
 
 // GET — list posts for the authenticated user, optionally filtered by month
 export async function GET(req: NextRequest) {
   const check = await requirePlan(req, "/calendar");
   if (check instanceof NextResponse) return check;
 
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { searchParams } = req.nextUrl;
   const month = searchParams.get("month"); // YYYY-MM
@@ -17,7 +19,7 @@ export async function GET(req: NextRequest) {
   let query = supabase
     .from("scheduled_posts")
     .select("id, title, caption, platform, status, date, time, client, hashtags, image_url, first_comment, created_at, updated_at")
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .order("date", { ascending: true })
     .order("time", { ascending: true });
 
@@ -35,9 +37,8 @@ export async function POST(req: NextRequest) {
   const check = await requirePlan(req, "/calendar");
   if (check instanceof NextResponse) return check;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const body = await req.json().catch(() => ({}));
   const { title, caption, platform, status, date, time, client, hashtags, image_url, first_comment } = body as {
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await supabase
     .from("scheduled_posts")
     .insert({
-      user_id: user.id,
+      user_id: auth.userId,
       title: title.trim(),
       caption: caption?.trim() || "",
       platform: platform || "instagram",

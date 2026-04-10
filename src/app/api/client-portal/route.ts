@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { hashPassword } from "@/lib/portal/password";
+import { requireAuth } from "@/lib/route-helpers";
 
 const FULL_FIELDS =
   "id, token, client_name, ig_username, tt_username, view_count, expires_at, created_at, updated_at, agency_name, agency_logo_url, accent_color, password_hash";
@@ -35,9 +36,10 @@ function sanitizeMany(rows: any[] | null): any[] {
 
 // POST — create a live portal link for a client
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json().catch(() => ({}));
   const {
@@ -71,7 +73,7 @@ export async function POST(req: NextRequest) {
     : null;
 
   const baseRow: Record<string, unknown> = {
-    user_id: user.id,
+    user_id: auth.userId,
     client_name: client_name.trim(),
     ig_username: ig_username?.trim() || "",
     tt_username: tt_username?.trim() || "",
@@ -118,16 +120,15 @@ export async function POST(req: NextRequest) {
 
 // GET — list all portal links for the authenticated user
 export async function GET() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const svc = createServiceClient();
 
   const first = await svc
     .from("client_portal_links")
     .select(FULL_FIELDS)
-    .eq("user_id", user.id)
+    .eq("user_id", auth.userId)
     .order("created_at", { ascending: false });
   let links: any = first.data;
   let error = first.error;
@@ -136,7 +137,7 @@ export async function GET() {
     const retry = await svc
       .from("client_portal_links")
       .select(LEGACY_FIELDS)
-      .eq("user_id", user.id)
+      .eq("user_id", auth.userId)
       .order("created_at", { ascending: false });
     links = retry.data;
     error = retry.error;
@@ -148,9 +149,8 @@ export async function GET() {
 
 // PATCH — update existing link: extend expiry, refresh data, set white-label, set/clear password
 export async function PATCH(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const body = await req.json().catch(() => ({}));
   const {
@@ -185,7 +185,7 @@ export async function PATCH(req: NextRequest) {
   if (fetchErr || !existing) {
     return NextResponse.json({ error: "Link not found" }, { status: 404 });
   }
-  if ((existing as { user_id: string }).user_id !== user.id) {
+  if ((existing as { user_id: string }).user_id !== auth.userId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -248,9 +248,8 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE — remove a portal link
 export async function DELETE(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(); if (!auth.ok) return auth.response;
+  const user = { id: auth.userId }; const supabase = await createClient();
 
   const { id } = await req.json().catch(() => ({}));
   if (!id) return NextResponse.json({ error: "id is required" }, { status: 400 });
@@ -260,7 +259,7 @@ export async function DELETE(req: NextRequest) {
     .from("client_portal_links")
     .delete()
     .eq("id", id)
-    .eq("user_id", user.id);
+    .eq("user_id", auth.userId);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ success: true });

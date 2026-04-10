@@ -5,6 +5,7 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
 import { MarketingReportPDF, MarketingReportData } from "@/lib/marketingReportPDF";
 import { resolveIGToken } from "@/lib/igToken";
+import { requireAuth } from "@/lib/route-helpers";
 
 function fmtNum(n: number) {
   if (n >= 1000000) return (n / 1000000).toFixed(1) + "M";
@@ -102,6 +103,8 @@ function htmlEmail(data: {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -109,7 +112,7 @@ export async function POST(req: NextRequest) {
   const { data: profile } = await supabase
     .from("profiles")
     .select("instagram_access_token, instagram_user_id, instagram_username, name")
-    .eq("id", user.id)
+    .eq("id", auth.userId)
     .single();
 
   if (!profile?.instagram_access_token || !profile?.instagram_user_id) {

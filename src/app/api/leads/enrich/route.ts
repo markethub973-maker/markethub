@@ -5,6 +5,7 @@ import { requirePlan } from "@/lib/requirePlan";
 import { safeApify } from "@/lib/serviceGuard";
 import { fetchAndExtract } from "@/lib/leadScraper";
 import { parsePhoneNumberFromString, type CountryCode } from "libphonenumber-js";
+import { requireAuth } from "@/lib/route-helpers";
 
 // Enrich leads with platform-specific scrapers:
 // - instagram/youtube → Apify actors (profile bio + business email/phone)
@@ -91,9 +92,9 @@ export async function POST(req: NextRequest) {
   const check = await requirePlan(req, "/leads");
   if (check instanceof NextResponse) return check;
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const { ids } = await req.json();
   if (!Array.isArray(ids) || !ids.length) {
@@ -106,7 +107,7 @@ export async function POST(req: NextRequest) {
     .from("research_leads")
     .select("id, lead_type, url, website, email, phone, name, address, extra_data")
     .in("id", capped)
-    .eq("user_id", user.id);
+    .eq("user_id", auth.userId);
   if (error) return NextResponse.json({ error: "fetch failed" }, { status: 500 });
 
   const results: { id: string; status: "enriched" | "skipped" | "error"; reason?: string; email?: string; phone?: string }[] = [];
@@ -145,7 +146,7 @@ export async function POST(req: NextRequest) {
     newExtra.enrichedAt = new Date().toISOString();
     patch.extra_data = newExtra;
 
-    const { error: ue } = await supa.from("research_leads").update(patch).eq("id", lead.id).eq("user_id", user.id);
+    const { error: ue } = await supa.from("research_leads").update(patch).eq("id", lead.id).eq("user_id", auth.userId);
     if (ue) {
       results.push({ id: lead.id, status: "error", reason: ue.message });
       continue;

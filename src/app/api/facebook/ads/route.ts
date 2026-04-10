@@ -1,21 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { resolveIGAuth } from "@/lib/adminPlatformToken";
+import { requireAuth } from "@/lib/route-helpers";
 
 /**
  * Facebook Ad Account Insights via Meta Graph API
  * Requires ads_read permission on the access token
  */
 export async function GET(req: NextRequest) {
+  const fbAuth = await requireAuth();
+  if (!fbAuth.ok) return fbAuth.response;
+  const user = { id: fbAuth.userId };
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const auth = await resolveIGAuth();
   const { data: profile } = await supabase
     .from("profiles")
     .select("instagram_access_token")
-    .eq("id", user.id)
+    .eq("id", fbAuth.userId)
     .single();
 
   const token = auth?.token || profile?.instagram_access_token || process.env.META_ACCESS_TOKEN;

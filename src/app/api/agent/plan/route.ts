@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { safeAnthropic } from "@/lib/serviceGuard";
+import { requireAuth } from "@/lib/route-helpers";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -71,9 +72,9 @@ Always think about the complete marketing funnel: discovery â†’ qualification â†
 Always use keywords and language matching the user's stated market and language. Never assume a default country.`;
 
 export async function POST(req: NextRequest) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
+  const user = { id: auth.userId };
 
   const { goal, region, hints, language } = await req.json();
   if (!goal?.trim()) return NextResponse.json({ error: "Goal required" }, { status: 400 });

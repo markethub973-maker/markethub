@@ -7,8 +7,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getStripe } from "@/lib/stripe";
 import { CREDIT_PACKS } from "@/lib/plan-config";
+import { requireAuth } from "@/lib/route-helpers";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -27,7 +30,7 @@ export async function POST(req: NextRequest) {
   const { data: profile } = await supabase
     .from("profiles")
     .select("stripe_customer_id, name")
-    .eq("id", user.id)
+    .eq("id", auth.userId)
     .single();
 
   let customerId = profile?.stripe_customer_id;
@@ -35,10 +38,10 @@ export async function POST(req: NextRequest) {
     const customer = await stripe.customers.create({
       email: user.email,
       name: profile?.name ?? undefined,
-      metadata: { supabase_user_id: user.id },
+      metadata: { supabase_user_id: auth.userId },
     });
     customerId = customer.id;
-    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", user.id);
+    await supabase.from("profiles").update({ stripe_customer_id: customerId }).eq("id", auth.userId);
   }
 
   // Create a one-time price for the credit pack
@@ -63,7 +66,7 @@ export async function POST(req: NextRequest) {
       type: "ai_credits",
       pack_id: pack.id,
       credits_usd: pack.usd.toString(),
-      user_id: user.id,
+      user_id: auth.userId,
     },
     success_url: `${baseUrl}/settings?tab=credits&success=1&pack=${pack.id}`,
     cancel_url:  `${baseUrl}/settings?tab=credits&cancelled=1`,
