@@ -9,6 +9,7 @@ import {
   Library, Megaphone, Mail, UserSquare2, Sparkles, CalendarDays,
   Target, Instagram, Shield, ChevronDown, Puzzle, Search,
   Database, Hash, Link2, Lock, X, ArrowRight, HardDrive, Tag, ShoppingBag,
+  UserCheck, FileText, Linkedin, UserPlus,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -36,6 +37,7 @@ const navGroups = [
       { href: "/instagram-search", label: "IG Search", icon: Instagram },
       { href: "/meta-insights", label: "Meta Insights", icon: BarChart3 },
       { href: "/tiktok", label: "TikTok", icon: Zap },
+      { href: "/linkedin", label: "LinkedIn", icon: Linkedin },
     ],
   },
   {
@@ -82,10 +84,19 @@ const navGroups = [
     items: [
       { href: "/clients", label: "Multi-Account", icon: UserSquare2 },
       { href: "/campaigns", label: "Campaigns", icon: Target },
+      { href: "/proposals", label: "Proposals", icon: FileText },
+      { href: "/influencers", label: "Influencer DB", icon: UserPlus },
       { href: "/email-reports", label: "Activity Reports", icon: Mail },
       { href: "/alerts", label: "Alerts", icon: Bell },
       { href: "/affiliate", label: "Affiliate Hub", icon: Tag },
       { href: "/trending-alerts", label: "Trending Products", icon: ShoppingBag },
+    ],
+  },
+  {
+    label: "Agency",
+    icon: UserCheck,
+    items: [
+      { href: "/team", label: "Team", icon: UserCheck },
     ],
   },
 ];

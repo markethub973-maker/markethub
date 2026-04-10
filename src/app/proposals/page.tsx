@@ -1,0 +1,227 @@
+"use client";
+import { useState, useEffect, useCallback } from "react";
+import Header from "@/components/layout/Header";
+import { Plus, Trash2, Edit3, Send, Download, Check, X, Loader2, FileText, DollarSign } from "lucide-react";
+
+interface Service { name: string; qty: number; price: number; }
+interface Proposal { id: string; client_name: string; client_email: string; title: string; services: Service[]; total_value: number; currency: string; valid_days: number; status: string; notes: string; created_at: string; sent_at: string | null; }
+
+const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
+const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
+  draft: { bg: "rgba(100,116,139,0.1)", color: "#64748B", label: "Draft" },
+  sent: { bg: "rgba(99,102,241,0.1)", color: "#6366F1", label: "Trimis" },
+  accepted: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Acceptat" },
+  rejected: { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Respins" },
+  expired: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Expirat" },
+};
+
+const emptyForm = { client_name: "", client_email: "", title: "", services: [{ name: "", qty: 1, price: 0 }] as Service[], currency: "USD", valid_days: 30, notes: "" };
+
+function generateHTML(p: Proposal, agencyName: string): string {
+  const rows = p.services.map(s => `<tr><td style="padding:10px 14px;border-bottom:1px solid #F5D7A0">${s.name}</td><td style="padding:10px 14px;border-bottom:1px solid #F5D7A0;text-align:center">${s.qty}</td><td style="padding:10px 14px;border-bottom:1px solid #F5D7A0;text-align:right">$${Number(s.price).toFixed(2)}</td><td style="padding:10px 14px;border-bottom:1px solid #F5D7A0;text-align:right;font-weight:bold">$${(s.qty * s.price).toFixed(2)}</td></tr>`).join("");
+  const exp = new Date(p.created_at); exp.setDate(exp.getDate() + p.valid_days);
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Propunere — ${p.title}</title>
+<style>*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#292524;max-width:750px;margin:40px auto;padding:40px}
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:40px}
+h1{color:#F59E0B;margin:0;font-size:26px}.badge{display:inline-block;padding:4px 12px;border-radius:20px;background:rgba(245,158,11,0.1);color:#D97706;font-size:12px;margin-top:8px}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px;padding:20px;background:#FFF8F0;border-radius:12px}
+.label{font-size:11px;color:#A8967E;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:24px 0}
+th{text-align:left;padding:10px 14px;background:#FFF8F0;font-size:12px;color:#A8967E;border-bottom:2px solid #F5D7A0}
+th:last-child,th:nth-child(3),th:nth-child(2){text-align:right;text-align:center}
+th:last-child,td:last-child{text-align:right}
+.total{text-align:right;font-size:22px;font-weight:bold;color:#F59E0B;margin-top:16px}
+.footer{margin-top:40px;padding-top:24px;border-top:1px solid #F5D7A0;font-size:12px;color:#A8967E}
+@media print{body{margin:0;padding:20px}}</style>
+</head><body>
+<div class="header">
+  <div><h1>${p.title}</h1><span class="badge">PROPUNERE</span></div>
+  <div style="text-align:right;font-size:13px;color:#78614E"><strong>${agencyName}</strong><br>markethubpromo.com</div>
+</div>
+<div class="info">
+  <div><div class="label">Client</div><strong>${p.client_name}</strong>${p.client_email ? `<br>${p.client_email}` : ""}</div>
+  <div><div class="label">Valabilă până la</div><strong>${exp.toLocaleDateString("ro-RO")}</strong></div>
+</div>
+<table><thead><tr><th>Serviciu</th><th style="text-align:center">Qty</th><th style="text-align:right">Preț unit.</th><th style="text-align:right">Total</th></tr></thead>
+<tbody>${rows}</tbody></table>
+<div class="total">Total: ${p.currency} ${Number(p.total_value).toFixed(2)}</div>
+${p.notes ? `<p style="margin-top:20px;color:#78614E;font-size:13px">${p.notes}</p>` : ""}
+<div class="footer">Propunere generată de MarketHub Pro · Valabilă ${p.valid_days} de zile<br>Pentru întrebări: markethub973@gmail.com</div>
+</body></html>`;
+}
+
+export default function ProposalsPage() {
+  const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
+  const [sendingId, setSendingId] = useState<string | null>(null);
+
+  const load = useCallback(() => {
+    fetch("/api/proposals").then(r => r.json()).then(d => { if (d.proposals) setProposals(d.proposals); }).finally(() => setLoading(false));
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  const totalValue = form.services.reduce((s, sv) => s + sv.qty * sv.price, 0);
+
+  const openEdit = (p: Proposal) => {
+    setForm({ client_name: p.client_name, client_email: p.client_email, title: p.title, services: p.services as Service[], currency: p.currency, valid_days: p.valid_days, notes: p.notes });
+    setEditId(p.id); setShowForm(true);
+  };
+
+  const save = async () => {
+    setSaving(true);
+    const payload = { ...form, total_value: totalValue };
+    const res = await fetch("/api/proposals", { method: editId ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(editId ? { id: editId, ...payload } : payload) });
+    const d = await res.json();
+    if (d.proposal) { editId ? setProposals(p => p.map(x => x.id === editId ? d.proposal : x)) : setProposals(p => [d.proposal, ...p]); }
+    setShowForm(false); setEditId(null); setForm(emptyForm); setSaving(false);
+  };
+
+  const send = async (p: Proposal) => {
+    if (!p.client_email) { alert("Adaugă emailul clientului înainte de trimitere"); return; }
+    setSendingId(p.id);
+    await fetch("/api/proposals", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, action: "send", client_email: p.client_email }) });
+    setProposals(prev => prev.map(x => x.id === p.id ? { ...x, status: "sent" } : x));
+    setSendingId(null);
+  };
+
+  const download = (p: Proposal) => {
+    const html = generateHTML(p, "MarketHub Pro Agency");
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url;
+    a.download = `Propunere_${p.client_name.replace(/\s+/g, "_")}_${p.id.slice(0, 6)}.html`;
+    a.click(); URL.revokeObjectURL(url);
+  };
+
+  const del = async (id: string) => {
+    if (!confirm("Ștergi propunerea?")) return;
+    await fetch("/api/proposals", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    setProposals(p => p.filter(x => x.id !== id));
+  };
+
+  const addService = () => setForm(p => ({ ...p, services: [...p.services, { name: "", qty: 1, price: 0 }] }));
+  const updateService = (i: number, field: keyof Service, val: any) =>
+    setForm(p => ({ ...p, services: p.services.map((s, idx) => idx === i ? { ...s, [field]: val } : s) }));
+  const removeService = (i: number) => setForm(p => ({ ...p, services: p.services.filter((_, idx) => idx !== i) }));
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
+      <Header title="Proposal Generator" subtitle="Creează și trimite oferte profesionale clienților" />
+      <div className="p-4 max-w-4xl mx-auto space-y-4">
+
+        <button type="button" onClick={() => { setShowForm(true); setEditId(null); setForm(emptyForm); }}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
+          style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
+          <Plus className="w-4 h-4" /> Propunere nouă
+        </button>
+
+        {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        : proposals.length === 0 ? (
+          <div className="rounded-2xl p-12 text-center" style={card}>
+            <FileText className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
+            <p className="text-sm" style={{ color: "#78614E" }}>Nicio propunere creată</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {proposals.map(p => {
+              const st = STATUS_COLORS[p.status] ?? STATUS_COLORS.draft;
+              return (
+                <div key={p.id} className="rounded-xl p-4 flex items-center gap-3" style={card}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-bold text-sm" style={{ color: "#292524" }}>{p.title}</p>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>
+                    </div>
+                    <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{p.client_name} {p.client_email ? `· ${p.client_email}` : ""}</p>
+                    <p className="text-sm font-bold mt-1" style={{ color: "#F59E0B" }}>${Number(p.total_value).toFixed(2)} {p.currency}</p>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <button type="button" onClick={() => download(p)} title="Download PDF"
+                      className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(99,102,241,0.08)", color: "#6366F1" }}>
+                      <Download className="w-3.5 h-3.5" />
+                    </button>
+                    {p.status === "draft" && (
+                      <button type="button" onClick={() => send(p)} disabled={sendingId === p.id} title="Trimite email"
+                        className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(16,185,129,0.08)", color: "#10B981" }}>
+                        {sendingId === p.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                      </button>
+                    )}
+                    <button type="button" onClick={() => openEdit(p)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "#D97706" }}><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button type="button" onClick={() => del(p.id)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#EF4444" }}><Trash2 className="w-3.5 h-3.5" /></button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {showForm && (
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4"
+          style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
+          onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
+          <div className="w-full md:max-w-2xl rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", maxHeight: "92dvh" }}>
+            <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
+              <FileText className="w-4 h-4" style={{ color: "#F59E0B" }} />
+              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Editează propunere" : "Propunere nouă"}</p>
+              <button type="button" onClick={() => setShowForm(false)} style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
+            </div>
+            <div className="overflow-y-auto p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Titlu propunere *</label><input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} placeholder="ex: Social Media Management — Noiembrie 2026" style={inp} /></div>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Client *</label><input value={form.client_name} onChange={e => setForm(p => ({ ...p, client_name: e.target.value }))} style={inp} /></div>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Email client</label><input value={form.client_email} onChange={e => setForm(p => ({ ...p, client_email: e.target.value }))} placeholder="client@email.com" style={inp} /></div>
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-medium" style={{ color: "#78614E" }}>Servicii</label>
+                  <button type="button" onClick={addService} className="text-xs flex items-center gap-1" style={{ color: "#F59E0B" }}><Plus className="w-3 h-3" />Adaugă</button>
+                </div>
+                <div className="space-y-2">
+                  {form.services.map((s, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input value={s.name} onChange={e => updateService(i, "name", e.target.value)} placeholder="Serviciu" style={{ ...inp, flex: 2 }} />
+                      <input type="number" value={s.qty || ""} onChange={e => updateService(i, "qty", parseInt(e.target.value) || 1)} placeholder="Qty" style={{ ...inp, width: 60, flex: "none" }} />
+                      <input type="number" value={s.price || ""} onChange={e => updateService(i, "price", parseFloat(e.target.value) || 0)} placeholder="$" style={{ ...inp, width: 90, flex: "none" }} />
+                      <button type="button" onClick={() => removeService(i)} style={{ color: "#EF4444" }}><X className="w-4 h-4" /></button>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex justify-end mt-2">
+                  <p className="text-sm font-bold" style={{ color: "#F59E0B" }}>Total: ${totalValue.toFixed(2)} {form.currency}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Monedă</label>
+                  <select value={form.currency} onChange={e => setForm(p => ({ ...p, currency: e.target.value }))} style={inp}>
+                    {["USD","EUR","RON","GBP"].map(c => <option key={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Valabilă (zile)</label>
+                  <input type="number" value={form.valid_days} onChange={e => setForm(p => ({ ...p, valid_days: parseInt(e.target.value) || 30 }))} style={inp} />
+                </div>
+                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Note</label>
+                  <textarea value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={2} style={{ ...inp, resize: "none" } as any} />
+                </div>
+              </div>
+
+              <button type="button" onClick={save} disabled={saving || !form.title.trim() || !form.client_name.trim()}
+                className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
+                style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                {editId ? "Salvează" : "Creează propunere"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
