@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   }
 
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/linkedin-post/callback`;
-  const scope = "openid profile w_member_social";
+  const scope = "openid profile email w_member_social";
 
   const params = new URLSearchParams({
     response_type: "code",

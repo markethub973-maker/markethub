@@ -1,15 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/route-helpers";
 import { createServiceClient } from "@/lib/supabase/service";
 
-export async function GET(req: NextRequest) {
+// LinkedIn OAuth with openid/profile/email/w_member_social scopes only
+// exposes the *authenticated* user's own profile via /v2/userinfo. There is
+// no supported way to look up arbitrary LinkedIn users — the page is now an
+// account status view, not a search tool.
+export async function GET() {
   const auth = await requireAuth();
   if (!auth.ok) return auth.response;
 
-  const username = req.nextUrl.searchParams.get("username");
-  if (!username) return NextResponse.json({ error: "username required" }, { status: 400 });
-
-  // Check if user has LinkedIn connected via OAuth
   const supa = createServiceClient();
   const { data: profile } = await supa
     .from("profiles")
@@ -19,46 +19,38 @@ export async function GET(req: NextRequest) {
 
   if (!profile?.linkedin_access_token) {
     return NextResponse.json({
-      error: "Conectează-ți contul LinkedIn pentru a vedea date de profil.",
-      needs_auth: true,
+      connected: false,
       connect_url: "/api/auth/linkedin-post/connect",
-    }, { status: 401 });
+    });
   }
 
-  try {
-    // Use LinkedIn API with OAuth token
-    const meRes = await fetch("https://api.linkedin.com/v2/userinfo", {
-      headers: { Authorization: `Bearer ${profile.linkedin_access_token}` },
-    });
+  const meRes = await fetch("https://api.linkedin.com/v2/userinfo", {
+    headers: { Authorization: `Bearer ${profile.linkedin_access_token}` },
+  });
 
-    if (!meRes.ok) {
-      // Token expired
-      await supa.from("profiles").update({ linkedin_access_token: null }).eq("id", auth.userId);
-      return NextResponse.json({
-        error: "Token LinkedIn expirat. Reconectează-te.",
-        needs_auth: true,
-        connect_url: "/api/auth/linkedin-post/connect",
-      }, { status: 401 });
-    }
-
-    const me = await meRes.json();
-
+  if (!meRes.ok) {
+    // Token expired or revoked — clear it so the UI can prompt reconnect.
+    await supa.from("profiles").update({ linkedin_access_token: null }).eq("id", auth.userId);
     return NextResponse.json({
-      profile: {
-        name: me.name ?? `${me.given_name ?? ""} ${me.family_name ?? ""}`.trim(),
-        headline: "",
-        summary: "",
-        followers: 0,
-        connections: 0,
-        location: me.locale?.country ?? "",
-        avatar: me.picture ?? "",
-        url: `https://www.linkedin.com/in/${username}/`,
-        company: "",
-        position: "",
-        email: me.email ?? "",
-      },
+      connected: false,
+      error: "Token LinkedIn expirat. Reconectează-te.",
+      connect_url: "/api/auth/linkedin-post/connect",
     });
-  } catch (err) {
-    return NextResponse.json({ error: String(err) }, { status: 500 });
   }
+
+  const me = await meRes.json();
+
+  return NextResponse.json({
+    connected: true,
+    profile: {
+      sub: me.sub,
+      name: me.name ?? `${me.given_name ?? ""} ${me.family_name ?? ""}`.trim(),
+      given_name: me.given_name ?? "",
+      family_name: me.family_name ?? "",
+      email: me.email ?? "",
+      email_verified: me.email_verified ?? false,
+      picture: me.picture ?? "",
+      locale: me.locale ?? null,
+    },
+  });
 }

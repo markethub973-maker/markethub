@@ -1,163 +1,155 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
-import { Search, Loader2, Users, Briefcase, MapPin, ExternalLink, UserPlus } from "lucide-react";
+import { Loader2, Calendar, LogOut, CheckCircle2, Linkedin } from "lucide-react";
+import Link from "next/link";
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const fmt = (n: number) => n >= 1e6 ? (n/1e6).toFixed(1)+"M" : n >= 1e3 ? (n/1e3).toFixed(1)+"K" : String(n || 0);
+
+type LinkedInProfile = {
+  sub: string;
+  name: string;
+  given_name: string;
+  family_name: string;
+  email: string;
+  email_verified: boolean;
+  picture: string;
+  locale: { country?: string; language?: string } | string | null;
+};
+
+type ApiResponse =
+  | { connected: true; profile: LinkedInProfile }
+  | { connected: false; error?: string; connect_url: string };
 
 export default function LinkedInPage() {
-  const [username, setUsername] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [profile, setProfile] = useState<any>(null);
-  const [error, setError] = useState("");
-  const [savedAsInfluencer, setSavedAsInfluencer] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [state, setState] = useState<ApiResponse | null>(null);
+  const [disconnecting, setDisconnecting] = useState(false);
 
-  const search = async () => {
-    const q = username.trim().replace(/^@/, "").replace(/.*linkedin\.com\/in\//, "").replace(/\/$/, "");
-    if (!q) return;
-    setLoading(true); setError(""); setProfile(null); setSavedAsInfluencer(false);
-    const res = await fetch(`/api/linkedin?username=${encodeURIComponent(q)}`);
-    const d = await res.json();
-    if (d.profile) setProfile(d.profile);
-    else if (d.needs_auth) {
-      setError("");
-      window.location.href = d.connect_url || "/api/auth/linkedin-post/connect";
-      return;
+  const load = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/linkedin");
+      const data: ApiResponse = await res.json();
+      setState(data);
+    } catch {
+      setState({ connected: false, connect_url: "/api/auth/linkedin-post/connect" });
+    } finally {
+      setLoading(false);
     }
-    else setError(d.error || "Profil negăsit");
-    setLoading(false);
   };
 
-  const saveAsInfluencer = async () => {
-    if (!profile) return;
-    await fetch("/api/influencers", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: profile.name,
-        niche: "Business",
-        location: profile.location,
-        notes: `LinkedIn: ${profile.headline}. Companie: ${profile.company}`,
-        status: "prospect",
-      }),
-    });
-    setSavedAsInfluencer(true);
+  useEffect(() => { load(); }, []);
+
+  const disconnect = async () => {
+    if (!confirm("Deconectează contul LinkedIn? Va trebui să te reconectezi ca să postezi pe LinkedIn din Calendar.")) return;
+    setDisconnecting(true);
+    try {
+      await fetch("/api/auth/linkedin-post/disconnect", { method: "POST" });
+      await load();
+    } finally {
+      setDisconnecting(false);
+    }
   };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="LinkedIn Analytics" subtitle="Analizează profiluri LinkedIn — followeri, poziție, companie" />
+      <Header title="LinkedIn Account" subtitle="Profilul tău LinkedIn conectat pentru publicare automată" />
       <div className="p-4 max-w-2xl mx-auto space-y-4">
 
-        {/* Connect banner */}
-        <div className="rounded-2xl p-4 flex items-center gap-3"
-          style={{ backgroundColor: "rgba(10,102,194,0.06)", border: "1px solid rgba(10,102,194,0.2)" }}>
-          <div className="flex-1">
-            <p className="text-sm font-semibold" style={{ color: "#0A66C2" }}>Conectează contul LinkedIn</p>
-            <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>Pentru date complete conectează-ți contul LinkedIn via OAuth</p>
-          </div>
-          <a href="/api/auth/linkedin-post/connect"
-            className="px-4 py-2 rounded-xl text-sm font-bold shrink-0 text-white"
-            style={{ backgroundColor: "#0A66C2" }}>
-            Conectează
-          </a>
-        </div>
-
-        {/* Search */}
-        <div className="flex gap-2">
-          <div className="flex-1 flex items-center gap-2 rounded-xl px-3" style={card}>
-            <Search className="w-4 h-4 shrink-0" style={{ color: "#C4AA8A" }} />
-            <input value={username} onChange={e => setUsername(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && search()}
-              placeholder="Username LinkedIn (ex: john-doe) sau URL profil"
-              className="flex-1 py-2.5 text-sm bg-transparent outline-none" style={{ color: "#292524" }} />
-          </div>
-          <button type="button" onClick={search} disabled={loading || !username.trim()}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
-            style={{ backgroundColor: "#0A66C2", color: "white" }}>
-            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-            Caută
-          </button>
-        </div>
-
-        {error && <p className="text-sm text-center" style={{ color: "#EF4444" }}>{error}</p>}
-
-        {profile && (
-          <div className="rounded-2xl p-5 space-y-4" style={card}>
-            {/* Header */}
-            <div className="flex items-start gap-4">
-              {profile.avatar ? (
-                <img src={profile.avatar} alt="" className="w-16 h-16 rounded-full object-cover shrink-0" />
-              ) : (
-                <div className="w-16 h-16 rounded-full flex items-center justify-center text-xl font-bold shrink-0"
-                  style={{ backgroundColor: "rgba(10,102,194,0.1)", color: "#0A66C2" }}>
-                  {profile.name?.[0] ?? "?"}
-                </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <h2 className="font-bold text-lg" style={{ color: "#292524" }}>{profile.name}</h2>
-                {profile.headline && <p className="text-sm mt-0.5" style={{ color: "#78614E" }}>{profile.headline}</p>}
-                <div className="flex flex-wrap gap-3 mt-2">
-                  {profile.company && (
-                    <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                      <Briefcase className="w-3 h-3" /> {profile.company} {profile.position && `· ${profile.position}`}
-                    </span>
-                  )}
-                  {profile.location && (
-                    <span className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
-                      <MapPin className="w-3 h-3" /> {profile.location}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "rgba(10,102,194,0.06)" }}>
-                <p className="text-xl font-bold" style={{ color: "#0A66C2" }}>{fmt(profile.followers)}</p>
-                <p className="text-xs" style={{ color: "#A8967E" }}>Followers</p>
-              </div>
-              <div className="rounded-xl p-3 text-center" style={{ backgroundColor: "rgba(10,102,194,0.06)" }}>
-                <p className="text-xl font-bold" style={{ color: "#0A66C2" }}>{fmt(profile.connections)}</p>
-                <p className="text-xs" style={{ color: "#A8967E" }}>Connections</p>
-              </div>
-            </div>
-
-            {profile.summary && (
-              <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,215,160,0.1)" }}>
-                <p className="text-xs font-medium mb-1" style={{ color: "#A8967E" }}>About</p>
-                <p className="text-sm line-clamp-4" style={{ color: "#78614E" }}>{profile.summary}</p>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex gap-2">
-              <a href={profile.url} target="_blank" rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold flex-1 justify-center"
-                style={{ backgroundColor: "#0A66C2", color: "white" }}>
-                <ExternalLink className="w-4 h-4" /> Deschide LinkedIn
-              </a>
-              <button type="button" onClick={saveAsInfluencer} disabled={savedAsInfluencer}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-60"
-                style={{ backgroundColor: savedAsInfluencer ? "rgba(16,185,129,0.1)" : "rgba(99,102,241,0.1)", color: savedAsInfluencer ? "#10B981" : "#6366F1" }}>
-                <UserPlus className="w-4 h-4" />
-                {savedAsInfluencer ? "Salvat!" : "Adaugă în Influencers"}
-              </button>
-            </div>
+        {loading && (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#0A66C2" }} />
           </div>
         )}
 
-        {/* Info box */}
-        {!profile && !loading && !error && (
-          <div className="rounded-2xl p-6 text-center" style={{ ...card, border: "1px solid rgba(10,102,194,0.15)" }}>
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3"
+        {/* Not connected */}
+        {!loading && state && !state.connected && (
+          <div className="rounded-2xl p-6 text-center" style={card}>
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4"
               style={{ backgroundColor: "rgba(10,102,194,0.1)" }}>
-              <Users className="w-6 h-6" style={{ color: "#0A66C2" }} />
+              <Linkedin className="w-7 h-7" style={{ color: "#0A66C2" }} />
             </div>
-            <p className="text-sm font-medium mb-1" style={{ color: "#292524" }}>Analizează orice profil LinkedIn</p>
-            <p className="text-xs" style={{ color: "#A8967E" }}>Introduci username-ul sau URL-ul complet.<br />Exemplu: <code style={{ color: "#0A66C2" }}>john-doe</code> sau <code style={{ color: "#0A66C2" }}>linkedin.com/in/john-doe</code></p>
+            <h2 className="text-lg font-bold mb-1" style={{ color: "#292524" }}>Conectează-ți contul LinkedIn</h2>
+            <p className="text-sm mb-5" style={{ color: "#78614E" }}>
+              Conectează-te cu LinkedIn ca să poți publica automat postări din Calendar direct pe profilul tău.
+            </p>
+            {state.error && (
+              <p className="text-sm mb-4" style={{ color: "#EF4444" }}>{state.error}</p>
+            )}
+            <a href={state.connect_url}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white"
+              style={{ backgroundColor: "#0A66C2" }}>
+              <Linkedin className="w-4 h-4" />
+              Conectează cu LinkedIn
+            </a>
           </div>
+        )}
+
+        {/* Connected */}
+        {!loading && state?.connected && (
+          <>
+            <div className="rounded-2xl p-6 space-y-5" style={card}>
+              <div className="flex items-start gap-4">
+                {state.profile.picture ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={state.profile.picture} alt={state.profile.name}
+                    className="w-20 h-20 rounded-full object-cover shrink-0"
+                    style={{ border: "2px solid rgba(10,102,194,0.3)" }} />
+                ) : (
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold shrink-0"
+                    style={{ backgroundColor: "rgba(10,102,194,0.1)", color: "#0A66C2" }}>
+                    {state.profile.name?.[0] ?? "?"}
+                  </div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h2 className="font-bold text-xl" style={{ color: "#292524" }}>{state.profile.name}</h2>
+                    <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: "#10B981" }} />
+                  </div>
+                  {state.profile.email && (
+                    <p className="text-sm" style={{ color: "#78614E" }}>
+                      {state.profile.email}
+                      {state.profile.email_verified && (
+                        <span className="ml-2 text-xs font-medium" style={{ color: "#10B981" }}>✓ verificat</span>
+                      )}
+                    </p>
+                  )}
+                  <p className="text-xs mt-2" style={{ color: "#A8967E" }}>
+                    Conectat cu scope <code>w_member_social</code> — permite publicare postări
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Link href="/calendar"
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-white"
+                style={{ backgroundColor: "#0A66C2" }}>
+                <Calendar className="w-4 h-4" />
+                Postează din Calendar
+              </Link>
+              <button type="button" onClick={disconnect} disabled={disconnecting}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold disabled:opacity-50"
+                style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#EF4444", border: "1px solid rgba(239,68,68,0.2)" }}>
+                {disconnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
+                Deconectează
+              </button>
+            </div>
+
+            {/* Info box — be honest about what this integration does */}
+            <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: "rgba(10,102,194,0.06)", border: "1px solid rgba(10,102,194,0.15)", color: "#78614E" }}>
+              <p className="font-medium mb-1" style={{ color: "#292524" }}>Ce pot face cu integrarea LinkedIn?</p>
+              <ul className="space-y-1 text-xs">
+                <li>• Publica postări text + imagine direct din Calendar</li>
+                <li>• Postezi pe profilul tău personal (nu pe Company Pages)</li>
+              </ul>
+              <p className="mt-3 text-xs" style={{ color: "#A8967E" }}>
+                LinkedIn nu expune public followers/connections/headline via OAuth — pentru analytics trebuie aplicație separată cu review Marketing Developer Platform.
+              </p>
+            </div>
+          </>
         )}
       </div>
     </div>
