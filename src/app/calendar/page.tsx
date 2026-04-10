@@ -52,7 +52,7 @@ function getFirstDayOfWeek(year: number, month: number) {
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
-const EMPTY_FORM = { title: "", caption: "", platform: "instagram", status: "draft", date: "", time: "12:00", client: "", hashtags: "", image_url: "", first_comment: "" };
+const EMPTY_FORM = { title: "", caption: "", platform: "instagram", status: "scheduled", date: "", time: "12:00", client: "", hashtags: "", image_url: "", first_comment: "" };
 
 export default function CalendarPage() {
   const searchParams = useSearchParams();
@@ -461,7 +461,9 @@ export default function CalendarPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Status</label>
+                    <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
+                      Status <span style={{ color: "#C4AA8A", fontWeight: 400 }}>— Scheduled = auto-publish at date/time</span>
+                    </label>
                     <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
                       aria-label="Status"
                       className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
