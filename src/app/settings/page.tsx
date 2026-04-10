@@ -28,15 +28,15 @@ type Tab = "profile" | "integrations" | "credits" | "api-keys";
 const API_KEYS = [
   {
     id: "anthropic",
-    name: "Anthropic Claude AI",
+    name: "AI MarketHub Engine",
     icon: "🤖",
     status: "active",
     statusLabel: "Active — paid credits",
     color: "#7C3AED",
     colorLight: "rgba(124,58,237,0.08)",
     colorBorder: "rgba(124,58,237,0.25)",
-    dashboardUrl: "https://console.anthropic.com/settings/billing",
-    docsUrl: "https://docs.anthropic.com",
+    dashboardUrl: "https://markethubpromo.com",
+    docsUrl: "https://markethubpromo.com",
     env: ["ANTHROPIC_API_KEY", "ANTHROPIC_API_KEY_APP"],
     using: [
       "AI caption generation (3 variants / set)",
@@ -633,12 +633,8 @@ export default function SettingsPage() {
             <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.2)" }}>
               <p style={{ color: "#78614E" }}>
                 <strong style={{ color: "#292524" }}>📌 Note:</strong>{" "}
-                Your actual Anthropic account balance is only visible at{" "}
-                <a href="https://console.anthropic.com/settings/billing" target="_blank" rel="noopener noreferrer"
-                  className="underline font-medium" style={{ color: "#7C3AED" }}>
-                  console.anthropic.com/settings/billing
-                </a>.
-                {" "}The platform cannot read the balance from the API — Anthropic does not expose an endpoint for that.
+                Your AI Engine usage and credits are managed internally by the platform.
+                {" "}Contact support for any billing questions related to AI usage.
               </p>
             </div>
           </div>

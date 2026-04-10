@@ -10,15 +10,15 @@ const CATEGORIES = [
     border: "rgba(139,92,246,0.2)",
     services: [
       {
-        name: "Anthropic Claude",
-        version: "claude-sonnet-4-6 / haiku-4-5",
+        name: "AI MarketHub Engine",
+        version: "Standard / Premium tier",
         logo: "🤖",
         purpose: "AI Captions, Sentiment Analysis, Agents, Weekly/Monthly Reports, A/B Title Generator, Buyer Persona, Research, Deep Analysis",
         envVars: [
-          { key: "ANTHROPIC_API_KEY_APP", desc: "Production — app features (isolated credits)" },
-          { key: "ANTHROPIC_API_KEY", desc: "Dev / admin tools" },
+          { key: "AI_ENGINE_KEY_APP", desc: "Production — app features (isolated credits)" },
+          { key: "AI_ENGINE_KEY", desc: "Dev / admin tools" },
         ],
-        docs: "console.anthropic.com",
+        docs: "markethubpromo.com",
       },
     ],
   },
@@ -307,7 +307,7 @@ export default function IntegrationsPage() {
                 {
                   title: "MarketHub Pro",
                   color: "#F59E0B",
-                  items: ["Next.js 15 (Vercel)", "Supabase DB + Auth", "Anthropic AI", "Stripe Payments"],
+                  items: ["Next.js 15 (Vercel)", "Supabase DB + Auth", "AI MarketHub Engine", "Stripe Payments"],
                   highlight: true,
                 },
                 { arrow: true },
