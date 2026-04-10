@@ -7,47 +7,10 @@ import {
   buildLanguageInstruction, getCountryByCode, recommendedPlatforms,
   type MarketScope,
 } from "@/lib/markets";
+import { SYSTEM_ANALYZE as SYSTEM_BASE, buildFindClientsSystem } from "@/lib/ai-prompts";
+
 
 const anthropic = getAppAnthropicClient();
-
-const SYSTEM_BASE = `You are an international lead generation strategist. Given an offer description and target audience, you must:
-1. Extract the best keywords to find people who NEED this offer right now
-2. Recommend the best platforms/sources to find these prospects
-3. For each source, generate the exact search query to use
-4. Identify intent signals that indicate a hot prospect
-
-Return ONLY valid JSON in this exact format:
-{
-  "offer_summary": "brief rewrite of the offer in client-benefit terms",
-  "target_profile": "who exactly needs this (specific, not generic)",
-  "keywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
-  "intent_signals": ["signal1", "signal2", "signal3"],
-  "sources": [
-    {
-      "id": "google",
-      "platform": "Google Search",
-      "icon": "search",
-      "query": "exact search query to use",
-      "why": "why this source is relevant",
-      "estimated_leads": "5-20",
-      "intent_level": "high"
-    }
-  ],
-  "affiliate_angle": "if this is affiliate, the specific pain point to target (or null)",
-  "outreach_hook": "one sentence that opens a conversation naturally"
-}
-
-Available platforms for sources (use only relevant ones, 3-6 max):
-- google: Google Search (people actively searching)
-- google_maps: Google Maps (local businesses to target)
-- reddit: Reddit (people asking for recommendations)
-- facebook_groups: Facebook Groups (community discussions)
-- instagram_hashtag: Instagram hashtag search
-- tiktok_hashtag: TikTok niche community
-- classifieds: Local classifieds platforms (Craigslist, OLX, etc. — depending on target market)
-- reviews: Google Maps reviews of competitors
-
-intent_level must be: "high", "medium", or "low"`;
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -68,7 +31,7 @@ export async function POST(req: NextRequest) {
   // Build the language enforcement prefix — when content_language is set
   // we hard-force the output language; otherwise we fall back to legacy
   // auto-detect behaviour so existing callers stay unchanged.
-  const SYSTEM = `${buildLanguageInstruction(content_language)}\n\n${SYSTEM_BASE}`;
+  const SYSTEM = buildFindClientsSystem(SYSTEM_BASE, content_language);
 
   const platforms = recommendedPlatforms({
     scope: (market_scope as MarketScope) || "worldwide",
