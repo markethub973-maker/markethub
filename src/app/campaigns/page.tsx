@@ -64,21 +64,26 @@ const emptyForm: Omit<Campaign, "id"> = {
   igUsername: "", tiktokUsername: "", socialData: {},
 };
 
-function loadCampaigns(): Campaign[] {
-  if (typeof window === "undefined") return [];
-  const stored = localStorage.getItem("mhp_campaigns");
-  if (!stored) return [];
-  // Migrate old campaigns without social fields
-  return JSON.parse(stored).map((c: any) => ({
-    ...c,
-    igUsername: c.igUsername || "",
-    tiktokUsername: c.tiktokUsername || "",
-    socialData: c.socialData || {},
-  }));
-}
-
-function saveCampaigns(campaigns: Campaign[]) {
-  localStorage.setItem("mhp_campaigns", JSON.stringify(campaigns));
+function dbToUi(c: any): Campaign {
+  return {
+    id: c.id,
+    name: c.name,
+    client: c.client ?? "",
+    platform: c.platform ?? "Instagram",
+    status: c.status ?? "draft",
+    budget: Number(c.budget ?? 0),
+    spent: Number(c.spent ?? 0),
+    startDate: c.start_date ?? "",
+    endDate: c.end_date ?? "",
+    impressions: Number(c.impressions ?? 0),
+    clicks: Number(c.clicks ?? 0),
+    conversions: Number(c.conversions ?? 0),
+    revenue: Number(c.revenue ?? 0),
+    notes: c.notes ?? "",
+    igUsername: c.ig_username ?? "",
+    tiktokUsername: c.tiktok_username ?? "",
+    socialData: c.social_data ?? {},
+  };
 }
 
 function proxyImg(url: string) {
@@ -87,7 +92,8 @@ function proxyImg(url: string) {
 }
 
 export default function CampaignsPage() {
-  const [campaigns, setCampaigns] = useState<Campaign[]>(loadCampaigns);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -97,8 +103,11 @@ export default function CampaignsPage() {
   const [fetchingId, setFetchingId] = useState<string | null>(null);
 
   useEffect(() => {
-    saveCampaigns(campaigns);
-  }, [campaigns]);
+    fetch("/api/campaigns")
+      .then(r => r.json())
+      .then(d => { if (d.campaigns) setCampaigns(d.campaigns.map(dbToUi)); })
+      .finally(() => setLoadingList(false));
+  }, []);
 
   const filtered = useMemo(() => {
     return campaigns.filter((c) => {
@@ -134,21 +143,36 @@ export default function CampaignsPage() {
     setShowForm(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim()) return;
-    let updated: Campaign[];
     if (editId) {
-      updated = campaigns.map((c) => (c.id === editId ? { ...form, id: editId } : c));
+      const res = await fetch("/api/campaigns", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editId, ...form }),
+      });
+      const d = await res.json();
+      if (d.campaign) setCampaigns(prev => prev.map(c => c.id === editId ? dbToUi(d.campaign) : c));
     } else {
-      updated = [...campaigns, { ...form, id: Date.now().toString() }];
+      const res = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const d = await res.json();
+      if (d.campaign) setCampaigns(prev => [dbToUi(d.campaign), ...prev]);
     }
-    setCampaigns(updated);
     setShowForm(false);
     setEditId(null);
   };
 
-  const handleDelete = (id: string) => {
-    setCampaigns(campaigns.filter((c) => c.id !== id));
+  const handleDelete = async (id: string) => {
+    await fetch("/api/campaigns", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+    setCampaigns(prev => prev.filter(c => c.id !== id));
   };
 
   const fetchSocialData = async (campaignId: string) => {
@@ -190,6 +214,12 @@ export default function CampaignsPage() {
     } catch { /* ignore */ }
 
     setCampaigns(prev => prev.map(c => c.id === campaignId ? { ...c, socialData } : c));
+    // persist social data to Supabase
+    fetch("/api/campaigns", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: campaignId, socialData }),
+    }).catch(() => {});
     setFetchingId(null);
   };
 
