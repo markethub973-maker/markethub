@@ -9,7 +9,7 @@ import {
   Library, Megaphone, Mail, UserSquare2, Sparkles, CalendarDays,
   Target, Instagram, Shield, ChevronDown, Puzzle, Search,
   Database, Hash, Link2, Lock, X, ArrowRight, HardDrive, Tag, ShoppingBag,
-  UserCheck, FileText, Linkedin, UserPlus, Clock, Gift, Calculator, Palette,
+  UserCheck, FileText, Linkedin, UserPlus, Clock, Gift, Calculator, Palette, Key, Send,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -101,6 +101,8 @@ const navGroups = [
       { href: "/roi-calculator", label: "ROI Calculator", icon: Calculator },
       { href: "/referral", label: "Referral", icon: Gift },
       { href: "/white-label", label: "White-label", icon: Palette },
+      { href: "/api-keys", label: "API Keys", icon: Key },
+      { href: "/email-campaigns", label: "Email Campaigns", icon: Send },
     ],
   },
 ];

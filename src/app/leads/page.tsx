@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Header from "@/components/layout/Header";
 import {
   Phone, Globe, Star, MapPin, Instagram, Facebook, Play,
   Search, Trash2, Download, RefreshCw, Loader2, AlertCircle,
   Users, Map, Hash, ExternalLink, Filter, Copy, Check,
   CheckCircle2, Circle, StickyNote, X, Youtube, MessageSquare,
-  Sparkles, Mail, Send,
+  Sparkles, Mail, Send, Upload,
 } from "lucide-react";
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -355,6 +355,40 @@ export default function LeadsPage() {
     fetchLeads();
   };
 
+  const csvInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<string | null>(null);
+
+  const importCSV = async (file: File) => {
+    setImporting(true); setImportResult(null);
+    const text = await file.text();
+    const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) { setImporting(false); return; }
+
+    const headers = lines[0].split(",").map(h => h.replace(/"/g, "").trim().toLowerCase());
+    const leads = lines.slice(1).map(line => {
+      const vals = line.match(/(".*?"|[^,]+|(?<=,)(?=,)|^(?=,))/g) ?? line.split(",");
+      const obj: Record<string, string> = {};
+      headers.forEach((h, i) => { obj[h] = (vals[i] ?? "").replace(/^"|"$/g, "").trim(); });
+      return {
+        name: obj.name || obj.company || obj.business || "",
+        email: obj.email || obj["e-mail"] || "",
+        phone: obj.phone || obj.tel || obj.telephone || "",
+        website: obj.website || obj.url || obj.site || "",
+        city: obj.city || obj.oras || obj.location || "",
+        address: obj.address || obj.adresa || "",
+        category: obj.category || obj.niche || obj.industry || "",
+        notes: obj.notes || obj.note || "",
+      };
+    }).filter(l => l.name || l.email || l.website);
+
+    const res = await fetch("/api/leads/import", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ leads }) });
+    const d = await res.json();
+    setImportResult(d.message || "Import complet");
+    if (d.imported > 0) fetchLeads();
+    setImporting(false);
+  };
+
   const exportCSV = () => {
     const toExport = filtered.filter(l => selected.size === 0 || selected.has(l.id));
     const rows = [
@@ -562,6 +596,14 @@ export default function LeadsPage() {
                 style={{ backgroundColor: "rgba(29,185,84,0.1)", color: GREEN }}>
                 <Download className="w-3 h-3" />Export CSV {selected.size > 0 ? `(${selected.size})` : ""}
               </button>
+              <input ref={csvInputRef} type="file" accept=".csv" className="hidden"
+                onChange={e => { const f = e.target.files?.[0]; if (f) importCSV(f); e.target.value = ""; }} />
+              <button type="button" onClick={() => csvInputRef.current?.click()} disabled={importing}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50"
+                style={{ backgroundColor: "rgba(99,102,241,0.1)", color: "#6366F1" }}>
+                {importing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                Import CSV
+              </button>
               <button type="button" onClick={fetchLeads} disabled={loading}
                 className="p-1.5 rounded-lg" style={{ color: "#A8967E" }}>
                 <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
@@ -570,6 +612,13 @@ export default function LeadsPage() {
           </div>
         )}
 
+        {importResult && (
+          <div className="rounded-xl p-3 text-xs font-semibold flex items-center gap-2"
+            style={{ backgroundColor: "rgba(99,102,241,0.08)", color: "#6366F1" }}>
+            <Check className="w-4 h-4" /> {importResult}
+            <button type="button" onClick={() => setImportResult(null)} className="ml-auto"><X className="w-3.5 h-3.5" /></button>
+          </div>
+        )}
         {enrichMsg && (
           <div className="rounded-xl p-3 text-xs font-semibold flex items-center gap-2"
             style={{ backgroundColor: "rgba(139,92,246,0.08)", color: "#8B5CF6", border: "1px solid rgba(139,92,246,0.2)" }}>
