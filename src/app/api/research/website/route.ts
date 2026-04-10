@@ -24,6 +24,11 @@ export async function POST(req: NextRequest) {
   // Validate that it looks like a real domain, not a keyword
   try {
     const parsed = new URL(startUrl);
+    // Block private IP ranges (SSRF protection)
+    const host = parsed.hostname.toLowerCase();
+    if (/^(localhost|127\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|::1|0\.0\.0\.0)/.test(host)) {
+      return NextResponse.json({ error: "Private networks not allowed" }, { status: 400 });
+    }
     if (!parsed.hostname.includes(".")) {
       return NextResponse.json({ error: "Enter a valid URL (e.g. competitor.com), not a keyword." }, { status: 400 });
     }

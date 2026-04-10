@@ -70,6 +70,8 @@ export async function POST(req: NextRequest) {
 
 // PATCH — increment click count for a specific link
 export async function PATCH(req: NextRequest) {
+  const auth = await requireAuth();
+  if (!auth.ok) return auth.response;
   const body = await req.json().catch(() => ({}));
   const { slug, link_id } = body as { slug: string; link_id: string };
   if (!slug || !link_id) return NextResponse.json({ ok: false });

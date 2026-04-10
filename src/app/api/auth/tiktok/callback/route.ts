@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
   const { access_token, refresh_token, expires_in, open_id } = tokenData.data ?? tokenData;
 
   if (!access_token || !open_id) {
-    console.error("[TikTok OAuth] missing access_token or open_id:", tokenData);
+    console.error("[OAuth] Token error — details redacted for security");
     return NextResponse.redirect(new URL("/tiktok?error=token_invalid", req.url));
   }
 

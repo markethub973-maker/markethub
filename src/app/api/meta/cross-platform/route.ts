@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { resolveIGAuth } from "@/lib/adminPlatformToken";
 import { createClient } from "@/lib/supabase/server";
+import { requireAuth } from "@/lib/route-helpers";
 
 interface PostMetric {
   platform: "instagram" | "facebook";
@@ -17,21 +18,21 @@ interface PostMetric {
 }
 
 export async function GET(req: NextRequest) {
+  const userAuth = await requireAuth();
+  if (!userAuth.ok) return userAuth.response;
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const days = parseInt(req.nextUrl.searchParams.get("days") || "30");
 
-  const auth = await resolveIGAuth();
+  const igAuth = await resolveIGAuth();
   const { data: profile } = await supabase
     .from("profiles")
     .select("instagram_access_token")
-    .eq("id", user.id)
+    .eq("id", userAuth.userId)
     .single();
 
-  const token = auth?.token || profile?.instagram_access_token || process.env.META_ACCESS_TOKEN;
-  const igId = auth?.igId || process.env.INSTAGRAM_ACCOUNT_ID;
+  const token = igAuth?.token || profile?.instagram_access_token || process.env.META_ACCESS_TOKEN;
+  const igId = igAuth?.igId || process.env.INSTAGRAM_ACCOUNT_ID;
 
   if (!token) return NextResponse.json({ error: "Meta not connected" }, { status: 401 });
 

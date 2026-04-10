@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     const tokenData = await tokenRes.json();
 
     if (tokenData.error || !tokenData.access_token) {
-      console.error("Facebook token error:", tokenData);
+      console.error("[OAuth] Token error — details redacted for security");
       return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=token_failed`);
     }
 

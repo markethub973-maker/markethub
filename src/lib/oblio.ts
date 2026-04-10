@@ -75,7 +75,8 @@ export async function emitOblioInvoice(params: OblioInvoiceParams): Promise<Obli
 
   try {
     const token = await getOblioToken();
-    const cif = process.env.OBLIO_CIF ?? "26648546";
+    const cif = process.env.OBLIO_CIF;
+    if (!cif) return { ok: false, error: "OBLIO_CIF not configured" };
     const issueDate = params.issueDate ?? new Date().toISOString().split("T")[0];
     const planLabel = PLAN_LABELS[params.plan] ?? params.plan;
     const price = params.amountUsd > 0 ? params.amountUsd : (PLAN_PRICES[params.plan] ?? 0);
