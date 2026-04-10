@@ -1,19 +1,10 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
-  return data?.is_admin ? user : null;
-}
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 // GET — list all discount codes
-export async function GET() {
-  const user = await requireAdmin();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: NextRequest) {
+  if (!isAdminAuthorized(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const supabase = createServiceClient();
   const { data, error } = await supabase
@@ -26,9 +17,8 @@ export async function GET() {
 }
 
 // POST — create a new code
-export async function POST(req: Request) {
-  const user = await requireAdmin();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function POST(req: NextRequest) {
+  if (!isAdminAuthorized(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json();
   const { code, description, discount_pct, max_uses, applies_to, expires_at } = body as {
@@ -60,9 +50,8 @@ export async function POST(req: Request) {
 }
 
 // PATCH — toggle active / deactivate
-export async function PATCH(req: Request) {
-  const user = await requireAdmin();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function PATCH(req: NextRequest) {
+  if (!isAdminAuthorized(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { id, is_active } = await req.json() as { id: string; is_active: boolean };
   if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
@@ -74,12 +63,10 @@ export async function PATCH(req: Request) {
 }
 
 // DELETE — remove a code
-export async function DELETE(req: Request) {
-  const user = await requireAdmin();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function DELETE(req: NextRequest) {
+  if (!isAdminAuthorized(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const { searchParams } = new URL(req.url);
-  const id = searchParams.get("id");
+  const id = req.nextUrl.searchParams.get("id");
   if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
   const supabase = createServiceClient();

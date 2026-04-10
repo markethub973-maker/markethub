@@ -8,8 +8,8 @@ const NEWS_API_KEY = process.env.NEWS_API_KEY ?? "";
 
 export async function POST(req: NextRequest) {
   const authHeader = req.headers.get("authorization") ?? "";
-  const secret = authHeader.replace("Bearer ", "") || req.nextUrl.searchParams.get("secret");
-  if (secret !== process.env.CRON_SECRET) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");
+  if (!secret || secret.length !== (process.env.CRON_SECRET?.length ?? 0) || !require("crypto").timingSafeEqual(Buffer.from(secret), Buffer.from(process.env.CRON_SECRET ?? ""))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supa = createServiceClient();
   const { data: configs } = await supa.from("listening_config").select("*").eq("active", true);

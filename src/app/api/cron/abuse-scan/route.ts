@@ -10,8 +10,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
 export async function GET(req: NextRequest) {
-  const secret = req.headers.get("x-cron-secret") ?? req.nextUrl.searchParams.get("secret");
-  if (secret !== process.env.CRON_SECRET) {
+  const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");
+  if (!secret || secret.length !== (process.env.CRON_SECRET?.length ?? 0) || !require("crypto").timingSafeEqual(Buffer.from(secret), Buffer.from(process.env.CRON_SECRET ?? ""))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { randomBytes } from "crypto";
 import { requireAuth } from "@/lib/route-helpers";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+// Use cryptographically secure random bytes — Math.random() is NOT secure
+// and predictable, making approval tokens forgeable.
 function generateToken(): string {
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+  return randomBytes(32).toString("hex");
 }
 
 // Send post for client approval

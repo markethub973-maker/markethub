@@ -52,22 +52,11 @@ export async function POST(req: NextRequest) {
 
   if (error) {
     if (error.code === "42P01") {
-      // Table doesn't exist yet — return helpful message
+      // Table not yet migrated — return a generic message without exposing DDL
       return NextResponse.json({
-        error: "Table 'client_accounts' does not exist. Run the SQL migration.",
-        migration: `CREATE TABLE IF NOT EXISTS client_accounts (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-  client_name TEXT NOT NULL,
-  instagram_username TEXT,
-  instagram_user_id TEXT NOT NULL,
-  instagram_access_token TEXT NOT NULL,
-  notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-ALTER TABLE client_accounts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users manage own clients" ON client_accounts FOR ALL USING (auth.uid() = user_id);`
-      }, { status: 400 });
+        error: "Service temporarily unavailable. Please contact support if this persists.",
+        code: "TABLE_MISSING",
+      }, { status: 503 });
     }
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

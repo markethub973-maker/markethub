@@ -7,8 +7,8 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export async function POST(req: NextRequest) {
   // Vercel cron sends Authorization: Bearer <CRON_SECRET>
   const authHeader = req.headers.get("authorization") ?? "";
-  const secret = authHeader.replace("Bearer ", "") || req.headers.get("x-cron-secret") || req.nextUrl.searchParams.get("secret");
-  if (secret !== process.env.CRON_SECRET) {
+  const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");
+  if (!secret || secret.length !== (process.env.CRON_SECRET?.length ?? 0) || !require("crypto").timingSafeEqual(Buffer.from(secret), Buffer.from(process.env.CRON_SECRET ?? ""))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

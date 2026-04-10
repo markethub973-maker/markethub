@@ -1,34 +1,19 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 export async function POST(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Use HMAC admin session cookie — consistent with all other /api/admin/* routes.
+  if (!isAdminAuthorized(request)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
-    const { id } = await params;
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check if admin
-    const { data: adminProfile } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
-
-    if (!adminProfile?.is_admin) {
-      return NextResponse.json(
-        { error: "Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    const targetUserId = id;
+    const { id: targetUserId } = await params;
+    const supabase = createServiceClient();
 
     // Calculate trial expiration (7 days from now)
     const trialExpiresAt = new Date();
@@ -42,7 +27,7 @@ export async function POST(
         expires_at: trialExpiresAt.toISOString(),
       })
       .eq("user_id", targetUserId)
-      .select()
+      .select("id, user_id, plan, status, expires_at")
       .single();
 
     if (updateError && updateError.code !== "PGRST116") { // PGRST116 = no rows found
@@ -62,7 +47,7 @@ export async function POST(
           status: "active",
           expires_at: trialExpiresAt.toISOString(),
         })
-        .select()
+        .select("id, user_id, plan, status, expires_at")
         .single();
 
       if (createError) {
@@ -86,8 +71,7 @@ export async function POST(
       subscription: updatedSub,
       expires_at: trialExpiresAt.toISOString(),
     });
-  } catch (error) {
-    console.error("Reset trial error:", error);
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

@@ -1,60 +1,44 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
+import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
+
+const VALID_PLANS = ["free_test", "lite", "pro", "business", "enterprise"];
 
 export async function PATCH(
-  request: Request,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Use HMAC admin session cookie — same as all other /api/admin/* routes.
+  // The old approach (is_admin DB flag via user session) could be bypassed
+  // by any authenticated user who managed to set is_admin=true on their profile.
+  if (!isAdminAuthorized(request)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
-    const { id } = await params;
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Check if admin
-    const { data: adminProfile } = await supabase
-      .from("profiles")
-      .select("is_admin")
-      .eq("id", user.id)
-      .single();
-
-    if (!adminProfile?.is_admin) {
-      return NextResponse.json(
-        { error: "Admin access required" },
-        { status: 403 }
-      );
-    }
-
-    const targetUserId = id;
+    const { id: targetUserId } = await params;
     const { plan } = await request.json();
 
     if (!plan) {
-      return NextResponse.json(
-        { error: "Plan is required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Plan is required" }, { status: 400 });
     }
 
-    if (!["free_test", "lite", "pro"].includes(plan)) {
+    if (!VALID_PLANS.includes(plan)) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
-    // Update user plan
-    const { data: updatedUser, error: updateError } = await supabase
+    const supa = createServiceClient();
+
+    // Return only safe fields — never include tokens or hashes
+    const { data: updatedUser, error: updateError } = await supa
       .from("profiles")
-      .update({ plan })
+      .update({ plan, subscription_plan: plan })
       .eq("id", targetUserId)
-      .select()
+      .select("id, email, name, plan, subscription_plan, subscription_status, created_at")
       .single();
 
     if (updateError) {
-      return NextResponse.json(
-        { error: updateError.message },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
 
     return NextResponse.json({
@@ -63,7 +47,6 @@ export async function PATCH(
       user: updatedUser,
     });
   } catch (error) {
-    console.error("Update user error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

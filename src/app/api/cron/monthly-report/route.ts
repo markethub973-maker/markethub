@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 import { Resend } from "resend";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
@@ -69,14 +70,14 @@ function buildHtml(data: {
 </body></html>`;
 }
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
+  // Accept: cron Bearer token (from Vercel cron) OR valid admin session cookie.
+  // The old admin path only checked for the cookie NAME being present —
+  // replaced with the proper HMAC-verified isAdminAuthorized() check.
   const authHeader = req.headers.get("authorization");
-  const isCron = authHeader === `Bearer ${CRON_SECRET}`;
-  if (!isCron) {
-    const cookie = req.headers.get("cookie") || "";
-    if (!cookie.includes("admin_session_token=")) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  const isCron = CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`;
+  if (!isCron && !isAdminAuthorized(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const resendKey = process.env.RESEND_API_KEY;

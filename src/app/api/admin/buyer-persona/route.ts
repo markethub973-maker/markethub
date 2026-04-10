@@ -7,24 +7,11 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 import Anthropic from "@anthropic-ai/sdk";
 import { getAppApiKey } from "@/lib/anthropic-client";
 
 const RAPIDAPI_HOST = "instagram-public-bulk-scraper.p.rapidapi.com";
-
-// ── Admin guard ───────────────────────────────────────────────────────────────
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", user.id)
-    .single();
-  return profile?.is_admin ? user : null;
-}
 
 // ── Scrape public Instagram profile ──────────────────────────────────────────
 async function scrapeInstagram(username: string) {
@@ -224,8 +211,7 @@ Important rules:
 
 // ── Route handler ─────────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  const admin = await requireAdmin();
-  if (!admin) {
+  if (!isAdminAuthorized(req)) {
     return NextResponse.json({ error: "Admin access required" }, { status: 403 });
   }
 

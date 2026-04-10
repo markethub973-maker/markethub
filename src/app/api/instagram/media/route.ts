@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
+import { resolveIGAuth } from "@/lib/adminPlatformToken";
 
 const APP_ID = process.env.META_APP_ID;
 const APP_SECRET = process.env.META_APP_SECRET;
 
 export async function GET() {
+  // Require auth — this route calls Meta API with app credentials and
+  // previously had no access control (anyone could trigger it publicly).
+  const auth = await resolveIGAuth();
+  if (!auth) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   if (!APP_ID || !APP_SECRET) {
     return NextResponse.json({ error: "Meta credentials not set" }, { status: 500 });
   }

@@ -1,18 +1,10 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 import { PLANS, type PlanId } from "@/lib/plan-config";
 import { PLAN_FEATURES } from "@/lib/plan-features";
 
 const PLAN_IDS: PlanId[] = ["free_test", "lite", "pro", "business", "enterprise"];
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
-  const { data } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
-  return data?.is_admin ? user : null;
-}
 
 async function getFeatureOverrides(): Promise<Record<string, Record<string, boolean>>> {
   const supabase = createServiceClient();
@@ -24,9 +16,8 @@ async function getFeatureOverrides(): Promise<Record<string, Record<string, bool
   return (data?.extra_data as Record<string, Record<string, boolean>>) ?? {};
 }
 
-export async function GET() {
-  const user = await requireAdmin();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function GET(req: NextRequest) {
+  if (!isAdminAuthorized(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const features = await getFeatureOverrides();
 
@@ -49,9 +40,8 @@ export async function GET() {
   return NextResponse.json({ plans, table_exists: true });
 }
 
-export async function POST(req: Request) {
-  const user = await requireAdmin();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+export async function POST(req: NextRequest) {
+  if (!isAdminAuthorized(req)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json();
   const { plan_id, feature_flags } = body as {
