@@ -8,7 +8,7 @@ import {
   Settings, Zap, LogOut, Bell, Newspaper, LineChart,
   Library, Megaphone, Mail, UserSquare2, Sparkles, CalendarDays,
   Target, Instagram, Shield, ChevronDown, Puzzle, Search,
-  Database, Hash, Link2, Lock, X, ArrowRight, HardDrive,
+  Database, Hash, Link2, Lock, X, ArrowRight, HardDrive, Tag, ShoppingBag,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -84,6 +84,8 @@ const navGroups = [
       { href: "/campaigns", label: "Campaigns", icon: Target },
       { href: "/email-reports", label: "Activity Reports", icon: Mail },
       { href: "/alerts", label: "Alerts", icon: Bell },
+      { href: "/affiliate", label: "Affiliate Hub", icon: Tag },
+      { href: "/trending-alerts", label: "Trending Products", icon: ShoppingBag },
     ],
   },
 ];

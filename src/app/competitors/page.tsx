@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import {
   Plus, X, Search, Loader2, Users, TrendingUp, Heart, MessageCircle,
   Eye, Instagram, Zap, Trash2, RefreshCw, ExternalLink, BarChart3,
-  ShieldCheck, Image, Video, ChevronDown, ChevronUp, ArrowUpDown
+  ShieldCheck, Image, Video, ChevronDown, ChevronUp, ArrowUpDown, Sparkles, AlertCircle
 } from "lucide-react";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -90,6 +90,132 @@ function loadCompetitors(): Competitor[] {
 
 function saveCompetitors(list: Competitor[]) {
   localStorage.setItem("mhp_competitors", JSON.stringify(list));
+}
+
+// ── Monetization Spy Panel ────────────────────────────────────────────────────
+function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
+  const [selected, setSelected] = useState("");
+  const [analyzing, setAnalyzing] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState("");
+
+  const analyze = async () => {
+    const comp = competitors.find(c => c.name === selected);
+    if (!selected) return;
+    setAnalyzing(true); setError(""); setResult(null);
+
+    const igData = comp ? {
+      username: comp.igUsername, followers: (comp as any).igData?.followers,
+      engagement: (comp as any).igData?.engagement, posts: (comp as any).igData?.postsCount,
+    } : null;
+
+    const res = await fetch("/api/competitors/monetization", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ brand: selected, ig_data: igData, ads_count: "unknown" }),
+    });
+    const d = await res.json();
+    if (d.analysis) setResult(d.analysis);
+    else setError(d.error || "Analysis failed");
+    setAnalyzing(false);
+  };
+
+  const THREAT_COLORS: Record<string, string> = { low: "#10B981", medium: "#F59E0B", high: "#EF4444" };
+
+  return (
+    <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(124,58,237,0.2)" }}>
+      <div className="flex items-center gap-2">
+        <Sparkles className="w-5 h-5" style={{ color: "#7C3AED" }} />
+        <h3 className="font-bold" style={{ color: "#292524" }}>Competitor Monetization Spy</h3>
+        <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(124,58,237,0.1)", color: "#7C3AED" }}>AI</span>
+      </div>
+
+      <div className="flex gap-2">
+        {competitors.length > 0 ? (
+          <select value={selected} onChange={e => setSelected(e.target.value)}
+            className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
+            style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }}>
+            <option value="">Alege competitor...</option>
+            {competitors.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+          </select>
+        ) : (
+          <input value={selected} onChange={e => setSelected(e.target.value)}
+            placeholder="Scrie numele brandului..."
+            className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
+            style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+        )}
+        <button type="button" onClick={analyze} disabled={analyzing || !selected.trim()}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
+          style={{ backgroundColor: "#7C3AED", color: "white" }}>
+          {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+          {analyzing ? "Analizez..." : "Analizează"}
+        </button>
+      </div>
+
+      {error && (
+        <div className="flex items-center gap-2 text-sm" style={{ color: "#EF4444" }}>
+          <AlertCircle className="w-4 h-4" /> {error}
+        </div>
+      )}
+
+      {result && (
+        <div className="space-y-3">
+          {/* Primary monetization */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {[
+              { label: "Monetizare principală", value: result.primary_monetization, color: "#7C3AED" },
+              { label: "Tip funnel", value: result.funnel_type, color: "#6366F1" },
+              { label: "Preț estimat", value: result.price_range, color: "#F59E0B" },
+            ].map(s => (
+              <div key={s.label} className="rounded-xl p-3" style={{ backgroundColor: `${s.color}08`, border: `1px solid ${s.color}20` }}>
+                <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#A8967E" }}>{s.label}</p>
+                <p className="text-sm font-bold" style={{ color: s.color }}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* Revenue streams */}
+            <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.15)" }}>
+              <p className="text-xs font-semibold mb-2" style={{ color: "#10B981" }}>💰 Surse de venit</p>
+              <ul className="space-y-1">
+                {result.revenue_streams?.map((s: string, i: number) => (
+                  <li key={i} className="text-xs flex items-center gap-1.5" style={{ color: "#292524" }}>
+                    <span style={{ color: "#10B981" }}>•</span> {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Opportunities */}
+            <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
+              <p className="text-xs font-semibold mb-2" style={{ color: "#F59E0B" }}>🚀 Oportunități pentru tine</p>
+              <ul className="space-y-1">
+                {result.opportunities?.map((o: string, i: number) => (
+                  <li key={i} className="text-xs flex items-center gap-1.5" style={{ color: "#292524" }}>
+                    <span style={{ color: "#F59E0B" }}>•</span> {o}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Threat level */}
+          <div className="flex items-center gap-3 rounded-xl p-3" style={{ backgroundColor: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.1)" }}>
+            <ShieldCheck className="w-5 h-5 shrink-0" style={{ color: THREAT_COLORS[result.threat_level] ?? "#A8967E" }} />
+            <div>
+              <span className="text-xs font-semibold" style={{ color: THREAT_COLORS[result.threat_level] }}>
+                Threat level: {result.threat_level?.toUpperCase()}
+              </span>
+              <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>{result.threat_reason}</p>
+            </div>
+          </div>
+
+          <p className="text-xs" style={{ color: "#A8967E" }}>Ad strategy: {result.ad_strategy}</p>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function CompetitorsPage() {
@@ -613,6 +739,9 @@ export default function CompetitorsPage() {
             );
           })}
         </div>
+        {/* Monetization Spy */}
+        <MonetizationSpy competitors={competitors} />
+
       </div>
     </div>
   );
