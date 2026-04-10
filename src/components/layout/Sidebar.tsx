@@ -8,7 +8,7 @@ import {
   Settings, Zap, LogOut, Bell, Newspaper, LineChart,
   Library, Megaphone, Mail, UserSquare2, Sparkles, CalendarDays,
   Target, Instagram, Shield, ChevronDown, Puzzle, Search,
-  Database, Hash, Link2, Lock, X, ArrowRight,
+  Database, Hash, Link2, Lock, X, ArrowRight, HardDrive,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
@@ -67,6 +67,13 @@ const navGroups = [
       { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
       { href: "/bio", label: "Link in Bio", icon: Link2 },
       { href: "/monthly-report", label: "Performance Report", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "Assets & Storage",
+    icon: HardDrive,
+    items: [
+      { href: "/assets", label: "All Assets", icon: HardDrive },
     ],
   },
   {
