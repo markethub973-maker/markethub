@@ -7,6 +7,7 @@ import * as XLSX from "xlsx";
 import {
   HelpCircle, Search, Mail, Calculator, Lightbulb, Wand2, Palette, Target,
   Send, Bot, ArrowLeft, Sparkles, FileDown, Table2, GitBranch, X, Loader2,
+  Tags, Megaphone, PenTool, Layout, Globe, BookOpen, Share2, BarChart2,
 } from "lucide-react";
 import { AGENTS, AgentType } from "@/lib/agents";
 
@@ -17,6 +18,7 @@ const WorkflowDiagram = dynamic(
 
 const ICON_MAP: Record<string, React.ElementType> = {
   HelpCircle, Search, Mail, Calculator, Lightbulb, Wand2, Palette, Target,
+  Tags, Megaphone, PenTool, Layout, Globe, BookOpen, Share2, BarChart2,
 };
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -30,6 +32,14 @@ const WELCOME_MESSAGES: Record<AgentType, string> = {
   "prompt-factory": "Hi! I'm Prompt Factory. I generate professional prompts for Midjourney, DALL-E, Stable Diffusion, ChatGPT, and Gemini — optimized for content marketing.\n\nWhat type of prompt do you need?",
   brand: "Hi! I'm the Brand Guidelines agent. I can help you create or apply a brand's visual identity: colors, fonts, communication tone, logo rules.\n\nWhat brand are we working on?",
   "competitive-ads": "Hi! I'm the ad analysis agent. I can analyze competitor ads, identify effective patterns, and recommend advertising strategies.\n\nWhich competitors would you like to analyze?",
+  "pricing-strategist": "Hi! I'm the Pricing Strategist. I help you design tiered pricing structures, analyze price elasticity, and maximize revenue across customer segments.\n\nTell me about your product and who you're selling to.",
+  "ad-copy-creator": "Hi! I'm the Ad Copy Creator. I write high-converting ad copy for Google, Facebook, Instagram, LinkedIn, and TikTok — with multiple A/B variations.\n\nWhich platform and what's the campaign objective?",
+  "copywriter": "Hi! I'm your Copywriter. I craft compelling headlines, value propositions, product descriptions, and CTAs that convert visitors into customers.\n\nWhat do you need copy for?",
+  "landing-page-writer": "Hi! I'm the Landing Page Writer. I create high-converting landing page copy — from hero headline to social proof to final CTA.\n\nTell me about your product and target customer.",
+  "seo-optimizer": "Hi! I'm the SEO Optimizer. I help you rank higher — keyword research, meta tag optimization, content structure, and technical SEO recommendations.\n\nWhat page or topic do you want to optimize?",
+  "blog-writer": "Hi! I'm the Blog Writer. I create educational, SEO-optimized blog posts, tutorials, and thought leadership articles that build authority and drive traffic.\n\nWhat topic would you like to write about?",
+  "social-media-creator": "Hi! I'm the Social Media Creator. I create platform-specific content, captions, content calendars, and posting strategies for Instagram, LinkedIn, TikTok, and more.\n\nWhich platform and what's your goal?",
+  "market-researcher": "Hi! I'm the Market Researcher. I analyze target markets, validate product-market fit, and uncover customer segments and opportunities.\n\nWhat market or product do you want to research?",
 };
 
 function AgentCard({ id, onClick }: { id: AgentType; onClick: () => void }) {
