@@ -447,7 +447,7 @@ function OnboardingView({ onEdit }: { onEdit: (o: Onboarding | null) => void }) 
 // ── Edit forms ─────────────────────────────────────────────────────────────────
 
 function EditClientForm({ client, onSave, onCancel }: { client: Client | null; onSave: () => void; onCancel: () => void }) {
-  const empty = { name: "", company: "", email: "", phone: "", service: "", monthly_value: 0, status: "active", start_date: "", notes: "" };
+  const empty = { name: "", company: "", email: "", phone: "", service: "", monthly_value: 0, status: "active", start_date: "", notes: "", payment_status: "paid", last_invoice_date: "", next_invoice_date: "" };
   const [form, setForm] = useState<Omit<Client, "id">>(client ? { ...client } : empty);
   const [saving, setSaving] = useState(false);
 
