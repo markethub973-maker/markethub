@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { canAccessRoute } from "@/lib/plan-features";
+import { logSecurityEvent } from "@/lib/siem";
 
 // ── Security headers applied to every response (CSP is dynamic — see buildCsp) ─
 const BASE_SECURITY_HEADERS: Record<string, string> = {
@@ -282,7 +283,13 @@ export async function proxy(request: NextRequest) {
   // — they are the login endpoints and must remain reachable without tunnel token
 
   if (isAdminPath && !checkAdminTunnel(request)) {
-    // Return 404 — don't reveal that an admin panel exists
+    // Log brute-force admin tunnel attempts
+    void logSecurityEvent({
+      event_type: "brute_force_admin",
+      ip: request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown",
+      path: pathname,
+      details: { method: request.method, hasToken: request.nextUrl.searchParams.has("t") },
+    });
     const res = new NextResponse(null, { status: 404 });
     applySecurityHeaders(res, csp);
     return res;
@@ -291,10 +298,16 @@ export async function proxy(request: NextRequest) {
   const ip = getClientIp(request);
 
   // ── Extra rate limit on admin tunnel access (brute-force protection) ────
-  // Limit ?t=<secret> probing to 5 requests/min per IP regardless of token validity
   if (isAdminPath && request.nextUrl.searchParams.has("t")) {
     if (!await checkRateLimit(ip, "auth")) {
-      const res = new NextResponse(null, { status: 404 }); // 404 not 429 — hide existence
+      void logSecurityEvent({
+        event_type: "brute_force_admin",
+        ip,
+        path: pathname,
+        severity: "critical",
+        details: { reason: "rate_limit_tunnel" },
+      });
+      const res = new NextResponse(null, { status: 404 });
       applySecurityHeaders(res, csp);
       return res;
     }
@@ -425,9 +438,17 @@ export async function proxy(request: NextRequest) {
     if (
       activePlan &&
       !pathname.startsWith("/api") &&
-      !isAdminPath &&          // admin paths already verified by tunnel — skip plan gate
+      !isAdminPath &&
       !canAccessRoute(activePlan, pathname, planOverrides)
     ) {
+      // Log plan bypass attempts (could indicate enumeration or privilege escalation)
+      void logSecurityEvent({
+        event_type: "plan_bypass_attempt",
+        ip,
+        user_id: user?.id,
+        path: pathname,
+        details: { plan: activePlan },
+      });
       const upgradeUrl = new URL("/upgrade-required", request.url);
       upgradeUrl.searchParams.set("feature", pathname);
       const redirect = NextResponse.redirect(upgradeUrl);

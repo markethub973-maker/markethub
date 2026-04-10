@@ -28,6 +28,7 @@ import AdminAuditLog from "@/components/admin/AdminAuditLog";
 import AdminTestAccounts from "@/components/admin/AdminTestAccounts";
 import AdminMarkupPanel from "@/components/admin/AdminMarkupPanel";
 import AdminBusinessPanel from "@/components/admin/AdminBusinessPanel";
+import AdminSecurityPanel from "@/components/admin/AdminSecurityPanel";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 // ── Panel definitions ──────────────────────────────────────────────────────────
@@ -36,7 +37,7 @@ type PanelId =
   | "users" | "analytics" | "billing" | "flags" | "discounts"
   | "tokens" | "platform" | "credentials" | "anthropic" | "markup"
   | "audit" | "health" | "tests" | "plantest" | "restore"
-  | "persona" | "progress" | "testaccounts" | "business";
+  | "persona" | "progress" | "testaccounts" | "business" | "security";
 
 interface PanelDef {
   id: PanelId;
@@ -65,6 +66,7 @@ const PANELS: PanelDef[] = [
   { id: "anthropic",   label: "AI Usage",        icon: Cpu,          color: "#7C3AED", bg: "rgba(124,58,237,0.1)", group: "Platform & API" },
   { id: "markup",      label: "API Markup",      icon: DollarSign,   color: "#D97706", bg: "rgba(217,119,6,0.1)",  group: "Platform & API" },
   // Security & QA
+  { id: "security",    label: "Security Events", icon: Shield,       color: "#EF4444", bg: "rgba(239,68,68,0.12)", group: "Security & QA" },
   { id: "audit",       label: "Audit Log",       icon: BookOpen,     color: "#6366F1", bg: "rgba(99,102,241,0.1)", group: "Security & QA" },
   { id: "health",      label: "Health Check",    icon: Activity,     color: "#10B981", bg: "rgba(16,185,129,0.1)", group: "Security & QA" },
   { id: "tests",       label: "Integration Tests",icon: Bug,         color: "#F59E0B", bg: "rgba(245,158,11,0.1)", group: "Security & QA" },
@@ -88,6 +90,7 @@ const PANEL_CONTENT: Record<PanelId, React.ReactNode> = {
   credentials:  <ModuleBoundary name="Credentials" minimal><AdminCredentials /></ModuleBoundary>,
   anthropic:    <ModuleBoundary name="AI Usage" minimal><AdminAnthropicUsage /></ModuleBoundary>,
   markup:       <ModuleBoundary name="API Markup" minimal><AdminMarkupPanel /></ModuleBoundary>,
+  security:     <ModuleBoundary name="Security Events" minimal><AdminSecurityPanel /></ModuleBoundary>,
   audit:        <ModuleBoundary name="Audit Log" minimal><AdminAuditLog /></ModuleBoundary>,
   health:       <ModuleBoundary name="Health Check" minimal><AdminHealthCheck /></ModuleBoundary>,
   tests:        <ModuleBoundary name="Integration Tests" minimal><AdminTestRunner /></ModuleBoundary>,
