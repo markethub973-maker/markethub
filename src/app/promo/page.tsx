@@ -9,80 +9,6 @@ import {
   Megaphone, PenTool, BookOpen, BarChart, MessageSquare,
 } from "lucide-react";
 
-// ── JSON-LD Structured Data ───────────────────────────────────────────────────
-const jsonLdOrg = {
-  "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  name: "MarketHub Pro",
-  applicationCategory: "BusinessApplication",
-  operatingSystem: "Web",
-  url: "https://markethubpromo.com",
-  description:
-    "AI marketing platform for agencies with 16 specialized AI agents, real-time social media analytics, and automated lead generation.",
-  offers: [
-    { "@type": "Offer", name: "Lite", price: "24", priceCurrency: "USD", billingDuration: "P1M" },
-    { "@type": "Offer", name: "Pro", price: "49", priceCurrency: "USD", billingDuration: "P1M" },
-    { "@type": "Offer", name: "Business", price: "99", priceCurrency: "USD", billingDuration: "P1M" },
-    { "@type": "Offer", name: "Enterprise", price: "249", priceCurrency: "USD", billingDuration: "P1M" },
-  ],
-  aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "87" },
-};
-
-const jsonLdFaq = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "What is MarketHub Pro?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "MarketHub Pro is an AI-powered marketing platform for agencies and content creators. It combines real-time analytics for YouTube, Instagram, TikTok and Facebook with 16 specialized AI agents that help you find clients, write copy, optimize SEO, run ads and grow organically.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "How does the AI Lead Finder work?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "You describe your offer and target market. The AI searches across 8 platforms simultaneously (Google, OLX, Instagram, TikTok, Facebook Groups, Reddit, YouTube, Google Maps), scores each lead by fit, writes personalized outreach messages in your language, and delivers ready-to-send campaigns.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What AI models power the platform?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Lite plan uses Claude Haiku 4.5 (fast and efficient). Pro, Business and Enterprise plans use Claude Sonnet 4.6 — Anthropic's top-tier model — for higher quality outputs on all 16 AI agents.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Can I try it for free?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. The Free Trial plan includes 5 Premium AI Actions per month, access to Research Hub, Lead Database, and all analytics dashboards. No credit card required to start.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Which social platforms does MarketHub Pro support?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "YouTube (channel analytics, trending, global search), Instagram (feed, stories, reels, demographics, hashtags, competitor analysis), TikTok (trends, creators, hashtags), Facebook (Pages, Ads Library, Groups scraping), and local market platforms including OLX, Pagini Aurii, Storia and Autovit for Romanian market.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is the platform available in multiple languages?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes. All 16 AI agents support 20+ languages including Romanian, English, French, German, Spanish, Italian, Greek, Portuguese, Polish, Hungarian, Dutch, Czech, Swedish, Danish, Norwegian, Finnish, Turkish, Arabic, Japanese and Korean. The AI automatically applies language-specific grammar rules and vocabulary packs.",
-      },
-    },
-  ],
-};
-
 // ── Brand colors ──────────────────────────────────────────────────────────────
 const C = {
   bg: "#FFF8F0",
@@ -332,15 +258,6 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 export default function PromoPage() {
   return (
     <>
-      {/* JSON-LD Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdFaq) }}
-      />
 
       <div style={{ backgroundColor: C.bg, color: C.text, fontFamily: "system-ui, -apple-system, sans-serif" }}>
 
