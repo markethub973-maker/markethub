@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import {
   Search, ExternalLink, Clock, Trash2, Facebook, Instagram, Globe2,
   TrendingUp, Bookmark, BookmarkCheck, StickyNote, ChevronDown, ChevronUp,
-  Copy, Check, Sparkles, Target, Eye, BarChart3, Lightbulb, X, Globe, Film
+  Copy, Check, Sparkles, Target, Eye, BarChart3, Lightbulb, X, Globe, Film, UserPlus, Loader2
 } from "lucide-react";
 
 const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -230,6 +230,29 @@ export default function AdsLibraryPage() {
     window.open(buildPanelUrl(brand, ctry, adF, platF), "meta_ads", `width=${w},height=${h},left=${left},top=50,toolbar=no,menubar=no`);
   };
 
+  const [savingLead, setSavingLead] = useState<string | null>(null);
+  const [savedLead, setSavedLead] = useState<string | null>(null);
+
+  const saveToLeads = async (name: string) => {
+    setSavingLead(name);
+    await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify([{
+        name,
+        source: "facebook",
+        lead_type: "search_result",
+        category: "Ads Library",
+        website: `https://www.facebook.com/${encodeURIComponent(name)}`,
+        url: buildUrl(name, country),
+        city: country !== "ALL" ? country : "",
+      }]),
+    });
+    setSavingLead(null);
+    setSavedLead(name);
+    setTimeout(() => setSavedLead(null), 2500);
+  };
+
   const isSaved = (name: string) => saved.some(s => s.name === name);
 
   const toggleSave = (name: string) => {
@@ -424,6 +447,12 @@ export default function AdsLibraryPage() {
                       style={{ color: isSaved(brand.name) ? "#F59E0B" : "#C4AA8A" }}>
                       {isSaved(brand.name) ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
                     </button>
+                    <button type="button" onClick={() => saveToLeads(brand.name)}
+                      className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Save to Leads Database"
+                      style={{ color: savedLead === brand.name ? "#10B981" : "#6366F1" }}>
+                      {savingLead === brand.name ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : savedLead === brand.name ? <Check className="w-3.5 h-3.5" /> : <UserPlus className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                 ))}
               </div>
@@ -550,6 +579,13 @@ export default function AdsLibraryPage() {
                             style={{ backgroundColor: META, color: "white" }}>
                             <ExternalLink className="w-3 h-3" />
                             Analyze
+                          </button>
+                          <button type="button" onClick={() => saveToLeads(brand.name)}
+                            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
+                            title="Add to Leads Database"
+                            style={{ backgroundColor: savedLead === brand.name ? "rgba(16,185,129,0.1)" : "rgba(99,102,241,0.1)", color: savedLead === brand.name ? "#10B981" : "#6366F1" }}>
+                            {savingLead === brand.name ? <Loader2 className="w-3 h-3 animate-spin" /> : savedLead === brand.name ? <Check className="w-3 h-3" /> : <UserPlus className="w-3 h-3" />}
+                            {savedLead === brand.name ? "Saved!" : "Lead"}
                           </button>
                           <button type="button" onClick={() => toggleSave(brand.name)}
                             className="p-2 rounded-lg transition-colors" style={{ color: "#EF4444" }}

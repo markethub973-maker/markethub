@@ -5,8 +5,9 @@ import Header from "@/components/layout/Header";
 import {
   Upload, Link2, Trash2, Download, ExternalLink, X, Plus,
   FolderOpen, Image, Film, FileText, Archive, BarChart3,
-  Loader2, Search, Tag, Copy, Check,
+  Loader2, Search, Tag, Copy, Check, RefreshCw,
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -323,12 +324,107 @@ function AssetCard({ asset, onDelete }: { asset: Asset; onDelete: (id: string) =
 
 // ── Main page ──────────────────────────────────────────────────────────────────
 
+function DriveSync() {
+  const [folderId, setFolderId] = useState("");
+  const [files, setFiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [category, setCategory] = useState<Category>("production");
+  const [status, setStatus] = useState<string | null>(null);
+
+  const listFiles = async () => {
+    if (!folderId.trim()) return;
+    setLoading(true); setStatus(null);
+    const res = await fetch(`/api/assets/drive?folder_id=${encodeURIComponent(folderId.trim())}`);
+    const d = await res.json();
+    if (d.needs_auth) { window.location.href = "/api/auth/gdrive/connect"; return; }
+    if (d.error) { setStatus(d.error); setLoading(false); return; }
+    setFiles(d.files ?? []);
+    setLoading(false);
+  };
+
+  const importSelected = async () => {
+    const toImport = files.filter(f => selected.has(f.id));
+    if (!toImport.length) return;
+    setImporting(true);
+    const res = await fetch("/api/assets/drive", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ files: toImport, category }),
+    });
+    const d = await res.json();
+    setStatus(`✅ ${d.imported} fișiere importate în ${category}`);
+    setSelected(new Set()); setImporting(false);
+  };
+
+  return (
+    <div className="rounded-2xl p-4 space-y-3" style={{ ...card, border: "1px solid rgba(99,102,241,0.2)" }}>
+      <div className="flex items-center gap-2">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: "rgba(99,102,241,0.1)" }}>
+          <RefreshCw className="w-4 h-4" style={{ color: "#6366F1" }} />
+        </div>
+        <p className="font-bold text-sm" style={{ color: "#292524" }}>Google Drive Sync</p>
+      </div>
+      <p className="text-xs" style={{ color: "#A8967E" }}>Inserează ID-ul folderului Drive (din URL: drive.google.com/drive/folders/<strong>FOLDER_ID</strong>)</p>
+      <div className="flex gap-2">
+        <input value={folderId} onChange={e => setFolderId(e.target.value)}
+          placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"
+          className="flex-1 rounded-lg px-3 py-2 text-xs outline-none"
+          style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+        <button type="button" onClick={listFiles} disabled={loading || !folderId.trim()}
+          className="px-3 py-2 rounded-lg text-xs font-bold disabled:opacity-40"
+          style={{ backgroundColor: "#6366F1", color: "white" }}>
+          {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "List"}
+        </button>
+      </div>
+      {status && <p className="text-xs" style={{ color: status.startsWith("✅") ? "#10B981" : "#EF4444" }}>{status}</p>}
+      {files.length > 0 && (
+        <>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold" style={{ color: "#78614E" }}>{files.length} fișiere găsite</p>
+            <div className="flex items-center gap-2">
+              <select value={category} onChange={e => setCategory(e.target.value as Category)}
+                className="text-xs rounded-lg px-2 py-1 outline-none"
+                style={{ border: "1px solid rgba(245,215,160,0.3)", color: "#292524" }}>
+                {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+              </select>
+              <button type="button" onClick={importSelected} disabled={importing || selected.size === 0}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold disabled:opacity-40"
+                style={{ backgroundColor: "#10B981", color: "white" }}>
+                {importing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : `Import (${selected.size})`}
+              </button>
+            </div>
+          </div>
+          <div className="max-h-48 overflow-y-auto space-y-1">
+            {files.map((f: any) => (
+              <label key={f.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-amber-50/50">
+                <input type="checkbox" checked={selected.has(f.id)}
+                  onChange={e => setSelected(prev => { const n = new Set(prev); e.target.checked ? n.add(f.id) : n.delete(f.id); return n; })} />
+                <span className="text-xs flex-1 truncate" style={{ color: "#292524" }}>{f.name}</span>
+                <span className="text-[10px] shrink-0" style={{ color: "#A8967E" }}>{f.size ? `${(f.size/1024).toFixed(0)} KB` : ""}</span>
+              </label>
+            ))}
+          </div>
+          <button type="button" onClick={() => setSelected(new Set(files.map((f: any) => f.id)))}
+            className="text-xs" style={{ color: "#6366F1" }}>
+            Select all
+          </button>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function AssetsPage() {
+  const searchParams = useSearchParams();
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState<Category | "all">("all");
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
+  const [showDrive, setShowDrive] = useState(false);
+  const [driveConnected, setDriveConnected] = useState<boolean | null>(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -339,6 +435,10 @@ export default function AssetsPage() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  useEffect(() => {
+    if (searchParams.get("gdrive") === "connected") setDriveConnected(true);
+  }, [searchParams]);
 
   const filtered = assets.filter(a => {
     if (activeCategory !== "all" && a.category !== activeCategory) return false;
@@ -389,6 +489,18 @@ export default function AssetsPage() {
           })}
         </div>
 
+        {/* Drive connected banner */}
+        {driveConnected && (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium"
+            style={{ backgroundColor: "rgba(16,185,129,0.1)", color: "#10B981", border: "1px solid rgba(16,185,129,0.2)" }}>
+            <Check className="w-4 h-4" /> Google Drive conectat cu succes!
+            <button type="button" onClick={() => setDriveConnected(null)} className="ml-auto"><X className="w-3.5 h-3.5" /></button>
+          </div>
+        )}
+
+        {/* Drive sync panel */}
+        {showDrive && <DriveSync />}
+
         {/* Search + Add */}
         <div className="flex gap-2">
           <div className="flex-1 flex items-center gap-2 rounded-xl px-3"
@@ -404,6 +516,12 @@ export default function AssetsPage() {
               </button>
             )}
           </div>
+          <button type="button" onClick={() => setShowDrive(v => !v)}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold shrink-0"
+            style={{ backgroundColor: showDrive ? "rgba(99,102,241,0.15)" : "rgba(99,102,241,0.08)", color: "#6366F1", border: "1px solid rgba(99,102,241,0.2)" }}>
+            <RefreshCw className="w-4 h-4" />
+            <span className="hidden sm:inline">Drive</span>
+          </button>
           <button type="button" onClick={() => setShowAdd(true)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold shrink-0"
             style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}>

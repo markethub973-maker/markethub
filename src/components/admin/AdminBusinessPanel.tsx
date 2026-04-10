@@ -5,6 +5,7 @@ import {
   ArrowLeft, Plus, Search, X, Edit3, Trash2, Check,
   DollarSign, FileText, Rocket, Loader2, ChevronRight,
   User, Mail, Phone, Calendar, CheckSquare, Square,
+  Bell, Download, AlertCircle,
 } from "lucide-react";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -14,6 +15,7 @@ type View = "home" | "finance" | "contracts" | "onboarding" | "edit_client" | "e
 interface Client {
   id: string; name: string; company: string; email: string; phone: string;
   service: string; monthly_value: number; status: string; start_date: string; notes: string;
+  payment_status: string; last_invoice_date: string; next_invoice_date: string;
 }
 interface Contract {
   id: string; client_name: string; type: string; value: number;
@@ -59,10 +61,18 @@ function SearchBar({ value, onChange }: { value: string; onChange: (v: string) =
 
 // ── Finance view ───────────────────────────────────────────────────────────────
 
+const PAYMENT_STATUS: Record<string, { bg: string; color: string; label: string }> = {
+  paid:    { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Plătit" },
+  pending: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Pending" },
+  overdue: { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Restant" },
+};
+
 function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [notifying, setNotifying] = useState<string | null>(null);
+  const [generatingInvoice, setGeneratingInvoice] = useState<string | null>(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -85,13 +95,68 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
   );
 
   const totalMRR = clients.filter(c => c.status === "active").reduce((s, c) => s + Number(c.monthly_value), 0);
+  const overdueCount = clients.filter(c => c.payment_status === "overdue").length;
+
+  const sendReminder = async (clientId: string) => {
+    setNotifying(clientId);
+    await fetch("/api/admin/business/notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ client_id: clientId, type: "overdue_reminder" }),
+    });
+    setClients(prev => prev.map(c => c.id === clientId ? { ...c, payment_status: "overdue" } : c));
+    setNotifying(null);
+  };
+
+  const downloadInvoice = async (clientId: string, clientName: string) => {
+    setGeneratingInvoice(clientId);
+    const res = await fetch(`/api/admin/business/invoice?client_id=${clientId}`);
+    const { invoice } = await res.json();
+    // Generate printable HTML invoice
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Invoice ${invoice.number}</title>
+    <style>body{font-family:Arial,sans-serif;max-width:700px;margin:40px auto;padding:40px;color:#292524}
+    h1{color:#F59E0B;margin:0}.header{display:flex;justify-content:space-between;margin-bottom:40px}
+    .agency{text-align:right;font-size:13px;color:#78614E}table{width:100%;border-collapse:collapse;margin:24px 0}
+    th{text-align:left;padding:8px 12px;background:#FFF8F0;font-size:12px;color:#A8967E;border-bottom:2px solid #F5D7A0}
+    td{padding:8px 12px;border-bottom:1px solid rgba(245,215,160,0.3);font-size:13px}
+    .total{text-align:right;margin-top:16px;font-size:18px;font-weight:bold;color:#F59E0B}
+    .badge{display:inline-block;padding:2px 8px;border-radius:20px;background:rgba(245,158,11,0.1);color:#D97706;font-size:11px}</style>
+    </head><body>
+    <div class="header">
+      <div><h1>INVOICE</h1><p class="badge">${invoice.number}</p></div>
+      <div class="agency">
+        <strong>${invoice.agency.name}</strong><br>${invoice.agency.email}<br>${invoice.agency.website}
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:32px">
+      <div><strong>Bill to:</strong><br>${invoice.client.name}${invoice.client.company ? `<br>${invoice.client.company}` : ""}${invoice.client.email ? `<br>${invoice.client.email}` : ""}</div>
+      <div style="text-align:right;font-size:13px;color:#78614E">
+        <strong>Invoice date:</strong> ${invoice.date}<br>
+        <strong>Due date:</strong> ${invoice.due_date}
+      </div>
+    </div>
+    <table><thead><tr><th>Description</th><th>Qty</th><th>Unit Price</th><th>Total</th></tr></thead>
+    <tbody>${invoice.items.map((i: any) => `<tr><td>${i.description}</td><td>${i.quantity}</td><td>$${i.unit_price.toFixed(2)}</td><td>$${i.total.toFixed(2)}</td></tr>`).join("")}
+    </tbody></table>
+    <div class="total">Total: $${invoice.total.toFixed(2)} ${invoice.currency}</div>
+    <p style="margin-top:32px;font-size:12px;color:#A8967E">${invoice.notes}</p>
+    </body></html>`;
+
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = `${invoice.number}_${clientName.replace(/\s+/g, "_")}.html`;
+    a.click(); URL.revokeObjectURL(url);
+    setGeneratingInvoice(null);
+  };
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-2 mb-4">
+      <div className="grid grid-cols-3 gap-2 mb-4">
         {[
           { label: "Clienți activi", value: clients.filter(c => c.status === "active").length, color: "#10B981" },
           { label: "MRR total", value: fmtCurrency(totalMRR), color: "#F59E0B" },
+          { label: "Restanți", value: overdueCount, color: overdueCount > 0 ? "#EF4444" : "#A8967E" },
         ].map(s => (
           <div key={s.label} className="rounded-xl p-3 text-center" style={card}>
             <p className="text-lg font-bold" style={{ color: s.color }}>{s.value}</p>
@@ -135,11 +200,32 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
                     <td className="px-3 py-2.5" style={{ color: "#78614E" }}>{c.service || "—"}</td>
                     <td className="px-3 py-2.5 font-semibold" style={{ color: "#F59E0B" }}>{fmtCurrency(c.monthly_value)}</td>
                     <td className="px-3 py-2.5">
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold"
-                        style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold w-fit"
+                          style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>
+                        {c.payment_status && (
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold w-fit"
+                            style={{ backgroundColor: PAYMENT_STATUS[c.payment_status]?.bg, color: PAYMENT_STATUS[c.payment_status]?.color }}>
+                            {PAYMENT_STATUS[c.payment_status]?.label ?? c.payment_status}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex gap-1 justify-end">
+                        <button type="button" onClick={() => downloadInvoice(c.id, c.name)}
+                          disabled={generatingInvoice === c.id} title="Download Invoice"
+                          className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(99,102,241,0.08)", color: "#6366F1" }}>
+                          {generatingInvoice === c.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                        </button>
+                        {c.email && (
+                          <button type="button" onClick={() => sendReminder(c.id)}
+                            disabled={notifying === c.id} title="Send payment reminder"
+                            className="p-1.5 rounded-lg"
+                            style={{ backgroundColor: c.payment_status === "overdue" ? "rgba(239,68,68,0.08)" : "rgba(245,158,11,0.08)", color: c.payment_status === "overdue" ? "#EF4444" : "#F59E0B" }}>
+                            {notifying === c.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bell className="w-3.5 h-3.5" />}
+                          </button>
+                        )}
                         <button type="button" onClick={() => onEdit(c)}
                           className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
                           <Edit3 className="w-3.5 h-3.5" />
