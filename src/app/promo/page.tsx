@@ -150,15 +150,15 @@ const FAQS = [
   },
   {
     q: "Which languages does the platform support?",
-    a: "All 16 AI agents support 20+ languages including Romanian, English, French, German, Spanish, Italian, Greek, Arabic and more. The AI automatically applies native grammar rules and vocabulary — no extra setup.",
+    a: "All 16 AI agents support 20+ languages including English, French, German, Spanish, Italian, Greek, Arabic, Japanese, Korean and more. The AI automatically applies native grammar rules and vocabulary — no extra setup.",
   },
   {
     q: "Can I manage multiple client accounts?",
     a: "Yes. Lite starts with 2 Instagram accounts, Pro supports 4, Business supports 10, and Enterprise is unlimited. The Client Portal lets you share white-label dashboards with each client.",
   },
   {
-    q: "Does it work for the Romanian market?",
-    a: "Yes — and it's optimized for it. Local Market Mode activates Romanian-specific sources: OLX.ro scraper (with real prices, city, seller), Pagini Aurii, Storia.ro, Autovit.ro. The AI uses correct Romanian grammar including gender-specific verb forms.",
+    q: "Does it work for local and regional markets?",
+    a: "Yes — it's optimized for local market discovery. Local Market Mode activates region-specific sources alongside Google, OLX, Facebook Groups and more. The AI adapts language, tone and platform recommendations to each target market.",
   },
 ];
 
@@ -326,7 +326,7 @@ export default function PromoPage() {
           </p>
 
           <p className="text-base mb-10 max-w-xl mx-auto" style={{ color: C.lighter }}>
-            Used by marketing agencies, content creators and brand owners across Romania, Europe and beyond.
+            Used by marketing agencies, content creators and brand owners across Europe, Asia and beyond.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">

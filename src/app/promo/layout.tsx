@@ -117,7 +117,7 @@ const jsonLdFaq = {
       name: "Which social platforms does MarketHub Pro support?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "YouTube, Instagram, TikTok, Facebook, plus local market sources including OLX, Pagini Aurii, Storia and Autovit for Romania.",
+        text: "YouTube, Instagram, TikTok, Facebook, plus local market sources including OLX and regional classifieds, directories and real estate platforms depending on target market.",
       },
     },
     {
@@ -125,7 +125,7 @@ const jsonLdFaq = {
       name: "Is the platform available in multiple languages?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. All 16 AI agents support 20+ languages including Romanian, English, French, German, Spanish, Italian, Greek, Portuguese, Polish, Hungarian and more.",
+        text: "Yes. All 16 AI agents support 20+ languages including English, French, German, Spanish, Italian, Greek, Portuguese, Polish, Hungarian, Japanese, Korean, Arabic and more.",
       },
     },
   ],
