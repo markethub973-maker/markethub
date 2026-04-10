@@ -174,6 +174,34 @@ export async function POST(req: Request) {
     }
   }
 
+  // Handles new subscriptions created outside of Checkout (e.g. direct API, trials)
+  if (event.type === "customer.subscription.created") {
+    const sub = event.data.object as any;
+    const customerId = sub.customer as string;
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("stripe_customer_id", customerId)
+      .single();
+
+    if (profile) {
+      const priceId = sub.items?.data?.[0]?.price?.id as string | undefined;
+      const { PLANS } = await import("@/lib/stripe");
+      const matchedPlan = Object.entries(PLANS).find(
+        ([, p]) => p.priceId === priceId
+      )?.[0];
+
+      const updates: Record<string, unknown> = {
+        subscription_status: sub.status,
+        stripe_subscription_id: sub.id,
+      };
+      if (matchedPlan) { updates.plan = matchedPlan; updates.subscription_plan = matchedPlan; }
+
+      await supabase.from("profiles").update(updates).eq("id", profile.id);
+    }
+  }
+
   // Handles plan upgrades, downgrades, and cancel_at_period_end changes
   if (event.type === "customer.subscription.updated") {
     const sub = event.data.object as any;
