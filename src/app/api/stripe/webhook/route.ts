@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createServerClient } from "@supabase/ssr";
 import { sendPaymentConfirmationEmail, sendSubscriptionCancelledEmail, sendAdminPaymentFailedAlert } from "@/lib/resend";
+import { emitOblioInvoice } from "@/lib/oblio";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -136,6 +137,21 @@ export async function POST(req: Request) {
           plan,
           invoiceExtra
         ).catch(() => {});
+
+        // Emite factură Oblio (non-fatal)
+        void emitOblioInvoice({
+          clientName: profile.name ?? profile.email,
+          clientEmail: profile.email,
+          plan,
+          amountUsd: invoiceExtra.amountPaid ? parseFloat(invoiceExtra.amountPaid.replace("$", "")) : 0,
+          stripeInvoiceId: invoiceExtra.invoiceId ?? session.id,
+        }).then(result => {
+          if (!result.ok) {
+            console.error("[oblio] Invoice emit failed:", result.error);
+          } else {
+            console.log(`[oblio] Invoice emitted: ${result.seriesName}${result.number} — ${result.link}`);
+          }
+        });
       }
     }
   }
