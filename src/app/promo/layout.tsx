@@ -101,7 +101,7 @@ const jsonLdFaq = {
       name: "What AI models power the platform?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Lite plan uses Claude Haiku 4.5 (fast and efficient). Pro, Business and Enterprise plans use Claude Sonnet 4.6 — Anthropic's top-tier model — for higher quality outputs on all 16 AI agents.",
+        text: "Lite plan uses AI MarketHub Engine Standard tier (fast and efficient). Pro, Business and Enterprise plans use AI MarketHub Engine Premium tier — delivering higher quality outputs on all 16 AI agents.",
       },
     },
     {
