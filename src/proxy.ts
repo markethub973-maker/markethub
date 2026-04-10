@@ -273,9 +273,11 @@ export async function proxy(request: NextRequest) {
   // ── Admin tunnel check ──────────────────────────────────────────────────
   const isAdminPath =
     pathname.startsWith("/markethub973") ||
-    pathname.startsWith("/dashboard/admin") ||
     pathname.startsWith("/api/admin/") ||   // /api/admin/* routes (with slash)
     pathname === "/api/admin";
+  // NOTE: /dashboard/admin is NOT in isAdminPath — it's a UI page that protects
+  // itself via localStorage admin_authenticated check client-side. The tunnel
+  // is only required for /markethub973 (login) and /api/admin/* (API calls).
   // NOTE: /api/admin-secret-login and /api/admin-auth are excluded intentionally
   // — they are the login endpoints and must remain reachable without tunnel token
 
