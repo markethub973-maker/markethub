@@ -1,17 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { isAdminAuthorized } from "@/lib/adminAuth";
 
 /**
- * Diagnostic endpoint to test RapidAPI connection
+ * Diagnostic endpoint to test RapidAPI connection — ADMIN ONLY
  * GET /api/instagram-scraper/test-rapidapi
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!isAdminAuthorized(req)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const apiKey = process.env.RAPIDAPI_KEY;
   const RAPIDAPI_HOST = "instagram-public-bulk-scraper.p.rapidapi.com";
-
-  console.log("[RapidAPI Test] Starting diagnostic...");
-  console.log("[RapidAPI Test] API Key exists:", !!apiKey);
-  console.log("[RapidAPI Test] API Key length:", apiKey?.length);
-  console.log("[RapidAPI Test] API Host:", RAPIDAPI_HOST);
 
   if (!apiKey) {
     return NextResponse.json({
@@ -22,10 +22,7 @@ export async function GET() {
   }
 
   try {
-    // Test with a well-known public Instagram account
     const testUsername = "instagram";
-
-    console.log(`[RapidAPI Test] Testing with username: ${testUsername}`);
 
     const res = await fetch(
       `https://${RAPIDAPI_HOST}/v1/user_info_web?username=${testUsername}`,
@@ -39,32 +36,17 @@ export async function GET() {
       }
     );
 
-    console.log(`[RapidAPI Test] Response Status: ${res.status}`);
-    console.log(`[RapidAPI Test] Response Headers:`, Object.fromEntries(res.headers));
-
     const responseText = await res.text();
-    console.log(`[RapidAPI Test] Response Body (first 500 chars):`, responseText.substring(0, 500));
-
-    let responseData;
-    try {
-      responseData = JSON.parse(responseText);
-    } catch {
-      responseData = { raw: responseText };
-    }
+    let responseData: any;
+    try { responseData = JSON.parse(responseText); } catch { responseData = {}; }
 
     if (!res.ok) {
       return NextResponse.json({
         status: "error",
         statusCode: res.status,
-        statusText: res.statusText,
         message: "RapidAPI returned an error",
-        apiKey: {
-          exists: true,
-          length: apiKey.length,
-          firstChars: apiKey.substring(0, 10) + "...",
-          lastChars: "..." + apiKey.substring(apiKey.length - 10),
-        },
-        response: responseData,
+        apiKeyConfigured: true, // never expose key chars
+        response: { hasData: false },
       }, { status: 400 });
     }
 
@@ -72,11 +54,7 @@ export async function GET() {
       status: "success",
       message: "RapidAPI connection successful",
       statusCode: res.status,
-      apiKey: {
-        exists: true,
-        length: apiKey.length,
-        firstChars: apiKey.substring(0, 10) + "...",
-      },
+      apiKeyConfigured: true,
       response: {
         hasData: !!responseData.data,
         dataKeys: responseData.data ? Object.keys(responseData.data).slice(0, 5) : [],
@@ -84,12 +62,10 @@ export async function GET() {
     });
 
   } catch (err: any) {
-    console.error("[RapidAPI Test] Exception:", err);
     return NextResponse.json({
       status: "error",
       message: "Exception during RapidAPI test",
       error: err.message,
-      stack: err.stack,
     }, { status: 500 });
   }
 }

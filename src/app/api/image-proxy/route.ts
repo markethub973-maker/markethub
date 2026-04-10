@@ -9,11 +9,33 @@ export async function GET(req: NextRequest) {
   const url = req.nextUrl.searchParams.get("url");
   if (!url) return new NextResponse("Missing url", { status: 400 });
 
-  // Only allow Instagram CDN URLs
+  // Only allow exact Instagram CDN hostnames — use Set + exact match to prevent
+  // subdomain bypass attacks (e.g. evil.instagram.com.attacker.com)
+  const ALLOWED_HOSTS = new Set([
+    "instagram.com", "www.instagram.com",
+    "cdninstagram.com",
+    "scontent.cdninstagram.com",
+    "scontent-ams4-1.cdninstagram.com",
+    "fbcdn.net",
+    "scontent.fbcdn.net",
+  ]);
+  let parsed: URL;
   try {
-    const parsed = new URL(url);
-    const allowed = ["instagram.com", "cdninstagram.com", "fbcdn.net"];
-    if (!allowed.some(d => parsed.hostname.endsWith(d))) {
+    parsed = new URL(url);
+    // Block non-HTTPS and private/internal addresses
+    if (parsed.protocol !== "https:") {
+      return new NextResponse("Only HTTPS allowed", { status: 403 });
+    }
+    const host = parsed.hostname.toLowerCase();
+    // Block private IP ranges (SSRF protection)
+    if (/^(localhost|127\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|::1)/.test(host)) {
+      return new NextResponse("Domain not allowed", { status: 403 });
+    }
+    // Exact hostname match OR ends with .cdninstagram.com / .fbcdn.net (CDN subdomains)
+    const allowed = ALLOWED_HOSTS.has(host)
+      || host.endsWith(".cdninstagram.com")
+      || host.endsWith(".fbcdn.net");
+    if (!allowed) {
       return new NextResponse("Domain not allowed", { status: 403 });
     }
   } catch {
