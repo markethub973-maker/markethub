@@ -25,7 +25,9 @@ export async function GET(request: Request) {
     }
 
     const url = new URL(request.url);
-    const period = url.searchParams.get("period") || "monthly"; // daily, weekly, monthly
+    const periodRaw = url.searchParams.get("period") || "monthly";
+    const VALID_PERIODS = ["daily", "weekly", "monthly"];
+    const period = VALID_PERIODS.includes(periodRaw) ? periodRaw : "monthly";
 
     // Get all users count
     const { count: totalUsers } = await supabase
