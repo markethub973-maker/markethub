@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { decryptField } from "@/lib/fieldCrypto";
 import { requireAuth } from "@/lib/route-helpers";
 
 async function fetchIGProfile(igId: string, token: string) {
@@ -24,12 +23,11 @@ async function fetchIGMedia(igId: string, token: string) {
 export async function GET() {
   const auth = await requireAuth();
   if (!auth.ok) return auth.response;
-  const user = { id: auth.userId };
   const supabase = await createClient();
 
   const { data: connections } = await supabase
     .from("instagram_connections")
-    .select("id, instagram_id, instagram_username, instagram_name, account_label, is_primary, access_token, enc_access_token")
+    .select("id, instagram_id, instagram_username, instagram_name, account_label, is_primary")
     .eq("user_id", auth.userId)
     .order("is_primary", { ascending: false });
 
@@ -37,15 +35,21 @@ export async function GET() {
     return NextResponse.json({ accounts: [] });
   }
 
+  // One Graph API token is shared across all accounts under the same Business
+  // Manager. Stored in profiles.instagram_access_token by the OAuth callback.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("instagram_access_token")
+    .eq("id", auth.userId)
+    .single();
+
+  const token = profile?.instagram_access_token as string | undefined;
+  if (!token) {
+    return NextResponse.json({ error: "Instagram token missing. Reconnect from Settings → Integrations." }, { status: 404 });
+  }
+
   const results = await Promise.all(
     connections.map(async (conn) => {
-      // Resolve token
-      let token = conn.access_token as string;
-      const enc = conn.enc_access_token as string | undefined;
-      if (enc?.startsWith("enc:v1:")) {
-        try { const dec = decryptField(enc); if (dec) token = dec; } catch {}
-      }
-
       const [profile, media] = await Promise.all([
         fetchIGProfile(conn.instagram_id, token),
         fetchIGMedia(conn.instagram_id, token),

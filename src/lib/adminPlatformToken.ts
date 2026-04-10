@@ -49,40 +49,13 @@ export async function resolveIGAuth(): Promise<IGAuth | null> {
     return null;
   }
 
-  // 2. Regular user path
+  // 2. Regular user path — instagram_connections holds metadata (one row per
+  // connected IG account), profiles.instagram_access_token holds the Graph
+  // API token shared across all accounts under the same Business Manager.
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  // Primary: instagram_connections table (written by OAuth callback)
-  const { data: conn } = await supabase
-    .from("instagram_connections")
-    .select("access_token, enc_access_token, instagram_id, instagram_username")
-    .eq("user_id", user.id)
-    .single();
-
-  if (conn?.instagram_id) {
-    // Prefer encrypted token if present
-    let token = conn.access_token as string;
-    const encToken = conn.enc_access_token as string | undefined;
-    if (encToken?.startsWith("enc:v1:")) {
-      try {
-        const { decryptField } = await import("@/lib/fieldCrypto");
-        const dec = decryptField(encToken);
-        if (dec) token = dec;
-      } catch { /* fallback to plaintext */ }
-    }
-    if (token) {
-      return {
-        token,
-        igId: conn.instagram_id as string,
-        username: (conn.instagram_username as string) || "",
-        isAdmin: false,
-      };
-    }
-  }
-
-  // Fallback: legacy profiles columns
   const { data: profile } = await supabase
     .from("profiles")
     .select("instagram_access_token, instagram_user_id, instagram_username")
@@ -91,10 +64,21 @@ export async function resolveIGAuth(): Promise<IGAuth | null> {
 
   if (!profile?.instagram_access_token || !profile?.instagram_user_id) return null;
 
+  // Prefer the primary instagram_connections row for the igId/username so the
+  // response reflects whatever the user picked in the settings UI. If there
+  // are no connections yet, fall back to the legacy fields on profiles.
+  const { data: conn } = await supabase
+    .from("instagram_connections")
+    .select("instagram_id, instagram_username")
+    .eq("user_id", user.id)
+    .order("is_primary", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
   return {
     token: profile.instagram_access_token,
-    igId: profile.instagram_user_id,
-    username: profile.instagram_username || "",
+    igId: (conn?.instagram_id as string) || profile.instagram_user_id,
+    username: (conn?.instagram_username as string) || profile.instagram_username || "",
     isAdmin: false,
   };
 }

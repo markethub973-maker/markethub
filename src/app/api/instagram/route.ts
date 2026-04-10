@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { resolveIGAuth } from "@/lib/adminPlatformToken";
 import { resolveIGToken } from "@/lib/igToken";
-import { decryptField } from "@/lib/fieldCrypto";
 
 export async function GET(req: NextRequest) {
   const accountId = req.nextUrl.searchParams.get("account_id"); // instagram_id param
@@ -17,14 +16,16 @@ export async function GET(req: NextRequest) {
     token = auth.token;
     igId = auth.igId;
   } else {
-    // Regular user — load from instagram_connections
+    // Regular user — instagram_connections stores metadata only (no tokens).
+    // The Graph API token lives in profiles.instagram_access_token; one token
+    // is shared across all accounts under the same Facebook Business Manager.
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     let query = supabase
       .from("instagram_connections")
-      .select("access_token, enc_access_token, instagram_id, instagram_username")
+      .select("instagram_id, instagram_username")
       .eq("user_id", user.id);
 
     if (accountId) {
@@ -40,11 +41,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "No Instagram account connected. Go to Settings → Integrations." }, { status: 404 });
     }
 
-    token = conn.access_token as string;
-    const enc = conn.enc_access_token as string | undefined;
-    if (enc?.startsWith("enc:v1:")) {
-      try { const dec = decryptField(enc); if (dec) token = dec; } catch {}
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("instagram_access_token")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile?.instagram_access_token) {
+      return NextResponse.json({ error: "Instagram token missing. Reconnect from Settings → Integrations." }, { status: 404 });
     }
+
+    token = profile.instagram_access_token as string;
     igId = conn.instagram_id as string;
   }
 
