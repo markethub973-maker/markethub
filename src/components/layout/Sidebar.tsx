@@ -48,6 +48,7 @@ const navGroups = [
       { href: "/ads-library", label: "Ads Library", icon: Library },
       { href: "/trends", label: "Trends", icon: LineChart },
       { href: "/news", label: "News", icon: Newspaper },
+      { href: "/social-listening", label: "Social Listening", icon: Bell },
     ],
   },
   {
