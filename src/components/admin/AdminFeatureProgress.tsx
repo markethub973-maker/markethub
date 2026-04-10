@@ -44,11 +44,15 @@ const FEATURES: Feature[] = [
   { id: "a04", name: "AI Agent — Financial Analyst", category: "AI", status: "done", priority: "high", description: "ROI analysis, budget optimization, cost breakdown", addedAt: "2026-03" },
   { id: "a05", name: "AI Agent — Support", category: "AI", status: "done", priority: "medium", description: "Customer support assistant with platform knowledge", addedAt: "2026-03" },
   { id: "a06", name: "AI Agent — Competitor Spy", category: "AI", status: "done", priority: "high", description: "Competitor analysis and strategy recommendations", addedAt: "2026-03" },
-  { id: "a07", name: "AI Budget Tracking System", category: "AI", status: "done", priority: "critical", description: "Per-user monthly AI budget limits by plan, pre-check before Claude calls", addedAt: "2026-03" },
+  { id: "a07", name: "Premium AI Actions — Monthly Counter", category: "AI", status: "done", priority: "critical", description: "Per-user monthly Premium Actions counter per plan (RPC atomic), replaces token system. Cotele: free=5, lite=20, pro=50, business=200, enterprise=1000", addedAt: "2026-04" },
   { id: "a08", name: "AI Elegant Error Messages", category: "AI", status: "done", priority: "high", description: "User-friendly messages for all Anthropic error types (402, 429, 529, etc.)", addedAt: "2026-03" },
   { id: "a09", name: "Agent Confidentiality Rules", category: "AI", status: "done", priority: "critical", description: "AI agents blocked from revealing app architecture, costs, APIs to regular users", addedAt: "2026-03" },
-  { id: "a10", name: "Buyer Persona Builder", category: "AI", status: "testing", priority: "high", description: "Scrapes Instagram + Claude AI generates full buyer persona with affiliate opportunities", addedAt: "2026-03", notes: "Added to admin dashboard. Needs production test with live IG account." },
+  { id: "a10", name: "Buyer Persona Builder", category: "AI", status: "done", priority: "high", description: "Scrapes Instagram + Claude AI generates full buyer persona (demographics, psychographics, affiliate opps, monetization score)", addedAt: "2026-03", notes: "Testat live în prod 10 apr 2026. max_tokens bumped la 4000." },
   { id: "a11", name: "PDF Marketing Reports", category: "AI", status: "done", priority: "medium", description: "AI-generated PDF reports with charts sent via Resend email", addedAt: "2026-03" },
+  { id: "a12", name: "Per-plan AI Model Routing", category: "AI", status: "done", priority: "high", description: "Free/Lite → Haiku 4.5, Pro/Business/Enterprise → Sonnet 4.6. Campo premium_action_model în plan-config.ts", addedAt: "2026-04" },
+  { id: "a13", name: "Multi-language AI Packs (20 limbi)", category: "AI", status: "done", priority: "high", description: "Language enforcement în toate rutele find-clients: RO, EN, ES, FR, DE, IT, EL, PT, PL, HU, BG, NL, CS, SV, DA, NO, FI, TR, AR, JA, KO", addedAt: "2026-04" },
+  { id: "a14", name: "Lead Finder — Full Wizard (5 steps)", category: "AI", status: "done", priority: "critical", description: "Analyze → Score (DEMAND vs SUPPLY) → Message → Campaign → APEX Advisor. Per-plan model routing, language enforcement, competitor detection", addedAt: "2026-04" },
+  { id: "a15", name: "ProfitStatsCard — Value Realization", category: "AI", status: "done", priority: "medium", description: "Dashboard widget: timp recuperat + costuri economisite bazat pe premium_actions_used. Counter animation 0→valoare. Ascuns când actions=0", addedAt: "2026-04" },
 
   // ── Admin Tools ────────────────────────────────────────────────────────────
   { id: "ad01", name: "Admin Dashboard", category: "Admin", status: "done", priority: "critical", description: "Private /markethub973 login, users table, revenue analytics, pricing panel", addedAt: "2026-02" },
@@ -57,9 +61,12 @@ const FEATURES: Feature[] = [
   { id: "ad04", name: "Admin Pricing Panel", category: "Admin", status: "done", priority: "high", description: "Live price management for all 6 plans", addedAt: "2026-03" },
   { id: "ad05", name: "API Keys & Opportunities Dashboard", category: "Admin", status: "done", priority: "medium", description: "All 5 APIs with status, dashboard links, current usage, untapped data opportunities", addedAt: "2026-03" },
   { id: "ad06", name: "Feature Progress Tracker", category: "Admin", status: "done", priority: "medium", description: "This table — tracks all features with status, category, priority, notes", addedAt: "2026-03" },
-  { id: "ad07", name: "Competitor Monetization Spy", category: "Admin", status: "planned", priority: "medium", description: "Ads Library + scraper to identify competitor monetization strategies", notes: "Planned for v1.1 update with price increase" },
+  { id: "ad07", name: "Competitor Monetization Spy", category: "Admin", status: "planned", priority: "medium", description: "Ads Library + scraper to identify competitor monetization strategies", notes: "Planned for v1.1" },
   { id: "ad08", name: "Affiliate Link Hub", category: "Admin", status: "planned", priority: "medium", description: "Store and manage affiliate links, match to audience demographics", notes: "Planned for v1.1" },
   { id: "ad09", name: "Trending Products Alert", category: "Admin", status: "planned", priority: "medium", description: "Daily TikTok+IG scan for trending products, email alert when detected", notes: "Planned for v1.1" },
+  { id: "ad10", name: "Onboarding Checklist — New Users", category: "Admin", status: "done", priority: "high", description: "4-step interactive checklist pe dashboard (Instagram, Lead Finder, Research, Captions). localStorage-tracked, progress bar, auto-dismiss", addedAt: "2026-04" },
+  { id: "ad11", name: "Premium Actions Notifications", category: "Admin", status: "done", priority: "high", description: "Bell notifications când remaining ≤5 sau ≤20% (warning) sau =0 (error). Afișează reset date + Upgrade CTA", addedAt: "2026-04" },
+  { id: "ad12", name: "Admin Sidebar — Enterprise Unlock", category: "Admin", status: "done", priority: "medium", description: "Lacătele din sidebar dispar pentru sesiunile admin (localStorage check → enterprise plan direct)", addedAt: "2026-04" },
 
   // ── Integrations ───────────────────────────────────────────────────────────
   { id: "i01", name: "Meta Graph API — Instagram Connect", category: "Integration", status: "done", priority: "critical", description: "OAuth flow for connecting user IG accounts, token storage in Supabase", addedAt: "2026-02" },
@@ -70,23 +77,30 @@ const FEATURES: Feature[] = [
   { id: "i06", name: "Anthropic — Dual API Keys", category: "Integration", status: "done", priority: "critical", description: "ANTHROPIC_API_KEY (dev/Claude Code) + ANTHROPIC_API_KEY_APP (app features) — independent credits", addedAt: "2026-03" },
 
   // ── Payment ─────────────────────────────────────────────────────────────────
-  { id: "p01", name: "Stripe Subscriptions — 5 Plans", category: "Payment", status: "done", priority: "critical", description: "Free Trial, Lite $24, Pro $49, Business $99, Enterprise $249", addedAt: "2026-03" },
-  { id: "p02", name: "Extra AI Credits Purchase", category: "Payment", status: "done", priority: "high", description: "Stripe one-time checkout for $10/$25/$50/$100 credit packs with bonuses", addedAt: "2026-03" },
-  { id: "p03", name: "Stripe Webhook Handler", category: "Payment", status: "done", priority: "critical", description: "Handles subscription + credit pack payments, updates Supabase", addedAt: "2026-03" },
-  { id: "p04", name: "Early-Bird Pricing Strategy", category: "Payment", status: "done", priority: "high", description: "Lite $24, Pro $49, Business $99, Enterprise $249 — final tier pricing post-launch", notes: "Tier prices finalized 2026-04. Update plan-config.ts if changing." },
+  { id: "p01", name: "Stripe Subscriptions — 5 Plans", category: "Payment", status: "done", priority: "critical", description: "Free Trial, Lite $24, Pro $49, Business $99, Enterprise $249. Live mode activ din 10 apr 2026", addedAt: "2026-03" },
+  { id: "p02", name: "Extra AI Credits Purchase", category: "Payment", status: "done", priority: "high", description: "Stripe one-time checkout pentru credit packs $10/$25/$50/$100 cu bonusuri", addedAt: "2026-03" },
+  { id: "p03", name: "Stripe Webhook Handler", category: "Payment", status: "done", priority: "critical", description: "4 events: checkout.session.completed, subscription.updated, subscription.deleted, invoice.payment_failed", addedAt: "2026-03" },
+  { id: "p04", name: "Stripe Live Mode", category: "Payment", status: "done", priority: "critical", description: "sk_live_... + 4 price IDs live + webhook live (whsec_live_...) configurate în Vercel. Checkout generează cs_live_... confirmat.", addedAt: "2026-04" },
 
   // ── Security ────────────────────────────────────────────────────────────────
-  { id: "s01", name: "Admin Auth — Secret URL + Password", category: "Security", status: "done", priority: "critical", description: "Private /markethub973 with localStorage token, no Supabase dependency", addedAt: "2026-02" },
-  { id: "s02", name: "is_admin Role-Based Access", category: "Security", status: "done", priority: "critical", description: "Supabase is_admin flag controls admin features, checked server-side on all admin APIs", addedAt: "2026-03" },
-  { id: "s03", name: "AI Budget Pre-Check", category: "Security", status: "done", priority: "high", description: "Budget checked BEFORE calling Claude — fail fast, no wasted API calls", addedAt: "2026-03" },
+  { id: "s01", name: "Admin Auth — Secret URL + Password", category: "Security", status: "done", priority: "critical", description: "Private /markethub973 cu ?t=tunnel_secret + cookie httpOnly 8h. 404 fără token.", addedAt: "2026-02" },
+  { id: "s02", name: "is_admin Role-Based Access", category: "Security", status: "done", priority: "critical", description: "Supabase is_admin flag — checked server-side pe toate API-urile admin", addedAt: "2026-03" },
+  { id: "s03", name: "Premium Actions Pre-Check", category: "Security", status: "done", priority: "high", description: "RPC atomic consume_premium_action verificat ÎNAINTE de Claude — fail fast, no wasted calls", addedAt: "2026-04" },
+  { id: "s04", name: "RLS pe 14 tabele publice (VUL-2)", category: "Security", status: "done", priority: "critical", description: "Row Level Security activat: 10 tabele user-owned cu 4-policy CRUD + 4 sistem deny-all. e2e 22/22 PASS", addedAt: "2026-04" },
+  { id: "s05", name: "Function search_path pin (VUL-3)", category: "Security", status: "done", priority: "high", description: "ALTER FUNCTION add_ai_credits_atomic SET search_path = public, pg_temp — previne schema shadowing", addedAt: "2026-04" },
+  { id: "s06", name: "Explicit deny-all pe 5 tabele sistem (VUL-4)", category: "Security", status: "done", priority: "medium", description: "RESTRICTIVE USING (false) pe admin_platform_config, audit_logs, cron_logs, discount_codes, stripe_webhook_events", addedAt: "2026-04" },
+  { id: "s07", name: "Rate Limiting — Auth + API", category: "Security", status: "done", priority: "high", description: "10 req/min pe rute auth, 120 req/min pe API. Upstash Redis. Brute-force protection pe login/register", addedAt: "2026-03" },
 
   // ── UI/UX ───────────────────────────────────────────────────────────────────
   { id: "u01", name: "Sidebar — Collapsible Groups", category: "UI/UX", status: "done", priority: "high", description: "5 organized groups with animated chevron, YouTube auto-expanded", addedAt: "2026-02" },
   { id: "u02", name: "Settings Page — 3 Tabs", category: "UI/UX", status: "done", priority: "high", description: "Profile, Integrations, AI Credits (admin sees API Keys & Opportunities instead)", addedAt: "2026-03" },
   { id: "u03", name: "Ads Library — Slide-In Panel", category: "UI/UX", status: "done", priority: "high", description: "Right slide-in panel with filters, mini browser preview, checklist, quick links", addedAt: "2026-03" },
-  { id: "u04", name: "Admin Sidebar Link Fix", category: "UI/UX", status: "done", priority: "medium", description: "Fixed cn() with style objects bug — now uses style prop correctly", addedAt: "2026-03" },
-  { id: "u05", name: "Language Consistency — English UI", category: "UI/UX", status: "done", priority: "medium", description: "Translated Romanian UI text: TikTok, Instagram Search, WorldMap, Settings", addedAt: "2026-03" },
-  { id: "u06", name: "6-Plan Pricing Page", category: "UI/UX", status: "done", priority: "high", description: "Responsive pricing page with plan comparison and Stripe integration", addedAt: "2026-03" },
+  { id: "u04", name: "Research Hub — OLX Real Scraper + FB Groups", category: "UI/UX", status: "done", priority: "high", description: "piotrv1001~olx-listings-scraper (preț, oraș, vânzător, foto) + apify~facebook-groups-scraper. Deep-link wizard→Research Hub", addedAt: "2026-04" },
+  { id: "u05", name: "Lead Database — Pipeline Funnel", category: "UI/UX", status: "done", priority: "high", description: "6 stagii (new→contacted→replied→interested→client→lost), enrich IG/YT/website, dedup URL, CSV export", addedAt: "2026-04" },
+  { id: "u06", name: "Pricing Page — Premium Actions", category: "UI/UX", status: "done", priority: "high", description: "Rewrite complet: token-based → Premium Actions. Comparison table, FAQ, business/enterprise features detaliate", addedAt: "2026-04" },
+  { id: "u07", name: "Client Portal — White-label + Password", category: "UI/UX", status: "done", priority: "high", description: "Agency name, logo, accent color per link. Live data refresh ≥30min. Password protection cu scrypt hash", addedAt: "2026-04" },
+  { id: "u08", name: "Local Market Mode — Romania", category: "UI/UX", status: "done", priority: "medium", description: "1-click activare din Research Hub banner. Tab-uri OLX, Pagini Aurii, Storia, Autovit instant vizibile", addedAt: "2026-04" },
+  { id: "u09", name: "Admin Logout Button — Header Fix", category: "UI/UX", status: "done", priority: "medium", description: "Mutat din absolute top-6 right-6 (suprapus pe bell+user) în Header rightExtra prop", addedAt: "2026-04" },
 ];
 
 // ── Status config ─────────────────────────────────────────────────────────────

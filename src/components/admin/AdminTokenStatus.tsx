@@ -90,9 +90,10 @@ export default function AdminTokenStatus() {
             🔑
           </div>
           <div>
-            <h2 className="font-bold text-lg" style={{ color: "#292524" }}>Token & API Key Status</h2>
+            <h2 className="font-bold text-lg" style={{ color: "#292524" }}>API Credentials & Token Status</h2>
             <p className="text-xs" style={{ color: "#C4AA8A" }}>
-              {summary ? `${summary.total} keys tracked` : "Loading..."}
+              Credențiale externe: Instagram, Stripe, YouTube, Anthropic, RapidAPI
+              {summary ? ` · ${summary.total} keys tracked` : ""}
               {lastRefresh && ` · ${lastRefresh.toLocaleTimeString()}`}
             </p>
           </div>
