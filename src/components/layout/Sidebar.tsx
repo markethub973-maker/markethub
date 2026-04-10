@@ -55,6 +55,7 @@ const navGroups = [
       { href: "/research", label: "Research Hub", icon: Search },
       { href: "/lead-finder", label: "Lead Finder", icon: Megaphone },
       { href: "/leads", label: "Leads Database", icon: Database },
+      { href: "/ai-hub", label: "AI Hub", icon: Sparkles },
     ],
   },
   {
@@ -65,8 +66,7 @@ const navGroups = [
       { href: "/captions", label: "AI Captions", icon: Sparkles },
       { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
       { href: "/bio", label: "Link in Bio", icon: Link2 },
-      { href: "/ai-hub", label: "AI Hub", icon: Sparkles },
-      { href: "/monthly-report", label: "Monthly Report", icon: BarChart3 },
+      { href: "/monthly-report", label: "Performance Report", icon: BarChart3 },
     ],
   },
   {
@@ -75,7 +75,7 @@ const navGroups = [
     items: [
       { href: "/clients", label: "Multi-Account", icon: UserSquare2 },
       { href: "/campaigns", label: "Campaigns", icon: Target },
-      { href: "/email-reports", label: "Email Reports", icon: Mail },
+      { href: "/email-reports", label: "Activity Reports", icon: Mail },
       { href: "/alerts", label: "Alerts", icon: Bell },
     ],
   },
