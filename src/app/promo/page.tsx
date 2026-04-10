@@ -146,7 +146,7 @@ const FAQS = [
   },
   {
     q: "What AI model powers the agents?",
-    a: "Lite uses Claude Haiku 4.5 (fast, efficient). Pro, Business and Enterprise use Claude Sonnet 4.6 — Anthropic's current top model — delivering noticeably better output quality for complex tasks.",
+    a: "Lite uses the AI MarketHub Engine Standard tier (fast, efficient). Pro, Business and Enterprise use the AI MarketHub Engine Premium tier — delivering noticeably better output quality for complex tasks.",
   },
   {
     q: "Which languages does the platform support?",
@@ -310,7 +310,7 @@ export default function PromoPage() {
             style={{ backgroundColor: C.amberLight, color: C.amberDark, border: `1px solid ${C.amberBorder}` }}
           >
             <Sparkles className="w-4 h-4" />
-            Powered by Claude Sonnet 4.6 — Anthropic&apos;s top AI model
+            Powered by AI MarketHub Engine — Premium tier
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6" style={{ color: C.text }}>
