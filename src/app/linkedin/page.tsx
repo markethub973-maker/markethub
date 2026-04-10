@@ -20,7 +20,11 @@ export default function LinkedInPage() {
     const res = await fetch(`/api/linkedin?username=${encodeURIComponent(q)}`);
     const d = await res.json();
     if (d.profile) setProfile(d.profile);
-    else if (d.needs_subscription) setError("⚠️ " + (d.error || "API LinkedIn necesită abonament"));
+    else if (d.needs_auth) {
+      setError("");
+      window.location.href = d.connect_url || "/api/auth/linkedin-post/connect";
+      return;
+    }
     else setError(d.error || "Profil negăsit");
     setLoading(false);
   };
@@ -44,6 +48,20 @@ export default function LinkedInPage() {
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
       <Header title="LinkedIn Analytics" subtitle="Analizează profiluri LinkedIn — followeri, poziție, companie" />
       <div className="p-4 max-w-2xl mx-auto space-y-4">
+
+        {/* Connect banner */}
+        <div className="rounded-2xl p-4 flex items-center gap-3"
+          style={{ backgroundColor: "rgba(10,102,194,0.06)", border: "1px solid rgba(10,102,194,0.2)" }}>
+          <div className="flex-1">
+            <p className="text-sm font-semibold" style={{ color: "#0A66C2" }}>Conectează contul LinkedIn</p>
+            <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>Pentru date complete conectează-ți contul LinkedIn via OAuth</p>
+          </div>
+          <a href="/api/auth/linkedin-post/connect"
+            className="px-4 py-2 rounded-xl text-sm font-bold shrink-0 text-white"
+            style={{ backgroundColor: "#0A66C2" }}>
+            Conectează
+          </a>
+        </div>
 
         {/* Search */}
         <div className="flex gap-2">

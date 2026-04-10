@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/route-helpers";
-
-const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY;
+import { createServiceClient } from "@/lib/supabase/service";
 
 export async function GET(req: NextRequest) {
   const auth = await requireAuth();
@@ -10,48 +9,54 @@ export async function GET(req: NextRequest) {
   const username = req.nextUrl.searchParams.get("username");
   if (!username) return NextResponse.json({ error: "username required" }, { status: 400 });
 
-  if (!RAPIDAPI_KEY) return NextResponse.json({ error: "RapidAPI not configured" }, { status: 500 });
+  // Check if user has LinkedIn connected via OAuth
+  const supa = createServiceClient();
+  const { data: profile } = await supa
+    .from("profiles")
+    .select("linkedin_access_token")
+    .eq("id", auth.userId)
+    .single();
+
+  if (!profile?.linkedin_access_token) {
+    return NextResponse.json({
+      error: "Conectează-ți contul LinkedIn pentru a vedea date de profil.",
+      needs_auth: true,
+      connect_url: "/api/auth/linkedin-post/connect",
+    }, { status: 401 });
+  }
 
   try {
-    // Try Fresh LinkedIn Scraper API (free tier available at rapidapi.com)
-    const res = await fetch(
-      `https://fresh-linkedin-scraper-api.p.rapidapi.com/api/v1/user/profile?username=${encodeURIComponent(username)}`,
-      {
-        headers: {
-          "x-rapidapi-host": "fresh-linkedin-scraper-api.p.rapidapi.com",
-          "x-rapidapi-key": RAPIDAPI_KEY,
-        },
-      }
-    );
+    // Use LinkedIn API with OAuth token
+    const meRes = await fetch("https://api.linkedin.com/v2/userinfo", {
+      headers: { Authorization: `Bearer ${profile.linkedin_access_token}` },
+    });
 
-    if (res.status === 403) {
+    if (!meRes.ok) {
+      // Token expired
+      await supa.from("profiles").update({ linkedin_access_token: null }).eq("id", auth.userId);
       return NextResponse.json({
-        error: "LinkedIn API necesită abonament gratuit pe RapidAPI. Mergi la: rapidapi.com/freshdata-freshdata-default/api/fresh-linkedin-profile-data → Subscribe (Free, 50 req/lună, fără card).",
-        needs_subscription: true,
-        subscribe_url: "https://rapidapi.com/freshdata-freshdata-default/api/fresh-linkedin-profile-data",
-      }, { status: 402 });
+        error: "Token LinkedIn expirat. Reconectează-te.",
+        needs_auth: true,
+        connect_url: "/api/auth/linkedin-post/connect",
+      }, { status: 401 });
     }
 
-    if (!res.ok) {
-      return NextResponse.json({ error: `LinkedIn API error: ${res.status}` }, { status: res.status });
-    }
+    const me = await meRes.json();
 
-    const data = await res.json();
-    const p = data.data ?? data;
     return NextResponse.json({
       profile: {
-        name: `${p.firstName ?? ""} ${p.lastName ?? ""}`.trim() || p.fullName || p.name || "",
-        headline: p.headline ?? p.title ?? "",
-        summary: p.summary ?? p.about ?? "",
-        followers: p.followersCount ?? p.followers ?? 0,
-        connections: p.connectionsCount ?? p.connections ?? 0,
-        location: p.location ?? p.geo?.full ?? "",
-        avatar: p.profilePicture ?? p.photo ?? "",
+        name: me.name ?? `${me.given_name ?? ""} ${me.family_name ?? ""}`.trim(),
+        headline: "",
+        summary: "",
+        followers: 0,
+        connections: 0,
+        location: me.locale?.country ?? "",
+        avatar: me.picture ?? "",
         url: `https://www.linkedin.com/in/${username}/`,
-        company: p.position?.[0]?.companyName ?? p.currentCompany ?? "",
-        position: p.position?.[0]?.title ?? p.currentPosition ?? "",
+        company: "",
+        position: "",
+        email: me.email ?? "",
       },
-      raw: data,
     });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
