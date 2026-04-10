@@ -3,6 +3,23 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { fetchIgSnapshot, fetchTtSnapshot, isStale } from "@/lib/portal/refreshData";
 import { verifyPassword } from "@/lib/portal/password";
 
+// ── Brute-force protection on password-protected portals ─────────────────────
+async function checkPortalPasswordRateLimit(ip: string, token: string): Promise<boolean> {
+  try {
+    const { Redis } = await import("@upstash/redis");
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL!,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+    });
+    const key = `portal_pw:${ip}:${token.slice(0, 8)}`; // per IP per portal
+    const count = await redis.incr(key);
+    if (count === 1) await redis.expire(key, 300); // 5-minute window
+    return count <= 5; // max 5 password attempts per 5 min
+  } catch {
+    return true; // fail open — don't block if Redis is down
+  }
+}
+
 const FULL_FIELDS =
   "id, token, client_name, ig_username, tt_username, data, view_count, expires_at, updated_at, agency_name, agency_logo_url, accent_color, password_hash";
 const LEGACY_FIELDS =
@@ -85,6 +102,16 @@ export async function GET(
       return NextResponse.json(
         { error: "Password required", requires_password: true },
         { status: 401 },
+      );
+    }
+
+    // Rate limit password attempts: max 5 per 5 min per IP per portal
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+    const allowed = await checkPortalPasswordRateLimit(ip, token);
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Too many attempts. Try again in 5 minutes.", requires_password: true },
+        { status: 429 },
       );
     }
 
