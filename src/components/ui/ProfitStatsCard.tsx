@@ -70,46 +70,46 @@ export default function ProfitStatsCard({ actionsCount }: ProfitStatsCardProps) 
         </div>
         <div>
           <h3 className="font-bold text-sm" style={{ color: "#292524" }}>
-            Impactul AI în afacerea ta
+            AI Impact on Your Business
           </h3>
-          <p className="text-xs" style={{ color: "#A8967E" }}>Luna aceasta · {actionsCount} acțiuni premium folosite</p>
+          <p className="text-xs" style={{ color: "#A8967E" }}>This month · {actionsCount} premium actions used</p>
         </div>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 mb-4">
-        {/* Timp recuperat */}
+        {/* Time saved */}
         <div
           className="rounded-xl p-4"
           style={{ backgroundColor: "rgba(245,215,160,0.15)", border: "1px solid rgba(245,215,160,0.3)" }}
         >
           <div className="flex items-center gap-2 mb-2">
             <Clock className="w-4 h-4" style={{ color: "#F59E0B" }} />
-            <span className="text-xs font-medium" style={{ color: "#78614E" }}>Timp recuperat</span>
+            <span className="text-xs font-medium" style={{ color: "#78614E" }}>Time saved</span>
           </div>
           <p className="text-2xl font-bold" style={{ color: "#292524" }}>
             {animHours.toFixed(1)}
-            <span className="text-sm font-medium ml-1" style={{ color: "#A8967E" }}>ore</span>
+            <span className="text-sm font-medium ml-1" style={{ color: "#A8967E" }}>hrs</span>
           </p>
           <p className="text-xs mt-1" style={{ color: "#C4AA8A" }}>
-            {actionsCount} × {MINUTES_PER_ACTION} min
+            {actionsCount} × {MINUTES_PER_ACTION} min manual work
           </p>
         </div>
 
-        {/* Costuri economisite */}
+        {/* Cost saved */}
         <div
           className="rounded-xl p-4"
           style={{ backgroundColor: "rgba(22,163,74,0.06)", border: "1px solid rgba(22,163,74,0.2)" }}
         >
           <div className="flex items-center gap-2 mb-2">
             <DollarSign className="w-4 h-4" style={{ color: "#16A34A" }} />
-            <span className="text-xs font-medium" style={{ color: "#78614E" }}>Costuri economisite</span>
+            <span className="text-xs font-medium" style={{ color: "#78614E" }}>Operational savings</span>
           </div>
           <p className="text-2xl font-bold" style={{ color: "#16A34A" }}>
             ${animMoney.toFixed(0)}
           </p>
           <p className="text-xs mt-1" style={{ color: "#C4AA8A" }}>
-            la ${HOURLY_VALUE_USD}/oră muncă manuală
+            at ${HOURLY_VALUE_USD}/hr equivalent labor cost
           </p>
         </div>
       </div>
@@ -121,11 +121,11 @@ export default function ProfitStatsCard({ actionsCount }: ProfitStatsCardProps) 
       >
         <span className="text-base flex-shrink-0">🚀</span>
         <p className="text-xs" style={{ color: "#5C4A35" }}>
-          Platforma a lucrat în locul tău echivalentul a{" "}
+          The platform worked for you the equivalent of{" "}
           <span className="font-bold" style={{ color: "#16A34A" }}>
-            {animDays.toFixed(1)} zile
+            {animDays.toFixed(1)} full-time days
           </span>{" "}
-          de muncă full-time luna aceasta.
+          this month.
         </p>
       </div>
     </div>

@@ -20,32 +20,32 @@ interface Step {
 const STEPS: Step[] = [
   {
     id: "instagram",
-    label: "Conectează Instagram",
-    description: "Leagă contul tău pentru analytics live",
+    label: "Connect Instagram",
+    description: "Link your account for live analytics",
     href: "/integrations",
     icon: <Instagram className="w-4 h-4" />,
     accentColor: "#E1306C",
   },
   {
     id: "leads",
-    label: "Găsește primii tăi clienți",
-    description: "Rulează Lead Finder cu oferta ta",
+    label: "Find your first clients",
+    description: "Run Lead Finder with your offer",
     href: "/lead-finder",
     icon: <Search className="w-4 h-4" />,
     accentColor: "#F59E0B",
   },
   {
     id: "research",
-    label: "Cercetează piața ta",
-    description: "Caută leads pe Google, OLX, Instagram",
+    label: "Research your market",
+    description: "Search leads on Google, OLX, Instagram",
     href: "/research",
     icon: <Compass className="w-4 h-4" />,
     accentColor: "#8B5CF6",
   },
   {
     id: "captions",
-    label: "Generează un caption AI",
-    description: "Caption pentru post IG/TT în 10 secunde",
+    label: "Generate an AI caption",
+    description: "Caption for IG/TT post in 10 seconds",
     href: "/captions",
     icon: <Sparkles className="w-4 h-4" />,
     accentColor: "#16A34A",
@@ -125,19 +125,19 @@ export default function OnboardingChecklist() {
           </div>
           <div>
             <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>
-              Bine ai venit în MarketHub Pro! 🎉
+              Welcome to MarketHub Pro! 🎉
             </h3>
             <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
               {allDone
-                ? "Ai terminat setup-ul — ești gata să crești!"
-                : `${completedCount} din ${STEPS.length} pași completați`}
+                ? "Setup complete — you're ready to grow!"
+                : `${completedCount} of ${STEPS.length} steps completed`}
             </p>
           </div>
         </div>
         <button
           type="button"
           onClick={dismiss}
-          aria-label="Închide ghidul de start"
+          aria-label="Dismiss getting started guide"
           className="p-1 rounded-lg transition-colors"
           style={{ color: "#C4AA8A" }}
           onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.2)")}
@@ -206,7 +206,7 @@ export default function OnboardingChecklist() {
                   onMouseEnter={e => (e.currentTarget.style.backgroundColor = step.accentColor + "28")}
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = step.accentColor + "18")}
                 >
-                  Mergi
+                  Go
                   <ChevronRight className="w-3 h-3" />
                 </Link>
               )}
@@ -222,7 +222,7 @@ export default function OnboardingChecklist() {
           style={{ backgroundColor: "rgba(22,163,74,0.08)", color: "#16A34A" }}
         >
           <CheckCircle2 className="w-4 h-4" />
-          Felicitări! Ai explorat toate funcțiile cheie. Succes cu campania!
+          Congratulations! You've explored all key features. Good luck with your campaign!
         </div>
       )}
     </div>

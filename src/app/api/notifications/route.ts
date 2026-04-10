@@ -176,8 +176,8 @@ export async function GET(req: NextRequest) {
         notifications.push({
           id: "premium_actions_exhausted",
           type: "error",
-          title: "Premium AI Actions epuizate",
-          message: `Ai folosit toate cele ${limit} acțiuni premium ale lunii.${resetDate ? ` Se resetează pe ${resetDate}.` : ""} Upgrade pentru mai multe.`,
+          title: "Premium AI Actions exhausted",
+          message: `You've used all ${limit} premium actions this month.${resetDate ? ` Resets on ${resetDate}.` : ""} Upgrade for more.`,
           action_url: "/pricing",
           action_label: "Upgrade Plan",
           created_at: now,
@@ -187,8 +187,8 @@ export async function GET(req: NextRequest) {
         notifications.push({
           id: "premium_actions_low",
           type: "warning",
-          title: `Mai ai ${remaining} Premium Action${remaining === 1 ? "" : "s"}`,
-          message: `Ai consumat ${used} din ${limit} acțiuni premium ale lunii.${resetDate ? ` Resetare pe ${resetDate}.` : ""}`,
+          title: `${remaining} Premium Action${remaining === 1 ? "" : "s"} remaining`,
+          message: `You've used ${used} of ${limit} premium actions this month.${resetDate ? ` Resets on ${resetDate}.` : ""}`,
           action_url: "/pricing",
           action_label: "Upgrade Plan",
           created_at: now,
