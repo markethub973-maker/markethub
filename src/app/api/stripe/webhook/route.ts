@@ -96,6 +96,7 @@ export async function POST(req: Request) {
     // ── Subscription plan purchase ───────────────────────────────────────
     if (userId && plan) {
       await supabase.from("profiles").update({
+        plan,
         subscription_plan: plan,
         subscription_status: "active",
         trial_expires_at: null,
@@ -198,7 +199,7 @@ export async function POST(req: Request) {
         stripe_subscription_id: sub.id,
       };
 
-      if (matchedPlan) updates.subscription_plan = matchedPlan;
+      if (matchedPlan) { updates.plan = matchedPlan; updates.subscription_plan = matchedPlan; }
 
       await supabase.from("profiles").update(updates).eq("id", profile.id);
     }
