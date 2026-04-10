@@ -176,6 +176,43 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     description: "Manage multiple client accounts from one dashboard.",
   },
 
+  // ── New Lite features ─────────────────────────────────────────────────────
+  "/assets": {
+    minPlan:    "lite",
+    label:      "Assets & Storage",
+    description: "Store and organize brand files, footage, and documents with Google Drive sync.",
+  },
+  "/affiliate": {
+    minPlan:    "lite",
+    label:      "Affiliate Hub",
+    description: "Manage affiliate links with click tracking and commission monitoring.",
+  },
+  "/trending-alerts": {
+    minPlan:    "lite",
+    label:      "Trending Products Alert",
+    description: "Daily scan of TikTok and Instagram for trending products matching your keywords.",
+  },
+  "/linkedin": {
+    minPlan:    "lite",
+    label:      "LinkedIn Analytics",
+    description: "Analyze any LinkedIn profile — followers, connections, company, headline.",
+  },
+  "/proposals": {
+    minPlan:    "lite",
+    label:      "Proposal Generator",
+    description: "Create and send professional service proposals directly to clients.",
+  },
+  "/time-tracking": {
+    minPlan:    "lite",
+    label:      "Time Tracking",
+    description: "Track billable hours per client with live timer and monthly reports.",
+  },
+  "/roi-calculator": {
+    minPlan:    "lite",
+    label:      "ROI Calculator",
+    description: "Calculate and demonstrate ROI of your services to clients.",
+  },
+
   // ── Pro ($49) features ────────────────────────────────────────────────────
   "/ai-hub": {
     minPlan:    "pro",
@@ -191,6 +228,38 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     minPlan:    "pro",
     label:      "Leads Database",
     description: "Full CRM for managing and contacting leads found by the AI agent.",
+  },
+  "/influencers": {
+    minPlan:    "pro",
+    label:      "Influencer Database",
+    description: "Build and manage your influencer database with live IG/TikTok data.",
+  },
+  "/social-listening": {
+    minPlan:    "pro",
+    label:      "Social Listening",
+    description: "Monitor brand mentions across TikTok, Instagram, Reddit, and News in real time.",
+  },
+  "/team": {
+    minPlan:    "pro",
+    label:      "Team Collaboration",
+    description: "Invite team members with role-based access (Admin, Editor, Viewer).",
+  },
+  "/email-campaigns": {
+    minPlan:    "pro",
+    label:      "Email Campaigns",
+    description: "Create and send branded email campaigns directly from the platform.",
+  },
+
+  // ── Business ($99) features ───────────────────────────────────────────────
+  "/api-keys": {
+    minPlan:    "business",
+    label:      "API Access",
+    description: "External REST API access for integrating MarketHub data into your own tools.",
+  },
+  "/white-label": {
+    minPlan:    "business",
+    label:      "White-label Settings",
+    description: "Brand the platform with your agency's logo, colors, and custom domain.",
   },
 };
 

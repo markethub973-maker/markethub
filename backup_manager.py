@@ -374,13 +374,29 @@ git push origin main  # Vercel deploy automat
     size = zip_path.stat().st_size / 1024 / 1024
     set_last_backup_time()
     print(f"\n  ✅ Salvat: {zip_path.name} ({size:.1f} MB)")
+
+    # Also create complete backup with node_modules + .next (like MarketHub Pro COMPLECT)
+    print("\n📦 TOTAL COMPLET — inclusiv node_modules + .next (~177MB)")
+    complete_path = BACKUP_DIR / f"backup_total_complet_{TIMESTAMP}.zip"
+    import subprocess
+    subprocess.run([
+        "zip", "-r", str(complete_path),
+        str(PROJECT_ROOT),
+        "--exclude", f"{PROJECT_ROOT}/.git/*",
+        "--exclude", f"{PROJECT_ROOT}/.env.local",
+        "-q"
+    ], check=False)
+    if complete_path.exists():
+        cs = complete_path.stat().st_size / 1024 / 1024
+        print(f"  ✅ Salvat: {complete_path.name} ({cs:.1f} MB)")
+
     return zip_path
 
 # ── Cleanup old backups ────────────────────────────────────────────────────────
 
 def cleanup_old_backups(keep: int = 5):
     """Keep only the last N backups of each type."""
-    for mode in ["incremental", "standard", "total"]:
+    for mode in ["incremental", "standard", "total", "total_complet"]:
         files = sorted(BACKUP_DIR.glob(f"backup_{mode}_*.zip"), reverse=True)
         for old in files[keep:]:
             old.unlink()
