@@ -813,7 +813,7 @@ export default function PromoPage() {
             </div>
             <div style={{ borderTop: `1px solid ${C.amberBorder}`, color: C.lighter }} className="pt-6 flex flex-col md:flex-row items-center justify-between gap-2 text-xs">
               <span>© {new Date().getFullYear()} MarketHub Pro. All rights reserved.</span>
-              <span>Powered by Claude Sonnet 4.6 (Anthropic) · GDPR Compliant</span>
+              <span>Powered by MarketHub Pro · GDPR Compliant</span>
             </div>
           </div>
         </footer>
