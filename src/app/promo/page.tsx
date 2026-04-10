@@ -209,25 +209,32 @@ const BLOG_POSTS = [
 
 const TESTIMONIALS = [
   {
-    name: "Alexandra M.",
-    role: "Marketing Agency Owner, Bucharest",
+    name: "James W.",
+    role: "Marketing Agency Owner, London 🇬🇧",
     text: "We went from spending 3 hours/day searching for clients to having 50+ qualified leads delivered every week. The AI outreach messages are better than what we wrote manually.",
     rating: 5,
     metric: "50+ leads/week",
   },
   {
-    name: "Mihai T.",
-    role: "Social Media Manager",
+    name: "Markus H.",
+    role: "Social Media Manager, Berlin 🇩🇪",
     text: "The multi-platform analytics alone is worth the subscription. I manage 8 client accounts and see everything in one place. The competitor analysis feature is game-changing.",
     rating: 5,
     metric: "8 accounts managed",
   },
   {
-    name: "Diana P.",
-    role: "E-commerce Brand Owner",
+    name: "Carlos R.",
+    role: "E-commerce Brand Owner, Madrid 🇪🇸",
     text: "The APEX advisor gave me a content strategy that increased our Instagram ER from 1.2% to 4.8% in 6 weeks. I was skeptical about AI but this actually works.",
     rating: 5,
     metric: "1.2% → 4.8% ER",
+  },
+  {
+    name: "Yuki T.",
+    role: "Digital Marketing Director, Tokyo 🇯🇵",
+    text: "MarketHub Pro changed how our agency operates. The Lead Finder alone saves my team 15 hours per week. The multi-language support works perfectly for our Japanese clients.",
+    rating: 5,
+    metric: "15h saved/week",
   },
 ];
 
@@ -510,7 +517,7 @@ export default function PromoPage() {
           <h2 className="text-2xl font-bold text-center mb-8" style={{ color: C.text }}>
             What agencies say
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {TESTIMONIALS.map((t) => (
               <div
                 key={t.name}
