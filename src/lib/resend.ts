@@ -39,37 +39,206 @@ export async function sendWelcomeEmail(email: string, name: string) {
   });
 }
 
-export async function sendPaymentConfirmationEmail(email: string, name: string, plan: string) {
-  const planLabel = plan === "pro" ? "Pro" : "Enterprise";
+const PLAN_CONFIG: Record<string, {
+  label: string; price: string; actions: string; model: string; color: string;
+  features: string[]; startUrl: string;
+  upsell?: { nextPlan: string; nextLabel: string; nextPrice: string; gains: string[] };
+}> = {
+  lite: {
+    label: "Lite", price: "$24.00", actions: "20", model: "Standard AI", color: "#F59E0B",
+    startUrl: "https://markethubpromo.com/lead-finder",
+    features: ["20 Premium AI Actions/month", "Basic AI unlimited", "12 tracked channels", "2 Instagram accounts", "All 16 AI Agents", "Client Portal"],
+    upsell: {
+      nextPlan: "pro", nextLabel: "Pro", nextPrice: "$49/mo",
+      gains: [
+        "50 AI Actions/month (2.5× more — 30 extra scored leads per week)",
+        "Premium AI Engine — noticeably better copy, research and strategy",
+        "30 tracked channels (vs 12 now)",
+        "4 Instagram accounts (vs 2 now)",
+        "Power Workflows — multi-agent sequences in one click",
+        "Priority Support — responses in under 4 hours",
+      ],
+    },
+  },
+  pro: {
+    label: "Pro", price: "$49.00", actions: "50", model: "Premium AI ★", color: "#8B5CF6",
+    startUrl: "https://markethubpromo.com/lead-finder",
+    features: ["50 Premium AI Actions/month", "Premium AI (top model)", "30 tracked channels", "4 Instagram accounts", "All 16 AI Agents", "Power Workflows", "Priority Support"],
+    upsell: {
+      nextPlan: "business", nextLabel: "Business", nextPrice: "$99/mo",
+      gains: [
+        "200 AI Actions/month (4× more — run full campaigns daily)",
+        "100 tracked channels (vs 30 now) — manage a full client portfolio",
+        "10 Instagram accounts (vs 4 now)",
+        "20 client accounts — scale your agency without limits",
+        "White Label Client Portal — your brand, not ours",
+        "Full API Access — integrate MarketHub data into your own tools",
+      ],
+    },
+  },
+  business: {
+    label: "Business", price: "$99.00", actions: "200", model: "Premium AI ★", color: "#EC4899",
+    startUrl: "https://markethubpromo.com/lead-finder",
+    features: ["200 Premium AI Actions/month", "Premium AI (top model)", "100 tracked channels", "10 Instagram accounts", "API Access", "20 client accounts", "White Label"],
+    upsell: {
+      nextPlan: "enterprise", nextLabel: "Enterprise", nextPrice: "$249/mo",
+      gains: [
+        "1,000 AI Actions/month (5× more — unlimited daily operations)",
+        "Unlimited channels, accounts, and client seats",
+        "SLA 99.9% uptime guarantee — mission-critical reliability",
+        "Dedicated priority support — your own response lane",
+        "Full White Label on all features and portals",
+      ],
+    },
+  },
+  enterprise: {
+    label: "Enterprise", price: "$249.00", actions: "1,000", model: "Premium AI ★", color: "#16A34A",
+    startUrl: "https://markethubpromo.com/lead-finder",
+    features: ["1,000 Premium AI Actions/month", "Premium AI (top model)", "Unlimited everything", "White Label", "Full API Access", "SLA 99.9%", "Priority Support"],
+  },
+};
+
+export async function sendPaymentConfirmationEmail(
+  email: string,
+  name: string,
+  plan: string,
+  extra?: {
+    amountPaid?: string;
+    invoiceId?: string;
+    invoicePdfUrl?: string;
+    renewalDate?: string;
+    subscriptionId?: string;
+  }
+) {
+  const cfg = PLAN_CONFIG[plan] ?? PLAN_CONFIG.lite;
+  const invoiceId = extra?.invoiceId ?? "—";
+  const amountPaid = extra?.amountPaid ?? cfg.price;
+  const renewalDate = extra?.renewalDate ?? "Next month";
+  const invoicePdfUrl = extra?.invoicePdfUrl ?? null;
+  const now = new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" });
+
+  const featureRows = cfg.features.map(f =>
+    `<tr><td style="padding:5px 0;font-size:13px;color:#78614E;">✓ ${f}</td></tr>`
+  ).join("");
+
   await getResend().emails.send({
     from: FROM,
     to: email,
-    subject: `${planLabel} subscription activated — MarketHub Pro`,
+    subject: `🎉 ${cfg.label} plan activated — Payment receipt #${invoiceId.slice(-8).toUpperCase()}`,
     html: `
-      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px 24px;background:#FFF8F0;border-radius:16px;">
-        <div style="text-align:center;margin-bottom:24px;">
-          <div style="display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,#F59E0B,#D97706);">
-            <span style="color:white;font-size:22px;font-weight:bold;">M</span>
-          </div>
-          <h1 style="color:#292524;margin:12px 0 4px;font-size:22px;">MarketHub Pro</h1>
-        </div>
-        <h2 style="color:#292524;font-size:18px;margin-bottom:8px;">Payment confirmed!</h2>
-        <p style="color:#78614E;line-height:1.6;margin-bottom:16px;">
-          Hi ${name}, your <strong>${planLabel}</strong> subscription is active. You now have full access to every feature on the platform.
-        </p>
-        <div style="background:#FFFCF7;border:1px solid rgba(245,215,160,0.5);border-radius:10px;padding:16px;margin-bottom:24px;">
-          <p style="margin:0 0 6px;color:#78614E;font-size:13px;"><strong>Plan:</strong> ${planLabel}</p>
-          <p style="margin:0;color:#78614E;font-size:13px;"><strong>Status:</strong> Active</p>
-        </div>
-        <div style="text-align:center;margin-bottom:24px;">
-          <a href="https://markethubpromo.com" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
-            Open dashboard
-          </a>
-        </div>
-        <p style="color:#C4AA8A;font-size:12px;text-align:center;margin:0;">
-          © 2026 MarketHub Pro · <a href="https://markethubpromo.com/privacy" style="color:#F59E0B;">Privacy</a> · <a href="https://markethubpromo.com/terms" style="color:#F59E0B;">Terms</a>
-        </p>
-      </div>
+<div style="font-family:sans-serif;max-width:560px;margin:0 auto;background:#FFF8F0;border-radius:16px;overflow:hidden;">
+
+  <!-- Header -->
+  <div style="background:linear-gradient(135deg,#F59E0B,#D97706);padding:28px 32px;text-align:center;">
+    <div style="display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,0.2);margin-bottom:12px;">
+      <span style="color:white;font-size:26px;font-weight:bold;">M</span>
+    </div>
+    <h1 style="color:white;margin:0 0 4px;font-size:22px;font-weight:800;">MarketHub Pro</h1>
+    <p style="color:rgba(255,255,255,0.85);margin:0;font-size:13px;">Payment confirmed ✓</p>
+  </div>
+
+  <!-- Body -->
+  <div style="padding:32px;">
+
+    <h2 style="color:#292524;font-size:19px;margin:0 0 6px;">Hi ${name}!</h2>
+    <p style="color:#78614E;line-height:1.6;margin:0 0 24px;">
+      Your <strong>${cfg.label}</strong> subscription is now active. Here's your payment receipt and everything you now have access to.
+    </p>
+
+    <!-- Invoice Box -->
+    <div style="background:#FFFCF7;border:1px solid rgba(245,215,160,0.6);border-radius:12px;padding:20px;margin-bottom:24px;">
+      <p style="color:#A8967E;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 14px;">PAYMENT RECEIPT</p>
+      <table style="width:100%;border-collapse:collapse;">
+        <tr style="border-bottom:1px solid rgba(245,215,160,0.4);">
+          <td style="padding:8px 0;font-size:13px;color:#78614E;">Invoice ID</td>
+          <td style="padding:8px 0;font-size:13px;color:#292524;text-align:right;font-family:monospace;">#${invoiceId.slice(-12).toUpperCase()}</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(245,215,160,0.4);">
+          <td style="padding:8px 0;font-size:13px;color:#78614E;">Date</td>
+          <td style="padding:8px 0;font-size:13px;color:#292524;text-align:right;">${now}</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(245,215,160,0.4);">
+          <td style="padding:8px 0;font-size:13px;color:#78614E;">Plan</td>
+          <td style="padding:8px 0;font-size:13px;color:#292524;text-align:right;font-weight:700;">${cfg.label}</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(245,215,160,0.4);">
+          <td style="padding:8px 0;font-size:13px;color:#78614E;">AI Engine</td>
+          <td style="padding:8px 0;font-size:13px;color:${cfg.color};text-align:right;font-weight:600;">${cfg.model}</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(245,215,160,0.4);">
+          <td style="padding:8px 0;font-size:13px;color:#78614E;">Billing cycle</td>
+          <td style="padding:8px 0;font-size:13px;color:#292524;text-align:right;">Monthly</td>
+        </tr>
+        <tr style="border-bottom:1px solid rgba(245,215,160,0.4);">
+          <td style="padding:8px 0;font-size:13px;color:#78614E;">Next renewal</td>
+          <td style="padding:8px 0;font-size:13px;color:#292524;text-align:right;">${renewalDate}</td>
+        </tr>
+        <tr>
+          <td style="padding:12px 0 0;font-size:15px;color:#292524;font-weight:800;">Total paid</td>
+          <td style="padding:12px 0 0;font-size:20px;color:#16A34A;text-align:right;font-weight:800;">${amountPaid}</td>
+        </tr>
+      </table>
+      ${invoicePdfUrl ? `
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(245,215,160,0.4);">
+        <a href="${invoicePdfUrl}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#F59E0B;font-weight:600;text-decoration:none;">
+          📄 Download PDF Invoice
+        </a>
+      </div>` : ""}
+    </div>
+
+    <!-- What you have now -->
+    <div style="background:#FFFCF7;border:1px solid rgba(245,215,160,0.4);border-radius:12px;padding:20px;margin-bottom:24px;">
+      <p style="color:#A8967E;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px;">WHAT YOU NOW HAVE ACCESS TO</p>
+      <table style="width:100%;border-collapse:collapse;">
+        ${featureRows}
+      </table>
+    </div>
+
+    <!-- First step CTA -->
+    <div style="background:rgba(${cfg.color === '#8B5CF6' ? '139,92,246' : cfg.color === '#EC4899' ? '236,72,153' : cfg.color === '#16A34A' ? '22,163,74' : '245,158,11'},0.06);border:1px solid rgba(${cfg.color === '#8B5CF6' ? '139,92,246' : cfg.color === '#EC4899' ? '236,72,153' : cfg.color === '#16A34A' ? '22,163,74' : '245,158,11'},0.2);border-radius:12px;padding:18px;margin-bottom:24px;text-align:center;">
+      <p style="color:#292524;font-size:14px;font-weight:700;margin:0 0 4px;">Ready to find your first clients?</p>
+      <p style="color:#78614E;font-size:13px;margin:0 0 14px;">Start with the AI Lead Finder — describe your offer and get 50+ scored leads.</p>
+      <a href="${cfg.startUrl}" style="display:inline-block;background:#F59E0B;color:#1C1814;font-weight:700;padding:11px 28px;border-radius:8px;text-decoration:none;font-size:14px;">
+        Open Lead Finder →
+      </a>
+    </div>
+
+    ${cfg.upsell ? `
+    <!-- Upsell -->
+    <div style="background:#FFFCF7;border:1px solid rgba(245,215,160,0.5);border-radius:12px;padding:20px;margin-bottom:24px;">
+      <p style="color:#A8967E;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">WANT MORE RESULTS?</p>
+      <p style="color:#292524;font-size:14px;font-weight:700;margin:0 0 12px;">
+        Upgrade to <strong>${cfg.upsell.nextLabel}</strong> at <strong>${cfg.upsell.nextPrice}</strong> and unlock:
+      </p>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
+        ${cfg.upsell.gains.map(g => `<tr><td style="padding:4px 0;font-size:13px;color:#78614E;">🚀 ${g}</td></tr>`).join("")}
+      </table>
+      <a href="https://markethubpromo.com/pricing" style="display:inline-block;background:#292524;color:white;font-weight:700;padding:10px 22px;border-radius:8px;text-decoration:none;font-size:13px;">
+        Upgrade to ${cfg.upsell.nextLabel} →
+      </a>
+    </div>
+    ` : ""}
+
+    <!-- Support -->
+    <p style="color:#A8967E;font-size:13px;text-align:center;margin:0 0 8px;">
+      Questions about your subscription? We're here.
+    </p>
+    <p style="text-align:center;margin:0 0 24px;">
+      <a href="mailto:support@markethubpromo.com" style="color:#F59E0B;font-size:13px;font-weight:600;">support@markethubpromo.com</a>
+    </p>
+
+    <!-- Manage -->
+    <p style="color:#C4AA8A;font-size:11px;text-align:center;margin:0;">
+      Manage your subscription →
+      <a href="https://markethubpromo.com/settings?tab=credits" style="color:#F59E0B;">Settings → Billing</a>
+      &nbsp;·&nbsp;
+      <a href="https://markethubpromo.com/privacy" style="color:#F59E0B;">Privacy</a>
+      &nbsp;·&nbsp;
+      <a href="https://markethubpromo.com/terms" style="color:#F59E0B;">Terms</a>
+    </p>
+    <p style="color:#C4AA8A;font-size:10px;text-align:center;margin:8px 0 0;">© ${new Date().getFullYear()} MarketHub Pro. All rights reserved.</p>
+  </div>
+</div>
     `,
   });
 }

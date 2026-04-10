@@ -107,7 +107,35 @@ export async function POST(req: Request) {
         .eq("id", userId)
         .single();
       if (profile?.email) {
-        await sendPaymentConfirmationEmail(profile.email, profile.name ?? "", plan).catch(() => {});
+        // Fetch invoice details from Stripe for the receipt email
+        let invoiceExtra: Parameters<typeof sendPaymentConfirmationEmail>[3] = {};
+        try {
+          const stripe = (await import("@/lib/stripe")).getStripe();
+          const sub = session.subscription
+            ? await stripe.subscriptions.retrieve(session.subscription as string)
+            : null;
+          const invoiceId = typeof sub?.latest_invoice === "string"
+            ? sub.latest_invoice
+            : (sub?.latest_invoice as any)?.id;
+          if (invoiceId) {
+            const inv = await stripe.invoices.retrieve(invoiceId);
+            invoiceExtra = {
+              amountPaid: `$${((inv.amount_paid ?? 0) / 100).toFixed(2)}`,
+              invoiceId: inv.id ?? "",
+              invoicePdfUrl: inv.invoice_pdf ?? undefined,
+              renewalDate: sub?.current_period_end
+                ? new Date(sub.current_period_end * 1000).toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" })
+                : undefined,
+            };
+          }
+        } catch { /* non-fatal — send email with defaults */ }
+
+        await sendPaymentConfirmationEmail(
+          profile.email,
+          profile.name ?? "",
+          plan,
+          invoiceExtra
+        ).catch(() => {});
       }
     }
   }
