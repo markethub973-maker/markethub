@@ -23,6 +23,175 @@ const ICON_MAP: Record<string, React.ElementType> = {
 
 type Message = { role: "user" | "assistant"; content: string };
 
+interface WorkflowStep {
+  agent: AgentType;
+  label: string;
+  starterMessage: string;
+}
+
+interface Workflow {
+  id: string;
+  title: string;
+  goal: string;
+  color: string;
+  icon: string;
+  steps: WorkflowStep[];
+}
+
+const WORKFLOWS: Workflow[] = [
+  {
+    id: "new-feature-launch",
+    title: "Launch a New Feature",
+    goal: "Validate → write copy → optimize → drive traffic",
+    color: "#8B5CF6",
+    icon: "🚀",
+    steps: [
+      {
+        agent: "market-researcher",
+        label: "1. Validate the market",
+        starterMessage: "I'm launching a new feature for marketing agencies. Help me validate: who needs it, how big is the market, and what pain points it must solve. Feature: [describe your feature here]",
+      },
+      {
+        agent: "copywriter",
+        label: "2. Write feature copy",
+        starterMessage: "Write 5 headline + subheadline variations for a new feature called [feature name]. Target: marketing agency owners. Main benefit: [benefit]. Keep each headline under 12 words.",
+      },
+      {
+        agent: "landing-page-writer",
+        label: "3. Build the landing page",
+        starterMessage: "Write a complete landing page for [feature name] — hero, problem section, solution, 3 key benefits, social proof placeholders, FAQ (3 objections), and CTA. Target: marketing agencies.",
+      },
+      {
+        agent: "seo-optimizer",
+        label: "4. Optimize for search",
+        starterMessage: "Optimize the landing page for [feature name]. Primary keyword: [keyword]. Give me: optimized title tag (60 chars), meta description (155 chars), H1-H3 structure, and 5 LSI keywords to include.",
+      },
+      {
+        agent: "blog-writer",
+        label: "5. Drive organic traffic",
+        starterMessage: "Write a 1500-word SEO blog post that leads people to discover [feature name]. Target keyword: [keyword]. Make it educational and actionable — mention the feature naturally, not as an ad.",
+      },
+    ],
+  },
+  {
+    id: "paid-ads-campaign",
+    title: "Paid Ads Campaign",
+    goal: "Research → create ads → convert traffic",
+    color: "#F97316",
+    icon: "🎯",
+    steps: [
+      {
+        agent: "market-researcher",
+        label: "1. Research the audience",
+        starterMessage: "Research the ideal customer segment for a paid ads campaign for [your product/service]. I need: demographics, psychographics, top 3 pain points, and what messages resonate. Budget: [budget].",
+      },
+      {
+        agent: "ad-copy-creator",
+        label: "2. Write ad copy",
+        starterMessage: "Write 3 Facebook/Instagram ad variations targeting [audience]. Objective: [clicks/leads/sales]. Value proposition: [your value prop]. Include: primary text (125 chars), headline (40 chars), CTA button.",
+      },
+      {
+        agent: "landing-page-writer",
+        label: "3. Convert the traffic",
+        starterMessage: "Write a high-converting landing page for people who clicked the ad. They came from Facebook, they know [what the ad said]. Goal: [signup/purchase/call]. Reduce friction, handle top 3 objections.",
+      },
+      {
+        agent: "pricing-strategist",
+        label: "4. Optimize the offer",
+        starterMessage: "My paid ads land on a page with this offer: [describe offer]. Conversion rate is [X%]. Suggest 3 alternative offer structures (pricing, trial, guarantee) that could improve conversions.",
+      },
+    ],
+  },
+  {
+    id: "organic-growth",
+    title: "Organic Growth Engine",
+    goal: "SEO + Content + Social = compounding traffic",
+    color: "#10B981",
+    icon: "📈",
+    steps: [
+      {
+        agent: "seo-optimizer",
+        label: "1. Find keyword opportunities",
+        starterMessage: "Find 10 keyword opportunities for [your niche/product]. I want low-competition, high-intent keywords. Group them by: informational, commercial, and transactional intent.",
+      },
+      {
+        agent: "blog-writer",
+        label: "2. Create pillar content",
+        starterMessage: "Write a comprehensive 2000-word pillar post on '[target keyword]'. Include: intro, 5 H2 sections with H3 subsections, examples, data, and a strong CTA at the end. Optimize for [primary keyword].",
+      },
+      {
+        agent: "social-media-creator",
+        label: "3. Amplify on social",
+        starterMessage: "Repurpose this blog post into: (1) a LinkedIn article intro (300 words), (2) 5 Twitter/X tweets as a thread, (3) 3 Instagram caption variations with hashtags. Blog topic: [topic].",
+      },
+      {
+        agent: "copywriter",
+        label: "4. Convert readers to users",
+        starterMessage: "Write 3 lead magnet ideas + their titles for visitors reading about [topic]. Then write the CTA copy for each (button text + 1-line description). Goal: email signup or free trial.",
+      },
+    ],
+  },
+];
+
+function WorkflowCard({ workflow, onLaunch }: { workflow: Workflow; onLaunch: (agent: AgentType, msg: string) => void }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div
+      className="rounded-xl p-5 flex flex-col gap-4"
+      style={{ backgroundColor: "#FFFCF7", border: `1px solid ${workflow.color}30`, boxShadow: "0 1px 3px rgba(120,97,78,0.06)" }}
+    >
+      {/* Header */}
+      <div className="flex items-start gap-3">
+        <span className="text-2xl flex-shrink-0">{workflow.icon}</span>
+        <div className="flex-1 min-w-0">
+          <h4 className="font-bold text-sm" style={{ color: "#292524" }}>{workflow.title}</h4>
+          <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{workflow.goal}</p>
+        </div>
+        <span className="text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: `${workflow.color}15`, color: workflow.color }}>
+          {workflow.steps.length} steps
+        </span>
+      </div>
+
+      {/* Steps — collapsed by default */}
+      <div className="flex flex-col gap-2">
+        {(expanded ? workflow.steps : workflow.steps.slice(0, 2)).map((step, i) => (
+          <button
+            key={step.agent}
+            type="button"
+            onClick={() => onLaunch(step.agent, step.starterMessage)}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-all group"
+            style={{ backgroundColor: `${workflow.color}08`, border: `1px solid ${workflow.color}20` }}
+            onMouseEnter={e => { e.currentTarget.style.backgroundColor = `${workflow.color}18`; }}
+            onMouseLeave={e => { e.currentTarget.style.backgroundColor = `${workflow.color}08`; }}
+          >
+            <span className="w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: `${workflow.color}25`, color: workflow.color }}>
+              {i + 1}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium" style={{ color: "#292524" }}>{step.label}</p>
+              <p className="text-xs truncate mt-0.5" style={{ color: "#A8967E" }}>
+                {AGENTS[step.agent].name}
+              </p>
+            </div>
+            <ArrowLeft className="w-3 h-3 rotate-180 opacity-0 group-hover:opacity-100 flex-shrink-0 transition-opacity" style={{ color: workflow.color }} />
+          </button>
+        ))}
+      </div>
+
+      {workflow.steps.length > 2 && (
+        <button
+          type="button"
+          onClick={() => setExpanded(e => !e)}
+          className="text-xs font-medium text-center py-1 rounded-lg transition-colors"
+          style={{ color: workflow.color, backgroundColor: `${workflow.color}08` }}
+        >
+          {expanded ? "Show less" : `Show all ${workflow.steps.length} steps`}
+        </button>
+      )}
+    </div>
+  );
+}
+
 const WELCOME_MESSAGES: Record<AgentType, string> = {
   support: "Hi! I'm the MarketHub Pro support agent. I can help you with platform setup, API configuration, or any questions about features. How can I help you?",
   research: "Hi! I'm the Deep Research agent. I can help you with market research, competitor analysis, industry trends, and identifying target audiences.\n\nTell me: what would you like to research?",
@@ -131,6 +300,14 @@ export default function AIHubPage() {
     setMessages([{ role: "assistant", content: WELCOME_MESSAGES[id] }]);
     setInput("");
     setShowDiagram(false);
+  };
+
+  const openAgentWithMessage = (id: AgentType, starterMessage: string) => {
+    setActiveAgent(id);
+    setMessages([{ role: "assistant", content: WELCOME_MESSAGES[id] }]);
+    setInput(starterMessage);
+    setShowDiagram(false);
+    setTimeout(() => inputRef.current?.focus(), 100);
   };
 
   const backToHub = () => {
@@ -421,6 +598,25 @@ export default function AIHubPage() {
             {(Object.keys(AGENTS) as AgentType[]).map((id) => (
               <AgentCard key={id} id={id} onClick={() => openAgent(id)} />
             ))}
+          </div>
+
+          {/* Power Workflows Section */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <GitBranch className="w-4 h-4" style={{ color: "#F59E0B" }} />
+              <h3 className="font-bold text-base" style={{ color: "#292524" }}>Power Workflows</h3>
+              <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+                Multi-agent sequences
+              </span>
+            </div>
+            <p className="text-xs mb-4" style={{ color: "#A8967E" }}>
+              Launch a predefined sequence of agents — each picks up where the previous left off. Click any step to open that agent with the suggested starting message.
+            </p>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {WORKFLOWS.map((wf) => (
+                <WorkflowCard key={wf.id} workflow={wf} onLaunch={openAgentWithMessage} />
+              ))}
+            </div>
           </div>
         </div>
       </div>

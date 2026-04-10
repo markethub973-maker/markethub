@@ -168,6 +168,7 @@ const PUBLIC_PATHS = [
   "/api/client-portal/",   // public token API for client portal viewer
   "/l/",                    // public Link in Bio pages
   "/portal/",               // public client portal pages
+  "/promo",                 // public marketing landing page
   "/blocked",               // blocked account page
   // Admin uses its own password-based auth — bypass Supabase middleware
   "/markethub973",
