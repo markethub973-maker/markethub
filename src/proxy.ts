@@ -423,6 +423,7 @@ export async function proxy(request: NextRequest) {
     if (
       activePlan &&
       !pathname.startsWith("/api") &&
+      !isAdminPath &&          // admin paths already verified by tunnel — skip plan gate
       !canAccessRoute(activePlan, pathname, planOverrides)
     ) {
       const upgradeUrl = new URL("/upgrade-required", request.url);
