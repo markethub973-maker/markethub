@@ -23,6 +23,13 @@ export async function GET(req: NextRequest) {
       }
     );
 
+    if (res.status === 403) {
+      return NextResponse.json({
+        error: "LinkedIn API necesită abonament separat pe RapidAPI. Mergi la rapidapi.com → caută 'LinkedIn Data API' → Subscribe (plan gratuit disponibil).",
+        needs_subscription: true,
+      }, { status: 402 });
+    }
+
     if (!res.ok) {
       return NextResponse.json({ error: `LinkedIn API error: ${res.status}` }, { status: res.status });
     }

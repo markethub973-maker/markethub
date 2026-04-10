@@ -20,6 +20,7 @@ export default function LinkedInPage() {
     const res = await fetch(`/api/linkedin?username=${encodeURIComponent(q)}`);
     const d = await res.json();
     if (d.profile) setProfile(d.profile);
+    else if (d.needs_subscription) setError("⚠️ " + (d.error || "API LinkedIn necesită abonament"));
     else setError(d.error || "Profil negăsit");
     setLoading(false);
   };
