@@ -158,7 +158,6 @@ export default function AdminPage() {
   const [adminAccess, setAdminAccess] = useState(false);
   const [stats, setStats] = useState({ totalUsers: 0, totalRevenue: 0, activeSubscriptions: 0, freeTrials: 0 });
   const [analyticsData, setAnalyticsData] = useState<any>(null);
-  const [_users, setUsers] = useState<any[]>([]);
   const [openPanel, setOpenPanel] = useState<PanelId | null>(null);
 
   const runMigrationSilently = useCallback(async () => {
@@ -169,14 +168,12 @@ export default function AdminPage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const [usersRes, analyticsRes] = await Promise.all([
+      const [, analyticsRes] = await Promise.all([
         fetch("/api/admin/users"),
         fetch("/api/admin/analytics?period=monthly"),
       ]);
-      const usersData = await usersRes.json();
       const analyticsData = await analyticsRes.json();
 
-      if (usersData.success) setUsers(usersData.users);
       if (analyticsData.success) {
         setAnalyticsData(analyticsData);
         const subs = analyticsData.summary.active_subscriptions;

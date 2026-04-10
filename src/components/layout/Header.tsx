@@ -123,7 +123,6 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
-    localStorage.removeItem("mh_auth");
     localStorage.removeItem("mh_user");
     router.push("/login");
   };

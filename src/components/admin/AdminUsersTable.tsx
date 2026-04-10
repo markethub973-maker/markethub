@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import ChangeUserPlanModal from "./ChangeUserPlanModal";
 import ResetTrialModal from "./ResetTrialModal";
 
@@ -17,19 +17,45 @@ interface User {
 }
 
 interface AdminUsersTableProps {
-  users: User[];
-  onUserUpdate: () => void;
+  users?: User[];
+  onUserUpdate?: () => void;
 }
 
 export default function AdminUsersTable({
-  users,
+  users: usersProp,
   onUserUpdate,
 }: AdminUsersTableProps) {
+  const [users, setUsers] = useState<User[]>(usersProp ?? []);
+  const [loadingUsers, setLoadingUsers] = useState(!usersProp || usersProp.length === 0);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [modalType, setModalType] = useState<"plan" | "trial" | null>(null);
-  const [sortBy, setSortBy] = useState<"name" | "plan" | "created">
-("created");
+  const [sortBy, setSortBy] = useState<"name" | "plan" | "created">("created");
+
+  useEffect(() => {
+    if (usersProp && usersProp.length > 0) { setUsers(usersProp); return; }
+    fetch("/api/admin/users")
+      .then(r => r.json())
+      .then(d => { if (d.success && d.users) setUsers(d.users); })
+      .finally(() => setLoadingUsers(false));
+  }, [usersProp]);
+
+  const handleUserUpdated = () => {
+    setLoadingUsers(true);
+    fetch("/api/admin/users")
+      .then(r => r.json())
+      .then(d => { if (d.success && d.users) setUsers(d.users); })
+      .finally(() => setLoadingUsers(false));
+    onUserUpdate?.();
+  };
+
+  if (loadingUsers) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} />
+      </div>
+    );
+  }
 
   const filteredUsers = users
     .filter(
@@ -206,7 +232,7 @@ export default function AdminUsersTable({
           onSuccess={() => {
             setModalType(null);
             setSelectedUser(null);
-            onUserUpdate();
+            handleUserUpdated();
           }}
         />
       )}
@@ -221,7 +247,7 @@ export default function AdminUsersTable({
           onSuccess={() => {
             setModalType(null);
             setSelectedUser(null);
-            onUserUpdate();
+            handleUserUpdated();
           }}
         />
       )}
