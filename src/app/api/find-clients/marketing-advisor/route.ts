@@ -374,8 +374,7 @@ CRITICAL INSTRUCTIONS:
         max_tokens: 5000,
         system:     SYSTEM,
         messages:   [
-          { role: "user",      content: prompt + extraHint },
-          { role: "assistant", content: "{" },  // force JSON start
+          { role: "user", content: prompt + extraHint + "\n\nReturn ONLY a valid JSON object starting with { and ending with }. No markdown, no explanation." },
         ],
       })
     );
@@ -401,14 +400,13 @@ CRITICAL INSTRUCTIONS:
 
   try {
     const rawText = result.data.content[0].type === "text" ? result.data.content[0].text : "";
-    // Prepend the "{" we injected via prefill
-    const text = "{" + rawText;
+    const text = rawText;
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       // Retry once with explicit reminder
       result = await callApex("\n\nIMPORTANT: Return ONLY the JSON object, starting with { and ending with }. No explanation.");
       if (!result.ok) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
-      const retryText = "{" + (result.data.content[0].type === "text" ? result.data.content[0].text : "");
+      const retryText = (result.data.content[0].type === "text" ? result.data.content[0].text : "");
       const retryMatch = retryText.match(/\{[\s\S]*\}/);
       if (!retryMatch) return NextResponse.json({ error: "AI parse error" }, { status: 500 });
       const retryParsed = JSON.parse(sanitizeJson(retryMatch[0]));
