@@ -95,7 +95,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const dataRes = await fetch(
-      `https://api.apify.com/v2/datasets/${datasetId}/items?token=${token}&clean=true&limit=100`
+      `https://api.apify.com/v2/datasets/${encodeURIComponent(datasetId)}/items?clean=true&limit=100`,
+      { headers: { Authorization: `Bearer ${token}` } }
     );
     const items = await dataRes.json();
 

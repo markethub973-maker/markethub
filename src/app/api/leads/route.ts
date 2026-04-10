@@ -167,10 +167,16 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const supa = createServiceClient();
-  const source = req.nextUrl.searchParams.get("source");
-  const lead_type = req.nextUrl.searchParams.get("type");
+  const VALID_SOURCES = new Set(["lead_wizard", "research", "google", "google_maps", "instagram", "tiktok", "youtube", "facebook", "reddit", "olx", "manual", "website"]);
+  const VALID_LEAD_TYPES = new Set(["search_result", "website", "instagram", "tiktok", "youtube", "facebook", "reddit", "olx"]);
+
+  const sourceRaw = req.nextUrl.searchParams.get("source");
+  const leadTypeRaw = req.nextUrl.searchParams.get("type");
   const session_id = req.nextUrl.searchParams.get("session");
-  const limit = parseInt(req.nextUrl.searchParams.get("limit") || "50");
+  const limit = Math.min(parseInt(req.nextUrl.searchParams.get("limit") || "50"), 500);
+
+  const source = sourceRaw && VALID_SOURCES.has(sourceRaw) ? sourceRaw : null;
+  const lead_type = leadTypeRaw && VALID_LEAD_TYPES.has(leadTypeRaw) ? leadTypeRaw : null;
 
   let query = supa
     .from("research_leads")
