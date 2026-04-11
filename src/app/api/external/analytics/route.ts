@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHash } from "crypto";
 import { createServiceClient } from "@/lib/supabase/service";
+import { logSecurityEvent } from "@/lib/siem";
 
 // External API endpoint — secured by API key in Authorization header
 // Usage: GET /api/external/analytics?type=campaigns
@@ -31,7 +32,15 @@ async function authenticateApiKey(req: NextRequest): Promise<{ userId: string; p
 
 export async function GET(req: NextRequest) {
   const auth = await authenticateApiKey(req);
-  if (!auth) return NextResponse.json({ error: "Invalid or expired API key" }, { status: 401 });
+  if (!auth) {
+    void logSecurityEvent({
+      event_type: "api_key_invalid",
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? undefined,
+      user_agent: req.headers.get("user-agent") ?? undefined,
+      path: req.nextUrl.pathname,
+    });
+    return NextResponse.json({ error: "Invalid or expired API key" }, { status: 401 });
+  }
 
   const type = req.nextUrl.searchParams.get("type") ?? "summary";
   const supa = createServiceClient();

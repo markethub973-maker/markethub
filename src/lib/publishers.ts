@@ -47,6 +47,15 @@ export function isUsableImageUrl(url: string | null | undefined): boolean {
 }
 
 // ── LinkedIn ───────────────────────────────────────────────────────────────
+// Uses the modern /rest/posts endpoint (LinkedIn-Version header) instead of
+// the deprecated /v2/ugcPosts. The new API takes a flatter payload: author,
+// commentary, visibility, distribution, lifecycleState, isReshareDisabledByAuthor.
+// Text-only posts work directly. Image posts require a 2-step dance:
+//   1. initializeUpload -> get uploadUrl + image URN
+//   2. PUT the bytes to uploadUrl
+//   3. reference the image URN in the post payload
+// Since we only have a URL (not raw bytes), image posts still go through the
+// legacy shareMediaCategory path in /rest/posts' `content.media` field.
 export async function publishToLinkedIn(
   post: ScheduledPostRow,
   linkedinToken: string
@@ -63,50 +72,87 @@ export async function publishToLinkedIn(
   const text = buildPostText(post);
   const includeMedia = isUsableImageUrl(post.image_url);
 
-  interface LinkedInShareContent {
-    shareCommentary: { text: string };
-    shareMediaCategory: "NONE" | "IMAGE";
-    media?: Array<{
-      status: string;
-      description: { text: string };
-      originalUrl: string;
-      title: { text: string };
-    }>;
+  // Base payload — `commentary` is the new flat text field, replacing the
+  // nested specificContent/com.linkedin.ugc.ShareContent blob from the old API.
+  interface LinkedInPostPayload {
+    author: string;
+    commentary: string;
+    visibility: "PUBLIC" | "CONNECTIONS" | "LOGGED_IN";
+    distribution: {
+      feedDistribution: "MAIN_FEED" | "NONE";
+      targetEntities: unknown[];
+      thirdPartyDistributionChannels: unknown[];
+    };
+    lifecycleState: "PUBLISHED";
+    isReshareDisabledByAuthor: boolean;
+    content?: {
+      media?: {
+        title?: string;
+        id: string;
+        altText?: string;
+      };
+      article?: {
+        source: string;
+        title?: string;
+        description?: string;
+      };
+    };
   }
 
-  const shareContent: LinkedInShareContent = {
-    shareCommentary: { text },
-    shareMediaCategory: includeMedia ? "IMAGE" : "NONE",
-  };
-
-  if (includeMedia && post.image_url) {
-    shareContent.media = [{
-      status: "READY",
-      description: { text: text.slice(0, 200) },
-      originalUrl: post.image_url,
-      title: { text: post.title || "" },
-    }];
-  }
-
-  const ugcPost = {
+  const payload: LinkedInPostPayload = {
     author: authorUrn,
+    commentary: text,
+    visibility: "PUBLIC",
+    distribution: {
+      feedDistribution: "MAIN_FEED",
+      targetEntities: [],
+      thirdPartyDistributionChannels: [],
+    },
     lifecycleState: "PUBLISHED",
-    specificContent: { "com.linkedin.ugc.ShareContent": shareContent },
-    visibility: { "com.linkedin.ugc.MemberNetworkVisibility": "PUBLIC" },
+    isReshareDisabledByAuthor: false,
   };
 
-  const liRes = await fetch("https://api.linkedin.com/v2/ugcPosts", {
+  // For image URLs we hand them to LinkedIn as an `article` link preview —
+  // the proper /rest/posts image flow requires uploading raw bytes to an
+  // upload URL returned from /rest/images?action=initializeUpload, which
+  // we don't have (we only have a URL). Article previews auto-fetch the
+  // meta image from the page and render nicely in the feed.
+  if (includeMedia && post.image_url) {
+    payload.content = {
+      article: {
+        source: post.image_url,
+        title: post.title || undefined,
+        description: text.slice(0, 200),
+      },
+    };
+  }
+
+  const liRes = await fetch("https://api.linkedin.com/rest/posts", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${linkedinToken}`,
       "Content-Type": "application/json",
+      "LinkedIn-Version": "202401",
       "X-Restli-Protocol-Version": "2.0.0",
     },
-    body: JSON.stringify(ugcPost),
+    body: JSON.stringify(payload),
   });
-  const liData = await liRes.json();
-  if (liRes.ok) return { ok: true, external_id: liData.id };
-  return { ok: false, error: liData.message ?? `LinkedIn publish failed (HTTP ${liRes.status})` };
+
+  // /rest/posts returns 201 Created on success with the post URN in the
+  // `x-restli-id` response header (the body is usually empty).
+  if (liRes.status === 201) {
+    const externalId = liRes.headers.get("x-restli-id") ?? undefined;
+    return { ok: true, external_id: externalId };
+  }
+
+  // On failure try to decode a meaningful error message, then fall back to
+  // status code.
+  let errMsg: string = `LinkedIn publish failed (HTTP ${liRes.status})`;
+  try {
+    const liData = await liRes.json();
+    if (liData.message) errMsg = liData.message;
+  } catch { /* response not JSON */ }
+  return { ok: false, error: errMsg };
 }
 
 // ── Facebook Page ──────────────────────────────────────────────────────────

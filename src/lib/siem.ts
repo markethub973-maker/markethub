@@ -27,10 +27,15 @@ export type SecurityEventType =
 
 export type Severity = "info" | "low" | "medium" | "high" | "critical";
 
+// Default severities. Single-shot events get a LOW/MEDIUM baseline; the
+// security-scan cron running at 06:00 UTC scans for brute-force patterns
+// (5+ events from same IP in 24h) and emits a separate "unusual_activity"
+// HIGH event per pattern. This keeps the critical/high noise floor low
+// enough that a real critical alert is actually meaningful.
 const SEVERITY_MAP: Record<SecurityEventType, Severity> = {
-  brute_force_login:       "high",
-  brute_force_admin:       "critical",
-  rate_limit_exceeded:     "medium",
+  brute_force_login:       "medium",
+  brute_force_admin:       "medium", // pattern detector upgrades to high/critical
+  rate_limit_exceeded:     "low",
   suspicious_user_agent:   "low",
   admin_login:             "info",
   admin_login_failed:      "medium",
@@ -41,7 +46,7 @@ const SEVERITY_MAP: Record<SecurityEventType, Severity> = {
   plan_bypass_attempt:     "medium",
   new_user_signup:         "info",
   stripe_webhook_replay:   "low",
-  cron_unauthorized:       "high",
+  cron_unauthorized:       "medium",
   unusual_activity:        "medium",
 };
 

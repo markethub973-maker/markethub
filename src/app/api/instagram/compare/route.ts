@@ -27,7 +27,7 @@ export async function GET() {
 
   const { data: connections } = await supabase
     .from("instagram_connections")
-    .select("id, instagram_id, instagram_username, instagram_name, account_label, is_primary")
+    .select("id, instagram_id, instagram_username, instagram_name, account_label, is_primary, page_access_token")
     .eq("user_id", auth.userId)
     .order("is_primary", { ascending: false });
 
@@ -35,21 +35,36 @@ export async function GET() {
     return NextResponse.json({ accounts: [] });
   }
 
-  // One Graph API token is shared across all accounts under the same Business
-  // Manager. Stored in profiles.instagram_access_token by the OAuth callback.
+  // Legacy fallback token from profiles (before page_access_token column
+  // existed on instagram_connections). Used only if the per-row token is
+  // missing — new OAuth callbacks always populate it per row.
   const { data: profile } = await supabase
     .from("profiles")
     .select("instagram_access_token")
     .eq("id", auth.userId)
     .single();
-
-  const token = profile?.instagram_access_token as string | undefined;
-  if (!token) {
-    return NextResponse.json({ error: "Instagram token missing. Reconnect from Settings → Integrations." }, { status: 404 });
-  }
+  const legacyToken = profile?.instagram_access_token as string | undefined;
 
   const results = await Promise.all(
     connections.map(async (conn) => {
+      const token = (conn.page_access_token as string | null) ?? legacyToken;
+      if (!token) {
+        return {
+          id: conn.id,
+          instagram_id: conn.instagram_id,
+          username: conn.instagram_username,
+          name: conn.instagram_name,
+          label: conn.account_label || conn.instagram_name,
+          is_primary: conn.is_primary,
+          profile: null,
+          engagement_rate: "0.00",
+          avg_likes: 0,
+          avg_comments: 0,
+          top_post: null,
+          recent_posts_count: 0,
+          error: "Token missing for this account — reconnect",
+        };
+      }
       const [profile, media] = await Promise.all([
         fetchIGProfile(conn.instagram_id, token),
         fetchIGMedia(conn.instagram_id, token),

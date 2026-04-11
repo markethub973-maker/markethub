@@ -198,6 +198,12 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  await supabase.from("cron_logs").upsert({
+    job: "health-monitor",
+    ran_at: new Date().toISOString(),
+    result: { allOk, failedServices, autoRedeployTriggered },
+  });
+
   return NextResponse.json({
     ok: allOk,
     timestamp: now,

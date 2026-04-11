@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
 
     let query = supabase
       .from("instagram_connections")
-      .select("instagram_id, instagram_username")
+      .select("instagram_id, instagram_username, page_access_token")
       .eq("user_id", user.id);
 
     if (accountId) {
@@ -41,17 +41,24 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "No Instagram account connected. Go to Settings → Integrations." }, { status: 404 });
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("instagram_access_token")
-      .eq("id", user.id)
-      .single();
+    // Per-account token first (multi-account correctness) with legacy
+    // profiles.instagram_access_token as fallback for rows stored before
+    // the page_access_token column was added.
+    let token_: string | null = conn.page_access_token as string | null;
+    if (!token_) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("instagram_access_token")
+        .eq("id", user.id)
+        .single();
+      token_ = profile?.instagram_access_token ?? null;
+    }
 
-    if (!profile?.instagram_access_token) {
+    if (!token_) {
       return NextResponse.json({ error: "Instagram token missing. Reconnect from Settings → Integrations." }, { status: 404 });
     }
 
-    token = profile.instagram_access_token as string;
+    token = token_;
     igId = conn.instagram_id as string;
   }
 

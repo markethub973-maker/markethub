@@ -84,5 +84,11 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, scanned: configs.length, inserted: totalInserted });
+  const result = { ok: true, scanned: configs.length, inserted: totalInserted };
+  await supa.from("cron_logs").upsert({
+    job: "trending-scan",
+    ran_at: new Date().toISOString(),
+    result,
+  });
+  return NextResponse.json(result);
 }

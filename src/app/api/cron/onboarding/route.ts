@@ -68,5 +68,10 @@ export async function GET(req: Request) {
     }
   }
 
+  await supabase.from("cron_logs").upsert({
+    job: "onboarding",
+    ran_at: new Date().toISOString(),
+    result: { summary },
+  });
   return NextResponse.json({ success: true, summary });
 }

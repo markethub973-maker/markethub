@@ -262,6 +262,12 @@ export async function proxy(request: NextRequest) {
   ) {
     const contentLength = parseInt(request.headers.get("content-length") ?? "0", 10);
     if (contentLength > 51_200) {
+      void logSecurityEvent({
+        event_type: "payload_too_large",
+        ip: request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? undefined,
+        path: pathname,
+        details: { content_length: contentLength, limit: 51_200 },
+      });
       const res = NextResponse.json(
         { error: "Request body too large. Maximum 50 KB allowed." },
         { status: 413 },

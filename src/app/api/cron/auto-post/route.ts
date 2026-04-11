@@ -111,6 +111,25 @@ export async function GET(req: NextRequest) {
     (profiles || []).map((p: UserProfile) => [p.id, p])
   );
 
+  // Primary Instagram account per user (post-refactor source of truth for
+  // both ig_user_id and page_access_token — the legacy profiles columns are
+  // a fallback for rows that existed before page_access_token was added).
+  const { data: igConnections } = await svc
+    .from("instagram_connections")
+    .select("user_id, instagram_id, page_access_token, is_primary")
+    .in("user_id", userIds)
+    .order("is_primary", { ascending: false });
+
+  const igPrimaryByUser = new Map<string, { igId: string; token: string | null }>();
+  for (const c of igConnections ?? []) {
+    if (!igPrimaryByUser.has(c.user_id)) {
+      igPrimaryByUser.set(c.user_id, {
+        igId: c.instagram_id,
+        token: (c.page_access_token as string | null) ?? null,
+      });
+    }
+  }
+
   let published = 0;
   let reminded = 0;
   let failed = 0;
@@ -126,7 +145,13 @@ export async function GET(req: NextRequest) {
       } else if (platform === "facebook") {
         result = await publishToFacebook(post, profile?.fb_page_id ?? null, profile?.fb_page_access_token ?? null);
       } else if (platform === "instagram") {
-        result = await publishToInstagram(post, profile?.instagram_user_id ?? null, profile?.instagram_access_token ?? null);
+        // Prefer per-row instagram_connections token, fall back to legacy
+        // profiles columns for users whose connections predate the multi-
+        // account schema refactor.
+        const igPrimary = igPrimaryByUser.get(post.user_id);
+        const igUserId = igPrimary?.igId ?? profile?.instagram_user_id ?? null;
+        const igToken = igPrimary?.token ?? profile?.instagram_access_token ?? null;
+        result = await publishToInstagram(post, igUserId, igToken);
       }
     } catch (err) {
       result = { ok: false, error: err instanceof Error ? err.message : String(err) };

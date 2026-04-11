@@ -54,7 +54,13 @@ export async function GET(req: NextRequest) {
   }
 
   if (!expired || expired.length === 0) {
-    return NextResponse.json({ success: true, expired_count: 0, warned_count: expiringSoon?.length ?? 0 });
+    const result = { success: true, expired_count: 0, warned_count: expiringSoon?.length ?? 0 };
+    await supabase.from("cron_logs").upsert({
+      job: "check-trial",
+      ran_at: new Date().toISOString(),
+      result,
+    });
+    return NextResponse.json(result);
   }
 
   // Expire all found users in one update
@@ -73,9 +79,15 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({
+  const result = {
     success: true,
     expired_count: expired.length,
     warned_count: expiringSoon?.length ?? 0,
+  };
+  await supabase.from("cron_logs").upsert({
+    job: "check-trial",
+    ran_at: new Date().toISOString(),
+    result,
   });
+  return NextResponse.json(result);
 }

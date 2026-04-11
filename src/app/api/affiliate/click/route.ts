@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { logSecurityEvent } from "@/lib/siem";
 
 // Public endpoint — increments click counter and redirects to affiliate URL.
 // The URL is stored in the DB (written only by authenticated users), but we
@@ -28,6 +29,12 @@ export async function GET(req: NextRequest) {
 
   // Validate destination URL before redirecting
   if (!isSafeExternalUrl(data.url)) {
+    void logSecurityEvent({
+      event_type: "ssrf_attempt",
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? undefined,
+      path: "/api/affiliate/click",
+      details: { affiliate_id: id, blocked_url: data.url },
+    });
     return NextResponse.json({ error: "Invalid redirect URL" }, { status: 400 });
   }
 

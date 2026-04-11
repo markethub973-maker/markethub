@@ -173,5 +173,11 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, scanned: configs.length, mentions: totalMentions });
+  const result = { ok: true, scanned: configs.length, mentions: totalMentions };
+  await supa.from("cron_logs").upsert({
+    job: "social-listening",
+    ran_at: new Date().toISOString(),
+    result,
+  });
+  return NextResponse.json(result);
 }

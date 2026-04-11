@@ -201,7 +201,10 @@ export async function GET(req: NextRequest) {
       .eq("user_id", userId);
     const hasExisting = (count ?? 0) > 0;
 
-    // Step 5: Upsert ALL found Instagram accounts
+    // Step 5: Upsert ALL found Instagram accounts WITH their per-page token.
+    // The page token is the credential used by Graph API calls to that IG
+    // business account — storing it per-row lets multi-account cross-page
+    // users switch between accounts without clobbering each other's token.
     let savedCount = 0;
     for (let i = 0; i < igAccounts.length; i++) {
       const acc = igAccounts[i];
@@ -218,6 +221,7 @@ export async function GET(req: NextRequest) {
             account_label: acc.igName,
             page_id: acc.pageId,
             page_name: acc.pageName,
+            page_access_token: acc.pageToken,
             is_primary: isPrimary,
             connected_at: new Date().toISOString(),
           },

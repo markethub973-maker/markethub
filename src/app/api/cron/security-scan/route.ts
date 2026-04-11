@@ -111,5 +111,11 @@ export async function GET(req: NextRequest) {
     }).catch(() => {});
   }
 
-  return NextResponse.json({ ok: true, events: total, critical: critical.length, high: high.length });
+  const result = { ok: true, events: total, critical: critical.length, high: high.length };
+  await supa.from("cron_logs").upsert({
+    job: "security-scan",
+    ran_at: new Date().toISOString(),
+    result,
+  });
+  return NextResponse.json(result);
 }
