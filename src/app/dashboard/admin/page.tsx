@@ -314,6 +314,7 @@ export default function AdminPage() {
           <div className="grid grid-cols-2 gap-2">
             {[
               { href: "/dashboard/admin/cockpit", label: "🚀 Cockpit — Mission Control", icon: Activity, color: "#F59E0B" },
+              { href: "/dashboard/engagement", label: "💬 Unified Inbox", icon: Users, color: "#E1306C" },
               { href: "/dashboard/admin/users", label: "Users & Revenue", icon: Users, color: "#6366F1" },
               { href: "/dashboard/admin/lead-wizard", label: "Lead Wizard", icon: Zap, color: "#F59E0B" },
               { href: "/dashboard/admin/maintenance", label: "Maintenance Findings", icon: Activity, color: "#10B981" },
