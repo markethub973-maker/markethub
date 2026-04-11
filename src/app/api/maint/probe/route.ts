@@ -67,14 +67,17 @@ const UNAUTH_API_PROBES: UnauthProbe[] = [
 ];
 
 function getBaseURL(): string {
+  // Always hit the direct Vercel hostname, not the primary alias:
+  //   - VERCEL_URL resolves to a *preview* deployment URL that has Vercel
+  //     Deploy Protection and returns 401 to any unauthenticated fetch.
+  //   - VERCEL_PROJECT_PRODUCTION_URL resolves to `markethubpromo.com` which
+  //     goes through Cloudflare Bot Fight Mode, blocking non-browser clients
+  //     with 403.
+  //   - `viralstat-dashboard.vercel.app` bypasses both — it's the stable
+  //     production alias, CRON_SECRET still authenticates us server-side.
+  // The same workaround is used by the auto-post / health-monitor GitHub
+  // Actions workflows (see .github/workflows/cron-*.yml).
   if (process.env.MAINT_PROBE_BASE_URL) return process.env.MAINT_PROBE_BASE_URL;
-  // Prefer the production alias over VERCEL_URL — the latter resolves to the
-  // current preview deployment hostname which has Vercel SSO / Deploy Protection
-  // and returns 401 to unauthenticated callers. The production alias is always
-  // publicly reachable (Cloudflare → Vercel routing).
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
-  }
   return "https://viralstat-dashboard.vercel.app";
 }
 
