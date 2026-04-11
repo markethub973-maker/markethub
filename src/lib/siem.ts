@@ -4,6 +4,7 @@
  */
 import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
+import { after } from "next/server";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "markethub973@gmail.com";
@@ -82,23 +83,37 @@ export async function logSecurityEvent({
     details: details ?? {},
   }).select("id").single();
 
-  // Reactive SIEM hook — fire for medium+ events so that brute_force_admin
-  // (default: medium) and other low-grade-but-real attacks reach the
-  // analyst. The analyst itself filters false alarms with Haiku — we only
-  // see ~30 qualifying events/day, so cost is ~$0.03/month.
-  // Fire-and-forget (no await) so the triggering request sees zero delay.
+  // Reactive SIEM hook — fire for medium+ events so brute_force_admin (and
+  // other low-grade-but-real attacks) reach the analyst. The analyst itself
+  // filters false alarms with Haiku. Cost: ~$0.03/month.
+  //
+  // CRITICAL: on Vercel serverless, plain fire-and-forget fetches get
+  // killed when the route handler returns (the isolate freezes). We use
+  // Next.js's `after()` primitive which tells the runtime "keep this
+  // function alive until the callback finishes". Added in Next 15+, works
+  // in both Route Handlers and Proxy.
   if ((severity === "medium" || severity === "high" || severity === "critical") && event?.id) {
     const cronSecret = process.env.CRON_SECRET;
+    const eventId = event.id;
     if (cronSecret) {
-      // Fire-and-forget — don't await, don't rethrow.
-      void fetch("https://viralstat-dashboard.vercel.app/api/cockpit/reactive-siem", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${cronSecret}`,
-        },
-        body: JSON.stringify({ event_id: event.id }),
-      }).catch(() => { /* swallow — this is best-effort */ });
+      try {
+        after(async () => {
+          try {
+            await fetch("https://viralstat-dashboard.vercel.app/api/cockpit/reactive-siem", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${cronSecret}`,
+              },
+              body: JSON.stringify({ event_id: eventId }),
+            });
+          } catch { /* swallow — best-effort */ }
+        });
+      } catch {
+        // Some contexts (e.g. the reactive-siem route itself calling
+        // reportFinding which logs its own event) don't support after().
+        // Silently skip the hook there — it'd infinite-loop anyway.
+      }
     }
   }
 
