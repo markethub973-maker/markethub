@@ -187,6 +187,19 @@ export async function GET(req: NextRequest) {
     if (e.path && PROBE_PATHS.has(e.path)) return false;
     // Skip curl-issued events (smoke tests + manual ops from this terminal)
     if (e.user_agent && /^curl\//.test(e.user_agent)) return false;
+    // Skip brute_force_admin events with no user_agent on /api/admin/*. Real
+    // attackers always set a User-Agent because most WAFs block UA-less
+    // requests outright; UA-less hits on admin paths are overwhelmingly our
+    // own internal tooling (audit scripts, probe agent, smoke tests). The
+    // probe is now tagged with X-Maint-Probe so future events are skipped at
+    // the source — this filter handles the historical 24h transition window.
+    if (
+      e.event_type === "brute_force_admin" &&
+      !e.user_agent &&
+      e.path?.startsWith("/api/admin/")
+    ) {
+      return false;
+    }
     return true;
   });
 
