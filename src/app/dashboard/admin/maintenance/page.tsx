@@ -71,6 +71,14 @@ export default function MaintenancePage() {
         `/api/admin/maintenance${showResolved ? "?include_resolved=1" : ""}`,
         { cache: "no-store" },
       );
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
+        // Cookie expired or never set — middleware blocked us. We can't
+        // hardcode the tunnel secret in client code (it would ship in
+        // every JS bundle), so show a clear "session expired" hint and
+        // let the user click through to their bookmarked admin tunnel.
+        setError("SESSION_EXPIRED");
+        return;
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setData(await res.json());
     } catch (e) {
@@ -260,7 +268,43 @@ export default function MaintenancePage() {
           </div>
         </div>
 
-        {error && (
+        {error === "SESSION_EXPIRED" && (
+          <div
+            style={{
+              padding: 24,
+              background: "rgba(245,158,11,0.12)",
+              border: "1px solid rgba(245,158,11,0.35)",
+              borderRadius: 10,
+              color: "#FCD34D",
+              marginBottom: 24,
+              textAlign: "center",
+            }}
+          >
+            <AlertTriangle size={20} style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }} />
+            <strong>Sesiunea admin a expirat.</strong>
+            <div style={{ marginTop: 8, fontSize: 13, color: "#C4AA8A" }}>
+              Cookie-ul de sesiune (max 8h) a expirat. Re-loghează prin URL-ul tunnel-ului
+              admin (cel cu <code>?t=...</code>), apoi revino aici.
+            </div>
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                marginTop: 16,
+                padding: "10px 20px",
+                background: "#F59E0B",
+                color: "#1C1814",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Reîncarcă după re-login
+            </button>
+          </div>
+        )}
+        {error && error !== "SESSION_EXPIRED" && (
           <div
             style={{
               padding: 16,

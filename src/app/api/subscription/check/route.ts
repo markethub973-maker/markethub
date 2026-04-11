@@ -9,10 +9,13 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Get user profile with subscription info
+  // Get user profile with subscription info.
+  // (total_api_cost_month was a denormalized column on profiles that no
+  // longer exists — the live monthly cost is computed below from
+  // usage_tracking, which is the source of truth.)
   const { data: profile } = await supabase
     .from("profiles")
-    .select("subscription_plan, subscription_status, trial_expires_at, total_api_cost_month")
+    .select("subscription_plan, subscription_status, trial_expires_at")
     .eq("id", user.id)
     .single();
 

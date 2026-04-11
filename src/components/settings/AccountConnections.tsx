@@ -86,9 +86,14 @@ export default function AccountConnections() {
     if (!user) return;
 
     // Check YouTube
+    // youtube_channel_name was previously selected here but the column doesn't
+    // exist on profiles — the only persisted YouTube identity is the channel
+    // ID. The select used to silently fail with "column does not exist" which
+    // made `data` null and showed YouTube as disconnected even after a
+    // successful OAuth round-trip. Schema-drift agent caught this.
     const { data: profile } = await supabase
       .from("profiles")
-      .select("youtube_access_token, youtube_channel_id, youtube_channel_name")
+      .select("youtube_access_token, youtube_channel_id")
       .eq("id", user.id)
       .single();
 
@@ -105,7 +110,7 @@ export default function AccountConnections() {
         return {
           ...c,
           connected,
-          connectedAs: profile?.youtube_channel_name || profile?.youtube_channel_id || undefined,
+          connectedAs: profile?.youtube_channel_id || undefined,
           loading: false,
         };
       }

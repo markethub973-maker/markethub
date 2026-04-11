@@ -35,14 +35,14 @@ export async function POST(req: NextRequest) {
   await resend.emails.send({
     from: "MarketHub Pro <noreply@markethubpromo.com>",
     to: client_email,
-    subject: `Aprobare conținut — ${post.content?.slice(0, 50) ?? "Post nou"}`,
+    subject: `Aprobare conținut — ${post.caption?.slice(0, 50) ?? "Post nou"}`,
     html: `
       <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:32px;color:#292524">
         <h2 style="color:#F59E0B">Conținut în așteptarea aprobării</h2>
         ${message ? `<p>${message}</p>` : ""}
         <div style="background:#FFF8F0;border:1px solid #F5D7A0;padding:16px;border-radius:8px;margin:24px 0">
-          <p style="margin:0;font-size:14px;color:#292524">${post.content?.slice(0, 300) ?? ""}${(post.content?.length ?? 0) > 300 ? "..." : ""}</p>
-          ${post.platform ? `<p style="margin:8px 0 0;font-size:12px;color:#A8967E">Platform: ${post.platform} · ${post.scheduled_for ? new Date(post.scheduled_for).toLocaleDateString("ro-RO") : "Draft"}</p>` : ""}
+          <p style="margin:0;font-size:14px;color:#292524">${post.caption?.slice(0, 300) ?? ""}${(post.caption?.length ?? 0) > 300 ? "..." : ""}</p>
+          ${post.platform ? `<p style="margin:8px 0 0;font-size:12px;color:#A8967E">Platform: ${post.platform} · ${post.date ? new Date(post.date).toLocaleDateString("ro-RO") : "Draft"}${post.time ? " " + post.time.slice(0, 5) : ""}</p>` : ""}
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
           <a href="${approvalUrl}?action=approve" style="background:#10B981;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold">✓ Aprobă</a>
@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get("token");
   if (!token) return NextResponse.json({ error: "token required" }, { status: 400 });
   const supa = createServiceClient();
-  const { data, error } = await supa.from("scheduled_posts").select("id,content,platform,scheduled_for,approval_status,approval_note,image_url").eq("approval_token", token).single();
+  const { data, error } = await supa.from("scheduled_posts").select("id,caption,platform,date,time,approval_status,approval_note,image_url").eq("approval_token", token).single();
   if (error || !data) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ post: data });
 }
