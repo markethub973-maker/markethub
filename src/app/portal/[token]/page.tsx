@@ -3,6 +3,26 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+interface ApprovalSlice {
+  id: string;
+  caption: string | null;
+  platform: string | null;
+  date: string | null;
+  time: string | null;
+  image_url: string | null;
+  approval_status: "pending" | "approved" | "rejected" | null;
+  approval_token: string | null;
+  revision_count: number;
+  comments_count: number;
+  recent_comments: { id: string; author: string; comment: string; at: string }[];
+}
+
+interface ApprovalsResponse {
+  client_name: string;
+  counts: { pending: number; approved: number; rejected: number; total: number };
+  approvals: ApprovalSlice[];
+}
+
 interface PortalData {
   client_name: string;
   ig_username: string;
@@ -69,6 +89,20 @@ export default function ClientPortalPage() {
   const [passwordInput, setPasswordInput] = useState("");
   const [passwordSubmitting, setPasswordSubmitting] = useState(false);
   const [wrongPassword, setWrongPassword] = useState(false);
+  const [approvals, setApprovals] = useState<ApprovalsResponse | null>(null);
+
+  // Fetch approvals whenever the portal loads successfully
+  useEffect(() => {
+    if (status !== "ok" || !token) return;
+    void (async () => {
+      try {
+        const r = await fetch(`/api/client-portal/${token}/approvals`, { cache: "no-store" });
+        if (r.ok) setApprovals((await r.json()) as ApprovalsResponse);
+      } catch {
+        /* silent — section just stays hidden */
+      }
+    })();
+  }, [status, token]);
 
   const fetchPortal = async (password?: string) => {
     if (!token) return;
@@ -324,6 +358,135 @@ export default function ClientPortalPage() {
                   </div>
                 </a>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Approvals section — Wave 1 */}
+        {approvals && approvals.approvals.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold flex items-center gap-2" style={{ color: "#292524" }}>
+                <span>📝</span> Posts pentru aprobare
+              </h2>
+              <div className="flex gap-2 text-xs">
+                {approvals.counts.pending > 0 && (
+                  <span className="px-2 py-0.5 rounded-full font-semibold"
+                    style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B" }}>
+                    {approvals.counts.pending} în așteptare
+                  </span>
+                )}
+                {approvals.counts.approved > 0 && (
+                  <span className="px-2 py-0.5 rounded-full font-semibold"
+                    style={{ backgroundColor: "rgba(16,185,129,0.12)", color: "#10B981" }}>
+                    {approvals.counts.approved} aprobate
+                  </span>
+                )}
+                {approvals.counts.rejected > 0 && (
+                  <span className="px-2 py-0.5 rounded-full font-semibold"
+                    style={{ backgroundColor: "rgba(239,68,68,0.12)", color: "#EF4444" }}>
+                    {approvals.counts.rejected} respinse
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="space-y-3">
+              {approvals.approvals.map((a) => {
+                const statusColor =
+                  a.approval_status === "approved"
+                    ? "#10B981"
+                    : a.approval_status === "rejected"
+                      ? "#EF4444"
+                      : "#F59E0B";
+                const statusLabel =
+                  a.approval_status === "approved"
+                    ? "✓ Aprobat"
+                    : a.approval_status === "rejected"
+                      ? "✗ Respins"
+                      : "⏳ În așteptare";
+                return (
+                  <a
+                    key={a.id}
+                    href={a.approval_token ? `/approve/${a.approval_token}` : undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block rounded-2xl overflow-hidden transition-transform hover:scale-[1.01]"
+                    style={{
+                      backgroundColor: "#FFFCF7",
+                      border: "1px solid rgba(245,215,160,0.3)",
+                      textDecoration: "none",
+                    }}
+                  >
+                    <div className="flex gap-3 p-4">
+                      {a.image_url ? (
+                        <img
+                          src={`/api/image-proxy?url=${encodeURIComponent(a.image_url)}`}
+                          alt=""
+                          className="w-20 h-20 rounded-lg object-cover shrink-0"
+                        />
+                      ) : (
+                        <div
+                          className="w-20 h-20 rounded-lg shrink-0 flex items-center justify-center text-2xl"
+                          style={{ backgroundColor: "rgba(245,158,11,0.08)" }}
+                        >
+                          📄
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span
+                            className="text-xs px-2 py-0.5 rounded-full font-semibold"
+                            style={{ backgroundColor: `${statusColor}18`, color: statusColor }}
+                          >
+                            {statusLabel}
+                          </span>
+                          {a.platform && (
+                            <span className="text-xs" style={{ color: "#A8967E" }}>
+                              {a.platform}
+                            </span>
+                          )}
+                          {a.date && (
+                            <span className="text-xs" style={{ color: "#A8967E" }}>
+                              ·{" "}
+                              {new Date(a.date).toLocaleDateString("ro-RO", {
+                                day: "numeric",
+                                month: "short",
+                              })}
+                              {a.time ? ` ${a.time.slice(0, 5)}` : ""}
+                            </span>
+                          )}
+                          {a.comments_count > 0 && (
+                            <span
+                              className="text-xs px-2 py-0.5 rounded-full font-semibold ml-auto"
+                              style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B" }}
+                            >
+                              💬 {a.comments_count}
+                            </span>
+                          )}
+                        </div>
+                        <p
+                          className="text-sm line-clamp-2"
+                          style={{ color: "#292524" }}
+                        >
+                          {a.caption || <em style={{ color: "#A8967E" }}>(fără caption)</em>}
+                        </p>
+                        {a.recent_comments.length > 0 && (
+                          <div
+                            className="mt-2 pt-2 text-xs"
+                            style={{ borderTop: "1px solid rgba(245,215,160,0.2)", color: "#78614E" }}
+                          >
+                            <span className="font-semibold">{a.recent_comments[0].author}:</span>{" "}
+                            <span className="italic">
+                              {a.recent_comments[0].comment.slice(0, 80)}
+                              {a.recent_comments[0].comment.length > 80 ? "…" : ""}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           </div>
         )}
