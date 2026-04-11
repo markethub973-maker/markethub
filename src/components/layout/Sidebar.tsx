@@ -477,18 +477,11 @@ export default function Sidebar() {
                   style={{ backgroundColor: PLAN_COLORS[userPlan as PlanId] ?? "#F59E0B" }} />
                 <p className="text-xs font-bold" style={{ color: "#F5D7A0" }}>{planLabel}</p>
               </div>
-              <div className="mt-2 flex gap-1">
-                <Link href="/dashboard/subscription"
-                  className="flex-1 py-1.5 rounded-md text-xs font-medium text-center"
-                  style={{ color: "#A8967E" }}>
-                  Plan
-                </Link>
-                <Link href="/dashboard/billing"
-                  className="flex-1 py-1.5 rounded-md text-xs font-medium text-center"
-                  style={{ color: "#A8967E" }}>
-                  Billing
-                </Link>
-              </div>
+              <Link href="/dashboard/billing"
+                className="mt-2 block w-full py-1.5 rounded-md text-xs font-medium text-center"
+                style={{ color: "#A8967E" }}>
+                Plan & Billing
+              </Link>
               <Link href="/upgrade"
                 className="mt-1 block w-full py-1.5 rounded-md text-xs font-bold text-center"
                 style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>

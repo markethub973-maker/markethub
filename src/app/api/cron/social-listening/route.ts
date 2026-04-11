@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
+import { verifyCronSecret } from "@/lib/cronAuth";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY ?? "";
 const NEWS_API_KEY = process.env.NEWS_API_KEY ?? "";
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("authorization") ?? "";
-  const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");
-  if (!secret || secret.length !== (process.env.CRON_SECRET?.length ?? 0) || !require("crypto").timingSafeEqual(Buffer.from(secret), Buffer.from(process.env.CRON_SECRET ?? ""))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!verifyCronSecret(req, "/api/cron/social-listening")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   const supa = createServiceClient();
   const { data: configs } = await supa.from("listening_config").select("*").eq("active", true);

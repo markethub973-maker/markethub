@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { generateAdminToken } from "@/lib/adminAuth";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
+import { logSecurityEvent } from "@/lib/siem";
 
 export async function POST(request: Request) {
   try {
@@ -32,11 +33,19 @@ export async function POST(request: Request) {
     // Bitwise AND — both operands ALWAYS evaluated, no short-circuit timing leak
     const passwordMatch = (lenEqual & contentEqual) === 1;
     if (!passwordMatch) {
+      const ipHdr = getIpFromHeaders(request instanceof Request ? request.headers : new Headers());
       await logAudit({
         action: "admin_login",
         actor_id: "unknown",
         details: { success: false },
-        ip: getIpFromHeaders(request instanceof Request ? request.headers : new Headers()),
+        ip: ipHdr,
+      });
+      void logSecurityEvent({
+        event_type: "admin_login_failed",
+        ip: ipHdr,
+        path: "/api/admin-secret-login",
+        user_agent: request.headers.get("user-agent") ?? undefined,
+        details: { reason: "bad_password" },
       });
       return NextResponse.json(
         { error: "Invalid password" },
@@ -52,12 +61,19 @@ export async function POST(request: Request) {
       message: "Admin access granted",
     });
 
+    const ipHdr = getIpFromHeaders(request instanceof Request ? request.headers : new Headers());
     await logAudit({
       action: "admin_login",
       actor_id: "admin",
       details: { success: true },
-      ip: getIpFromHeaders(request instanceof Request ? request.headers : new Headers()),
-      user_agent: request instanceof Request ? (request.headers.get("user-agent") ?? undefined) : undefined,
+      ip: ipHdr,
+      user_agent: request.headers.get("user-agent") ?? undefined,
+    });
+    void logSecurityEvent({
+      event_type: "admin_login",
+      ip: ipHdr,
+      path: "/api/admin-secret-login",
+      user_agent: request.headers.get("user-agent") ?? undefined,
     });
 
     // Set secure session cookie

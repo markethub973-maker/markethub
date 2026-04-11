@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { sendWelcomeEmail, sendOnboarding1_Welcome } from "@/lib/resend";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
+import { logSecurityEvent } from "@/lib/siem";
 
 const VALID_PLANS = ["free_test", "lite", "pro", "business", "enterprise"];
 
@@ -167,6 +168,17 @@ export async function POST(req: NextRequest) {
     entity_type: "user",
     details: { plan: selectedPlan },
     ip: getIpFromHeaders(req.headers),
+  });
+
+  // SIEM: every signup is worth tracking — high-severity only when it looks
+  // suspicious (multi-account burst on same IP), otherwise info-level.
+  void logSecurityEvent({
+    event_type: "new_user_signup",
+    ip: registrationIp,
+    user_id: data.user?.id,
+    path: "/api/auth/register",
+    user_agent: req.headers.get("user-agent") ?? undefined,
+    details: { plan: selectedPlan, normalized_email: normalizedEmail },
   });
 
   await sendWelcomeEmail(email, name).catch(() => {});

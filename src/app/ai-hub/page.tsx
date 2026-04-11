@@ -3,7 +3,7 @@
 import Header from "@/components/layout/Header";
 import { useState, useRef, useEffect } from "react";
 import dynamic from "next/dynamic";
-import * as XLSX from "xlsx";
+import * as XLSX from "@e965/xlsx";
 import {
   HelpCircle, Search, Mail, Calculator, Lightbulb, Wand2, Palette, Target,
   Send, Bot, ArrowLeft, Sparkles, FileDown, Table2, GitBranch, X, Loader2,

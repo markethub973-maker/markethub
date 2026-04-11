@@ -383,7 +383,8 @@ export async function proxy(request: NextRequest) {
 
   // Not authenticated:
   //   - API routes → respond with JSON 401 (so programmatic clients see a real error)
-  //   - Page routes → redirect to /login?next=<pathname>
+  //   - Root `/` → redirect to /promo (public marketing landing, not login wall)
+  //   - Other page routes → redirect to /login?next=<pathname>
   if (!user) {
     if (pathname.startsWith("/api/")) {
       const unauth = NextResponse.json(
@@ -392,6 +393,14 @@ export async function proxy(request: NextRequest) {
       );
       applySecurityHeaders(corsResponse(request, unauth), csp);
       return unauth;
+    }
+    // Anonymous visitors hitting the bare domain should see the marketing
+    // page, not a login wall — otherwise organic / Google / share links
+    // bounce on a 307 to /login?next=/ which murders first impressions.
+    if (pathname === "/") {
+      const promoRedirect = NextResponse.redirect(new URL("/promo", request.url));
+      applySecurityHeaders(promoRedirect, csp);
+      return promoRedirect;
     }
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("next", pathname);

@@ -49,7 +49,7 @@ export async function exportExcel(
   filename: string,
   sheets: Array<{ name: string; headers: string[]; rows: (string | number | null | undefined)[][] }>
 ) {
-  const XLSX = await import("xlsx");
+  const XLSX = await import("@e965/xlsx");
   const wb = XLSX.utils.book_new();
   for (const sheet of sheets) {
     const data = [sheet.headers, ...sheet.rows];

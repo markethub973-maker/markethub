@@ -3,6 +3,7 @@ import { stripe } from "@/lib/stripe";
 import { createServerClient } from "@supabase/ssr";
 import { sendPaymentConfirmationEmail, sendSubscriptionCancelledEmail, sendAdminPaymentFailedAlert } from "@/lib/resend";
 import { emitOblioInvoice } from "@/lib/oblio";
+import { logSecurityEvent } from "@/lib/siem";
 
 export async function POST(req: Request) {
   const body = await req.text();
@@ -12,6 +13,14 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch {
+    // Invalid signature is the #1 sign of a spoofed webhook — always log.
+    void logSecurityEvent({
+      event_type: "unusual_activity",
+      severity: "high",
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? undefined,
+      path: "/api/stripe/webhook",
+      details: { reason: "stripe_signature_invalid" },
+    });
     return NextResponse.json({ error: "Webhook invalid." }, { status: 400 });
   }
 
@@ -31,6 +40,11 @@ export async function POST(req: Request) {
     const code = (idemErr as { code?: string }).code;
     // 23505 = unique violation = already processed → return success
     if (code === "23505") {
+      void logSecurityEvent({
+        event_type: "stripe_webhook_replay",
+        path: "/api/stripe/webhook",
+        details: { event_id: event.id, event_type: event.type },
+      });
       return NextResponse.json({ received: true, replay: true });
     }
     // PGRST205 / 42P01 = table missing → migration pending, degrade gracefully

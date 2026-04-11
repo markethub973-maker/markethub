@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
+import { verifyCronSecret } from "@/lib/cronAuth";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function GET(req: NextRequest) {
-  // Vercel cron sends Authorization: Bearer <CRON_SECRET>
-  const authHeader = req.headers.get("authorization") ?? "";
-  const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");
-  if (!secret || secret.length !== (process.env.CRON_SECRET?.length ?? 0) || !require("crypto").timingSafeEqual(Buffer.from(secret), Buffer.from(process.env.CRON_SECRET ?? ""))) {
+  if (!verifyCronSecret(req, "/api/cron/trending-scan")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

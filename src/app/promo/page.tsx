@@ -1,13 +1,11 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
 import {
   Zap, BarChart2, Search, Brain, Instagram, Youtube, TrendingUp,
   Users, Globe, Target, ChevronRight, Check, Star, ArrowRight,
-  Sparkles, Shield, Clock, DollarSign, Play, ChevronDown,
+  Sparkles, Shield, Clock, DollarSign, Play,
   Megaphone, PenTool, BookOpen, BarChart, MessageSquare,
 } from "lucide-react";
+import FaqItem from "./FaqItem";
 
 // ── Brand colors ──────────────────────────────────────────────────────────────
 const C = {
@@ -237,29 +235,6 @@ const TESTIMONIALS = [
     metric: "15h saved/week",
   },
 ];
-
-// ── Components ────────────────────────────────────────────────────────────────
-function FaqItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div style={{ borderBottom: `1px solid ${C.amberBorder}` }}>
-      <button
-        type="button"
-        onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between py-4 text-left"
-      >
-        <span className="font-semibold text-sm pr-4" style={{ color: C.text }}>{q}</span>
-        <ChevronDown
-          className="w-4 h-4 flex-shrink-0 transition-transform"
-          style={{ color: C.lighter, transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
-        />
-      </button>
-      {open && (
-        <p className="pb-4 text-sm leading-relaxed" style={{ color: C.muted }}>{a}</p>
-      )}
-    </div>
-  );
-}
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function PromoPage() {

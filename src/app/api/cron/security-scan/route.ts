@@ -6,15 +6,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
 import { logSecurityEvent } from "@/lib/siem";
-import { timingSafeEqual } from "crypto";
+import { verifyCronSecret } from "@/lib/cronAuth";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "markethub973@gmail.com";
 
 export async function GET(req: NextRequest) {
-  const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");
-  const expected = process.env.CRON_SECRET ?? "";
-  if (!secret || secret.length !== expected.length || !timingSafeEqual(Buffer.from(secret), Buffer.from(expected))) {
+  if (!verifyCronSecret(req, "/api/cron/security-scan")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
