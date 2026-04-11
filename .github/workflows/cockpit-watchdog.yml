@@ -1,0 +1,34 @@
+name: Cockpit Watchdog (every 2 min)
+
+# Fast-poll watchdog that complements the daily maintenance-agents run.
+# Runs every 2 minutes and hits /api/cockpit/watchdog, which does:
+#   - critical cron probes (auto-post, health-monitor)
+#   - security event spike detection (> 15 events in 2 min window)
+#   - Stripe webhook freshness check (no events in 2h = broken)
+#   - cron heartbeat (no cron_logs rows in 30 min = scheduler dead)
+#
+# Each check that fails upserts a `maintenance_findings` row (critical or
+# high severity). The watchdog itself logs to cron_logs so the next run
+# sees a heartbeat and doesn't false-positive.
+
+on:
+  schedule:
+    - cron: "*/2 * * * *" # every 2 minutes
+  workflow_dispatch: {}
+
+concurrency:
+  group: cockpit-watchdog
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Cockpit Watchdog
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 30 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-cockpit/1 (watchdog)" \
+            https://viralstat-dashboard.vercel.app/api/cockpit/watchdog

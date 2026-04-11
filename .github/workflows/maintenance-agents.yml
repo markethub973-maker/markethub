@@ -1,0 +1,89 @@
+name: Maintenance Agent Team
+
+# Runs the full maintenance agent team + digest once per day at 03:00 UTC,
+# just before the daily 06:00 security-scan cron. Sequential on purpose —
+# earlier agents seed the findings table, the digest reads the resolved
+# set at the end. Each step uses `if: always()` so one agent timing out
+# doesn't block the downstream agents or the digest.
+#
+# Phase 1 agents: probe, schema-drift, consistency
+# Phase 2 agents: secret-scan, dependency-guardian, siem-analyst
+#
+# The digest itself is idempotent (fingerprint `digest:${date}`), so a
+# manual re-run via workflow_dispatch on the same day is a no-op.
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # daily at 03:00 UTC
+  workflow_dispatch: {}
+
+concurrency:
+  group: maintenance-agents
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Agent 1 — Synthetic Probe
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-maint/1 (agent-probe)" \
+            https://viralstat-dashboard.vercel.app/api/maint/probe
+
+      - name: Agent 2 — Schema Drift Detector
+        if: always()
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-maint/1 (agent-schema-drift)" \
+            https://viralstat-dashboard.vercel.app/api/maint/schema-drift
+
+      - name: Agent 3 — Cross-System Consistency
+        if: always()
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-maint/1 (agent-consistency)" \
+            https://viralstat-dashboard.vercel.app/api/maint/consistency
+
+      - name: Agent 4 — Secret / Config Leakage Scanner
+        if: always()
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-maint/1 (agent-secret-scan)" \
+            https://viralstat-dashboard.vercel.app/api/maint/secret-scan
+
+      - name: Agent 5 — Dependency + Infra Guardian
+        if: always()
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-maint/1 (agent-dependency-guardian)" \
+            https://viralstat-dashboard.vercel.app/api/maint/dependency-guardian
+
+      - name: Agent 7 — SIEM Analyst (Haiku)
+        if: always()
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-maint/1 (agent-siem-analyst)" \
+            https://viralstat-dashboard.vercel.app/api/maint/siem-analyst
+
+      - name: Consolidator — Daily Digest Email
+        if: always()
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 60 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-maint/1 (digest)" \
+            https://viralstat-dashboard.vercel.app/api/maint/digest

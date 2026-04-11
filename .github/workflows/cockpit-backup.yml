@@ -1,0 +1,39 @@
+name: Cockpit Encrypted Backup (04:00 UTC)
+
+# Runs the encrypted backup once per day at 04:00 UTC. Dumps all critical
+# tables, AES-256-GCM encrypts with BACKUP_ENCRYPTION_KEY, uploads to the
+# isolated `cockpit-backups` Supabase Storage bucket (+ Cloudflare R2 if
+# R2_* env vars are configured in Vercel).
+#
+# Failures become critical findings in maintenance_findings so the
+# watchdog + daily report pick them up immediately.
+
+on:
+  schedule:
+    - cron: "0 4 * * *" # daily at 04:00 UTC (06:00 or 07:00 RO time)
+  workflow_dispatch:
+    inputs:
+      note:
+        description: "Optional label for this backup"
+        required: false
+        default: ""
+
+concurrency:
+  group: cockpit-backup
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Cockpit Encrypted Backup
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 300 \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: gha-cockpit/1 (backup)" \
+            -d "{\"note\": \"${{ github.event.inputs.note }}\"}" \
+            https://viralstat-dashboard.vercel.app/api/cockpit/backup

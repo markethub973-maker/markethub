@@ -1,0 +1,28 @@
+name: Cockpit Daily Report (08:00 UTC)
+
+# Generates the Cockpit morning report once per day. Pulls a 24h snapshot,
+# asks Claude Haiku 4.5 to write a Romanian narrative, emails it to the
+# admin via Resend. Idempotent per day — re-running the same day is a
+# no-op unless ?force=1 is passed.
+
+on:
+  schedule:
+    - cron: "0 8 * * *" # daily at 08:00 UTC (10:00 or 11:00 RO time)
+  workflow_dispatch: {}
+
+concurrency:
+  group: cockpit-daily-report
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Cockpit Daily Report
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-cockpit/1 (daily-report)" \
+            https://viralstat-dashboard.vercel.app/api/cockpit/daily-report
