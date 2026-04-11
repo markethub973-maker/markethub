@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { MessageCircle, X, Send, Bot, Download, ChevronDown } from "lucide-react";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -33,6 +34,7 @@ function Bubble({ msg }: { msg: Message }) {
 }
 
 export default function SetupAgent() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "Hi! I'm the MarketHub Pro agent 👋\n\nI can help you configure any API or understand any platform feature.\n\nHow can I help you?" },
@@ -67,7 +69,13 @@ export default function SetupAgent() {
       const res = await fetch("/api/agent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages.map(m => ({ role: m.role, content: m.content })) }),
+        body: JSON.stringify({
+          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+          // Current pathname so the agent knows which page the user is viewing
+          // without having to ask. Server prepends a page-context block to the
+          // system prompt in /api/agent/route.ts → getAgentPrompt().
+          pathname,
+        }),
       });
 
       if (!res.ok) {

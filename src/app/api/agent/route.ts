@@ -32,15 +32,17 @@ export async function POST(req: NextRequest) {
 
   const isAdmin = profile?.is_admin === true;
 
-  const { messages, agentType = "support" } = await req.json();
+  const { messages, agentType = "support", pathname } = await req.json();
 
   const agent = AGENTS[agentType as AgentType];
   if (!agent) {
     return new Response(JSON.stringify({ error: "Unknown agent type" }), { status: 400 });
   }
 
-  // Admin gets full access; regular users get confidentiality-restricted prompt
-  const systemPrompt = getAgentPrompt(agentType as AgentType, isAdmin);
+  // Admin gets full access; regular users get confidentiality-restricted prompt.
+  // pathname (current page the user is on) gets prepended to the system prompt
+  // as a context block so the agent knows where the user is without asking.
+  const systemPrompt = getAgentPrompt(agentType as AgentType, isAdmin, pathname ?? null);
 
   const client = new Anthropic({ apiKey: appApiKey });
   const encoder = new TextEncoder();

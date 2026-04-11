@@ -212,12 +212,22 @@ You can freely discuss the technical stack, implementations, API costs, architec
 You speak in English, you are technical and precise.
 `;
 
-/** Returns the correct system prompt based on admin status */
-export function getAgentPrompt(agentType: AgentType, isAdmin: boolean): string {
-  if (isAdmin) {
-    return `${ADMIN_PLATFORM_CONTEXT}\n\n${AGENT_PROMPTS[agentType].replace(PLATFORM_CONTEXT, "").replace(CONFIDENTIALITY_RULES, "").trim()}`;
-  }
-  return AGENT_PROMPTS[agentType];
+/** Returns the correct system prompt based on admin status + current page. */
+export function getAgentPrompt(
+  agentType: AgentType,
+  isAdmin: boolean,
+  pathname?: string | null,
+): string {
+  // Lazy import to avoid pulling the whole lib at module init
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { pageContextBlock } = require("@/lib/pageContext") as typeof import("@/lib/pageContext");
+  const pageBlock = pageContextBlock(pathname);
+
+  const base = isAdmin
+    ? `${ADMIN_PLATFORM_CONTEXT}\n\n${AGENT_PROMPTS[agentType].replace(PLATFORM_CONTEXT, "").replace(CONFIDENTIALITY_RULES, "").trim()}`
+    : AGENT_PROMPTS[agentType];
+
+  return base + pageBlock;
 }
 
 export const AGENT_PROMPTS: Record<AgentType, string> = {

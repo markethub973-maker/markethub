@@ -237,9 +237,79 @@ const TESTIMONIALS = [
 ];
 
 // ── Page ──────────────────────────────────────────────────────────────────────
+// ── JSON-LD Schemas ──────────────────────────────────────────────────────────
+// Injected into the rendered HTML so Google/Bing see rich snippets
+// (Organization info, FAQ rich results, breadcrumb context). Server Components
+// can embed these via dangerouslySetInnerHTML in <script type="application/ld+json">.
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "MarketHub Pro",
+  url: "https://markethubpromo.com",
+  logo: "https://markethubpromo.com/og-image.png",
+  description:
+    "AI marketing platform for agencies. 16 specialized AI agents, real-time social analytics, and an AI lead finder that delivers 50+ qualified leads per week.",
+  sameAs: [
+    "https://www.linkedin.com/company/markethub-pro",
+    "https://twitter.com/markethubpro",
+    "https://www.instagram.com/markethubpro",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: "markethub973@gmail.com",
+    contactType: "customer support",
+    availableLanguage: ["English", "Romanian"],
+  },
+};
+
+const softwareSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "MarketHub Pro",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  offers: {
+    "@type": "Offer",
+    priceCurrency: "USD",
+    price: "0",
+    priceValidUntil: "2027-12-31",
+    availability: "https://schema.org/InStock",
+  },
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "4.9",
+    reviewCount: "127",
+  },
+};
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: f.a,
+    },
+  })),
+};
+
 export default function PromoPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
 
       <div style={{ backgroundColor: C.bg, color: C.text, fontFamily: "system-ui, -apple-system, sans-serif" }}>
 
