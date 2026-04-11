@@ -4,7 +4,6 @@
  */
 import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
-import { after } from "next/server";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "markethub973@gmail.com";
@@ -87,42 +86,43 @@ export async function logSecurityEvent({
   // other low-grade-but-real attacks) reach the analyst. The analyst itself
   // filters false alarms with Haiku. Cost: ~$0.03/month.
   //
-  // Serverless fire-and-forget is tricky: `void fetch(...)` gets killed
-  // when the isolate freezes. We try TWO mechanisms in order:
-  //   1. `after()` from next/server — Next 15+ primitive that keeps the
-  //      function alive until the callback finishes. Works cleanly in
-  //      Route Handlers. Flaky in Proxy middleware in Next 16.
-  //   2. `fetch(..., { keepalive: true })` — WHATWG flag that lets the
-  //      browser/runtime detach the request from the caller's lifetime.
-  //      Vercel honors it for outbound fetches, so the request reaches
-  //      /api/cockpit/reactive-siem even after the caller's isolate is
-  //      frozen. This is our reliable fallback.
-  if ((severity === "medium" || severity === "high" || severity === "critical") && event?.id) {
+  // We AWAIT the callback even though it adds latency. Serverless fire-and-
+  // forget (void fetch, keepalive, after() from Proxy) is all flaky on
+  // Vercel's cold/warm isolate boundary. The simplest reliable strategy is
+  // to block the response by ~500ms-1s while the analyst runs. The callers
+  // that log security events are almost always:
+  //   - Failed admin brute-force (already 404ing, attacker doesn't care)
+  //   - Failed logins (already 401/429, attacker doesn't care)
+  //   - Oversized payloads (already 413, attacker doesn't care)
+  //   - SSRF attempts (already blocked, attacker doesn't care)
+  // So the added latency hits failing requests from attackers, not real
+  // users. Worth the trade for reliable detection.
+  //
+  // One guard: skip when the triggering SIEM event was itself produced by
+  // the reactive-siem route (infinite recursion). We detect this via the
+  // REACTIVE_SIEM_RECURSION env var threaded through the route context —
+  // since that's non-trivial to implement, we use a simpler heuristic:
+  // skip when user_agent indicates our own SIEM probe traffic.
+  if (
+    (severity === "medium" || severity === "high" || severity === "critical") &&
+    event?.id &&
+    !(user_agent && /cockpit-reactive|maint-probe/.test(user_agent))
+  ) {
     const cronSecret = process.env.CRON_SECRET;
-    const eventId = event.id;
     if (cronSecret) {
-      const fireReactive = async () => {
-        try {
-          await fetch("https://viralstat-dashboard.vercel.app/api/cockpit/reactive-siem", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${cronSecret}`,
-            },
-            body: JSON.stringify({ event_id: eventId }),
-            keepalive: true,
-          });
-        } catch { /* swallow — best-effort */ }
-      };
       try {
-        // Prefer after() — it guarantees the callback runs before the
-        // function shuts down. If the surrounding context doesn't support
-        // after() (e.g. nested call from the reactive-siem route itself,
-        // or certain proxy contexts), fall back to keepalive fetch.
-        after(fireReactive);
-      } catch {
-        void fireReactive();
-      }
+        // Block for up to 8s — if Haiku is slow we give up and let the
+        // next agent run pick it up.
+        await fetch("https://viralstat-dashboard.vercel.app/api/cockpit/reactive-siem", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${cronSecret}`,
+          },
+          body: JSON.stringify({ event_id: event.id }),
+          signal: AbortSignal.timeout(8000),
+        });
+      } catch { /* swallow — best-effort */ }
     }
   }
 
