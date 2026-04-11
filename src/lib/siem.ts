@@ -82,12 +82,12 @@ export async function logSecurityEvent({
     details: details ?? {},
   }).select("id").single();
 
-  // Reactive SIEM hook — for high/critical events, trigger the cockpit's
-  // reactive analyst endpoint fire-and-forget. The analyst pulls context
-  // (recent events from the same IP), calls Haiku, and decides whether the
-  // event is an actual attack worth alerting on. Because we await nothing
-  // here, this adds ~0ms to the request that fired the event.
-  if ((severity === "high" || severity === "critical") && event?.id) {
+  // Reactive SIEM hook — fire for medium+ events so that brute_force_admin
+  // (default: medium) and other low-grade-but-real attacks reach the
+  // analyst. The analyst itself filters false alarms with Haiku — we only
+  // see ~30 qualifying events/day, so cost is ~$0.03/month.
+  // Fire-and-forget (no await) so the triggering request sees zero delay.
+  if ((severity === "medium" || severity === "high" || severity === "critical") && event?.id) {
     const cronSecret = process.env.CRON_SECRET;
     if (cronSecret) {
       // Fire-and-forget — don't await, don't rethrow.
