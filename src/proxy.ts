@@ -239,6 +239,13 @@ function checkAdminTunnel(request: NextRequest): boolean {
   return diff === 0;
 }
 
+// Header the maintenance probe agent sets on every synthetic request so the
+// middleware can skip SIEM logging. Without this, each probe run generates
+// ~15 false-positive brute_force_admin / unusual_activity events that then
+// get escalated by the SIEM analyst agent. Checked inside the handler and
+// forwarded to the route handlers (which also skip their own SIEM calls).
+const MAINT_PROBE_HEADER = "x-maint-probe";
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -250,6 +257,11 @@ export async function proxy(request: NextRequest) {
   ) {
     return NextResponse.next();
   }
+
+  // Is this a synthetic probe request? We use this flag to suppress SIEM
+  // logging below — the probe is our own traffic and polluting the SIEM
+  // noise floor defeats the point of running an analyst over it.
+  const isMaintProbe = request.headers.get(MAINT_PROBE_HEADER) === "viralstat-probe/1";
 
   // ── Generate per-request nonce for CSP ───────────────────────────────────
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
@@ -296,13 +308,18 @@ export async function proxy(request: NextRequest) {
   // — they are the login endpoints and must remain reachable without tunnel token
 
   if (isAdminPath && !checkAdminTunnel(request)) {
-    // Log brute-force admin tunnel attempts
-    void logSecurityEvent({
-      event_type: "brute_force_admin",
-      ip: request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown",
-      path: pathname,
-      details: { method: request.method, hasToken: request.nextUrl.searchParams.has("t") },
-    });
+    // Log brute-force admin tunnel attempts (but not our own probe traffic —
+    // the probe hits /api/admin/pricing + /api/admin/users on purpose to
+    // verify the 404 response, and those hits are NOT attacks).
+    if (!isMaintProbe) {
+      void logSecurityEvent({
+        event_type: "brute_force_admin",
+        ip: request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown",
+        user_agent: request.headers.get("user-agent") ?? undefined,
+        path: pathname,
+        details: { method: request.method, hasToken: request.nextUrl.searchParams.has("t") },
+      });
+    }
     const res = new NextResponse(null, { status: 404 });
     applySecurityHeaders(res, csp);
     return res;
