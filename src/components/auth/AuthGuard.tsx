@@ -9,14 +9,45 @@ import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
 import TrialWarningBanner from "@/components/TrialWarningBanner";
 import { createClient } from "@/lib/supabase/client";
 
-const PUBLIC_PATHS = ["/login", "/register", "/markethub973", "/blocked", "/pricing"];
+const PUBLIC_PATHS = [
+  "/login",
+  "/register",
+  "/markethub973",
+  "/blocked",
+  "/pricing",
+  "/promo",
+  "/privacy",
+  "/terms",
+  "/upgrade-required",
+];
+
+function isPublicPath(pathname: string): boolean {
+  if (PUBLIC_PATHS.includes(pathname)) return true;
+  // Public slug routes
+  if (pathname.startsWith("/l/")) return true;       // bio-link viewer
+  if (pathname.startsWith("/portal/")) return true;  // client portal viewer
+  if (pathname.startsWith("/approve/")) return true; // client approval
+  if (pathname.startsWith("/report/")) return true;  // shared report
+  return false;
+}
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [checked, setChecked] = useState(false);
 
+  // Public pages render IMMEDIATELY — they must be indexable, shareable on
+  // social media, and fast on first paint. Skipping the auth gate lets the
+  // Server Component content ship in the initial HTML body instead of being
+  // blocked behind a client-side `checked` flag that hides everything until
+  // hydration completes.
+  const publicPath = isPublicPath(pathname);
+
   useEffect(() => {
+    if (publicPath) {
+      setChecked(true);
+      return;
+    }
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       // Check if user is admin (via localStorage)
@@ -24,20 +55,20 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         typeof window !== "undefined" &&
         localStorage.getItem("admin_authenticated") === "true";
 
-      if (!user && !isAdminAuthenticated && !PUBLIC_PATHS.includes(pathname)) {
+      if (!user && !isAdminAuthenticated) {
         router.replace("/login");
       } else {
         setChecked(true);
       }
     });
-  }, [pathname, router]);
+  }, [pathname, router, publicPath]);
 
-  if (!checked) return null;
-
-  // Public pages: no sidebar
-  if (PUBLIC_PATHS.includes(pathname)) {
+  // Public pages: render children directly, no sidebar, no auth gate.
+  if (publicPath) {
     return <>{children}</>;
   }
+
+  if (!checked) return null;
 
   // Admin dashboard: sidebar + main layout (no SetupAgent)
   if (pathname.startsWith("/dashboard/admin")) {
