@@ -1,0 +1,32 @@
+name: Cron — auto-post (every 5 min)
+
+# Vercel Free caps cron frequency at 1/day. This workflow runs every 5
+# minutes and hits /api/cron/auto-post on production so scheduled posts
+# get published near their intended time slot instead of being delayed
+# until the next daily run.
+#
+# Setup:
+#   - Add repository secret CRON_SECRET matching the Vercel env var
+#   - GitHub Actions is free for public repos, 2000 free minutes/month
+#     for private repos — well under the needed budget for /5min polling
+#   - To disable, delete this file or comment out the schedule block
+
+on:
+  schedule:
+    - cron: "*/5 * * * *" # every 5 minutes
+  workflow_dispatch: {}    # allow manual trigger from GitHub UI
+
+concurrency:
+  group: cron-auto-post
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Hit auto-post cron
+        run: |
+          curl --silent --show-error --fail-with-body \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://markethubpromo.com/api/cron/auto-post

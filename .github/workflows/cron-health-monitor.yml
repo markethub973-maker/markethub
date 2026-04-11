@@ -1,0 +1,26 @@
+name: Cron — health-monitor (every 5 min)
+
+# Vercel Free caps cron frequency at 1/day. This workflow polls the
+# health-monitor endpoint every 5 min so auto-redeploy-on-3-consecutive-
+# failures actually has a chance to arm — the intended safety net from
+# the original design.
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: cron-health-monitor
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Hit health-monitor cron
+        run: |
+          curl --silent --show-error --fail-with-body \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://markethubpromo.com/api/cron/health-monitor
