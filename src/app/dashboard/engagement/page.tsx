@@ -29,6 +29,7 @@ import {
   ArrowLeft,
   Loader2,
   MessageCircle,
+  UserPlus,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -192,6 +193,42 @@ export default function EngagementPage() {
         body: JSON.stringify({ id: msg.id, status: "read" }),
       });
       void load();
+    }
+  }
+
+  const [convertingToLead, setConvertingToLead] = useState(false);
+  const [convertResult, setConvertResult] = useState<{ ok?: boolean; error?: string; lead_id?: string } | null>(null);
+
+  async function convertToLead(msg: Message) {
+    if (convertingToLead) return;
+    setConvertingToLead(true);
+    setConvertResult(null);
+    try {
+      const res = await fetch("/api/crm/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: msg.author_name || msg.author_handle || "Unknown contact",
+          notes: `From ${msg.platform} ${msg.kind}:\n\n"${msg.content.slice(0, 500)}"\n\nLink: ${msg.media_permalink ?? "—"}`,
+        }),
+      });
+      const d = await res.json();
+      if (!res.ok) {
+        setConvertResult({ ok: false, error: d.error || "Convert failed" });
+      } else {
+        setConvertResult({ ok: true, lead_id: d.lead?.id });
+        // Auto-tag the message so we know it was converted
+        await fetch("/api/engagement/messages", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: msg.id, tags: [...msg.tags, "converted_to_lead"] }),
+        });
+        await load();
+      }
+    } catch (e) {
+      setConvertResult({ ok: false, error: e instanceof Error ? e.message : "Network error" });
+    } finally {
+      setConvertingToLead(false);
     }
   }
 
@@ -665,6 +702,46 @@ export default function EngagementPage() {
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 6 }}>
+                  {!selected.tags.includes("converted_to_lead") && (
+                    <button
+                      onClick={() => convertToLead(selected)}
+                      disabled={convertingToLead}
+                      style={{
+                        padding: "6px 12px",
+                        background: "rgba(139,92,246,0.1)",
+                        color: "#8B5CF6",
+                        border: "1px solid rgba(139,92,246,0.3)",
+                        borderRadius: 6,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        cursor: convertingToLead ? "not-allowed" : "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      {convertingToLead ? <Loader2 size={12} className="animate-spin" /> : <UserPlus size={12} />}
+                      Convert to Lead
+                    </button>
+                  )}
+                  {selected.tags.includes("converted_to_lead") && (
+                    <span
+                      style={{
+                        padding: "6px 12px",
+                        background: "rgba(16,185,129,0.1)",
+                        color: "#10B981",
+                        border: "1px solid rgba(16,185,129,0.3)",
+                        borderRadius: 6,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <CheckCircle2 size={12} /> Lead created
+                    </span>
+                  )}
                   <button
                     onClick={() => archiveMsg(selected.id)}
                     style={{
@@ -684,6 +761,29 @@ export default function EngagementPage() {
                   </button>
                 </div>
               </div>
+
+              {convertResult && (
+                <div
+                  style={{
+                    marginBottom: 12,
+                    padding: 10,
+                    background: convertResult.ok ? "rgba(139,92,246,0.08)" : "rgba(239,68,68,0.08)",
+                    border: `1px solid ${convertResult.ok ? "rgba(139,92,246,0.3)" : "rgba(239,68,68,0.3)"}`,
+                    borderRadius: 6,
+                    fontSize: 11,
+                    color: convertResult.ok ? "#6D28D9" : "#B91C1C",
+                  }}
+                >
+                  {convertResult.ok ? (
+                    <>
+                      <CheckCircle2 size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
+                      Lead creat în CRM Kanban — <a href="/dashboard/crm" style={{ color: "#6D28D9", textDecoration: "underline" }}>Vezi în pipeline</a>
+                    </>
+                  ) : (
+                    <>⚠ {convertResult.error}</>
+                  )}
+                </div>
+              )}
 
               {/* Message body */}
               <div
