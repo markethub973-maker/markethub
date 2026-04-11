@@ -9,11 +9,33 @@ export default function AdminSecretLogin() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // If already authenticated, go straight to admin
+  // If still authenticated (cookie valid), go straight to admin. Don't trust
+  // localStorage alone — admin_session_token expires after 8h and when it does
+  // the localStorage flag is stale, so auto-redirecting without checking the
+  // cookie leaves the user stuck in a loop: they land on /markethub973, get
+  // bounced to /dashboard/admin, admin features 404 because the cookie is
+  // gone, they come back to /markethub973, and bounce again. Verify against
+  // the server before redirecting.
   useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem("admin_authenticated") === "true") {
-      router.replace("/dashboard/admin");
-    }
+    if (typeof window === "undefined") return;
+    if (localStorage.getItem("admin_authenticated") !== "true") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/admin-session-check", { cache: "no-store" });
+        if (cancelled) return;
+        if (res.ok) {
+          router.replace("/dashboard/admin");
+        } else {
+          // Cookie expired — clear the stale localStorage flag so the user
+          // sees the password form instead of being bounced in a loop.
+          localStorage.removeItem("admin_authenticated");
+        }
+      } catch {
+        // Network error — leave the form visible so the user can retry.
+      }
+    })();
+    return () => { cancelled = true; };
   }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
