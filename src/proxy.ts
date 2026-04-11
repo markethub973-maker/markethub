@@ -312,8 +312,15 @@ export async function proxy(request: NextRequest) {
     // Log brute-force admin tunnel attempts (but not our own probe traffic —
     // the probe hits /api/admin/pricing + /api/admin/users on purpose to
     // verify the 404 response, and those hits are NOT attacks).
+    //
+    // IMPORTANT: we AWAIT the log call even though it runs right before a
+    // return. Serverless isolates freeze immediately after the response,
+    // so `void logSecurityEvent(...)` gets killed mid-fetch and the
+    // reactive-siem hook never fires. Awaiting adds ~500ms-2s to a request
+    // that's going to 404 anyway — the attacker doesn't care, and real
+    // tooling is whitelisted via the X-Maint-Probe header.
     if (!isMaintProbe) {
-      void logSecurityEvent({
+      await logSecurityEvent({
         event_type: "brute_force_admin",
         ip: request.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown",
         user_agent: request.headers.get("user-agent") ?? undefined,
