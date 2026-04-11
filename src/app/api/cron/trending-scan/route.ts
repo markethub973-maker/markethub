@@ -4,7 +4,7 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   // Vercel cron sends Authorization: Bearer <CRON_SECRET>
   const authHeader = req.headers.get("authorization") ?? "";
   const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");

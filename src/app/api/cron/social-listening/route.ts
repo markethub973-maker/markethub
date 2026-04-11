@@ -6,7 +6,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY ?? "";
 const NEWS_API_KEY = process.env.NEWS_API_KEY ?? "";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization") ?? "";
   const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");
   if (!secret || secret.length !== (process.env.CRON_SECRET?.length ?? 0) || !require("crypto").timingSafeEqual(Buffer.from(secret), Buffer.from(process.env.CRON_SECRET ?? ""))) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

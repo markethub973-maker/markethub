@@ -29,10 +29,13 @@ export async function GET(req: Request) {
 
   const supabase = createServiceClient();
 
-  // Fetch paid users with Instagram connected
+  // Fetch paid users with Instagram connected. The per-user threshold column
+  // (engagement_alert_threshold) doesn't exist in the current schema — every
+  // user gets DEFAULT_THRESHOLD for now. If we want per-user thresholds later
+  // we'd add the column and expose it in settings UI.
   const { data: profiles, error } = await supabase
     .from("profiles")
-    .select("id, email, full_name, instagram_access_token, instagram_user_id, instagram_username, subscription_plan, engagement_alert_threshold")
+    .select("id, email, full_name, instagram_access_token, instagram_user_id, instagram_username, subscription_plan")
     .not("instagram_access_token", "is", null)
     .not("instagram_user_id", "is", null)
     .not("subscription_plan", "in", '("free","free_test")')
@@ -56,7 +59,7 @@ export async function GET(req: Request) {
   for (const profile of profiles ?? []) {
     summary.checked++;
     const logKey = `engagement-alert-${profile.id}`;
-    const threshold = profile.engagement_alert_threshold ?? DEFAULT_THRESHOLD;
+    const threshold = DEFAULT_THRESHOLD;
 
     // Check cooldown — skip if alerted within ALERT_COOLDOWN_DAYS
     if (lastAlerted[logKey]) {

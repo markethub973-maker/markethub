@@ -11,7 +11,7 @@ import { timingSafeEqual } from "crypto";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "markethub973@gmail.com";
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const secret = req.headers.get("authorization")?.replace("Bearer ", "") ?? req.headers.get("x-cron-secret");
   const expected = process.env.CRON_SECRET ?? "";
   if (!secret || secret.length !== expected.length || !timingSafeEqual(Buffer.from(secret), Buffer.from(expected))) {

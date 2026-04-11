@@ -57,7 +57,7 @@ export default function TrendingAlertsPage() {
 
   const scanNow = async () => {
     setScanning(true);
-    await fetch("/api/cron/trending-scan", { method: "POST", headers: { "x-cron-secret": "" } }).catch(() => {});
+    await fetch("/api/trending-alerts/scan", { method: "POST" }).catch(() => {});
     await new Promise(r => setTimeout(r, 2000));
     await load();
     setScanning(false);

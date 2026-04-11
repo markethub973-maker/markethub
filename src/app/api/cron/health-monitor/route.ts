@@ -124,9 +124,16 @@ async function triggerVercelRedeploy(): Promise<{ triggered: boolean; deployment
 }
 
 export async function GET(req: NextRequest) {
-  // Accept: Vercel cron secret header OR admin session cookie (for admin dashboard UI)
-  const cronSecret = req.headers.get("x-cron-secret");
-  const fromCron = cronSecret === CRON_SECRET;
+  // Accept either:
+  //  - x-cron-secret header (legacy convention kept for backwards compat)
+  //  - Authorization: Bearer <CRON_SECRET> (what Vercel cron actually sends)
+  //  - admin session cookie (manual trigger from admin dashboard UI)
+  const authHeader = req.headers.get("authorization") ?? "";
+  const bearerSecret = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  const legacyHeader = req.headers.get("x-cron-secret") ?? "";
+  const fromCron =
+    (bearerSecret && bearerSecret === CRON_SECRET) ||
+    (legacyHeader && legacyHeader === CRON_SECRET);
   const fromAdmin = isAdminAuthorized(req);
   if (!fromCron && !fromAdmin) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -1,19 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { isAdminAuthorized } from "@/lib/adminAuth";
+import { timingSafeEqual } from "crypto";
 
 const META_APP_ID = process.env.META_APP_ID!;
 const META_APP_SECRET = process.env.META_APP_SECRET!;
-const CRON_SECRET = process.env.CRON_SECRET!;
+const CRON_SECRET = process.env.CRON_SECRET ?? "";
 
 /**
  * Auto-refresh Instagram/Facebook tokens before they expire.
  * Called weekly by Vercel Cron. Also callable manually from admin.
+ *
+ * Moved from /api/admin/refresh-tokens — the old path was behind the admin
+ * tunnel check in proxy.ts which requires ?t=<ADMIN_TUNNEL_SECRET> in the
+ * query string. Vercel cron can't set query params, so the old cron was
+ * silently returning 404 and the Instagram/FB tokens were never getting
+ * refreshed automatically.
  */
 export async function GET(req: NextRequest) {
   // Accept: Vercel cron Bearer token OR admin session cookie (for manual trigger)
-  const authHeader = req.headers.get("authorization");
-  const fromCron = CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`;
+  const authHeader = req.headers.get("authorization") ?? "";
+  const provided = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+  let fromCron = false;
+  if (CRON_SECRET && provided && provided.length === CRON_SECRET.length) {
+    try {
+      fromCron = timingSafeEqual(Buffer.from(provided), Buffer.from(CRON_SECRET));
+    } catch { /* mismatched length */ }
+  }
   const fromAdmin = isAdminAuthorized(req);
 
   if (!fromCron && !fromAdmin) {
@@ -110,6 +123,13 @@ export async function GET(req: NextRequest) {
     } else {
       results.facebook = "⚠️ No token stored";
     }
+
+    // Log cron run
+    await supabase.from("cron_logs").upsert({
+      job: "refresh-tokens",
+      ran_at: new Date().toISOString(),
+      result: results,
+    });
 
     return NextResponse.json({
       success: true,

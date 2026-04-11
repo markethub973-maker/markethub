@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/route-helpers";
 
-// Authenticated trigger for the social-listening cron. The page used to call
-// /api/cron/social-listening directly from the browser with an env var that
-// would either be undefined (current state — silently broken) or get exposed
-// to every visitor in the client bundle (security trap). Route it through an
+// Authenticated trigger for the trending-scan cron. Same pattern as
+// /api/social-listening/scan — the page used to POST to /api/cron/trending-scan
+// directly with an empty header which always failed. Route through an
 // authenticated server endpoint that forwards the real CRON_SECRET internally.
 export async function POST() {
   const auth = await requireAuth();
@@ -16,7 +15,7 @@ export async function POST() {
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://markethubpromo.com";
-  const res = await fetch(`${appUrl}/api/cron/social-listening`, {
+  const res = await fetch(`${appUrl}/api/cron/trending-scan`, {
     method: "GET",
     headers: { authorization: `Bearer ${cronSecret}` },
   });

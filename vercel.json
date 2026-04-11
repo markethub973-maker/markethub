@@ -5,7 +5,7 @@
   "framework": "nextjs",
   "crons": [
     {
-      "path": "/api/admin/refresh-tokens",
+      "path": "/api/cron/refresh-tokens",
       "schedule": "0 6 * * 1"
     },
     {
