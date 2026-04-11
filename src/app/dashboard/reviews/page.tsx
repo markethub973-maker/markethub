@@ -25,6 +25,7 @@ import {
   CheckCircle2,
   Flag,
   EyeOff,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -110,6 +111,8 @@ export default function ReviewsPage() {
   const [replyText, setReplyText] = useState("");
   const [replying, setReplying] = useState(false);
   const [replyError, setReplyError] = useState<string | null>(null);
+  const [drafting, setDrafting] = useState(false);
+  const [draftError, setDraftError] = useState<string | null>(null);
 
   // Sync state
   const [syncUrl, setSyncUrl] = useState("");
@@ -177,6 +180,29 @@ export default function ReviewsPage() {
       setSelected({ ...selected, status });
     }
     void load();
+  }
+
+  async function draftReply() {
+    if (!selected || drafting) return;
+    setDrafting(true);
+    setDraftError(null);
+    try {
+      const res = await fetch("/api/reviews/draft-reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: selected.id }),
+      });
+      const d = await res.json();
+      if (!res.ok) {
+        setDraftError(d.error || "Draft failed");
+      } else if (d.draft) {
+        setReplyText(d.draft);
+      }
+    } catch (e) {
+      setDraftError(e instanceof Error ? e.message : "Network error");
+    } finally {
+      setDrafting(false);
+    }
   }
 
   async function sendReply() {
@@ -763,21 +789,71 @@ export default function ReviewsPage() {
                 >
                   <div
                     style={{
-                      fontSize: 10,
-                      color: "#A8967E",
-                      letterSpacing: 1,
-                      textTransform: "uppercase",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
                       marginBottom: 8,
-                      fontWeight: 700,
                     }}
                   >
-                    Răspunsul tău
+                    <div
+                      style={{
+                        fontSize: 10,
+                        color: "#A8967E",
+                        letterSpacing: 1,
+                        textTransform: "uppercase",
+                        fontWeight: 700,
+                      }}
+                    >
+                      Răspunsul tău
+                    </div>
+                    <button
+                      onClick={draftReply}
+                      disabled={drafting}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 5,
+                        padding: "4px 10px",
+                        background: drafting
+                          ? "rgba(139,92,246,0.1)"
+                          : "linear-gradient(135deg, #8B5CF6, #6366F1)",
+                        color: drafting ? "#8B5CF6" : "white",
+                        border: "1px solid rgba(139,92,246,0.3)",
+                        borderRadius: 6,
+                        fontSize: 10,
+                        fontWeight: 700,
+                        cursor: drafting ? "not-allowed" : "pointer",
+                        letterSpacing: 0.5,
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      {drafting ? (
+                        <Loader2 size={10} className="animate-spin" />
+                      ) : (
+                        <Sparkles size={10} />
+                      )}
+                      {drafting ? "Se genereaza..." : "AI Draft"}
+                    </button>
                   </div>
+                  {draftError && (
+                    <div
+                      style={{
+                        marginBottom: 8,
+                        padding: 6,
+                        background: "rgba(239,68,68,0.08)",
+                        borderRadius: 6,
+                        fontSize: 10,
+                        color: "#B91C1C",
+                      }}
+                    >
+                      ⚠ {draftError}
+                    </div>
+                  )}
                   <textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={`Răspunde la review-ul lui ${selected.reviewer_name || "user"}...`}
-                    rows={4}
+                    placeholder={`Răspunde la review-ul lui ${selected.reviewer_name || "user"}... sau folosește "AI Draft" pentru un schițe generat de Claude Haiku`}
+                    rows={6}
                     style={{
                       width: "100%",
                       padding: 10,
