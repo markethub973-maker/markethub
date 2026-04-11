@@ -44,7 +44,7 @@ export default function SocialListeningPage() {
 
   const scan = async () => {
     setScanning(true);
-    await fetch("/api/cron/social-listening", { method: "POST", headers: { authorization: `Bearer ${process.env.NEXT_PUBLIC_CRON_SECRET ?? ""}` } }).catch(() => {});
+    await fetch("/api/social-listening/scan", { method: "POST" }).catch(() => {});
     await new Promise(r => setTimeout(r, 3000));
     await load();
     setScanning(false);
