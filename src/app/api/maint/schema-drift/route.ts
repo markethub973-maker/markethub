@@ -36,11 +36,22 @@ export const dynamic = "force-dynamic";
 const AGENT_NAME = "schema-drift";
 const SRC_ROOT = join(process.cwd(), "src");
 
-// Matches `.from("table")` followed by anything up to `.select("...")` on the
-// same chain. Using non-greedy `[\s\S]*?` so it spans whitespace/newlines in
-// chained builder calls, and stops at the first `.select` it sees.
+// Matches `.from("table")` followed by `.select("...")` on the SAME chain.
+//
+// Naive non-greedy `[\s\S]*?` is wrong: if a `.from(X).update(...)` chain
+// (no .select) is followed later by an unrelated `.from(Y).select(...)`,
+// the regex pairs the wrong table with the wrong columns. We saw this
+// firsthand on first run: 5 false-positive findings on profiles where
+// the columns actually live on plan_limits, because checkPlanLimits.ts
+// has a `.from("profiles").update(...)` between the two tables.
+//
+// Fix: the gap between `.from(` and `.select(` MUST NOT contain another
+// `.from(`, `.update(`, `.insert(`, `.upsert(`, or `.delete(`. Any of
+// those tokens means the chain broke and we're now in a different
+// statement. Implemented with a tempered greedy token (negative lookahead
+// at every character).
 const FROM_SELECT_RE =
-  /\.from\(\s*["'`]([a-zA-Z0-9_]+)["'`]\s*\)[\s\S]*?\.select\(\s*["'`]([^"'`]+)["'`]/g;
+  /\.from\(\s*["'`]([a-zA-Z0-9_]+)["'`]\s*\)((?:(?!\.from\(|\.update\(|\.insert\(|\.upsert\(|\.delete\()[\s\S])*?)\.select\(\s*["'`]([^"'`]+)["'`]/g;
 
 // Columns to ignore — these are PostgREST / Supabase conventions, not real DB
 // columns, so we skip them during comparison.
@@ -150,7 +161,9 @@ function extractReferencesFromFile(file: string, rel: string): Reference[] {
   let m: RegExpExecArray | null;
   while ((m = FROM_SELECT_RE.exec(text)) !== null) {
     const table = m[1];
-    const selectStr = m[2];
+    // Capture group 2 is the (intentionally discarded) gap between
+    // .from(...) and .select(...). Group 3 is the column list.
+    const selectStr = m[3];
     const parsed = parseSelectString(selectStr, table);
     for (const p of parsed) refs.push({ ...p, file: rel });
   }
