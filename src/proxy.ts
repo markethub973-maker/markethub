@@ -163,6 +163,7 @@ const PUBLIC_PATHS = [
   "/api/apify/webhook",
   "/api/webhooks",          // all webhook receivers do their own HMAC auth
   "/api/cron",              // cron routes verify CRON_SECRET themselves
+  "/api/maint",             // maintenance agent routes verify CRON_SECRET themselves
   "/api/subscription/check-trial",
   "/api/admin-session-check",
   "/api/bio-link/",         // public slug API for Link in Bio viewer
