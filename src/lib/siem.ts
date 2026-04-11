@@ -87,32 +87,41 @@ export async function logSecurityEvent({
   // other low-grade-but-real attacks) reach the analyst. The analyst itself
   // filters false alarms with Haiku. Cost: ~$0.03/month.
   //
-  // CRITICAL: on Vercel serverless, plain fire-and-forget fetches get
-  // killed when the route handler returns (the isolate freezes). We use
-  // Next.js's `after()` primitive which tells the runtime "keep this
-  // function alive until the callback finishes". Added in Next 15+, works
-  // in both Route Handlers and Proxy.
+  // Serverless fire-and-forget is tricky: `void fetch(...)` gets killed
+  // when the isolate freezes. We try TWO mechanisms in order:
+  //   1. `after()` from next/server — Next 15+ primitive that keeps the
+  //      function alive until the callback finishes. Works cleanly in
+  //      Route Handlers. Flaky in Proxy middleware in Next 16.
+  //   2. `fetch(..., { keepalive: true })` — WHATWG flag that lets the
+  //      browser/runtime detach the request from the caller's lifetime.
+  //      Vercel honors it for outbound fetches, so the request reaches
+  //      /api/cockpit/reactive-siem even after the caller's isolate is
+  //      frozen. This is our reliable fallback.
   if ((severity === "medium" || severity === "high" || severity === "critical") && event?.id) {
     const cronSecret = process.env.CRON_SECRET;
     const eventId = event.id;
     if (cronSecret) {
+      const fireReactive = async () => {
+        try {
+          await fetch("https://viralstat-dashboard.vercel.app/api/cockpit/reactive-siem", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${cronSecret}`,
+            },
+            body: JSON.stringify({ event_id: eventId }),
+            keepalive: true,
+          });
+        } catch { /* swallow — best-effort */ }
+      };
       try {
-        after(async () => {
-          try {
-            await fetch("https://viralstat-dashboard.vercel.app/api/cockpit/reactive-siem", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${cronSecret}`,
-              },
-              body: JSON.stringify({ event_id: eventId }),
-            });
-          } catch { /* swallow — best-effort */ }
-        });
+        // Prefer after() — it guarantees the callback runs before the
+        // function shuts down. If the surrounding context doesn't support
+        // after() (e.g. nested call from the reactive-siem route itself,
+        // or certain proxy contexts), fall back to keepalive fetch.
+        after(fireReactive);
       } catch {
-        // Some contexts (e.g. the reactive-siem route itself calling
-        // reportFinding which logs its own event) don't support after().
-        // Silently skip the hook there — it'd infinite-loop anyway.
+        void fireReactive();
       }
     }
   }
