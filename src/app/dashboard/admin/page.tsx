@@ -317,6 +317,7 @@ export default function AdminPage() {
               { href: "/dashboard/engagement", label: "💬 Unified Inbox", icon: Users, color: "#E1306C" },
               { href: "/dashboard/reviews", label: "⭐ Review Management", icon: Activity, color: "#F59E0B" },
               { href: "/dashboard/crm", label: "📊 CRM Kanban", icon: Users, color: "#8B5CF6" },
+              { href: "/dashboard/studio", label: "🎨 Content Studio", icon: Zap, color: "#FF0000" },
               { href: "/dashboard/admin/users", label: "Users & Revenue", icon: Users, color: "#6366F1" },
               { href: "/dashboard/admin/lead-wizard", label: "Lead Wizard", icon: Zap, color: "#F59E0B" },
               { href: "/dashboard/admin/maintenance", label: "Maintenance Findings", icon: Activity, color: "#10B981" },
