@@ -82,6 +82,26 @@ export async function logSecurityEvent({
     details: details ?? {},
   }).select("id").single();
 
+  // Reactive SIEM hook — for high/critical events, trigger the cockpit's
+  // reactive analyst endpoint fire-and-forget. The analyst pulls context
+  // (recent events from the same IP), calls Haiku, and decides whether the
+  // event is an actual attack worth alerting on. Because we await nothing
+  // here, this adds ~0ms to the request that fired the event.
+  if ((severity === "high" || severity === "critical") && event?.id) {
+    const cronSecret = process.env.CRON_SECRET;
+    if (cronSecret) {
+      // Fire-and-forget — don't await, don't rethrow.
+      void fetch("https://viralstat-dashboard.vercel.app/api/cockpit/reactive-siem", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${cronSecret}`,
+        },
+        body: JSON.stringify({ event_id: event.id }),
+      }).catch(() => { /* swallow — this is best-effort */ });
+    }
+  }
+
   // Send immediate email alert for HIGH/CRITICAL
   if (ALERT_ON.includes(severity)) {
     const severityEmoji = severity === "critical" ? "🚨" : "⚠️";

@@ -164,6 +164,7 @@ const PUBLIC_PATHS = [
   "/api/webhooks",          // all webhook receivers do their own HMAC auth
   "/api/cron",              // cron routes verify CRON_SECRET themselves
   "/api/maint",             // maintenance agent routes verify CRON_SECRET themselves
+  "/api/cockpit",           // cockpit routes self-authenticate (state/assistant via isAdminAuthorized cookie, watchdog/backup/daily-report/reactive-siem via Bearer CRON_SECRET)
   "/api/subscription/check-trial",
   "/api/admin-session-check",
   "/api/bio-link/",         // public slug API for Link in Bio viewer
