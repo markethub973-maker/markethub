@@ -315,6 +315,7 @@ export default function AdminPage() {
             {[
               { href: "/dashboard/admin/users", label: "Users & Revenue", icon: Users, color: "#6366F1" },
               { href: "/dashboard/admin/lead-wizard", label: "Lead Wizard", icon: Zap, color: "#F59E0B" },
+              { href: "/dashboard/admin/maintenance", label: "Maintenance Findings", icon: Activity, color: "#10B981" },
             ].map((link) => {
               const Icon = link.icon;
               return (
