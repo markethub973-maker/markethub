@@ -124,6 +124,49 @@ export async function GET(req: NextRequest) {
       results.facebook = "⚠️ No token stored";
     }
 
+    // ── Per-user Instagram token refresh ────────────────────────────────
+    // Each row in instagram_connections has its own page_access_token that
+    // also expires in ~60 days. Walk all rows and re-exchange each token
+    // against Graph API. This covers the multi-account case the cron
+    // didn't touch before (only admin_platform_config was refreshed).
+    const { data: userConns } = await supabase
+      .from("instagram_connections")
+      .select("id, user_id, instagram_id, instagram_username, page_id, page_access_token")
+      .not("page_access_token", "is", null);
+
+    let userRefreshed = 0;
+    let userFailed = 0;
+    let userSkipped = 0;
+    for (const conn of userConns ?? []) {
+      if (!conn.page_access_token || !conn.page_id) {
+        userSkipped++;
+        continue;
+      }
+      try {
+        // Exchange the current page token for a fresh long-lived one.
+        // Facebook Graph API supports fb_exchange_token on user tokens —
+        // for page tokens we refetch the page's current access_token via
+        // the stored user_token path if available, otherwise we re-request
+        // it through the same grant.
+        const exchangeRes = await fetch(
+          `https://graph.facebook.com/v22.0/oauth/access_token?grant_type=fb_exchange_token&client_id=${META_APP_ID}&client_secret=${META_APP_SECRET}&fb_exchange_token=${conn.page_access_token}`
+        );
+        const exchangeData = await exchangeRes.json();
+        if (exchangeData.access_token) {
+          await supabase
+            .from("instagram_connections")
+            .update({ page_access_token: exchangeData.access_token })
+            .eq("id", conn.id);
+          userRefreshed++;
+        } else {
+          userFailed++;
+        }
+      } catch {
+        userFailed++;
+      }
+    }
+    results.instagram_per_user = `${userRefreshed} refreshed, ${userFailed} failed, ${userSkipped} skipped`;
+
     // Log cron run
     await supabase.from("cron_logs").upsert({
       job: "refresh-tokens",

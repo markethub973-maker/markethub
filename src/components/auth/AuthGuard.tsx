@@ -19,6 +19,7 @@ const PUBLIC_PATHS = [
   "/privacy",
   "/terms",
   "/upgrade-required",
+  "/help",
 ];
 
 function isPublicPath(pathname: string): boolean {

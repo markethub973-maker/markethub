@@ -27,7 +27,10 @@ export type AuditAction =
   | "pricing_updated"
   | "feature_flag_updated"
   | "youtube_connected"
-  | "tiktok_connected";
+  | "tiktok_connected"
+  | "gdpr_data_export"
+  | "gdpr_account_deleted"
+  | "support_request";
 
 export interface AuditEntry {
   action:       AuditAction;
