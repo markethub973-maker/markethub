@@ -20,7 +20,9 @@ jobs:
     timeout-minutes: 3
     steps:
       - name: Hit health-monitor cron
+        # Direct Vercel hostname — see note in cron-auto-post.yml.
         run: |
           curl --silent --show-error --fail-with-body \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            https://markethubpromo.com/api/cron/health-monitor
+            -H "User-Agent: gha-cron/1 (markethub-health-monitor)" \
+            https://viralstat-dashboard.vercel.app/api/cron/health-monitor

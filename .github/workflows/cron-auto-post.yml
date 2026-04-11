@@ -26,7 +26,12 @@ jobs:
     timeout-minutes: 5
     steps:
       - name: Hit auto-post cron
+        # Uses the direct Vercel hostname to bypass Cloudflare Bot Fight
+        # Mode / Browser Integrity Check, which challenge non-browser clients
+        # (including GitHub Actions runners) on the primary markethubpromo.com
+        # hostname. CRON_SECRET still authenticates the caller server-side.
         run: |
           curl --silent --show-error --fail-with-body \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
-            https://markethubpromo.com/api/cron/auto-post
+            -H "User-Agent: gha-cron/1 (markethub-auto-post)" \
+            https://viralstat-dashboard.vercel.app/api/cron/auto-post
