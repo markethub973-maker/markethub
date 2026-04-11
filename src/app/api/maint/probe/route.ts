@@ -51,16 +51,26 @@ const CRON_PROBES: CronProbe[] = [
   { path: "/api/subscription/check-trial", expectHTTP: 200 },
 ];
 
-// For these routes we EXPECT a failure (401/405) when hit without auth. If we
-// get 200, that's a critical finding — means the route leaks data.
+// For these routes we EXPECT a failure (401/404/405) when hit without auth.
+// If we get 200, that's a critical finding — means the route leaks data.
+//
+// Notes on expected statuses:
+//   - /api/stripe/checkout → 401: middleware auth guard fires before the
+//     method check, so unauthenticated GET returns 401, not 405.
+//   - /api/stripe/webhook → 405: in PUBLIC_PATHS (webhook receivers verify
+//     their own HMAC signature), so middleware passes through and Next.js
+//     returns 405 for GET on a POST-only handler.
+//   - /api/admin/* → 404: admin tunnel middleware returns 404 (not 401) for
+//     requests without the `?t=` token or `admin_session_token` cookie. This
+//     is intentional — it hides the existence of the admin API entirely.
 const UNAUTH_API_PROBES: UnauthProbe[] = [
   { path: "/api/instagram", expectHTTP: 401 },
   { path: "/api/linkedin", expectHTTP: 401 },
   { path: "/api/calendar", expectHTTP: 401 },
-  { path: "/api/stripe/checkout", expectHTTP: 405, method: "GET" }, // POST-only → 405 on GET
-  { path: "/api/stripe/webhook", expectHTTP: 405, method: "GET" }, // POST-only → 405 on GET
-  { path: "/api/admin/pricing", expectHTTP: 401 },
-  { path: "/api/admin/users", expectHTTP: 401 },
+  { path: "/api/stripe/checkout", expectHTTP: 401, method: "GET" },
+  { path: "/api/stripe/webhook", expectHTTP: 405, method: "GET" },
+  { path: "/api/admin/pricing", expectHTTP: 404 },
+  { path: "/api/admin/users", expectHTTP: 404 },
   { path: "/api/billing", expectHTTP: 401 },
   { path: "/api/assets", expectHTTP: 401 },
   { path: "/api/clients", expectHTTP: 401 },
