@@ -25,11 +25,11 @@ export const PLAN_PRICES: Record<PlanId, number> = {
 };
 
 export const PLAN_LABELS: Record<PlanId, string> = {
-  free_test:  "Free Trial",
-  lite:       "Lite",
+  free_test:  "Starter",
+  lite:       "Creator",
   pro:        "Pro",
-  business:   "Business",
-  enterprise: "Enterprise",
+  business:   "Studio",
+  enterprise: "Agency",
 };
 
 export const PLAN_COLORS: Record<PlanId, string> = {
@@ -122,7 +122,7 @@ export interface RouteGate {
 }
 
 export const ROUTE_GATES: Record<string, RouteGate> = {
-  // ── Lite ($24) features ───────────────────────────────────────────────────
+  // ── Creator ($24) features ─────────────────────────────────────────────────
   "/calendar": {
     minPlan:    "lite",
     featureKey: "has_calendar",
@@ -176,7 +176,7 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     description: "Manage multiple client accounts from one dashboard.",
   },
 
-  // ── New Lite features ─────────────────────────────────────────────────────
+  // ── New Creator features ───────────────────────────────────────────────────
   "/assets": {
     minPlan:    "lite",
     label:      "Assets & Storage",
@@ -250,7 +250,7 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     description: "Create and send branded email campaigns directly from the platform.",
   },
 
-  // ── Business ($99) features ───────────────────────────────────────────────
+  // ── Studio ($99) features ─────────────────────────────────────────────────
   "/api-keys": {
     minPlan:    "business",
     label:      "API Access",

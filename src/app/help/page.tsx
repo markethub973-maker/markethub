@@ -44,11 +44,11 @@ const HELP_FAQS = [
   },
   {
     q: "What's the free trial limitation?",
-    a: "Free trial accounts get 7 days of access to everything on the Pro plan. After day 7, your account transitions to 'expired' status and you'll be prompted to upgrade.",
+    a: "Starter accounts get 14 days of access to everything on the Pro plan. After day 14, your account transitions to 'expired' status and you'll be prompted to upgrade.",
   },
   {
     q: "The AI agent isn't responding — what do I check?",
-    a: "First: is ANTHROPIC_API_KEY configured? (Admin → check environment). Second: are you on a plan that allows AI Hub access? (Lite and above). Third: try a different agent — if only one is broken, it may be a prompt or model issue.",
+    a: "First: is ANTHROPIC_API_KEY configured? (Admin → check environment). Second: are you on a plan that allows AI Hub access? (Creator and above). Third: try a different agent — if only one is broken, it may be a prompt or model issue.",
   },
 ];
 

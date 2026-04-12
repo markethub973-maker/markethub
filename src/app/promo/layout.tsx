@@ -67,11 +67,11 @@ const jsonLdOrg = {
   description:
     "AI marketing platform for agencies with 16 specialized AI agents, real-time social media analytics, and automated lead generation.",
   offers: [
-    { "@type": "Offer", name: "Free Trial", price: "0", priceCurrency: "USD" },
-    { "@type": "Offer", name: "Lite", price: "24", priceCurrency: "USD", billingDuration: "P1M" },
+    { "@type": "Offer", name: "Starter", price: "0", priceCurrency: "USD" },
+    { "@type": "Offer", name: "Creator", price: "24", priceCurrency: "USD", billingDuration: "P1M" },
     { "@type": "Offer", name: "Pro", price: "49", priceCurrency: "USD", billingDuration: "P1M" },
-    { "@type": "Offer", name: "Business", price: "99", priceCurrency: "USD", billingDuration: "P1M" },
-    { "@type": "Offer", name: "Enterprise", price: "249", priceCurrency: "USD", billingDuration: "P1M" },
+    { "@type": "Offer", name: "Studio", price: "99", priceCurrency: "USD", billingDuration: "P1M" },
+    { "@type": "Offer", name: "Agency", price: "249", priceCurrency: "USD", billingDuration: "P1M" },
   ],
   aggregateRating: { "@type": "AggregateRating", ratingValue: "4.9", reviewCount: "87" },
 };
@@ -101,7 +101,7 @@ const jsonLdFaq = {
       name: "What AI models power the platform?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Lite plan uses AI MarketHub Engine Standard tier (fast and efficient). Pro, Business and Enterprise plans use AI MarketHub Engine Premium tier — delivering higher quality outputs on all 16 AI agents.",
+        text: "Creator plan uses AI MarketHub Engine Standard tier (fast and efficient). Pro, Studio and Agency plans use AI MarketHub Engine Premium tier — delivering higher quality outputs on all 16 AI agents.",
       },
     },
     {
@@ -109,7 +109,7 @@ const jsonLdFaq = {
       name: "Can I try it for free?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Yes. The Free Trial plan includes 5 Premium AI Actions per month, access to Research Hub, Lead Database, and all analytics dashboards. No credit card required to start.",
+        text: "Yes. The Starter plan includes 14 days free with 5 Premium AI Actions per month, access to Research Hub, Lead Database, and all analytics dashboards. No credit card required to start.",
       },
     },
     {

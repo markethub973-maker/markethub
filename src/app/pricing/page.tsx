@@ -9,8 +9,8 @@ const FREE_PLANS = ["free_test", "expired"];
 const plans = [
   {
     id: "free_test",
-    name: "Free Trial",
-    duration: "7 Days",
+    name: "Starter",
+    duration: "14 Days",
     price: "$0",
     priceNum: 0,
     premiumActions: "5",
@@ -31,13 +31,13 @@ const plans = [
   },
   {
     id: "lite",
-    name: "Lite",
+    name: "Creator",
     duration: "/ month",
     price: "$24",
     priceNum: 24,
     premiumActions: "20",
     description: "For solo creators",
-    cta: "Get Lite",
+    cta: "Get Creator",
     popular: true,
     features: [
       "20 Premium AI Actions / month",
@@ -70,7 +70,7 @@ const plans = [
       "50 Premium AI Actions / month",
       "Unlimited Basic AI (captions, drafts)",
       "5 client accounts",
-      "Everything in Lite",
+      "Everything in Creator",
       "Lead Finder & CRM",
       "3 team members",
       "20 competitor brands",
@@ -81,13 +81,13 @@ const plans = [
   },
   {
     id: "business",
-    name: "Business",
+    name: "Studio",
     duration: "/ month",
     price: "$99",
     priceNum: 99,
     premiumActions: "200",
     description: "For digital marketing agencies",
-    cta: "Get Business",
+    cta: "Get Studio",
     popular: false,
     features: [
       "200 Premium AI Actions / month",
@@ -105,12 +105,12 @@ const plans = [
   },
   {
     id: "enterprise",
-    name: "Enterprise",
+    name: "Agency",
     duration: "/ month",
     price: "$249",
     priceNum: 249,
     premiumActions: "1,000",
-    description: "For large-scale operations",
+    description: "For marketing agencies at scale",
     cta: "Contact Sales",
     popular: false,
     features: [
@@ -335,11 +335,11 @@ export default function PricingPage() {
               <tr style={{ borderBottom: "2px solid rgba(245,215,160,0.3)", backgroundColor: "#1C1814" }}>
                 <th className="text-left px-5 py-4 font-semibold" style={{ color: "#A8967E", minWidth: 180 }}>Feature</th>
                 {[
-                  { label: "Free Trial", sub: "7 days", color: "#78614E" },
-                  { label: "Lite", sub: "$24/mo", color: "#F59E0B" },
+                  { label: "Starter", sub: "14 days", color: "#78614E" },
+                  { label: "Creator", sub: "$24/mo", color: "#F59E0B" },
                   { label: "Pro", sub: "$49/mo", color: "#8B5CF6" },
-                  { label: "Business", sub: "$99/mo", color: "#E1306C" },
-                  { label: "Enterprise", sub: "$249/mo", color: "#16A34A" },
+                  { label: "Studio", sub: "$99/mo", color: "#E1306C" },
+                  { label: "Agency", sub: "$249/mo", color: "#16A34A" },
                 ].map(({ label, sub, color }) => (
                   <th key={label} className="text-center px-3 py-4" style={{ minWidth: 110 }}>
                     <span className="block text-xs font-bold" style={{ color }}>{label}</span>

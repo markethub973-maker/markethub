@@ -10,12 +10,12 @@ const FREE_PLANS = [null, "free_test", "expired"];
 const plans = [
   {
     id: "free_test",
-    name: "Free Trial",
-    duration: "7 Days",
+    name: "Starter",
+    duration: "14 Days",
     price: "$0",
     premiumActions: "5",
     description: "Test the platform for free",
-    cta: "Start Free Trial",
+    cta: "Start Free",
     popular: false,
     features: [
       { name: "Premium AI Actions", value: "5", included: true },
@@ -28,12 +28,12 @@ const plans = [
   },
   {
     id: "lite",
-    name: "Lite",
+    name: "Creator",
     duration: "Monthly",
     price: "$24",
     premiumActions: "20",
     description: "For solo creators",
-    cta: "Choose Lite",
+    cta: "Choose Creator",
     popular: false,
     features: [
       { name: "Premium AI Actions", value: "20 / month", included: true },
@@ -64,12 +64,12 @@ const plans = [
   },
   {
     id: "business",
-    name: "Business",
+    name: "Studio",
     duration: "Monthly",
     price: "$99",
     premiumActions: "200",
     description: "For digital marketing agencies",
-    cta: "Choose Business",
+    cta: "Choose Studio",
     popular: false,
     features: [
       { name: "Premium AI Actions", value: "200 / month", included: true },
@@ -82,11 +82,11 @@ const plans = [
   },
   {
     id: "enterprise",
-    name: "Enterprise",
+    name: "Agency",
     duration: "Monthly",
     price: "$249",
     premiumActions: "1,000",
-    description: "For large-scale operations",
+    description: "For marketing agencies at scale",
     cta: "Contact Sales",
     popular: false,
     features: [

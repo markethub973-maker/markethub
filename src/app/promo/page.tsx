@@ -95,16 +95,16 @@ const AGENTS = [
 const PLANS = [
   {
     id: "free",
-    name: "Free Trial",
+    name: "Starter",
     price: 0,
     actions: "5",
     model: "Haiku AI",
     color: "#A8967E",
-    features: ["5 Premium AI Actions/mo", "Basic AI unlimited", "3 tracked channels", "Research Hub", "Lead Database", "Social Analytics"],
+    features: ["14-day free trial", "5 Premium AI Actions/mo", "Basic AI unlimited", "3 tracked channels", "Research Hub", "Lead Database", "Social Analytics"],
   },
   {
     id: "lite",
-    name: "Lite",
+    name: "Creator",
     price: 24,
     actions: "20",
     model: "Haiku AI",
@@ -124,19 +124,28 @@ const PLANS = [
   },
   {
     id: "business",
-    name: "Business",
+    name: "Studio",
     price: 99,
     actions: "200",
     model: "Sonnet AI ★",
     color: "#EC4899",
     features: ["200 Premium AI Actions/mo", "Claude Sonnet (top model)", "100 tracked channels", "10 Instagram accounts", "API Access", "20 client accounts", "White Label"],
   },
+  {
+    id: "enterprise",
+    name: "Agency",
+    price: 249,
+    actions: "1,000",
+    model: "Sonnet AI ★",
+    color: "#16A34A",
+    features: ["1,000 Premium AI Actions/mo", "Claude Sonnet (top model)", "Unlimited everything", "White Label", "Full API Access", "SLA 99.9%", "Priority Support"],
+  },
 ];
 
 const FAQS = [
   {
     q: "Do I need a credit card to start?",
-    a: "No. The Free Trial plan is completely free — no card required. You get 5 Premium AI Actions per month, access to all analytics dashboards, Research Hub and Lead Database.",
+    a: "No. The Starter plan is completely free for 14 days — no card required. You get 5 Premium AI Actions per month, access to all analytics dashboards, Research Hub and Lead Database.",
   },
   {
     q: "What's a Premium AI Action?",
@@ -144,7 +153,7 @@ const FAQS = [
   },
   {
     q: "What AI model powers the agents?",
-    a: "Lite uses the AI MarketHub Engine Standard tier (fast, efficient). Pro, Business and Enterprise use the AI MarketHub Engine Premium tier — delivering noticeably better output quality for complex tasks.",
+    a: "Creator uses the AI MarketHub Engine Standard tier (fast, efficient). Pro, Studio and Agency use the AI MarketHub Engine Premium tier — delivering noticeably better output quality for complex tasks.",
   },
   {
     q: "Which languages does the platform support?",
@@ -152,7 +161,7 @@ const FAQS = [
   },
   {
     q: "Can I manage multiple client accounts?",
-    a: "Yes. Lite starts with 2 Instagram accounts, Pro supports 4, Business supports 10, and Enterprise is unlimited. The Client Portal lets you share white-label dashboards with each client.",
+    a: "Yes. Creator starts with 2 Instagram accounts, Pro supports 4, Studio supports 10, and Agency is unlimited. The Client Portal lets you share white-label dashboards with each client.",
   },
   {
     q: "Does it work for local and regional markets?",
@@ -380,7 +389,7 @@ export default function PromoPage() {
               className="flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold transition-all hover:opacity-90"
               style={{ backgroundColor: C.amber, color: "white", boxShadow: `0 8px 24px ${C.amber}40` }}
             >
-              Start Free Trial — No card required
+              Get Started Free — No card required
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
@@ -660,14 +669,14 @@ export default function PromoPage() {
                       color: plan.highlight ? plan.color : C.amberDark,
                     }}
                   >
-                    {plan.price === 0 ? "Start Free" : "Start Free Trial"}
+                    {plan.price === 0 ? "Start Free" : "Get Started Free"}
                   </Link>
                 </div>
               ))}
             </div>
             <p className="text-center text-xs mt-6" style={{ color: C.lighter }}>
-              All paid plans include a free trial period. Cancel anytime. Need Enterprise (1,000 actions, $249/mo)?{" "}
-              <Link href="/pricing" style={{ color: C.amberDark }}>See full pricing →</Link>
+              All paid plans include a 14-day free trial. Cancel anytime.{" "}
+              <Link href="/pricing" style={{ color: C.amberDark }}>Compare all plans →</Link>
             </p>
           </div>
         </section>
@@ -786,7 +795,7 @@ export default function PromoPage() {
             className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-lg font-bold transition-all hover:opacity-90"
             style={{ backgroundColor: C.amber, color: "white", boxShadow: `0 12px 32px ${C.amber}40` }}
           >
-            Start Free Trial
+            Get Started Free
             <ChevronRight className="w-5 h-5" />
           </Link>
           <p className="text-sm mt-4" style={{ color: C.lighter }}>No credit card · Cancel anytime · Free forever plan available</p>

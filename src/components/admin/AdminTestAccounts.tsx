@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { Users, Plus, Copy, Check, ExternalLink, RefreshCw, ChevronDown, ChevronUp, LogIn, Loader2 } from "lucide-react";
 
 const PLAN_LABELS: Record<string, string> = {
-  free_test: "Free Trial",
-  lite: "Lite — $24/mo",
+  free_test: "Starter",
+  lite: "Creator — $24/mo",
   pro: "Pro — $49/mo",
-  business: "Business — $99/mo",
-  enterprise: "Enterprise — $249/mo",
+  business: "Studio — $99/mo",
+  enterprise: "Agency — $249/mo",
 };
 
 const PLAN_COLORS: Record<string, string> = {

@@ -89,7 +89,7 @@ const CATEGORIES = [
         name: "Stripe",
         version: "stripe ^17.7",
         logo: "💳",
-        purpose: "Subscription checkout (Lite $24 / Pro $49 / Business $99 / Enterprise $249), token recharge packs, webhooks (checkout, cancellation, payment failed)",
+        purpose: "Subscription checkout (Creator $24 / Pro $49 / Studio $99 / Agency $249), token recharge packs, webhooks (checkout, cancellation, payment failed)",
         envVars: [
           { key: "STRIPE_SECRET_KEY", desc: "Backend secret key" },
           { key: "STRIPE_WEBHOOK_SECRET", desc: "Webhook signature verification" },

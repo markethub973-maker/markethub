@@ -130,7 +130,7 @@ export default function UpgradeRequiredPage() {
       </h1>
 
       <p className="text-base text-center max-w-lg mb-3" style={{ color: "#78716C" }}>
-        Your 7-day trial is over. Choose a plan below to unlock all features,
+        Your 14-day trial is over. Choose a plan below to unlock all features,
         keep your data, and continue growing your brand with AI-powered insights.
       </p>
 

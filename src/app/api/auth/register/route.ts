@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   }
 
   const selectedPlan = VALID_PLANS.includes(plan) ? plan : "free_test";
-  const trialExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+  const trialExpiresAt = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
 
   const registrationIp = getClientIp(req);
   const normalizedEmail = normalizeEmail(email);

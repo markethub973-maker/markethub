@@ -59,7 +59,7 @@ export default function AdminPricingPanel() {
   const handleSave = async () => {
     if (!editingPlan) return;
     if (editingPlan === "free_test" && editingPrice !== 0) {
-      setError("Free Trial must stay at $0");
+      setError("Starter plan must stay at $0");
       return;
     }
     if (editingPrice < 0) { setError("Price cannot be negative"); return; }
@@ -225,7 +225,7 @@ export default function AdminPricingPanel() {
       )}
 
       <p className="text-xs" style={{ color: "#C4AA8A" }}>
-        Prices are read from Supabase on every load. Free Trial is always $0. Changes affect new Stripe checkouts only.
+        Prices are read from Supabase on every load. Starter is always $0. Changes affect new Stripe checkouts only.
       </p>
     </div>
   );

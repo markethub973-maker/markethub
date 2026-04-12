@@ -34,8 +34,8 @@ const BADGES: Record<string, { label: string; color: string }> = {
   free_test:  { label: "Try Free",   color: "#78614E" },
   lite:       { label: "Start Here", color: "#F59E0B" },
   pro:        { label: "Best Value", color: "#8B5CF6" },
-  business:   { label: "Agency",     color: "#E1306C" },
-  enterprise: { label: "Enterprise", color: "#16A34A" },
+  business:   { label: "Studio",     color: "#E1306C" },
+  enterprise: { label: "Agency",     color: "#16A34A" },
 };
 
 function fmtVal(n: number, suffix = "") {
@@ -240,7 +240,7 @@ export default function RegisterPage() {
                           backgroundColor: isSelected ? badge.color : `${badge.color}15`,
                           color: isSelected ? "white" : badge.color,
                         }}>
-                        {isSelected ? "Selected ✓" : isFree ? "Start Free Trial" : `Choose ${plan.name}`}
+                        {isSelected ? "Selected ✓" : isFree ? "Start Free" : `Choose ${plan.name}`}
                       </button>
                     </div>
                   );

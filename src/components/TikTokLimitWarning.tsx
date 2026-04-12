@@ -12,7 +12,7 @@ interface TikTokLimitWarningProps {
 export default function TikTokLimitWarning({
   currentUsage = 10,
   limit = 10,
-  planName = "Free Trial",
+  planName = "Starter",
 }: TikTokLimitWarningProps) {
   const usagePercentage = Math.round((currentUsage / limit) * 100);
   const isAtLimit = currentUsage >= limit;
@@ -56,7 +56,7 @@ export default function TikTokLimitWarning({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between items-center">
                 <span className="text-gray-700">
-                  <strong>Lite Plan:</strong> Unlimited TikTok videos
+                  <strong>Creator Plan:</strong> Unlimited TikTok videos
                 </span>
                 <span className="text-orange-600 font-semibold">$24/mo</span>
               </div>

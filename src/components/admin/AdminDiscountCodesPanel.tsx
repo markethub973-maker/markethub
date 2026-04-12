@@ -23,10 +23,10 @@ const SQL = `CREATE TABLE IF NOT EXISTS discount_codes (
 );`;
 
 const PLAN_OPTIONS = [
-  { id: "lite", label: "Lite" },
+  { id: "lite", label: "Creator" },
   { id: "pro", label: "Pro" },
-  { id: "business", label: "Business" },
-  { id: "enterprise", label: "Enterprise" },
+  { id: "business", label: "Studio" },
+  { id: "enterprise", label: "Agency" },
 ];
 
 const EMPTY_FORM = {

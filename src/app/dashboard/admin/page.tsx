@@ -258,7 +258,7 @@ export default function AdminPage() {
             { title: "Total Users",     value: stats.totalUsers,                        icon: "👥", change: "" },
             { title: "Revenue / mo",    value: `$${stats.totalRevenue.toFixed(0)}`,     icon: "💰", change: "" },
             { title: "Active Plans",    value: stats.activeSubscriptions,               icon: "✅", change: "" },
-            { title: "Free Trials",     value: stats.freeTrials,                        icon: "🎁", change: "" },
+            { title: "Starter Plans",   value: stats.freeTrials,                        icon: "🎁", change: "" },
           ].map((s) => (
             <AdminStatsCard key={s.title} title={s.title} value={s.value} change={s.change} icon={s.icon} />
           ))}

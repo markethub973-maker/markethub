@@ -44,10 +44,10 @@ const PLAN_PRICES: Record<string, number> = {
 };
 
 const PLAN_LABELS: Record<string, string> = {
-  lite: "Lite",
+  lite: "Creator",
   pro: "Pro",
-  business: "Business",
-  enterprise: "Enterprise",
+  business: "Studio",
+  enterprise: "Agency",
 };
 
 // ── Emite factură ─────────────────────────────────────────────────────────────

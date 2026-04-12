@@ -20,11 +20,11 @@ const fmtDays = (d: number) => {
 const fmtSla = (s: number | null) => (s === null ? "—" : `${s}%`);
 
 const PLAN_LABELS: Record<PlanId, string> = {
-  free_test: "Free Trial",
-  lite: "Lite — $24",
+  free_test: "Starter",
+  lite: "Creator — $24",
   pro: "Pro — $49",
-  business: "Business — $99",
-  enterprise: "Enterprise — $249",
+  business: "Studio — $99",
+  enterprise: "Agency — $249",
 };
 
 const PLAN_COLORS: Record<PlanId, string> = {

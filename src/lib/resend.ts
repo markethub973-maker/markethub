@@ -45,7 +45,7 @@ const PLAN_CONFIG: Record<string, {
   upsell?: { nextPlan: string; nextLabel: string; nextPrice: string; gains: string[] };
 }> = {
   lite: {
-    label: "Lite", price: "$24.00", actions: "20", model: "Standard AI", color: "#F59E0B",
+    label: "Creator", price: "$24.00", actions: "20", model: "Standard AI", color: "#F59E0B",
     startUrl: "https://markethubpromo.com/lead-finder",
     features: ["20 Premium AI Actions/month", "Basic AI unlimited", "12 tracked channels", "2 Instagram accounts", "All 16 AI Agents", "Client Portal"],
     upsell: {
@@ -65,7 +65,7 @@ const PLAN_CONFIG: Record<string, {
     startUrl: "https://markethubpromo.com/lead-finder",
     features: ["50 Premium AI Actions/month", "Premium AI (top model)", "30 tracked channels", "4 Instagram accounts", "All 16 AI Agents", "Power Workflows", "Priority Support"],
     upsell: {
-      nextPlan: "business", nextLabel: "Business", nextPrice: "$99/mo",
+      nextPlan: "business", nextLabel: "Studio", nextPrice: "$99/mo",
       gains: [
         "200 AI Actions/month (4× more — run full campaigns daily)",
         "100 tracked channels (vs 30 now) — manage a full client portfolio",
@@ -77,11 +77,11 @@ const PLAN_CONFIG: Record<string, {
     },
   },
   business: {
-    label: "Business", price: "$99.00", actions: "200", model: "Premium AI ★", color: "#EC4899",
+    label: "Studio", price: "$99.00", actions: "200", model: "Premium AI ★", color: "#EC4899",
     startUrl: "https://markethubpromo.com/lead-finder",
     features: ["200 Premium AI Actions/month", "Premium AI (top model)", "100 tracked channels", "10 Instagram accounts", "API Access", "20 client accounts", "White Label"],
     upsell: {
-      nextPlan: "enterprise", nextLabel: "Enterprise", nextPrice: "$249/mo",
+      nextPlan: "enterprise", nextLabel: "Agency", nextPrice: "$249/mo",
       gains: [
         "1,000 AI Actions/month (5× more — unlimited daily operations)",
         "Unlimited channels, accounts, and client seats",
@@ -92,7 +92,7 @@ const PLAN_CONFIG: Record<string, {
     },
   },
   enterprise: {
-    label: "Enterprise", price: "$249.00", actions: "1,000", model: "Premium AI ★", color: "#16A34A",
+    label: "Agency", price: "$249.00", actions: "1,000", model: "Premium AI ★", color: "#16A34A",
     startUrl: "https://markethubpromo.com/lead-finder",
     features: ["1,000 Premium AI Actions/month", "Premium AI (top model)", "Unlimited everything", "White Label", "Full API Access", "SLA 99.9%", "Priority Support"],
   },
@@ -415,7 +415,7 @@ export async function sendTrialExpiringSoonEmail(email: string, name: string, da
         </div>
         <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Hi, ${name}!</h2>
         <p style="color:#78614E;line-height:1.6;margin-bottom:20px;">
-          Your free 7-day trial is about to expire. Don't lose access to analytics, AI tools and all your connected data.
+          Your free 14-day trial is about to expire. Don't lose access to analytics, AI tools and all your connected data.
         </p>
         <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
           Pick a plan and keep going without interruptions — without losing anything you've already configured.
@@ -451,7 +451,7 @@ export async function sendTrialExpiredEmail(email: string, name: string) {
         </div>
         <h2 style="color:#292524;font-size:17px;margin-bottom:8px;">Hi, ${name},</h2>
         <p style="color:#78614E;line-height:1.6;margin-bottom:20px;">
-          Your free 7-day trial has ended. Access to analytics and AI tools is currently restricted.
+          Your free 14-day trial has ended. Access to analytics and AI tools is currently restricted.
         </p>
         <p style="color:#78614E;line-height:1.6;margin-bottom:24px;">
           Activate a paid plan to regain full access to all your data and features.

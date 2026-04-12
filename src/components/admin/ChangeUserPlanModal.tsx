@@ -26,9 +26,9 @@ export default function ChangeUserPlanModal({
   const [error, setError] = useState("");
 
   const plans = [
-    { id: "free_test", name: "Free Test", desc: "7-day trial" },
-    { id: "lite", name: "Lite", desc: "$20/month" },
-    { id: "pro", name: "Pro", desc: "$40/month" },
+    { id: "free_test", name: "Starter", desc: "14-day trial" },
+    { id: "lite", name: "Creator", desc: "$24/month" },
+    { id: "pro", name: "Pro", desc: "$49/month" },
   ];
 
   const handleSubmit = async () => {

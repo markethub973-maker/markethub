@@ -52,7 +52,7 @@ export default function PlanGate({ requiredPlan, children, message }: PlanGatePr
 
   if (hasAccess) return <>{children}</>;
 
-  const planLabel = { lite: "Lite", pro: "Pro", business: "Business", enterprise: "Enterprise" }[requiredPlan];
+  const planLabel = { lite: "Creator", pro: "Pro", business: "Studio", enterprise: "Agency" }[requiredPlan];
 
   return (
     <div

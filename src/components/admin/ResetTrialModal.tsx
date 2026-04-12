@@ -76,7 +76,7 @@ export default function ResetTrialModal({
           style={{ backgroundColor: "rgba(245,158,11,0.1)" }}
         >
           <p style={{ color: "#292524" }} className="text-sm">
-            This will give the user a new 7-day trial period. Their trial expiration date will be reset to 7 days from now.
+            This will give the user a new 14-day trial period. Their trial expiration date will be reset to 14 days from now.
           </p>
         </div>
 

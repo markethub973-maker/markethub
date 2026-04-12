@@ -7,13 +7,13 @@
  * Marketing Advisor / APEX) are metered per month and reset on the 1st
  * of each month UTC via the consume_premium_action() RPC.
  *
- *   Plan       Price   Premium Actions/mo   Basic AI
- *   ─────────────────────────────────────────────────
- *   free_test  $0      5                    unlimited
- *   lite       $24     20                   unlimited
- *   pro        $49     50                   unlimited
- *   business   $99     200                  unlimited
- *   enterprise $249    1000                 unlimited
+ *   Plan (ID)       Label     Price   Premium Actions/mo   Basic AI
+ *   ──────────────────────────────────────────────────────────────────
+ *   free_test       Starter   $0      5                    unlimited
+ *   lite            Creator   $24     20                   unlimited
+ *   pro             Pro       $49     50                   unlimited
+ *   business        Studio    $99     200                  unlimited
+ *   enterprise      Agency    $249    1000                 unlimited
  *
  * The legacy ai_budget_usd / ai_credits fields are kept for the admin
  * finance dashboard which still tracks raw API spend, but they no longer
@@ -50,7 +50,7 @@ export interface PlanConfig {
 export const PLANS: Record<PlanId, PlanConfig> = {
   free_test: {
     id: "free_test",
-    name: "Free Trial",
+    name: "Starter",
     price: 0,
     premium_actions_per_month: 5,
     premium_action_model: "claude-haiku-4-5-20251001",
@@ -64,7 +64,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     team_members: 1,
     client_accounts: 1,
     pdf_reports_month: 3,
-    history_days: 7,
+    history_days: 14,
     has_calendar: true,
     has_tiktok: true,
     has_api_access: false,
@@ -75,7 +75,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
 
   lite: {
     id: "lite",
-    name: "Lite",
+    name: "Creator",
     price: 24,
     premium_actions_per_month: 20,
     premium_action_model: "claude-haiku-4-5-20251001",
@@ -125,7 +125,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
 
   business: {
     id: "business",
-    name: "Business",
+    name: "Studio",
     price: 99,
     premium_actions_per_month: 200,
     premium_action_model: "claude-sonnet-4-6",
@@ -150,7 +150,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
 
   enterprise: {
     id: "enterprise",
-    name: "Enterprise",
+    name: "Agency",
     price: 249,
     premium_actions_per_month: 1000,
     premium_action_model: "claude-sonnet-4-6",
