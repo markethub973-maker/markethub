@@ -91,7 +91,7 @@ export default function YouTubePage() {
   useEffect(() => {
     fetchAccounts();
     if (justConnected) setNotice("Canal YouTube conectat cu succes!");
-    if (connectError)  setNotice(`Eroare conectare: ${connectError}`);
+    if (connectError)  setNotice(`Connection error: ${connectError}`);
   }, []);
 
   const fetchAccounts = async () => {

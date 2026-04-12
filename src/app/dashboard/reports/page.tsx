@@ -284,11 +284,11 @@ export default function ReportsPage() {
               style={inputStyle}
             />
           </Field>
-          <Field label="Subject (opțional)">
+          <Field label="Subject (optional)">
             <input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder="Raport săptămânal Instagram — 5 apr 2026"
+              placeholder="Weekly Instagram Report — Apr 5 2026"
               style={inputStyle}
             />
           </Field>
@@ -297,11 +297,11 @@ export default function ReportsPage() {
               value={bodyMsg}
               onChange={(e) => setBodyMsg(e.target.value)}
               rows={4}
-              placeholder="Bună, acestea sunt rezultatele săptămânii trecute..."
+              placeholder="Hi, here are last week's results..."
               style={{ ...inputStyle, resize: "vertical" }}
             />
           </Field>
-          <Field label="Link raport (opțional)">
+          <Field label="Report link (optional)">
             <input
               value={reportUrl}
               onChange={(e) => setReportUrl(e.target.value)}
@@ -309,7 +309,7 @@ export default function ReportsPage() {
               style={inputStyle}
             />
           </Field>
-          <Field label="Tip raport">
+          <Field label="Report type">
             <select
               value={reportType}
               onChange={(e) => setReportType(e.target.value as Delivery["report_type"])}
@@ -350,7 +350,7 @@ export default function ReportsPage() {
             }}
           >
             {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-            {sending ? "Se trimite..." : "Trimite raportul"}
+            {sending ? "Sending..." : "Send report"}
           </button>
 
           {sendResult && (
@@ -368,7 +368,7 @@ export default function ReportsPage() {
               {sendResult.ok ? (
                 <>
                   <CheckCircle2 size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
-                  Trimis ({sendResult.message_id ? `id: ${sendResult.message_id.slice(0, 16)}...` : "queued"})
+                  Sent ({sendResult.message_id ? `id: ${sendResult.message_id.slice(0, 16)}...` : "queued"})
                 </>
               ) : (
                 <>
@@ -403,22 +403,22 @@ export default function ReportsPage() {
             }}
           >
             <MessageSquare size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
-            Istoric livrări
+            Delivery history
           </div>
 
           {loading && !data && (
             <div style={{ padding: 30, textAlign: "center", color: "#A8967E" }}>
               <Loader2 size={20} className="animate-spin" style={{ margin: "0 auto 8px" }} />
-              Se încarcă...
+              Loading...
             </div>
           )}
 
           {!loading && deliveries.length === 0 && (
             <div style={{ padding: 30, textAlign: "center", color: "#A8967E" }}>
               <MessageSquare size={32} style={{ margin: "0 auto 8px", opacity: 0.3 }} />
-              <div style={{ fontWeight: 600, color: "#78614E" }}>Nicio livrare încă</div>
+              <div style={{ fontWeight: 600, color: "#78614E" }}>No deliveries yet</div>
               <div style={{ fontSize: 12, marginTop: 4 }}>
-                Trimite primul raport din formul-ul din stânga.
+                Send your first report using the form on the left.
               </div>
             </div>
           )}

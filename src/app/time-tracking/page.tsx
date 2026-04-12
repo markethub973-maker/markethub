@@ -101,7 +101,7 @@ export default function TimeTrackingPage() {
           <input type="month" value={month} onChange={e => setMonth(e.target.value)} style={{ ...inp, maxWidth: 150 }} />
           {[
             { label: "Total ore", value: totalHours.toFixed(1) + "h", color: "#6366F1" },
-            { label: "Facturabile", value: billableHours.toFixed(1) + "h", color: "#F59E0B" },
+            { label: "Billable", value: billableHours.toFixed(1) + "h", color: "#F59E0B" },
             { label: "Venituri", value: "$" + totalEarnings.toFixed(0), color: "#10B981" },
           ].map(s => (
             <div key={s.label} className="rounded-xl px-4 py-2.5 text-center" style={card}>
@@ -112,7 +112,7 @@ export default function TimeTrackingPage() {
           <button type="button" onClick={() => setShowForm(true)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold ml-auto"
             style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-            <Plus className="w-4 h-4" /> Adaugă manual
+            <Plus className="w-4 h-4" /> Add manual
           </button>
         </div>
 
@@ -136,7 +136,7 @@ export default function TimeTrackingPage() {
         : entries.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Clock className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm" style={{ color: "#78614E" }}>Nicio înregistrare pentru luna selectată</p>
+            <p className="text-sm" style={{ color: "#78614E" }}>No entries for the selected month</p>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-xl" style={card}>
@@ -185,7 +185,7 @@ export default function TimeTrackingPage() {
                 <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Tarif ($/h)</label><input type="number" value={form.rate} onChange={e => setForm(p => ({ ...p, rate: parseFloat(e.target.value) || 0 }))} style={inp} /></div>
                 <div className="col-span-2 flex items-center gap-2">
                   <input type="checkbox" id="billable" checked={form.billable} onChange={e => setForm(p => ({ ...p, billable: e.target.checked }))} />
-                  <label htmlFor="billable" className="text-sm" style={{ color: "#78614E" }}>Facturabil</label>
+                  <label htmlFor="billable" className="text-sm" style={{ color: "#78614E" }}>Billable</label>
                   {form.billable && <span className="text-sm font-semibold ml-auto" style={{ color: "#10B981" }}>= ${(form.hours * form.rate).toFixed(2)}</span>}
                 </div>
               </div>
@@ -193,7 +193,7 @@ export default function TimeTrackingPage() {
                 className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
                 style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                Salvează
+                Save
               </button>
             </div>
           </div>

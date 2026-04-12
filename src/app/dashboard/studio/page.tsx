@@ -606,7 +606,7 @@ function YouTubeTab() {
               style={inputStyle}
             />
           </Field>
-          <Field label="Descriere draft (opțional)">
+          <Field label="Draft description (optional)">
             <textarea
               value={draftDescription}
               onChange={(e) => setDraftDescription(e.target.value)}
@@ -614,7 +614,7 @@ function YouTubeTab() {
               style={{ ...inputStyle, resize: "vertical" }}
             />
           </Field>
-          <Field label="Nișă (opțional)">
+          <Field label="Niche (optional)">
             <input
               value={niche}
               onChange={(e) => setNiche(e.target.value)}
@@ -730,7 +730,7 @@ function YouTubeTab() {
             }}
           >
             <Upload size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
-            Upload pe YouTube
+            Upload to YouTube
           </div>
           <Field label="URL video (Supabase Storage sau public)">
             <input
@@ -811,7 +811,7 @@ function YouTubeTab() {
             }}
           >
             {uploading ? <Loader2 size={14} className="animate-spin" /> : <Youtube size={14} />}
-            {uploading ? "Se încarcă..." : "Upload pe YouTube"}
+            {uploading ? "Loading..." : "Upload to YouTube"}
           </button>
           {uploadResult?.error && (
             <div

@@ -54,7 +54,7 @@ export default function LinkedInPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="LinkedIn Account" subtitle="Profilul tău LinkedIn conectat pentru publicare automată" />
+      <Header title="LinkedIn Account" subtitle="Your connected LinkedIn profile for automatic publishing" />
       <div className="p-4 max-w-2xl mx-auto space-y-4">
 
         {loading && (

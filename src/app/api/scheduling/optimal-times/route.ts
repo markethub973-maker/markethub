@@ -62,7 +62,7 @@ const PLATFORM_DEFAULTS: Record<string, Array<{ day_of_week: number; hour_of_day
   ],
 };
 
-const DAY_NAMES = ["Duminică", "Luni", "Marți", "Miercuri", "Joi", "Vineri", "Sâmbătă"];
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 interface OptimalSlot {
   day_of_week: number;
@@ -135,7 +135,7 @@ export async function GET(req: NextRequest) {
     by_day,
     note:
       source === "default"
-        ? "Folosim valorile industry-standard. După ~10 postări cu engagement metrics tracked, vom afișa recomandări pe baza istoricului tău."
-        : `Bazat pe istoricul tău de ${slots.reduce((s, x) => s + (x.post_count ?? 0), 0)} postări analizate.`,
+        ? "Using industry-standard values. After ~10 posts with engagement metrics tracked, we'll show recommendations based on your history."
+        : `Based on your history of ${slots.reduce((s, x) => s + (x.post_count ?? 0), 0)} posts analyzed.`,
   });
 }

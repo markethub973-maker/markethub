@@ -367,7 +367,7 @@ export default function ClientPortalPage() {
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold flex items-center gap-2" style={{ color: "#292524" }}>
-                <span>📝</span> Posts pentru aprobare
+                <span>📝</span> Posts for approval
               </h2>
               <div className="flex gap-2 text-xs">
                 {approvals.counts.pending > 0 && (
@@ -468,7 +468,7 @@ export default function ClientPortalPage() {
                           className="text-sm line-clamp-2"
                           style={{ color: "#292524" }}
                         >
-                          {a.caption || <em style={{ color: "#A8967E" }}>(fără caption)</em>}
+                          {a.caption || <em style={{ color: "#A8967E" }}>(no caption)</em>}
                         </p>
                         {a.recent_comments.length > 0 && (
                           <div

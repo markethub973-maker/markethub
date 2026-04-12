@@ -107,7 +107,7 @@ export default function ResearchPage() {
   };
 
   const postLeads = async (leads: any[]): Promise<{ ok: boolean; count: number; skipped: number; error?: string }> => {
-    if (!leads.length) return { ok: false, count: 0, skipped: 0, error: "Niciun lead de salvat" };
+    if (!leads.length) return { ok: false, count: 0, skipped: 0, error: "No leads to save" };
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
@@ -341,14 +341,14 @@ export default function ResearchPage() {
 
       const r = await postLeads(leads);
       if (r.ok) {
-        const parts = [`${r.count} lead-uri salvate`];
+        const parts = [`${r.count} leads saved`];
         if (r.skipped) parts.push(`${r.skipped} sărite (deja în DB)`);
         setSaveStatus({ kind: "ok", msg: parts.join(" • ") });
       } else {
-        setSaveStatus({ kind: "err", msg: r.error || "Eroare la salvare" });
+        setSaveStatus({ kind: "err", msg: r.error || "Error saving" });
       }
     } catch (e: any) {
-      setSaveStatus({ kind: "err", msg: e?.message || "Eroare neașteptată" });
+      setSaveStatus({ kind: "err", msg: e?.message || "Unexpected error" });
     } finally {
       setSavingLeads(false);
       setTimeout(() => setSaveStatus(null), 5000);
@@ -360,7 +360,7 @@ export default function ResearchPage() {
       className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all disabled:opacity-50"
       style={{ backgroundColor: `${color}15`, color, border: `1px solid ${color}40` }}>
       {savingLeads ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
-      {savingLeads ? "Salvez..." : `Salvează ca lead-uri (${count})`}
+      {savingLeads ? "Saving..." : `Save as leads (${count})`}
     </button>
   );
 
@@ -587,7 +587,7 @@ export default function ResearchPage() {
                 Activează Local Market Mode pentru România
               </p>
               <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
-                Adaugă 4 tab-uri noi în Research Hub: <strong>OLX.ro</strong> (scraper real cu preț, oraș, vânzător), <strong>Pagini Aurii</strong>, <strong>Storia.ro</strong>, <strong>Autovit.ro</strong> — gratis, 1 click.
+                Add 4 tab-uri noi în Research Hub: <strong>OLX.ro</strong> (scraper real cu preț, oraș, vânzător), <strong>Pagini Aurii</strong>, <strong>Storia.ro</strong>, <strong>Autovit.ro</strong> — gratis, 1 click.
               </p>
             </div>
             <button type="button" onClick={activateRomanianMarket} disabled={activatingMarket}

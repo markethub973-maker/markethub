@@ -246,7 +246,7 @@ export default function LeadsPage() {
       ? pool.filter(l => selected.has(l.id))
       : pool;
     if (!targets.length) {
-      setEnrichMsg("Niciun lead enrichable (Instagram/YouTube/Website)");
+      setEnrichMsg("No enrichable leads (Instagram/YouTube/Website)");
       setTimeout(() => setEnrichMsg(null), 4000);
       return;
     }
@@ -585,7 +585,7 @@ export default function LeadsPage() {
                 </button>
               )}
               <button type="button" onClick={handleEnrich} disabled={enriching}
-                title="Îmbogățește lead-uri Instagram/YouTube cu bio + email + telefon"
+                title="Enrich Instagram/YouTube leads with bio + email + phone"
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50"
                 style={{ backgroundColor: "rgba(139,92,246,0.1)", color: "#8B5CF6" }}>
                 {enriching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
@@ -871,12 +871,12 @@ export default function LeadsPage() {
                 value={emailGoal}
                 onChange={e => setEmailGoal(e.target.value)}
                 rows={3}
-                placeholder="Ex: Vreau să le propun o colaborare pentru promovarea unui produs nou. Sau: Pitch pentru un pachet de marketing pe Instagram."
+                placeholder="E.g. I want to propose a collaboration for promoting a new product. Or: Pitch for an Instagram marketing package."
                 className="w-full text-xs px-3 py-2 rounded-xl resize-none focus:outline-none"
                 style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "#292524" }}
               />
               <p className="text-[10px]" style={{ color: "#C4AA8A" }}>
-                Lasă gol pentru un mesaj generic de prezentare. AI-ul va folosi numele, bio-ul și nișa lead-ului.
+                Leave blank for a generic introduction message. The AI will use the lead's name, bio and niche.
               </p>
             </div>
 

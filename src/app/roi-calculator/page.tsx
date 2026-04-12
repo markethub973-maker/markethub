@@ -85,7 +85,7 @@ td{padding:8px 12px;border-bottom:1px solid rgba(245,215,160,0.3);font-size:13px
 
         {/* Client name */}
         <div className="flex gap-2 items-center">
-          <input value={client} onChange={e => setClient(e.target.value)} placeholder="Numele clientului (opțional)"
+          <input value={client} onChange={e => setClient(e.target.value)} placeholder="Client name (optional)"
             className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none" style={{ ...inp, maxWidth: 300 }} />
           <button type="button" onClick={downloadReport}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"

@@ -33,7 +33,7 @@ const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color:
   { id: "brand_kit",    label: "Brand Kit",     icon: Image,    color: "#E4405F", bg: "rgba(228,64,95,0.1)",   desc: "Logos, fonturi, guidelines, templates" },
   { id: "raw_footage",  label: "Raw Footage",   icon: Film,     color: "#6366F1", bg: "rgba(99,102,241,0.1)",  desc: "Material video brut, B-Roll" },
   { id: "production",   label: "Production",    icon: FileText, color: "#F59E0B", bg: "rgba(245,158,11,0.1)",  desc: "Scripturi, voiceover, muzică, prompts AI" },
-  { id: "deliverables", label: "Deliverables",  icon: Archive,  color: "#10B981", bg: "rgba(16,185,129,0.1)",  desc: "Conținut final livrat clientului" },
+  { id: "deliverables", label: "Deliverables",  icon: Archive,  color: "#10B981", bg: "rgba(16,185,129,0.1)",  desc: "Final content delivered to client" },
   { id: "reports",      label: "Reports",       icon: BarChart3,color: "#8B5CF6", bg: "rgba(139,92,246,0.1)",  desc: "Screenshots analytics, PDF-uri rapoarte" },
 ];
 
@@ -184,7 +184,7 @@ function AddAssetModal({
                 ) : (
                   <>
                     <Upload className="w-6 h-6" style={{ color: "#C4AA8A" }} />
-                    <p className="text-sm" style={{ color: "#78614E" }}>Tap pentru a selecta fișier</p>
+                    <p className="text-sm" style={{ color: "#78614E" }}>Tap to select a file</p>
                     <p className="text-xs" style={{ color: "#A8967E" }}>Max 50 MB — imagine, video, PDF, ZIP</p>
                   </>
                 )}
@@ -203,7 +203,7 @@ function AddAssetModal({
                   style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
               </div>
               <div>
-                <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Nume (opțional)</label>
+                <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Name (optional)</label>
                 <input value={externalName} onChange={e => setExternalName(e.target.value)}
                   placeholder="ex: Logo Nike final v3"
                   className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
@@ -238,7 +238,7 @@ function AddAssetModal({
             className="w-full py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
             style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (mode === "upload" ? <Upload className="w-4 h-4" /> : <Link2 className="w-4 h-4" />)}
-            {loading ? "Se salvează..." : "Salvează"}
+            {loading ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
@@ -507,7 +507,7 @@ export default function AssetsPage() {
             style={{ ...card, border: "1px solid rgba(245,215,160,0.3)" }}>
             <Search className="w-4 h-4 shrink-0" style={{ color: "#C4AA8A" }} />
             <input value={search} onChange={e => setSearch(e.target.value)}
-              placeholder="Caută după nume sau client..."
+              placeholder="Search by name or client..."
               className="flex-1 py-2.5 text-sm bg-transparent outline-none"
               style={{ color: "#292524" }} />
             {search && (
@@ -546,14 +546,14 @@ export default function AssetsPage() {
           <div className="rounded-2xl p-12 flex flex-col items-center gap-3 text-center" style={card}>
             <FolderOpen className="w-8 h-8" style={{ color: "#C4AA8A" }} />
             <p className="text-sm font-medium" style={{ color: "#78614E" }}>
-              {assets.length === 0 ? "Niciun asset adăugat încă" : "Niciun rezultat pentru filtrele selectate"}
+              {assets.length === 0 ? "No assets added yet" : "No results for selected filters"}
             </p>
             {assets.length === 0 && (
               <button type="button" onClick={() => setShowAdd(true)}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold mt-1"
                 style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}>
                 <Plus className="w-4 h-4" />
-                Adaugă primul asset
+                Add your first asset
               </button>
             )}
           </div>

@@ -63,7 +63,7 @@ export default function InfluencersPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Influencer Database" subtitle="Găsește și gestionează influenceri pentru campanii" />
+      <Header title="Influencer Database" subtitle="Find and manage influencers for campaigns" />
       <div className="p-4 max-w-5xl mx-auto space-y-4">
 
         {/* Stats */}
@@ -84,13 +84,13 @@ export default function InfluencersPage() {
         <div className="flex gap-2">
           <div className="flex-1 flex items-center gap-2 rounded-xl px-3" style={card}>
             <Search className="w-4 h-4 shrink-0" style={{ color: "#C4AA8A" }} />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Caută după nume, nișă, username..."
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, niche, username..."
               className="flex-1 py-2.5 text-sm bg-transparent outline-none" style={{ color: "#292524" }} />
           </div>
           <button type="button" onClick={() => { setShowForm(true); setEditId(null); setForm(empty); }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
             style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-            <Plus className="w-4 h-4" /> Adaugă
+            <Plus className="w-4 h-4" /> Add
           </button>
         </div>
 
@@ -99,7 +99,7 @@ export default function InfluencersPage() {
         : filtered.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Users className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm" style={{ color: "#78614E" }}>Niciun influencer adăugat</p>
+            <p className="text-sm" style={{ color: "#78614E" }}>No influencers added yet</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -167,7 +167,7 @@ export default function InfluencersPage() {
           <div className="w-full md:max-w-lg rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", maxHeight: "92dvh" }}>
             <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
               <Users className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Editează influencer" : "Influencer nou"}</p>
+              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Edit influencer" : "New influencer"}</p>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
             </div>
             <div className="overflow-y-auto p-4 space-y-3">
@@ -188,15 +188,15 @@ export default function InfluencersPage() {
                 </div>
                 <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Email</label><input value={form.email} onChange={f("email")} style={inp} /></div>
                 <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Locație</label><input value={form.location} onChange={f("location")} placeholder="ex: București" style={inp} /></div>
-                <div><label className="block text-xs font-medium mb-1" style={{ color: "#10B981" }}>Preț/post ($)</label><input type="number" value={form.price_post || ""} onChange={e => setForm(p => ({ ...p, price_post: parseFloat(e.target.value) || 0 }))} style={inp} /></div>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#10B981" }}>Price/post ($)</label><input type="number" value={form.price_post || ""} onChange={e => setForm(p => ({ ...p, price_post: parseFloat(e.target.value) || 0 }))} style={inp} /></div>
                 <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Note</label><textarea value={form.notes} onChange={f("notes")} rows={2} style={{ ...inp, resize: "none" } as any} /></div>
               </div>
-              {form.ig_username && !editId && <p className="text-xs" style={{ color: "#A8967E" }}>💡 Datele IG (followers, engagement) vor fi importate automat la salvare</p>}
+              {form.ig_username && !editId && <p className="text-xs" style={{ color: "#A8967E" }}>💡 IG data (followers, engagement) will be imported automatically on save</p>}
               <button type="button" onClick={save} disabled={saving || !form.name.trim()}
                 className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
                 style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                {editId ? "Salvează" : "Adaugă influencer"}
+                {editId ? "Save" : "Add influencer"}
               </button>
             </div>
           </div>

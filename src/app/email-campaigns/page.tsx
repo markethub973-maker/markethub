@@ -9,17 +9,17 @@ const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0
 const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
 const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   draft:   { bg: "rgba(100,116,139,0.1)", color: "#64748B", label: "Draft" },
-  sending: { bg: "rgba(99,102,241,0.1)",  color: "#6366F1", label: "Se trimite..." },
-  sent:    { bg: "rgba(16,185,129,0.1)",  color: "#10B981", label: "Trimis" },
-  failed:  { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Eroare" },
+  sending: { bg: "rgba(99,102,241,0.1)",  color: "#6366F1", label: "Sending..." },
+  sent:    { bg: "rgba(16,185,129,0.1)",  color: "#10B981", label: "Sent" },
+  failed:  { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Error" },
 };
 const fmtDate = (s: string) => new Date(s).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 const emptyForm = { name: "", subject: "", body_html: "", recipients_text: "", notes: "" };
 
 const TEMPLATES = [
-  { label: "Newsletter lunar", subject: "Noutăți din lumea social media — {{luna}}", body: `<h2>Bună, {{name}}!</h2><p>Iată cele mai importante știri din lumea social media luna aceasta:</p><ul><li>...</li><li>...</li></ul><p>Cu drag,<br>Echipa MarketHub Pro</p>` },
-  { label: "Raport performanță", subject: "Raport lunar performanță — {{client}}", body: `<h2>Raport Lunar</h2><p>Dragă {{client}},</p><p>Iată rezultatele din luna aceasta:</p><ul><li><strong>Followeri noi:</strong> +...</li><li><strong>Reach total:</strong> ...</li><li><strong>Engagement:</strong> ...%</li></ul><p>Cu respect,<br>Echipa ta de social media</p>` },
-  { label: "Ofertă promoțională", subject: "Ofertă specială pentru tine 🎁", body: `<h2>Ofertă Exclusivă</h2><p>Bună,</p><p>Te invităm să beneficiezi de oferta noastră specială:</p><div style="background:#FFF8F0;border-left:4px solid #F59E0B;padding:16px;margin:16px 0"><strong>20% reducere</strong> la pachetul Social Media Pro</div><p>Oferta este valabilă până pe {{data}}.</p>` },
+  { label: "Monthly newsletter", subject: "Social media news — {{month}}", body: `<h2>Hi {{name}}!</h2><p>Here are the most important social media updates this month:</p><ul><li>...</li><li>...</li></ul><p>Best regards,<br>MarketHub Pro Team</p>` },
+  { label: "Performance report", subject: "Monthly performance report — {{client}}", body: `<h2>Monthly Report</h2><p>Dear {{client}},</p><p>Here are this month's results:</p><ul><li><strong>New followers:</strong> +...</li><li><strong>Total reach:</strong> ...</li><li><strong>Engagement:</strong> ...%</li></ul><p>Best regards,<br>Your social media team</p>` },
+  { label: "Promotional offer", subject: "Special offer for you 🎁", body: `<h2>Exclusive Offer</h2><p>Hi,</p><p>We'd like to invite you to take advantage of our special offer:</p><div style="background:#FFF8F0;border-left:4px solid #F59E0B;padding:16px;margin:16px 0"><strong>20% discount</strong> on the Social Media Pro package</div><p>This offer is valid until {{date}}.</p>` },
 ];
 
 export default function EmailCampaignsPage() {
@@ -51,8 +51,8 @@ export default function EmailCampaignsPage() {
   };
 
   const send = async (camp: Campaign) => {
-    if (!camp.recipients?.length) { alert("Adaugă destinatari înainte de trimitere"); return; }
-    if (!confirm(`Trimiți campania la ${camp.recipients.length} destinatari?`)) return;
+    if (!camp.recipients?.length) { alert("Add recipients before sending"); return; }
+    if (!confirm(`Send campaign to ${camp.recipients.length} recipients?`)) return;
     setSendingId(camp.id);
     const res = await fetch("/api/email-campaigns", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: camp.id, action: "send" }) });
     const d = await res.json();
@@ -61,7 +61,7 @@ export default function EmailCampaignsPage() {
   };
 
   const del = async (id: string) => {
-    if (!confirm("Ștergi campania?")) return;
+    if (!confirm("Delete this campaign?")) return;
     await fetch("/api/email-campaigns", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setCampaigns(p => p.filter(x => x.id !== id));
   };
@@ -75,20 +75,20 @@ export default function EmailCampaignsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Email Campaigns" subtitle="Creează și trimite campanii email direct din platformă" />
+      <Header title="Email Campaigns" subtitle="Create and send email campaigns directly from the platform" />
       <div className="p-4 max-w-4xl mx-auto space-y-4">
 
         <button type="button" onClick={() => { setShowForm(true); setEditId(null); setForm(emptyForm); }}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
           style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-          <Plus className="w-4 h-4" /> Campanie nouă
+          <Plus className="w-4 h-4" /> New campaign
         </button>
 
         {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>
         : campaigns.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Mail className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm" style={{ color: "#78614E" }}>Nicio campanie email creată</p>
+            <p className="text-sm" style={{ color: "#78614E" }}>No email campaigns created yet</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -103,14 +103,14 @@ export default function EmailCampaignsPage() {
                     </div>
                     <p className="text-xs mt-0.5 truncate" style={{ color: "#78614E" }}>{c.subject}</p>
                     <div className="flex items-center gap-3 mt-1 text-xs" style={{ color: "#A8967E" }}>
-                      <span className="flex items-center gap-1"><Users className="w-3 h-3" />{c.recipients?.length ?? 0} destinatari</span>
+                      <span className="flex items-center gap-1"><Users className="w-3 h-3" />{c.recipients?.length ?? 0} recipients</span>
                       {c.status === "sent" && <span style={{ color: "#10B981" }}>✓ {c.sent_count} trimise</span>}
                       {c.sent_at && <span>{fmtDate(c.sent_at)}</span>}
                     </div>
                   </div>
                   <div className="flex gap-1 shrink-0">
                     {c.status === "draft" && (
-                      <button type="button" onClick={() => send(c)} disabled={sendingId === c.id} title="Trimite"
+                      <button type="button" onClick={() => send(c)} disabled={sendingId === c.id} title="Send"
                         className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(16,185,129,0.08)", color: "#10B981" }}>
                         {sendingId === c.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                       </button>
@@ -132,7 +132,7 @@ export default function EmailCampaignsPage() {
           <div className="w-full md:max-w-2xl rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", maxHeight: "92dvh" }}>
             <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
               <Mail className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Editează campania" : "Campanie nouă"}</p>
+              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Edit campaign" : "New campaign"}</p>
               <button type="button" onClick={() => setPreviewHtml(v => !v)} className="text-xs px-2 py-1 rounded-lg" style={{ color: "#6366F1", backgroundColor: "rgba(99,102,241,0.08)" }}>
                 {previewHtml ? "Editor" : "Preview"}
               </button>
@@ -181,14 +181,14 @@ export default function EmailCampaignsPage() {
                   placeholder="email1@exemplu.com&#10;email2@exemplu.com"
                   className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
                   style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
-                <p className="text-[10px] mt-1" style={{ color: "#A8967E" }}>{parseRecipients(form.recipients_text).length} destinatari detectați</p>
+                <p className="text-[10px] mt-1" style={{ color: "#A8967E" }}>{parseRecipients(form.recipients_text).length} recipients detected</p>
               </div>
 
               <button type="button" onClick={save} disabled={saving || !form.name.trim() || !form.subject.trim()}
                 className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
                 style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                {editId ? "Salvează" : "Creează campania"}
+                {editId ? "Save" : "Create campaign"}
               </button>
             </div>
           </div>

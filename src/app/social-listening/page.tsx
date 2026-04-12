@@ -88,7 +88,7 @@ export default function SocialListeningPage() {
           <button type="button" onClick={() => setShowConfig(v => !v)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
             style={{ ...card, color: "#78614E", boxShadow: "0 1px 3px rgba(120,97,78,0.06)" }}>
-            <Settings className="w-4 h-4" /> Configurează
+            <Settings className="w-4 h-4" /> Configure
           </button>
           <button type="button" onClick={scan} disabled={scanning}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
@@ -153,14 +153,14 @@ export default function SocialListeningPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Email notificări</label>
+                <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Notification email</label>
                 <input value={config.email} onChange={e => setConfig(p => ({ ...p, email: e.target.value }))}
-                  placeholder="email@exemplu.com" style={inp} />
+                  placeholder="email@example.com" style={inp} />
               </div>
               <div className="flex items-center gap-2 pt-5">
                 <input type="checkbox" id="notify" checked={config.notify_email}
                   onChange={e => setConfig(p => ({ ...p, notify_email: e.target.checked }))} />
-                <label htmlFor="notify" className="text-sm" style={{ color: "#78614E" }}>Trimite email</label>
+                <label htmlFor="notify" className="text-sm" style={{ color: "#78614E" }}>Send email</label>
               </div>
             </div>
 
@@ -168,7 +168,7 @@ export default function SocialListeningPage() {
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
               style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-              Salvează
+              Save
             </button>
           </div>
         )}
@@ -216,7 +216,7 @@ export default function SocialListeningPage() {
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Bell className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
             <p className="text-sm font-medium mb-1" style={{ color: "#78614E" }}>
-              {config.keywords?.length === 0 ? "Configurează keywords pentru a începe monitorizarea" : "Nicio mențiune detectată încă"}
+              {config.keywords?.length === 0 ? "Configure keywords to start monitoring" : "No mentions detected yet"}
             </p>
             <p className="text-xs" style={{ color: "#A8967E" }}>Apasă „Scanează acum" sau așteaptă scan-ul zilnic automat</p>
           </div>

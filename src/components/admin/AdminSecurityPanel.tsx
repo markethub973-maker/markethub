@@ -94,7 +94,7 @@ export default function AdminSecurityPanel() {
       ) : filtered.length === 0 ? (
         <div className="text-center py-8">
           <CheckCircle className="w-8 h-8 mx-auto mb-2" style={{ color: "#10B981" }} />
-          <p className="text-sm" style={{ color: "#78614E" }}>Niciun eveniment în categoria selectată</p>
+          <p className="text-sm" style={{ color: "#78614E" }}>No events in selected category</p>
         </div>
       ) : (
         <div className="space-y-1.5 max-h-[500px] overflow-y-auto">

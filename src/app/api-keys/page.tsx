@@ -30,12 +30,12 @@ export default function ApiKeysPage() {
     const res = await fetch("/api/api-keys", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: name.trim(), expires_days: parseInt(expiresDays) || null }) });
     const d = await res.json();
     if (d.key) { setKeys(p => [d.key, ...p]); setNewKey(d.key.raw_key); setName(""); }
-    else setError(d.error || "Eroare");
+    else setError(d.error || "Error");
     setCreating(false);
   };
 
   const del = async (id: string) => {
-    if (!confirm("Ștergi API key-ul? Aplicațiile care îl folosesc vor pierde accesul.")) return;
+    if (!confirm("Delete this API key? Applications using it will lose access.")) return;
     await fetch("/api/api-keys", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setKeys(p => p.filter(k => k.id !== id));
   };
@@ -93,7 +93,7 @@ export default function ApiKeysPage() {
         : keys.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Key className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm" style={{ color: "#78614E" }}>Niciun API key creat</p>
+            <p className="text-sm" style={{ color: "#78614E" }}>No API keys created yet</p>
           </div>
         ) : (
           <div className="space-y-2">

@@ -189,7 +189,7 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
 
             {/* Opportunities */}
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
-              <p className="text-xs font-semibold mb-2" style={{ color: "#F59E0B" }}>🚀 Oportunități pentru tine</p>
+              <p className="text-xs font-semibold mb-2" style={{ color: "#F59E0B" }}>🚀 Opportunities for you</p>
               <ul className="space-y-1">
                 {result.opportunities?.map((o: string, i: number) => (
                   <li key={i} className="text-xs flex items-center gap-1.5" style={{ color: "#292524" }}>

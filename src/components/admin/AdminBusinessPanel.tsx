@@ -83,7 +83,7 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
   useEffect(() => { load(); }, [load]);
 
   const del = async (id: string) => {
-    if (!confirm("Ștergi clientul?")) return;
+    if (!confirm("Delete this client?")) return;
     await fetch("/api/admin/business/clients", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setClients(prev => prev.filter(c => c.id !== id));
   };
@@ -154,9 +154,9 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
     <div>
       <div className="grid grid-cols-3 gap-2 mb-4">
         {[
-          { label: "Clienți activi", value: clients.filter(c => c.status === "active").length, color: "#10B981" },
+          { label: "Active clients", value: clients.filter(c => c.status === "active").length, color: "#10B981" },
           { label: "MRR total", value: fmtCurrency(totalMRR), color: "#F59E0B" },
-          { label: "Restanți", value: overdueCount, color: overdueCount > 0 ? "#EF4444" : "#A8967E" },
+          { label: "Overdue", value: overdueCount, color: overdueCount > 0 ? "#EF4444" : "#A8967E" },
         ].map(s => (
           <div key={s.label} className="rounded-xl p-3 text-center" style={card}>
             <p className="text-lg font-bold" style={{ color: s.color }}>{s.value}</p>
@@ -170,13 +170,13 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
       <button type="button" onClick={() => onEdit(null)}
         className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold mb-3"
         style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-        <Plus className="w-4 h-4" /> Client nou
+        <Plus className="w-4 h-4" /> New client
       </button>
 
       {loading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
       ) : filtered.length === 0 ? (
-        <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>Niciun client găsit</p>
+        <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>No clients found</p>
       ) : (
         <div className="overflow-x-auto rounded-xl" style={card}>
           <table className="w-full text-xs min-w-[480px]">
@@ -278,13 +278,13 @@ function ContractsView({ onEdit }: { onEdit: (c: Contract | null) => void }) {
       <button type="button" onClick={() => onEdit(null)}
         className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold mb-3"
         style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-        <Plus className="w-4 h-4" /> Contract nou
+        <Plus className="w-4 h-4" /> New contract
       </button>
 
       {loading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
       ) : filtered.length === 0 ? (
-        <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>Niciun contract</p>
+        <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>No contracts</p>
       ) : (
         <div className="overflow-x-auto rounded-xl" style={card}>
           <table className="w-full text-xs min-w-[480px]">
@@ -379,13 +379,13 @@ function OnboardingView({ onEdit }: { onEdit: (o: Onboarding | null) => void }) 
       <button type="button" onClick={() => onEdit(null)}
         className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold mb-3"
         style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-        <Plus className="w-4 h-4" /> Client nou
+        <Plus className="w-4 h-4" /> New client
       </button>
 
       {loading ? (
         <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
       ) : filtered.length === 0 ? (
-        <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>Niciun client în onboarding</p>
+        <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>No clients in onboarding</p>
       ) : (
         <div className="space-y-3">
           {filtered.map(item => {
@@ -503,10 +503,10 @@ function EditClientForm({ client, onSave, onCancel }: { client: Client | null; o
           className="flex-1 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
           style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-          {client ? "Salvează" : "Adaugă"}
+          {client ? "Save" : "Add"}
         </button>
         <button type="button" onClick={onCancel} className="px-4 py-2.5 rounded-xl text-sm" style={{ color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}>
-          Anulează
+          Cancel
         </button>
       </div>
     </div>
@@ -576,10 +576,10 @@ function EditContractForm({ contract, onSave, onCancel }: { contract: Contract |
           className="flex-1 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
           style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-          {contract ? "Salvează" : "Adaugă"}
+          {contract ? "Save" : "Add"}
         </button>
         <button type="button" onClick={onCancel} className="px-4 py-2.5 rounded-xl text-sm" style={{ color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}>
-          Anulează
+          Cancel
         </button>
       </div>
     </div>
@@ -643,10 +643,10 @@ function EditOnboardingForm({ item, onSave, onCancel }: { item: Onboarding | nul
           className="flex-1 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
           style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-          {item ? "Salvează" : "Adaugă"}
+          {item ? "Save" : "Add"}
         </button>
         <button type="button" onClick={onCancel} className="px-4 py-2.5 rounded-xl text-sm" style={{ color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}>
-          Anulează
+          Cancel
         </button>
       </div>
     </div>
@@ -670,8 +670,8 @@ export default function AdminBusinessPanel() {
   const viewTitle: Record<string, string> = {
     home: "Administrare Business", finance: "💰 Finanțe",
     contracts: "📄 Contracte", onboarding: "🚀 Onboarding",
-    edit_client: editClient ? "Editează client" : "Client nou",
-    edit_contract: editContract ? "Editează contract" : "Contract nou",
+    edit_client: editClient ? "Edit client" : "New client",
+    edit_contract: editContract ? "Edit contract" : "New contract",
     edit_onboarding: editOnboarding ? "Editează onboarding" : "Onboarding nou",
   };
 

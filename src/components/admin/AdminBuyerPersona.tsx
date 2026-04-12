@@ -407,7 +407,7 @@ export default function AdminBuyerPersona() {
           {/* ── Affiliate Opportunities ── */}
           <div className="rounded-xl border p-5" style={{ borderColor: "rgba(245,215,160,0.25)" }}>
             <h4 className="font-bold mb-1 flex items-center gap-2" style={{ color: "#292524" }}>
-              <TrendingUp size={16} style={{ color: "#C2854C" }} /> Oportunități Afiliate Recomandate
+              <TrendingUp size={16} style={{ color: "#C2854C" }} /> Recommended Affiliate Opportunities
             </h4>
             <p className="text-xs mb-4" style={{ color: "#A8967E" }}>Programe de afiliere potrivite pentru audiența acestui cont</p>
 

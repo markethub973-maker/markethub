@@ -332,7 +332,7 @@ export default function CrmPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Caută lead..."
+            placeholder="Search leads..."
             style={{
               border: "none",
               outline: "none",
@@ -359,7 +359,7 @@ export default function CrmPage() {
             cursor: "pointer",
           }}
         >
-          <Plus size={14} /> Adaugă coloană
+          <Plus size={14} /> Add coloană
         </button>
       </div>
 
@@ -376,7 +376,7 @@ export default function CrmPage() {
         {loading && stages.length === 0 && (
           <div style={{ width: "100%", textAlign: "center", color: "#A8967E", padding: 50 }}>
             <Loader2 size={24} className="animate-spin" style={{ margin: "0 auto 10px" }} />
-            Se încarcă Kanban...
+            Loading Kanban...
           </div>
         )}
 
@@ -663,7 +663,7 @@ function KanbanColumn(props: {
                 cursor: "pointer",
               }}
             >
-              Adaugă
+              Add
             </button>
             <button
               onClick={() => {
@@ -977,7 +977,7 @@ function LeadDetailDrawer({
           }}
         >
           {saving ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
-          Salvează
+          Save
         </button>
         <button
           onClick={() => onDelete(lead.id)}

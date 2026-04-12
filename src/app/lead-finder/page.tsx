@@ -971,7 +971,7 @@ export default function LeadFinderPage() {
                                 style={{ color: AMBER }}
                               >
                                 <ExternalLink className="w-3 h-3" />
-                                Caută acum în Research Hub
+                                Search now in Research Hub
                               </a>
                             );
                           })()}

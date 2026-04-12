@@ -82,7 +82,7 @@ export default function ProposalsPage() {
   };
 
   const send = async (p: Proposal) => {
-    if (!p.client_email) { alert("Adaugă emailul clientului înainte de trimitere"); return; }
+    if (!p.client_email) { alert("Add client email before sending"); return; }
     setSendingId(p.id);
     await fetch("/api/proposals", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, action: "send", client_email: p.client_email }) });
     setProposals(prev => prev.map(x => x.id === p.id ? { ...x, status: "sent" } : x));
@@ -94,12 +94,12 @@ export default function ProposalsPage() {
     const blob = new Blob([html], { type: "text/html" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a"); a.href = url;
-    a.download = `Propunere_${p.client_name.replace(/\s+/g, "_")}_${p.id.slice(0, 6)}.html`;
+    a.download = `Proposal_${p.client_name.replace(/\s+/g, "_")}_${p.id.slice(0, 6)}.html`;
     a.click(); URL.revokeObjectURL(url);
   };
 
   const del = async (id: string) => {
-    if (!confirm("Ștergi propunerea?")) return;
+    if (!confirm("Delete this proposal?")) return;
     await fetch("/api/proposals", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setProposals(p => p.filter(x => x.id !== id));
   };
@@ -111,20 +111,20 @@ export default function ProposalsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Proposal Generator" subtitle="Creează și trimite oferte profesionale clienților" />
+      <Header title="Proposal Generator" subtitle="Create and send professional proposals to clients" />
       <div className="p-4 max-w-4xl mx-auto space-y-4">
 
         <button type="button" onClick={() => { setShowForm(true); setEditId(null); setForm(emptyForm); }}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
           style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-          <Plus className="w-4 h-4" /> Propunere nouă
+          <Plus className="w-4 h-4" /> New proposal
         </button>
 
         {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>
         : proposals.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <FileText className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm" style={{ color: "#78614E" }}>Nicio propunere creată</p>
+            <p className="text-sm" style={{ color: "#78614E" }}>No proposals created yet</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -146,7 +146,7 @@ export default function ProposalsPage() {
                       <Download className="w-3.5 h-3.5" />
                     </button>
                     {p.status === "draft" && (
-                      <button type="button" onClick={() => send(p)} disabled={sendingId === p.id} title="Trimite email"
+                      <button type="button" onClick={() => send(p)} disabled={sendingId === p.id} title="Send email"
                         className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(16,185,129,0.08)", color: "#10B981" }}>
                         {sendingId === p.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                       </button>
@@ -168,7 +168,7 @@ export default function ProposalsPage() {
           <div className="w-full md:max-w-2xl rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", maxHeight: "92dvh" }}>
             <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
               <FileText className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Editează propunere" : "Propunere nouă"}</p>
+              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Editează propunere" : "New proposal"}</p>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
             </div>
             <div className="overflow-y-auto p-4 space-y-3">
@@ -181,7 +181,7 @@ export default function ProposalsPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-medium" style={{ color: "#78614E" }}>Servicii</label>
-                  <button type="button" onClick={addService} className="text-xs flex items-center gap-1" style={{ color: "#F59E0B" }}><Plus className="w-3 h-3" />Adaugă</button>
+                  <button type="button" onClick={addService} className="text-xs flex items-center gap-1" style={{ color: "#F59E0B" }}><Plus className="w-3 h-3" />Add</button>
                 </div>
                 <div className="space-y-2">
                   {form.services.map((s, i) => (
@@ -216,7 +216,7 @@ export default function ProposalsPage() {
                 className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
                 style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                {editId ? "Salvează" : "Creează propunere"}
+                {editId ? "Save" : "Create proposal"}
               </button>
             </div>
           </div>

@@ -153,7 +153,7 @@ export default function AdminMarkupPanel() {
             className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm disabled:opacity-60"
             style={{ backgroundColor: AMBER, color: "#1C1814" }}>
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {saveOk ? "Salvat ✓" : "Salvează"}
+            {saveOk ? "Saved ✓" : "Save"}
           </button>
         </div>
         {error && <p className="text-sm" style={{ color: RED }}>{error}</p>}

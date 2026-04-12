@@ -231,7 +231,7 @@ export default function ApprovalPage() {
                 className="text-sm leading-relaxed whitespace-pre-wrap"
                 style={{ color: "#292524" }}
               >
-                {post.caption ?? <em style={{ color: "#A8967E" }}>(fără caption)</em>}
+                {post.caption ?? <em style={{ color: "#A8967E" }}>(no caption)</em>}
               </p>
             </div>
           </div>
@@ -433,7 +433,7 @@ export default function ApprovalPage() {
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Adaugă o notă care va însoți verdictul..."
+              placeholder="Add a note to accompany your verdict..."
               rows={2}
               className="w-full rounded-xl px-3 py-2.5 text-sm outline-none resize-none mb-3"
               style={{

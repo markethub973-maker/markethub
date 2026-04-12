@@ -307,7 +307,7 @@ export default function ReviewsPage() {
         <input
           value={syncUrl}
           onChange={(e) => setSyncUrl(e.target.value)}
-          placeholder="Google Maps URL sau numele locației (ex: 'MarketHub Bucuresti')"
+          placeholder="Google Maps URL or location name (e.g. 'MarketHub NYC')"
           onKeyDown={(e) => e.key === "Enter" && syncPlace()}
           disabled={syncing}
           style={{
@@ -449,17 +449,17 @@ export default function ReviewsPage() {
           {loading && !data && (
             <div style={{ padding: 30, textAlign: "center", color: "#A8967E" }}>
               <Loader2 size={20} className="animate-spin" style={{ margin: "0 auto 8px" }} />
-              Se încarcă...
+              Loading...
             </div>
           )}
           {!loading && reviews.length === 0 && (
             <div style={{ padding: 40, textAlign: "center", color: "#A8967E" }}>
               <Star size={36} style={{ margin: "0 auto 12px", opacity: 0.3 }} />
               <div style={{ fontWeight: 600, color: "#78614E", marginBottom: 4 }}>
-                Nu există review-uri
+                No reviews found
               </div>
               <div style={{ fontSize: 12 }}>
-                Sincronizează o locație Google Business de mai sus ca să începi.
+                Sync a Google Business location above to get started.
               </div>
             </div>
           )}
@@ -543,7 +543,7 @@ export default function ReviewsPage() {
                     overflow: "hidden",
                   }}
                 >
-                  {r.content || <em>(fără text)</em>}
+                  {r.content || <em>(no text)</em>}
                 </div>
                 {r.status === "replied" && (
                   <div
@@ -556,7 +556,7 @@ export default function ReviewsPage() {
                       gap: 4,
                     }}
                   >
-                    <CheckCircle2 size={10} /> Răspuns trimis
+                    <CheckCircle2 size={10} /> Reply sent
                   </div>
                 )}
               </button>
@@ -581,10 +581,10 @@ export default function ReviewsPage() {
             >
               <Star size={40} style={{ marginBottom: 12, opacity: 0.3 }} />
               <div style={{ fontWeight: 600, color: "#78614E", marginBottom: 4 }}>
-                Selectează un review
+                Select a review
               </div>
               <div style={{ fontSize: 12 }}>
-                Alege unul din listă pentru a vedea detalii și a răspunde
+                Choose one from the list to see details and reply
               </div>
             </div>
           )}
@@ -697,7 +697,7 @@ export default function ReviewsPage() {
                     margin: 0,
                   }}
                 >
-                  {selected.content || <em style={{ color: "#A8967E" }}>(fără text)</em>}
+                  {selected.content || <em style={{ color: "#A8967E" }}>(no text)</em>}
                 </p>
               </div>
 
@@ -722,7 +722,7 @@ export default function ReviewsPage() {
                       marginBottom: 4,
                     }}
                   >
-                    Răspuns existent pe platformă
+                    Existing reply on platform
                   </div>
                   <p style={{ fontSize: 13, color: "#292524", margin: 0, whiteSpace: "pre-wrap" }}>
                     {selected.owner_reply}
@@ -752,7 +752,7 @@ export default function ReviewsPage() {
                     }}
                   >
                     <CheckCircle2 size={10} style={{ display: "inline", marginRight: 3 }} />
-                    Draft-ul tău ·{" "}
+                    Your draft ·{" "}
                     {selected.replied_at
                       ? new Date(selected.replied_at).toLocaleString("ro-RO")
                       : ""}
@@ -769,8 +769,8 @@ export default function ReviewsPage() {
                         fontStyle: "italic",
                       }}
                     >
-                      ℹ Necesită copy-paste în Google Business Profile pentru publicare
-                      (API reply necesită OAuth GBP separat).
+                      ℹ Requires copy-paste into Google Business Profile to publish
+                      (API reply requires separate GBP OAuth).
                     </div>
                   )}
                 </div>
@@ -804,7 +804,7 @@ export default function ReviewsPage() {
                         fontWeight: 700,
                       }}
                     >
-                      Răspunsul tău
+                      Your reply
                     </div>
                     <button
                       onClick={draftReply}
@@ -852,7 +852,7 @@ export default function ReviewsPage() {
                   <textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={`Răspunde la review-ul lui ${selected.reviewer_name || "user"}... sau folosește "AI Draft" pentru un schițe generat de Claude Haiku`}
+                    placeholder={`Reply to ${selected.reviewer_name || "user"}... or use "AI Draft" for an AI-generated response`}
                     rows={6}
                     style={{
                       width: "100%",
@@ -900,7 +900,7 @@ export default function ReviewsPage() {
                     }}
                   >
                     {replying ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />}
-                    {replying ? "Se salvează..." : "Salvează răspunsul"}
+                    {replying ? "Saving..." : "Save reply"}
                   </button>
                 </div>
               )}

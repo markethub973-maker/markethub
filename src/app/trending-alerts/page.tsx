@@ -80,7 +80,7 @@ export default function TrendingAlertsPage() {
           <button type="button" onClick={() => setShowConfig(v => !v)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
             style={{ ...card, color: "#78614E", boxShadow: "0 1px 3px rgba(120,97,78,0.06)" }}>
-            <Settings className="w-4 h-4" /> Configurează
+            <Settings className="w-4 h-4" /> Configure
           </button>
           <button type="button" onClick={scanNow} disabled={scanning}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
@@ -116,15 +116,15 @@ export default function TrendingAlertsPage() {
               </button>
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Email notificări</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Notification email</label>
               <input value={config.email} onChange={e => setConfig(p => ({ ...p, email: e.target.value }))}
-                placeholder="email@exemplu.com" style={{ ...inp, width: "100%" }} />
+                placeholder="email@example.com" style={{ ...inp, width: "100%" }} />
             </div>
             <button type="button" onClick={saveConfig} disabled={saving}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
               style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-              Salvează
+              Save
             </button>
           </div>
         )}
@@ -132,7 +132,7 @@ export default function TrendingAlertsPage() {
         {/* Keywords active */}
         {config.keywords?.length > 0 && !showConfig && (
           <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-xs" style={{ color: "#A8967E" }}>Urmărești:</span>
+            <span className="text-xs" style={{ color: "#A8967E" }}>Tracking:</span>
             {config.keywords.map(k => (
               <span key={k} className="text-xs px-2 py-0.5 rounded-full"
                 style={{ backgroundColor: "rgba(124,58,237,0.1)", color: "#7C3AED" }}>{k}</span>
@@ -146,8 +146,8 @@ export default function TrendingAlertsPage() {
         ) : alerts.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Bell className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm font-medium mb-1" style={{ color: "#78614E" }}>Nicio alertă detectată încă</p>
-            <p className="text-xs" style={{ color: "#A8967E" }}>Adaugă keywords și apasă „Scanează acum"</p>
+            <p className="text-sm font-medium mb-1" style={{ color: "#78614E" }}>No alerts detected yet</p>
+            <p className="text-xs" style={{ color: "#A8967E" }}>Add keywords and click "Scan now"</p>
           </div>
         ) : (
           <div className="space-y-3">

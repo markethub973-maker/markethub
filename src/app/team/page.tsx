@@ -55,7 +55,7 @@ export default function TeamPage() {
           <p className="font-bold text-sm" style={{ color: "#292524" }}>Invită un membru nou</p>
           <div className="flex gap-2 flex-wrap">
             <input value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && invite()}
-              placeholder="email@exemplu.com" style={{ ...inp, flex: 1, minWidth: 200 }} />
+              placeholder="email@example.com" style={{ ...inp, flex: 1, minWidth: 200 }} />
             <select value={role} onChange={e => setRole(e.target.value)} style={{ ...inp, minWidth: 120 }}>
               {ROLES.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
             </select>

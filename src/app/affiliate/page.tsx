@@ -114,13 +114,13 @@ export default function AffiliatePage() {
         <div className="flex gap-2">
           <div className="flex-1 flex items-center gap-2 rounded-xl px-3" style={{ ...card }}>
             <Search className="w-4 h-4 shrink-0" style={{ color: "#C4AA8A" }} />
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Caută linkuri..."
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search links..."
               className="flex-1 py-2.5 text-sm bg-transparent outline-none" style={{ color: "#292524" }} />
           </div>
           <button type="button" onClick={() => { setShowForm(true); setEditId(null); setForm(emptyForm); }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
             style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-            <Plus className="w-4 h-4" /> Adaugă
+            <Plus className="w-4 h-4" /> Add
           </button>
         </div>
 
@@ -130,7 +130,7 @@ export default function AffiliatePage() {
         ) : filtered.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Link2 className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm" style={{ color: "#78614E" }}>Niciun link afiliat. Adaugă primul!</p>
+            <p className="text-sm" style={{ color: "#78614E" }}>No affiliate links yet. Add your first one!</p>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-xl" style={card}>
@@ -191,7 +191,7 @@ export default function AffiliatePage() {
           <div className="w-full md:max-w-lg rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", maxHeight: "90dvh" }}>
             <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
               <Tag className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Editează link" : "Link afiliat nou"}</p>
+              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Edit link" : "New affiliate link"}</p>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
             </div>
             <div className="overflow-y-auto p-4 space-y-3">
@@ -231,7 +231,7 @@ export default function AffiliatePage() {
                 className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
                 style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-                {editId ? "Salvează" : "Adaugă link"}
+                {editId ? "Save" : "Add link"}
               </button>
             </div>
           </div>

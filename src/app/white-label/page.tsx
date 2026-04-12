@@ -60,7 +60,7 @@ export default function WhiteLabelPage() {
               <span className="font-bold text-white">{settings.agency_name || "Numele Agenției"}</span>
             </div>
             <div className="p-6" style={{ backgroundColor: "#FFFCF7" }}>
-              <p className="text-sm" style={{ color: "#78614E" }}>Platforma de marketing personalizată pentru clienții tăi.<br />Acces la analytics, rapoarte și mai mult.</p>
+              <p className="text-sm" style={{ color: "#78614E" }}>Customized marketing platform for your clients.<br />Access to analytics, reports and more.</p>
               <div className="mt-4 inline-block px-4 py-2 rounded-lg text-sm font-bold text-white"
                 style={{ backgroundColor: settings.accent_color || "#D97706" }}>
                 Accesează Dashboard
@@ -103,9 +103,9 @@ export default function WhiteLabelPage() {
             <div className="rounded-2xl p-4 space-y-3" style={card}>
               <div className="flex items-center gap-2 mb-1">
                 <Globe className="w-4 h-4" style={{ color: "#6366F1" }} />
-                <p className="font-bold text-sm" style={{ color: "#292524" }}>Domeniu & Contact</p>
+                <p className="font-bold text-sm" style={{ color: "#292524" }}>Domain & Contact</p>
               </div>
-              <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Domeniu custom (opțional)</label><input value={settings.custom_domain} onChange={f("custom_domain")} placeholder="ex: portal.agentiatamea.ro" style={inp} /></div>
+              <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Custom domain (optional)</label><input value={settings.custom_domain} onChange={f("custom_domain")} placeholder="e.g. portal.youragency.com" style={inp} /></div>
               <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Email suport</label><input value={settings.support_email} onChange={f("support_email")} placeholder="suport@agentiatamea.ro" style={inp} /></div>
             </div>
 
@@ -125,14 +125,14 @@ export default function WhiteLabelPage() {
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold disabled:opacity-40"
               style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-              {saved ? "Salvat!" : "Salvează setările"}
+              {saved ? "Saved!" : "Save settings"}
             </button>
           </div>
         )}
 
         {/* Note */}
         <div className="rounded-xl p-3 text-xs" style={{ backgroundColor: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.15)", color: "#78614E" }}>
-          💡 Setările de branding se aplică automat în <strong>Client Portal</strong> și rapoartele trimise clienților tăi. Domeniu custom necesită configurare DNS suplimentară.
+          💡 Branding settings are automatically applied to <strong>Client Portal</strong> and reports sent to your clients. Custom domain requires additional DNS configuration.
         </div>
       </div>
     </div>

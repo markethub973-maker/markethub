@@ -44,7 +44,7 @@ export default function ViewsChart() {
       {loading ? (
         <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#C4AA8A" }}>Loading...</div>
       ) : error ? (
-        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#A8967E" }}>Date indisponibile momentan</div>
+        <div className="h-[260px] flex items-center justify-center text-xs" style={{ color: "#A8967E" }}>Data unavailable at the moment</div>
       ) : (
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={data} layout="vertical" margin={{ top: 4, right: 20, bottom: 0, left: 8 }}>

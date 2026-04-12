@@ -216,7 +216,7 @@ export default function CockpitPage() {
       if (!res.ok) {
         setChatMessages([
           ...next,
-          { role: "assistant", content: `⚠️ Eroare: HTTP ${res.status}. Verifică cookie-ul admin.` },
+          { role: "assistant", content: `⚠️ Error: HTTP ${res.status}. Check admin cookie.` },
         ]);
       } else {
         const data = (await res.json()) as { reply: string };
@@ -227,7 +227,7 @@ export default function CockpitPage() {
         ...next,
         {
           role: "assistant",
-          content: `⚠️ Eroare rețea: ${e instanceof Error ? e.message : "unknown"}`,
+          content: `⚠️ Network error: ${e instanceof Error ? e.message : "unknown"}`,
         },
       ]);
     } finally {

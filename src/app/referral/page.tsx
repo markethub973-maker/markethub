@@ -101,7 +101,7 @@ export default function ReferralPage() {
           <p className="text-sm font-bold" style={{ color: "#292524" }}>Invită prin email</p>
           <div className="flex gap-2">
             <input value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && invite()}
-              placeholder="email@exemplu.com"
+              placeholder="email@example.com"
               className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
               style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
             <button type="button" onClick={invite} disabled={sending || !email.trim()}

@@ -18,7 +18,7 @@ const RED   = "#EF4444";
 const card  = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
 const OFFER_TYPES = [
-  { id: "service",   icon: Zap,         label: "Serviciu",         desc: "DJ, fotograf, curier, consultant…" },
+  { id: "service",   icon: Zap,         label: "Service",         desc: "DJ, fotograf, curier, consultant…" },
   { id: "product",   icon: Package,     label: "Produs fizic",     desc: "Echipament, marfă, handmade…" },
   { id: "affiliate", icon: Link,        label: "Afiliat",          desc: "Promovezi produsul altcuiva" },
   { id: "software",  icon: ShoppingCart,label: "Software / SaaS",  desc: "App, tool, abonament digital…" },
@@ -238,7 +238,7 @@ export default function LeadWizardPage() {
     const data = await res.json();
     setAnalyzing(false);
 
-    if (!res.ok) { setAnalyzeError(data.error || "Eroare AI"); return; }
+    if (!res.ok) { setAnalyzeError(data.error || "AI Error"); return; }
 
     setSuggestion(data);
     setKeywords(data.keywords || []);
@@ -347,7 +347,7 @@ export default function LeadWizardPage() {
     setSearching(false);
 
     if (!allResults.length) {
-      setSearchError("Niciun rezultat. Încearcă alte cuvinte-cheie.");
+      setSearchError("No results. Try different keywords.");
       setStep(4);
       return;
     }
@@ -443,7 +443,7 @@ export default function LeadWizardPage() {
     <div>
       <Header
         title="Lead Generation Wizard"
-        subtitle="Admin preview · Găsește prospecți calificați în orice nișă"
+        subtitle="Admin preview · Find qualified prospects in any niche"
       />
       <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-6">
 
@@ -719,7 +719,7 @@ export default function LeadWizardPage() {
                 disabled={!Object.values(enabledSources).some(Boolean)}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold transition-all disabled:opacity-40"
                 style={{ backgroundColor: AMBER, color: "#1C1814" }}>
-                <Search className="w-4 h-4" /> Caută prospecți acum
+                <Search className="w-4 h-4" /> Search prospects now
               </button>
             </div>
           </div>
@@ -735,7 +735,7 @@ export default function LeadWizardPage() {
                 <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" style={{ color: AMBER }} />
                   <p className="text-sm font-bold" style={{ color: "#292524" }}>
-                    {searching ? "Căutare în progres…" : "AI scorează prospecții…"}
+                    {searching ? "Search in progress…" : "AI scoring prospects…"}
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -768,14 +768,14 @@ export default function LeadWizardPage() {
                 {saveGoal === "error" && (
                   <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
                     style={{ backgroundColor: "rgba(239,68,68,0.08)", color: RED, border: "1px solid rgba(239,68,68,0.15)" }}>
-                    <AlertCircle className="w-4 h-4" /> Eroare la salvare — verifică dacă tabelul research_leads există în Supabase
+                    <AlertCircle className="w-4 h-4" /> Error saving — check if research_leads table exists in Supabase
                   </div>
                 )}
 
                 {/* Summary */}
                 <div className="rounded-2xl p-4 flex items-center gap-4 flex-wrap" style={card}>
                   <div className="flex-1">
-                    <p className="font-bold" style={{ color: "#292524" }}>{leads.length} prospecți găsiți</p>
+                    <p className="font-bold" style={{ color: "#292524" }}>{leads.length} prospects found</p>
                     <p className="text-xs" style={{ color: "#A8967E" }}>din {rawResults.length} rezultate totale</p>
                   </div>
                   <div className="flex gap-3">
@@ -896,7 +896,7 @@ export default function LeadWizardPage() {
                             : savedIds.has(lead.index)
                             ? <BookmarkCheck className="w-3 h-3" />
                             : <Bookmark className="w-3 h-3" />}
-                          {savedIds.has(lead.index) ? "Salvat" : "Salvează"}
+                          {savedIds.has(lead.index) ? "Saved" : "Save"}
                         </button>
                       </div>
                     </div>
@@ -909,7 +909,7 @@ export default function LeadWizardPage() {
               <div className="rounded-2xl p-10 text-center" style={card}>
                 <Search className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(196,170,138,0.3)" }} />
                 <p className="font-semibold" style={{ color: "#78614E" }}>Pregătit pentru căutare</p>
-                <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>Apasă "Caută" pe pasul anterior</p>
+                <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>Click "Search" on the previous step</p>
               </div>
             )}
 
@@ -1028,7 +1028,7 @@ export default function LeadWizardPage() {
               <button type="button" onClick={() => { setStep(1); setOfferText(""); setSuggestion(null); setLeads([]); setOutreach(null); }}
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm"
                 style={{ backgroundColor: "rgba(245,215,160,0.08)", color: "#78614E", border: "1px solid rgba(245,215,160,0.15)" }}>
-                <RefreshCw className="w-4 h-4" /> Caută altceva
+                <RefreshCw className="w-4 h-4" /> Search again
               </button>
             </div>
 
