@@ -14,7 +14,9 @@ const inter = Inter({ subsets: ["latin"] });
 const CLARITY_PROJECT_ID = "wb3kzgygye";
 
 const SITE_URL = "https://markethubpromo.com";
-const OG_IMAGE = `${SITE_URL}/og-image.png`; // 1200x630 — drop into /public
+// Generated dynamically by src/app/opengraph-image.tsx at request time.
+// No need to drop a static PNG anywhere.
+const OG_IMAGE = `${SITE_URL}/opengraph-image`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
