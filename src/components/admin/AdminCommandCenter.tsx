@@ -22,7 +22,7 @@
  */
 
 import { useEffect, useState, useCallback } from "react";
-import { ChevronDown, AlertTriangle, AlertCircle, CheckCircle2, RefreshCw } from "lucide-react";
+import { ChevronDown, AlertTriangle, AlertCircle, CheckCircle2, RefreshCw, Shield, MessageCircle, Brain, Zap } from "lucide-react";
 
 interface Resource {
   resource: string;
@@ -56,6 +56,17 @@ interface Status {
   recent_alerts: Alert[];
 }
 
+// B — Subsystems pulse from /api/admin/platform-pulse
+interface PulseSection {
+  status: "ok" | "warning" | "critical";
+}
+interface Pulse {
+  security_agents: PulseSection & { ok: number; stale: number; missing: number; total: number };
+  support_tickets: PulseSection & { open: number; escalated: number; resolved_24h: number; total: number };
+  learning_db: PulseSection & { total: number; new_7d: number };
+  automations: PulseSection & { templates: number; runs_24h: number; runs_failed_24h: number };
+}
+
 const STATUS_CONFIG = {
   ok:       { color: "#10B981", glow: "rgba(16,185,129,0.4)",  label: "ALL SYSTEMS GO",      pulse: false, icon: CheckCircle2 },
   warning:  { color: "#F59E0B", glow: "rgba(245,158,11,0.4)",  label: "ATTENTION REQUIRED",  pulse: true,  icon: AlertTriangle },
@@ -74,16 +85,21 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 export default function AdminCommandCenter() {
   const [status, setStatus] = useState<Status | null>(null);
+  const [pulse, setPulse] = useState<Pulse | null>(null);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchStatus = useCallback(async () => {
     try {
-      const res = await fetch("/api/cost-monitor/status", { cache: "no-store" });
-      if (res.ok) {
-        const data = await res.json();
-        setStatus(data);
+      const [costRes, pulseRes] = await Promise.all([
+        fetch("/api/cost-monitor/status", { cache: "no-store" }),
+        fetch("/api/admin/platform-pulse", { cache: "no-store" }),
+      ]);
+      if (costRes.ok) setStatus(await costRes.json());
+      if (pulseRes.ok) {
+        const p = await pulseRes.json();
+        if (p?.ok && p?.pulse) setPulse(p.pulse as Pulse);
       }
     } catch {
       // silent fail — keep last known state
@@ -208,6 +224,85 @@ export default function AdminCommandCenter() {
       {/* EXPANDABLE PANEL */}
       {expanded && (
         <div className="border-t" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
+          {/* B — Subsystems pulse strip (4 mini-cards) */}
+          {pulse && (
+            <div
+              className="px-5 py-4 grid grid-cols-2 md:grid-cols-4 gap-3"
+              style={{ backgroundColor: "rgba(245,215,160,0.04)", borderBottom: "1px solid rgba(245,215,160,0.1)" }}
+            >
+              {([
+                {
+                  key: "security",
+                  label: "Security Agents",
+                  Icon: Shield,
+                  href: "/dashboard/admin#secagents",
+                  status: pulse.security_agents.status,
+                  primary: `${pulse.security_agents.ok}/${pulse.security_agents.total}`,
+                  sub: pulse.security_agents.stale + pulse.security_agents.missing > 0
+                    ? `${pulse.security_agents.stale + pulse.security_agents.missing} stale`
+                    : "all live",
+                },
+                {
+                  key: "support",
+                  label: "Support Tickets",
+                  Icon: MessageCircle,
+                  href: "/dashboard/admin#support",
+                  status: pulse.support_tickets.status,
+                  primary: `${pulse.support_tickets.open}`,
+                  sub: pulse.support_tickets.escalated > 0
+                    ? `${pulse.support_tickets.escalated} escalated`
+                    : `${pulse.support_tickets.resolved_24h} resolved 24h`,
+                },
+                {
+                  key: "learning",
+                  label: "Learning DB",
+                  Icon: Brain,
+                  href: "/dashboard/admin",
+                  status: pulse.learning_db.status,
+                  primary: `${pulse.learning_db.total}`,
+                  sub: pulse.learning_db.new_7d > 0 ? `+${pulse.learning_db.new_7d} this week` : "no new this week",
+                },
+                {
+                  key: "automations",
+                  label: "Automations",
+                  Icon: Zap,
+                  href: "/dashboard/automations",
+                  status: pulse.automations.status,
+                  primary: `${pulse.automations.templates}`,
+                  sub: pulse.automations.runs_24h > 0
+                    ? `${pulse.automations.runs_24h} runs 24h${pulse.automations.runs_failed_24h > 0 ? ` · ${pulse.automations.runs_failed_24h} failed` : ""}`
+                    : "no runs 24h",
+                },
+              ] as const).map((card) => {
+                const c = STATUS_CONFIG[card.status];
+                return (
+                  <a
+                    key={card.key}
+                    href={card.href}
+                    className="rounded-lg p-3 transition-all hover:scale-[1.02]"
+                    style={{
+                      backgroundColor: "rgba(0,0,0,0.3)",
+                      border: `1px solid ${c.color}33`,
+                    }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <card.Icon className="w-4 h-4" style={{ color: c.color }} />
+                      <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#A8967E" }}>
+                        {card.label}
+                      </p>
+                    </div>
+                    <p className="text-2xl font-bold leading-none" style={{ color: c.color }}>
+                      {card.primary}
+                    </p>
+                    <p className="text-[10px] mt-1" style={{ color: "#A8967E" }}>
+                      {card.sub}
+                    </p>
+                  </a>
+                );
+              })}
+            </div>
+          )}
+
           {/* Recent alerts strip */}
           {status.recent_alerts.length > 0 && (
             <div className="px-5 py-3" style={{ backgroundColor: "rgba(239,68,68,0.06)", borderBottom: "1px solid rgba(239,68,68,0.2)" }}>

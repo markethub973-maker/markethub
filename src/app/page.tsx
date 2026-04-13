@@ -2,6 +2,7 @@
 
 import Header from "@/components/layout/Header";
 import OnboardingChecklist from "@/components/ui/OnboardingChecklist";
+import WhatsNewModal from "@/components/ui/WhatsNewModal";
 import ProfitStatsCard from "@/components/ui/ProfitStatsCard";
 import StatCard from "@/components/ui/StatCard";
 import PlatformBadge from "@/components/ui/PlatformBadge";
@@ -135,6 +136,7 @@ export default function DashboardPage() {
       />
 
       <div className="p-6 space-y-6">
+        <WhatsNewModal />
         <OnboardingChecklist />
         <ProfitStatsCard actionsCount={premiumActionsUsed} />
         {/* Stats Row — computed from YouTube trending data */}
