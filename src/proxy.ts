@@ -77,11 +77,13 @@ async function loadPlanFeaturesOverrides(
 
 // ── Global rate limiter via Upstash REST API (plain fetch, no SDK) ──────────
 // Uses INCR + EXPIRE via Upstash HTTP REST — works in any runtime.
-// Auth: 10 req/min per IP | API: 120 req/min per IP
+// Auth: 10 req/min per IP | API: 120 req/min per IP | AI: 20 req/min per IP
+// AI tier is for Anthropic-expensive endpoints (consultant chat, support
+// ticket creation, learning DB search) where each request can cost cents.
 // Fails open if Redis is unavailable (no outage risk).
-const LIMITS = { auth: 10, api: 120 } as const;
+const LIMITS = { auth: 10, api: 120, ai: 20 } as const;
 
-async function checkRateLimit(ip: string, type: "auth" | "api"): Promise<boolean> {
+async function checkRateLimit(ip: string, type: "auth" | "api" | "ai"): Promise<boolean> {
   const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
   const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
   if (!redisUrl || !redisToken) return true; // not configured — fail-open
@@ -364,10 +366,34 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/webhooks/apify";
 
   const isAuthPath = !isWebhook && AUTH_PATHS.some((p) => pathname.startsWith(p));
+  // AI-expensive endpoints — each call hits Anthropic API at ~$0.001-0.01.
+  // Tighter limit prevents bill blowup from a single bad-actor or runaway loop.
+  const isAiPath = !isWebhook && (
+    pathname === "/api/consultant/chat" ||
+    pathname === "/api/learning/issues/search" ||
+    (pathname === "/api/support/tickets" && request.method === "POST")
+  );
+
   if (isAuthPath) {
     if (!await checkRateLimit(ip, "auth")) {
       const res = NextResponse.json(
         { error: "Too many requests. Please wait before trying again." },
+        { status: 429 }
+      );
+      res.headers.set("Retry-After", "60");
+      applySecurityHeaders(res, csp);
+      return res;
+    }
+  } else if (isAiPath) {
+    if (!await checkRateLimit(ip, "ai")) {
+      void logSecurityEvent({
+        event_type: "rate_limit_exceeded",
+        ip,
+        path: pathname,
+        details: { tier: "ai", limit: LIMITS.ai, window_sec: 60 },
+      });
+      const res = NextResponse.json(
+        { error: "AI rate limit exceeded. Please wait a minute before trying again." },
         { status: 429 }
       );
       res.headers.set("Retry-After", "60");
