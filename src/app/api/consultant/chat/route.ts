@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { searchResolvedIssues, markIssueUsed } from "@/lib/learningDB";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -129,14 +130,29 @@ export async function POST(req: NextRequest) {
     recent_events: body.recent_events ?? [],
   };
 
+  // M5 — search Learning DB for past resolutions of similar questions
+  const kbMatches = await searchResolvedIssues(body.message, { limit: 3 });
+  const kbBlock = kbMatches.length === 0
+    ? ""
+    : `\n[KNOWN SOLUTIONS — prefer these if relevant]\n` +
+      kbMatches
+        .map(
+          (m, i) =>
+            `${i + 1}. [${m.category}${m.platform ? `/${m.platform}` : ""}] ${m.symptom.slice(0, 140)}\n   → ${m.solution.slice(0, 300)}`,
+        )
+        .join("\n");
+
   const contextMsg = `[CONTEXT]
 page: ${context.page_url ?? "unknown"}
 plan: ${context.user_plan ?? "guest/trial"}
 recent features used: ${context.recent_features.join(", ") || "none yet"}
 form state: ${context.form_state ? JSON.stringify(context.form_state).slice(0, 300) : "none"}
-recent signals: ${context.recent_events.join(", ") || "none"}`;
+recent signals: ${context.recent_events.join(", ") || "none"}${kbBlock}`;
 
   const ai = await generate(body.message, contextMsg, history);
+
+  // If we surfaced past solutions, bump their usage counters
+  for (const m of kbMatches) void markIssueUsed(m.id);
 
   // Persist conversation turn
   await service.from("consultant_conversations").insert({

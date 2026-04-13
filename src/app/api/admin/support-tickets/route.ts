@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 import { createServiceClient } from "@/lib/supabase/service";
+import { saveResolvedIssue } from "@/lib/learningDB";
 
 export const dynamic = "force-dynamic";
 
@@ -87,6 +88,40 @@ export async function PATCH(req: NextRequest) {
       sender_name: "MarketHub Team",
       message: body.admin_reply,
     });
+  }
+
+  // M5 Learning DB — when a ticket becomes resolved with a note, persist
+  // the resolution so future similar questions can find it.
+  if (body.status === "resolved" && body.resolution_note) {
+    const { data: ticket } = await supa
+      .from("support_tickets")
+      .select("message,category,language,created_at,ai_confidence")
+      .eq("id", body.ticket_id)
+      .maybeSingle();
+    if (ticket) {
+      const created = ticket.created_at ? new Date(ticket.created_at as string) : null;
+      const resMin = created
+        ? Math.max(1, Math.floor((Date.now() - created.getTime()) / 60000))
+        : null;
+      const rawCategory = (ticket.category as string | null) ?? "client_question";
+      // Map support categories to learning categories
+      const category =
+        rawCategory === "bug" ? "bug"
+        : rawCategory === "billing" ? "payment"
+        : rawCategory === "feature_request" ? "feature_request"
+        : rawCategory === "question" ? "client_question"
+        : "other";
+      await saveResolvedIssue({
+        category: category as Parameters<typeof saveResolvedIssue>[0]["category"],
+        symptom: (ticket.message as string) ?? "",
+        solution: body.resolution_note,
+        language: (ticket.language as string | undefined) ?? "en",
+        source: "ticket",
+        source_ref: body.ticket_id,
+        auto_resolved: false,
+        resolution_time_minutes: resMin,
+      });
+    }
   }
 
   return NextResponse.json({ ok: true });
