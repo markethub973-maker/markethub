@@ -1,0 +1,30 @@
+  name: Cost & Resource Monitor (every 6h)                                                                                                                                               
+                                                                  
+  # M3 Sprint 1 — Polls all paid + free-with-limits resources (Anthropic, Supabase,                                                                                                      
+  # Vercel, Apify, Resend, platform tokens) and fires Telegram + email alerts at
+  # 80% and 95% thresholds (deduped 24h). Snapshot persisted in `resource_usage`                                                                                                         
+  # table for the Admin Dashboard 3D panel (M7).                                                                                                                                         
+   
+  on:                                                                                                                                                                                    
+    schedule:                                                     
+      - cron: "0 */6 * * *" # every 6 hours
+    workflow_dispatch: {}                                                                                                                                                                
+   
+  concurrency:                                                                                                                                                                           
+    group: cost-monitor                                           
+    cancel-in-progress: false
+
+  jobs:
+    run:
+      runs-on: ubuntu-latest                                                                                                                                                             
+      timeout-minutes: 5
+      steps:                                                                                                                                                                             
+        - name: Run Cost Monitor                                  
+          run: |
+            curl --silent --show-error --fail-with-body \
+              --max-time 90 \                                                                                                                                                            
+              -X POST \
+              -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \                                                                                                                    
+              -H "User-Agent: gha-cost-monitor/1" \               
+              https://viralstat-dashboard.vercel.app/api/cost-monitor/check                                                                                                              
+   
