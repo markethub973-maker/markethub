@@ -172,6 +172,8 @@ const PUBLIC_PATHS = [
   "/api/subscription/check-trial",
   "/api/admin-session-check",
   "/api/health",            // public uptime probe — no auth, no rate limit
+  "/api/status",            // public status API — feeds /status page
+  "/status",                // public status page
   "/api/bio-link/",         // public slug API for Link in Bio viewer
   "/api/client-portal/",   // public token API for client portal viewer
   "/l/",                    // public Link in Bio pages
