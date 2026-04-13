@@ -1,0 +1,9 @@
+Contact: mailto:security@markethubpromo.com
+Contact: https://markethubpromo.com/help
+Expires: 2027-04-14T00:00:00.000Z
+Preferred-Languages: en, ro
+Canonical: https://markethubpromo.com/.well-known/security.txt
+Policy: https://markethubpromo.com/security
+
+# This file is a fallback — RFC 9116 specifies /.well-known/security.txt
+# as the canonical location. Some older scanners check / first.

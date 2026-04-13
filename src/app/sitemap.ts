@@ -21,16 +21,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${SITE}/login`,
+      url: `${SITE}/register`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE}/help`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
-      url: `${SITE}/register`,
+      url: `${SITE}/status`,
       lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
+      changeFrequency: "always",
+      priority: 0.4,
     },
     {
       url: `${SITE}/privacy`,
@@ -44,5 +50,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    // NOTE: /login intentionally NOT included — robots: noindex per SEO
+    // metadata. Crawlers find it via direct links if needed.
   ];
 }

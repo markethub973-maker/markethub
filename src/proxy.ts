@@ -174,6 +174,8 @@ const PUBLIC_PATHS = [
   "/api/health",            // public uptime probe — no auth, no rate limit
   "/api/status",            // public status API — feeds /status page
   "/status",                // public status page
+  "/security",              // public security disclosure page (RFC 9116 policy)
+  "/.well-known/",          // RFC 9116 security.txt + future well-known files
   "/api/bio-link/",         // public slug API for Link in Bio viewer
   "/api/client-portal/",   // public token API for client portal viewer
   "/l/",                    // public Link in Bio pages
