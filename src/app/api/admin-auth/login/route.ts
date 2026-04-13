@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { generateAdminToken } from "@/lib/adminAuth";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
+import { getStatus as get2FAStatus, verifyCode as verify2FACode } from "@/lib/admin2fa";
 
 export async function POST(request: NextRequest) {
   try {
-    const { password } = await request.json();
+    const { password, totp_code } = (await request.json()) as {
+      password?: string;
+      totp_code?: string;
+    };
 
     if (!password) {
       return NextResponse.json(
@@ -43,11 +47,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Second factor: if 2FA is enrolled, require valid TOTP/recovery code.
+    // Returns 401 with "needs_2fa: true" so client can prompt for code
+    // and re-submit with totp_code included.
+    const twofa = await get2FAStatus();
+    if (twofa.enrolled) {
+      if (!totp_code) {
+        return NextResponse.json(
+          { error: "2FA code required", needs_2fa: true },
+          { status: 401 }
+        );
+      }
+      const v = await verify2FACode(totp_code);
+      if (!v.ok) {
+        await logAudit({
+          action: "admin_login",
+          actor_id: "unknown",
+          details: { success: false, reason: "2fa_failed", err: v.error },
+          ip: getIpFromHeaders(request.headers),
+        }).catch(() => {});
+        return NextResponse.json(
+          { error: v.error ?? "Invalid 2FA code", needs_2fa: true },
+          { status: 401 }
+        );
+      }
+      // 2FA passed — log and continue to set session
+    }
+
     const sessionToken = generateAdminToken();
 
     const response = NextResponse.json({
       success: true,
       message: "Admin access granted",
+      twofa_used: twofa.enrolled,
     });
 
     await logAudit({

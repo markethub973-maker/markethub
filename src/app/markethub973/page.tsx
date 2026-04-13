@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 
 export default function AdminSecretLogin() {
   const [password, setPassword] = useState("");
+  const [totpCode, setTotpCode] = useState("");
+  const [needs2FA, setNeeds2FA] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -41,6 +43,7 @@ export default function AdminSecretLogin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) return;
+    if (needs2FA && !totpCode.trim()) return;
 
     setStatus("loading");
     setError("");
@@ -49,15 +52,31 @@ export default function AdminSecretLogin() {
       const res = await fetch("/api/admin-secret-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({
+          password,
+          ...(needs2FA && { totp_code: totpCode.trim() }),
+        }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
+        // Server requested a second factor — show the TOTP input
+        if (data.needs_2fa) {
+          setNeeds2FA(true);
+          setStatus("idle");
+          if (needs2FA) {
+            // Already in 2FA step → must be a bad code
+            setError(data.error || "Invalid 2FA code");
+            setTotpCode("");
+          }
+          return;
+        }
         setError(data.error || "Wrong password");
         setStatus("error");
         setPassword("");
+        setTotpCode("");
+        setNeeds2FA(false);
         return;
       }
 
@@ -97,28 +116,55 @@ export default function AdminSecretLogin() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="Admin password"
-                autoFocus
-                disabled={status === "loading"}
+                autoFocus={!needs2FA}
+                disabled={status === "loading" || needs2FA}
                 className="w-full px-4 py-3 rounded-xl text-sm font-medium focus:outline-none"
                 style={{
-                  border: error ? "1px solid #dc2626" : "1px solid #E8D9C5",
-                  backgroundColor: "#FFF8F0",
+                  border: (error && !needs2FA) ? "1px solid #dc2626" : "1px solid #E8D9C5",
+                  backgroundColor: needs2FA ? "rgba(232,217,197,0.3)" : "#FFF8F0",
                   color: "#292524",
                 }}
                 onKeyDown={e => e.key === "Enter" && handleSubmit(e as unknown as React.FormEvent)}
               />
-              {error && (
-                <p className="text-xs mt-1.5" style={{ color: "#dc2626" }}>{error}</p>
-              )}
             </div>
+
+            {needs2FA && (
+              <div>
+                <p className="text-xs mb-2" style={{ color: "#78614E" }}>
+                  Enter the 6-digit code from your authenticator app (or a recovery code).
+                </p>
+                <input
+                  type="text"
+                  value={totpCode}
+                  onChange={e => setTotpCode(e.target.value)}
+                  placeholder="000000"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  autoFocus
+                  disabled={status === "loading"}
+                  maxLength={11}
+                  className="w-full px-4 py-3 rounded-xl text-center text-xl font-mono tracking-widest focus:outline-none"
+                  style={{
+                    border: error ? "1px solid #dc2626" : "1px solid #F59E0B",
+                    backgroundColor: "#FFF8F0",
+                    color: "#292524",
+                  }}
+                  onKeyDown={e => e.key === "Enter" && handleSubmit(e as unknown as React.FormEvent)}
+                />
+              </div>
+            )}
+
+            {error && (
+              <p className="text-xs" style={{ color: "#dc2626" }}>{error}</p>
+            )}
 
             <button
               type="submit"
-              disabled={status === "loading" || !password.trim()}
+              disabled={status === "loading" || !password.trim() || (needs2FA && totpCode.length < 6)}
               className="w-full py-3 rounded-xl text-sm font-bold transition-opacity disabled:opacity-50"
               style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
             >
-              {status === "loading" ? "Verifying..." : "Enter"}
+              {status === "loading" ? "Verifying..." : needs2FA ? "Verify 2FA" : "Enter"}
             </button>
           </form>
         )}

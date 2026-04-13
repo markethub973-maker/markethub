@@ -3,10 +3,14 @@ import crypto from "crypto";
 import { generateAdminToken } from "@/lib/adminAuth";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 import { logSecurityEvent } from "@/lib/siem";
+import { getStatus as get2FAStatus, verifyCode as verify2FACode } from "@/lib/admin2fa";
 
 export async function POST(request: Request) {
   try {
-    const { password } = await request.json();
+    const { password, totp_code } = (await request.json()) as {
+      password?: string;
+      totp_code?: string;
+    };
 
     if (!password) {
       return NextResponse.json(
@@ -53,12 +57,45 @@ export async function POST(request: Request) {
       );
     }
 
+    // Second factor: if 2FA enrolled, require valid TOTP/recovery code.
+    const twofa = await get2FAStatus();
+    if (twofa.enrolled) {
+      if (!totp_code) {
+        return NextResponse.json(
+          { error: "2FA code required", needs_2fa: true },
+          { status: 401 }
+        );
+      }
+      const v = await verify2FACode(totp_code);
+      if (!v.ok) {
+        const ipHdr = getIpFromHeaders(request instanceof Request ? request.headers : new Headers());
+        await logAudit({
+          action: "admin_login",
+          actor_id: "unknown",
+          details: { success: false, reason: "2fa_failed", err: v.error },
+          ip: ipHdr,
+        });
+        void logSecurityEvent({
+          event_type: "admin_login_failed",
+          ip: ipHdr,
+          path: "/api/admin-secret-login",
+          user_agent: request.headers.get("user-agent") ?? undefined,
+          details: { reason: "2fa_failed" },
+        });
+        return NextResponse.json(
+          { error: v.error ?? "Invalid 2FA code", needs_2fa: true },
+          { status: 401 }
+        );
+      }
+    }
+
     // Deterministic HMAC token — verifiable without storing
     const sessionToken = generateAdminToken();
 
     const response = NextResponse.json({
       success: true,
       message: "Admin access granted",
+      twofa_used: twofa.enrolled,
     });
 
     const ipHdr = getIpFromHeaders(request instanceof Request ? request.headers : new Headers());
