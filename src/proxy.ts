@@ -412,6 +412,73 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // ── CSRF protection via Origin header (OWASP-recommended pattern) ──────
+  // Modern browsers always send Origin on cross-origin POST/PUT/DELETE/PATCH.
+  // For state-changing requests under /api/* we require Origin to match
+  // an allowed origin. Webhooks bypass (HMAC-auth'd) and cron routes bypass
+  // (Bearer CRON_SECRET — not browser-initiated). Same for admin endpoints
+  // which use isAdminAuthorized cookie check.
+  //
+  // This stops a malicious page on attacker.com from triggering
+  // state-changing actions in a logged-in user's browser, even though
+  // Supabase auth cookies would auto-attach.
+  const isMutating =
+    request.method === "POST" ||
+    request.method === "PUT" ||
+    request.method === "PATCH" ||
+    request.method === "DELETE";
+  const isCsrfExempt =
+    isWebhook ||
+    pathname.startsWith("/api/cron/") ||
+    pathname.startsWith("/api/cockpit/") ||
+    pathname.startsWith("/api/maint/") ||
+    pathname === "/api/security/health-check" ||
+    pathname.startsWith("/api/admin/") ||
+    pathname === "/api/admin-auth" ||
+    pathname === "/api/admin-secret-login" ||
+    pathname.startsWith("/api/auth/"); // OAuth callbacks have own state-token verification
+
+  if (isMutating && pathname.startsWith("/api/") && !isCsrfExempt) {
+    const origin = request.headers.get("origin");
+    const referer = request.headers.get("referer");
+
+    // Origin is preferred — referer can be stripped by privacy settings.
+    // If origin is present, must match. If absent, fall back to referer
+    // origin (parse the URL). If both missing, reject (suspicious — every
+    // legitimate browser sends at least one for cross-origin POST).
+    let originOk = false;
+    if (origin) {
+      originOk = ALLOWED_ORIGINS.includes(origin);
+    } else if (referer) {
+      try {
+        const refOrigin = new URL(referer).origin;
+        originOk = ALLOWED_ORIGINS.includes(refOrigin);
+      } catch {
+        originOk = false;
+      }
+    }
+
+    if (!originOk) {
+      void logSecurityEvent({
+        event_type: "rate_limit_exceeded", // re-using existing type; csrf_block not in enum
+        ip,
+        path: pathname,
+        details: {
+          reason: "csrf_origin_mismatch",
+          method: request.method,
+          origin: origin ?? null,
+          referer: referer ?? null,
+        },
+      });
+      const res = NextResponse.json(
+        { error: "CSRF check failed — request blocked" },
+        { status: 403 },
+      );
+      applySecurityHeaders(res, csp);
+      return res;
+    }
+  }
+
   // ── Allow public paths without auth check ──────────────────────────────
   const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
   if (isPublic) {
