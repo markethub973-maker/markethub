@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/components/auth/AuthGuard";
+import ReportIssueButton from "@/components/ui/ReportIssueButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
         <AuthGuard>{children}</AuthGuard>
+        {/* M4 Sprint 1 — floating help button visible on every page */}
+        <ReportIssueButton />
       </body>
     </html>
   );

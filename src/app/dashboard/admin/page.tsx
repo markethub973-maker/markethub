@@ -30,6 +30,7 @@ import AdminMarkupPanel from "@/components/admin/AdminMarkupPanel";
 import AdminBusinessPanel from "@/components/admin/AdminBusinessPanel";
 import AdminSecurityPanel from "@/components/admin/AdminSecurityPanel";
 import AdminCommandCenter from "@/components/admin/AdminCommandCenter";
+import AdminSupportTickets from "@/components/admin/AdminSupportTickets";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 // ── Panel definitions ──────────────────────────────────────────────────────────
@@ -38,7 +39,8 @@ type PanelId =
   | "users" | "analytics" | "billing" | "flags" | "discounts"
   | "tokens" | "platform" | "credentials" | "anthropic" | "markup"
   | "audit" | "health" | "tests" | "plantest" | "restore"
-  | "persona" | "progress" | "testaccounts" | "business" | "security";
+  | "persona" | "progress" | "testaccounts" | "business" | "security"
+  | "support";
 
 interface PanelDef {
   id: PanelId;
@@ -52,6 +54,8 @@ interface PanelDef {
 const PANELS: PanelDef[] = [
   // Business Management — primul, cel mai important
   { id: "business", label: "Administrare Business", icon: Shield, color: "#F59E0B", bg: "rgba(245,158,11,0.15)", group: "💼 Business" },
+  // Support Tickets — M4 Sprint 1
+  { id: "support", label: "Support Tickets", icon: Bug, color: "#EF4444", bg: "rgba(239,68,68,0.1)", group: "💼 Business" },
   // Users & Revenue
   { id: "users",       label: "Users",           icon: Users,        color: "#6366F1", bg: "rgba(99,102,241,0.1)",  group: "Users & Revenue" },
   { id: "analytics",   label: "Revenue Chart",   icon: BarChart3,    color: "#10B981", bg: "rgba(16,185,129,0.1)", group: "Users & Revenue" },
@@ -80,6 +84,7 @@ const PANELS: PanelDef[] = [
 
 const PANEL_CONTENT: Record<PanelId, React.ReactNode> = {
   business:     <ModuleBoundary name="Business" minimal><AdminBusinessPanel /></ModuleBoundary>,
+  support:      <ModuleBoundary name="Support Tickets" minimal><AdminSupportTickets /></ModuleBoundary>,
   users:        <ModuleBoundary name="Users Table" minimal><AdminUsersTable /></ModuleBoundary>,
   analytics:    <ModuleBoundary name="Analytics" minimal><div id="analytics-inner" /></ModuleBoundary>,
   testaccounts: <ModuleBoundary name="Test Accounts" minimal><AdminTestAccounts /></ModuleBoundary>,

@@ -43,3 +43,6 @@ next-env.d.ts
 
 # Sentry auth token — DO NOT COMMIT
 .env.sentry-build-plugin
+
+# Workflow files that require manual GitHub UI upload (PAT lacks workflow scope)
+.github/workflows/cost-monitor.yml
