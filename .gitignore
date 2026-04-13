@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# Sentry auth token — DO NOT COMMIT
+.env.sentry-build-plugin

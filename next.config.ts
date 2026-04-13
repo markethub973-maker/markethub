@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 // Security headers applied to all routes (OWASP A05 — Security Misconfiguration)
 const securityHeaders = [
@@ -63,4 +64,23 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  // Sentry org + project (from wizard setup)
+  org: "markethub-gj",
+  project: "markethub-pro",
+
+  // Suppress source map upload logs except in CI
+  silent: !process.env.CI,
+
+  // Upload full set of source maps for better stack traces
+  widenClientFileUpload: true,
+
+  // Tunnel Sentry requests through our domain to bypass ad blockers
+  // (handled at /monitoring → no impact on existing routes)
+  tunnelRoute: "/monitoring",
+
+  // Webpack-specific options (auto-instrument Vercel Cron Monitors)
+  webpack: {
+    automaticVercelMonitors: true,
+  },
+});
