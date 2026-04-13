@@ -30,6 +30,10 @@ Sentry.init({
   sendDefaultPii: true,
 
   environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development",
+
+  // NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA is auto-injected by Vercel for the
+  // client bundle (must be NEXT_PUBLIC to ship to the browser).
+  release: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? undefined,
 });
 
 // Tracks Next.js App Router navigations as Sentry transactions.

@@ -14,4 +14,6 @@ Sentry.init({
   sendDefaultPii: true,
 
   environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development",
+
+  release: process.env.VERCEL_GIT_COMMIT_SHA ?? undefined,
 });

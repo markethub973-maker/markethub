@@ -18,4 +18,8 @@ Sentry.init({
 
   // Environment tag (so we can filter prod vs preview vs dev)
   environment: process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development",
+
+  // Release = git SHA of deployed commit. Sentry groups errors per release
+  // so we can pinpoint "this bug appeared in deploy abc123" + roll back.
+  release: process.env.VERCEL_GIT_COMMIT_SHA ?? undefined,
 });
