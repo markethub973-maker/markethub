@@ -68,6 +68,21 @@ export interface ResolvedIssueMatch {
 }
 
 /**
+ * Extract search terms from a free-text query — punctuation stripped,
+ * lowercased, ≥3 chars only, max 8 terms. Exported for unit testing.
+ */
+export function extractSearchTerms(query: string): string[] {
+  const q = query.trim();
+  if (!q || q.length < 3) return [];
+  return q
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length >= 3)
+    .slice(0, 8);
+}
+
+/**
  * Simple keyword / full-text search. Uses to_tsvector index on the
  * concat of symptom+root_cause+solution. Returns up to `limit` matches
  * ordered by rank.
@@ -76,19 +91,10 @@ export async function searchResolvedIssues(
   query: string,
   opts: { category?: string; platform?: string; limit?: number } = {},
 ): Promise<ResolvedIssueMatch[]> {
-  const q = query.trim();
-  if (!q || q.length < 3) return [];
+  const terms = extractSearchTerms(query);
+  if (terms.length === 0) return [];
 
   const service = createServiceClient();
-
-  // Keep only meaningful words (≥3 chars), strip punctuation, cap to 8.
-  const terms = q
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, " ")
-    .split(/\s+/)
-    .filter((t) => t.length >= 3)
-    .slice(0, 8);
-  if (terms.length === 0) return [];
   // websearch_to_tsquery uses literal " OR " for disjunction (not "|").
   const tsquery = terms.join(" OR ");
 
