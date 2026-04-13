@@ -1,0 +1,65 @@
+{
+  "_comment": "Generic scaffold — copy for new templates. Nodes: Webhook → Verify HMAC → Do Work → Callback.",
+  "name": "MarketHub — <template name>",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "TEMPLATE_WEBHOOK_PATH",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const crypto = require('crypto');\nconst raw = JSON.stringify($json.body);\nconst expected = 'sha256=' + crypto.createHmac('sha256', $env.MARKETHUB_WEBHOOK_SECRET).update(raw).digest('hex');\nconst provided = $json.headers['x-markethub-signature'];\nif (expected !== provided) {\n  throw new Error('Invalid MarketHub signature');\n}\nreturn [{ json: $json.body }];"
+      },
+      "name": "Verify HMAC",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "// TODO: replace with real work. Access inputs via $json.inputs.\nreturn [{ json: { run_id: $json.run_id, status: 'succeeded', output: { stub: true } } }];"
+      },
+      "name": "Do Work",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [650, 300]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.MARKETHUB_API_BASE}}/api/n8n/callback",
+        "method": "POST",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"run_id\": \"{{$json.run_id}}\",\n  \"status\": \"{{$json.status}}\",\n  \"output\": {{JSON.stringify($json.output)}}\n}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-MarketHub-Signature",
+              "value": "=sha256={{ $crypto.hmac('sha256', $env.MARKETHUB_WEBHOOK_SECRET).update(JSON.stringify({run_id: $json.run_id, status: $json.status, output: $json.output})).digest('hex') }}"
+            }
+          ]
+        }
+      },
+      "name": "Callback MarketHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [850, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": { "main": [[{ "node": "Verify HMAC", "type": "main", "index": 0 }]] },
+    "Verify HMAC": { "main": [[{ "node": "Do Work", "type": "main", "index": 0 }]] },
+    "Do Work": { "main": [[{ "node": "Callback MarketHub", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": {}
+}

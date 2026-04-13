@@ -1,0 +1,37 @@
+# Caddy config for automations.markethubpromo.com
+# Auto TLS via Let's Encrypt. Proxies everything to n8n.
+
+automations.markethubpromo.com {
+    encode zstd gzip
+
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Frame-Options "SAMEORIGIN"
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # n8n needs inline scripts/styles
+        -Server
+    }
+
+    # Rate-limit webhooks (protect from spam)
+    @webhook path /webhook/*
+    rate_limit @webhook {
+        zone webhook_by_ip
+        events 60
+        window 1m
+    }
+
+    reverse_proxy n8n:5678 {
+        flush_interval -1
+        header_up Host {host}
+        header_up X-Real-IP {remote}
+        header_up X-Forwarded-For {remote}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+}
