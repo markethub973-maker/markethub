@@ -693,7 +693,7 @@ export default function LeadFinderPage() {
                     ))}
                   </select>
                   <input value={marketRegion} onChange={e => setMarketRegion(e.target.value)}
-                    placeholder="Optional — city, region, or area (e.g. București, Sector 2)"
+                    placeholder="Optional — city, region, or area (e.g. Bucharest, Sector 2)"
                     className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none"
                     style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }} />
                 </div>
@@ -1274,9 +1274,9 @@ export default function LeadFinderPage() {
                   <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: AMBER }} />
                   <div className="text-xs leading-relaxed" style={{ color: "#78614E" }}>
                     <p className="font-bold mb-1" style={{ color: AMBER }}>
-                      ⚠ Lead detectat ca {outreach.lead_kind === "business" ? "competitor (alt furnizor)" : "neclar"}
+                      ⚠ Lead flagged as {outreach.lead_kind === "business" ? "competitor (another provider)" : "unclear"}
                     </p>
-                    <p>{outreach.warning || "Acest lead pare să ofere servicii similare cu ale tale, nu să caute. Verifică sursa și alege un lead din Facebook Groups sau Reddit unde oamenii cer recomandări."}</p>
+                    <p>{outreach.warning || "This lead appears to offer services similar to yours rather than looking for them. Verify the source and pick a lead from Facebook Groups or Reddit where people are asking for recommendations."}</p>
                   </div>
                 </div>
               )}

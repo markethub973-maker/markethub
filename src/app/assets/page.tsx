@@ -30,11 +30,11 @@ interface Asset {
 // ── Config ─────────────────────────────────────────────────────────────────────
 
 const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color: string; bg: string; desc: string }[] = [
-  { id: "brand_kit",    label: "Brand Kit",     icon: Image,    color: "#E4405F", bg: "rgba(228,64,95,0.1)",   desc: "Logos, fonturi, guidelines, templates" },
-  { id: "raw_footage",  label: "Raw Footage",   icon: Film,     color: "#6366F1", bg: "rgba(99,102,241,0.1)",  desc: "Material video brut, B-Roll" },
-  { id: "production",   label: "Production",    icon: FileText, color: "#F59E0B", bg: "rgba(245,158,11,0.1)",  desc: "Scripturi, voiceover, muzică, prompts AI" },
+  { id: "brand_kit",    label: "Brand Kit",     icon: Image,    color: "#E4405F", bg: "rgba(228,64,95,0.1)",   desc: "Logos, fonts, guidelines, templates" },
+  { id: "raw_footage",  label: "Raw Footage",   icon: Film,     color: "#6366F1", bg: "rgba(99,102,241,0.1)",  desc: "Raw video material, B-Roll" },
+  { id: "production",   label: "Production",    icon: FileText, color: "#F59E0B", bg: "rgba(245,158,11,0.1)",  desc: "Scripts, voiceover, music, AI prompts" },
   { id: "deliverables", label: "Deliverables",  icon: Archive,  color: "#10B981", bg: "rgba(16,185,129,0.1)",  desc: "Final content delivered to client" },
-  { id: "reports",      label: "Reports",       icon: BarChart3,color: "#8B5CF6", bg: "rgba(139,92,246,0.1)",  desc: "Screenshots analytics, PDF-uri rapoarte" },
+  { id: "reports",      label: "Reports",       icon: BarChart3,color: "#8B5CF6", bg: "rgba(139,92,246,0.1)",  desc: "Analytics screenshots, report PDFs" },
 ];
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.06)" };
@@ -141,14 +141,14 @@ function AddAssetModal({
                   ? { backgroundColor: "#F59E0B", color: "#1C1814" }
                   : { backgroundColor: "transparent", color: "#78614E" }}>
                 {m === "upload" ? <Upload className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
-                {m === "upload" ? "Upload fișier" : "Link extern"}
+                {m === "upload" ? "Upload file" : "External link"}
               </button>
             ))}
           </div>
 
           {/* Category */}
           <div>
-            <label className="block text-xs font-medium mb-1.5" style={{ color: "#78614E" }}>Categorie</label>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: "#78614E" }}>Category</label>
             <div className="grid grid-cols-2 gap-2">
               {CATEGORIES.map(cat => {
                 const Icon = cat.icon;
@@ -185,7 +185,7 @@ function AddAssetModal({
                   <>
                     <Upload className="w-6 h-6" style={{ color: "#C4AA8A" }} />
                     <p className="text-sm" style={{ color: "#78614E" }}>Tap to select a file</p>
-                    <p className="text-xs" style={{ color: "#A8967E" }}>Max 50 MB — imagine, video, PDF, ZIP</p>
+                    <p className="text-xs" style={{ color: "#A8967E" }}>Max 50 MB — image, video, PDF, ZIP</p>
                   </>
                 )}
               </button>
@@ -205,7 +205,7 @@ function AddAssetModal({
               <div>
                 <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Name (optional)</label>
                 <input value={externalName} onChange={e => setExternalName(e.target.value)}
-                  placeholder="ex: Logo Nike final v3"
+                  placeholder="e.g. Logo Nike final v3"
                   className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
                   style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
               </div>
@@ -217,14 +217,14 @@ function AddAssetModal({
             <div>
               <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Client</label>
               <input value={client} onChange={e => setClient(e.target.value)}
-                placeholder="ex: Nike"
+                placeholder="e.g. Nike"
                 className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
                 style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
             </div>
             <div>
-              <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Note</label>
+              <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Notes</label>
               <input value={notes} onChange={e => setNotes(e.target.value)}
-                placeholder="ex: Versiune finală"
+                placeholder="e.g. Final version"
                 className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
                 style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
             </div>
@@ -262,7 +262,7 @@ function AssetCard({ asset, onDelete }: { asset: Asset; onDelete: (id: string) =
   };
 
   const handleDelete = async () => {
-    if (!confirm(`Ștergi "${asset.name}"?`)) return;
+    if (!confirm(`Delete "${asset.name}"?`)) return;
     await fetch("/api/assets", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -305,7 +305,7 @@ function AssetCard({ asset, onDelete }: { asset: Asset; onDelete: (id: string) =
               className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-medium transition-all"
               style={{ backgroundColor: copied ? "rgba(16,185,129,0.1)" : "rgba(245,158,11,0.1)", color: copied ? "#10B981" : "#D97706" }}>
               {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-              {copied ? "Copiat" : "Link"}
+              {copied ? "Copied" : "Link"}
             </button>
             <a href={url} target="_blank" rel="noopener noreferrer"
               className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(99,102,241,0.08)", color: "#6366F1" }}>
@@ -354,7 +354,7 @@ function DriveSync() {
       body: JSON.stringify({ files: toImport, category }),
     });
     const d = await res.json();
-    setStatus(`✅ ${d.imported} fișiere importate în ${category}`);
+    setStatus(`✅ ${d.imported} files imported into ${category}`);
     setSelected(new Set()); setImporting(false);
   };
 
@@ -366,7 +366,7 @@ function DriveSync() {
         </div>
         <p className="font-bold text-sm" style={{ color: "#292524" }}>Google Drive Sync</p>
       </div>
-      <p className="text-xs" style={{ color: "#A8967E" }}>Inserează ID-ul folderului Drive (din URL: drive.google.com/drive/folders/<strong>FOLDER_ID</strong>)</p>
+      <p className="text-xs" style={{ color: "#A8967E" }}>Paste the Drive folder ID (from the URL: drive.google.com/drive/folders/<strong>FOLDER_ID</strong>)</p>
       <div className="flex gap-2">
         <input value={folderId} onChange={e => setFolderId(e.target.value)}
           placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"
@@ -382,7 +382,7 @@ function DriveSync() {
       {files.length > 0 && (
         <>
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold" style={{ color: "#78614E" }}>{files.length} fișiere găsite</p>
+            <p className="text-xs font-semibold" style={{ color: "#78614E" }}>{files.length} files found</p>
             <div className="flex items-center gap-2">
               <select value={category} onChange={e => setCategory(e.target.value as Category)}
                 className="text-xs rounded-lg px-2 py-1 outline-none"
@@ -451,7 +451,7 @@ export default function AssetsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Assets & Storage" subtitle="Fișiere, linkuri și materiale organizate per categorie" />
+      <Header title="Assets & Storage" subtitle="Files, links and materials organized by category" />
 
       <div className="p-4 max-w-5xl mx-auto space-y-4">
 
@@ -493,7 +493,7 @@ export default function AssetsPage() {
         {driveConnected && (
           <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-medium"
             style={{ backgroundColor: "rgba(16,185,129,0.1)", color: "#10B981", border: "1px solid rgba(16,185,129,0.2)" }}>
-            <Check className="w-4 h-4" /> Google Drive conectat cu succes!
+            <Check className="w-4 h-4" /> Google Drive connected successfully!
             <button type="button" onClick={() => setDriveConnected(null)} className="ml-auto"><X className="w-3.5 h-3.5" /></button>
           </div>
         )}

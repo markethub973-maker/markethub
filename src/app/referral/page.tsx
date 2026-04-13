@@ -7,9 +7,9 @@ interface Referral { id: string; referee_email: string; status: string; reward_v
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
 const STATUS: Record<string, { label: string; color: string; bg: string }> = {
-  pending:   { label: "Invitat",   color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
-  signed_up: { label: "Înregistrat", color: "#6366F1", bg: "rgba(99,102,241,0.1)" },
-  converted: { label: "Convertit", color: "#10B981", bg: "rgba(16,185,129,0.1)" },
+  pending:   { label: "Invited",   color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
+  signed_up: { label: "Signed up", color: "#6366F1", bg: "rgba(99,102,241,0.1)" },
+  converted: { label: "Converted", color: "#10B981", bg: "rgba(16,185,129,0.1)" },
 };
 
 export default function ReferralPage() {
@@ -52,13 +52,13 @@ export default function ReferralPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Referral Program" subtitle="Invită colegi și câștigă reduceri la abonament" />
+      <Header title="Referral Program" subtitle="Invite colleagues and earn subscription discounts" />
       <div className="p-4 max-w-2xl mx-auto space-y-4">
 
         {/* Your code */}
         <div className="rounded-2xl p-5 text-center space-y-3" style={{ ...card, border: "1px solid rgba(245,158,11,0.25)" }}>
           <Gift className="w-8 h-8 mx-auto" style={{ color: "#F59E0B" }} />
-          <p className="font-bold" style={{ color: "#292524" }}>Codul tău de referral</p>
+          <p className="font-bold" style={{ color: "#292524" }}>Your referral code</p>
           <div className="flex items-center gap-2 justify-center">
             <code className="text-2xl font-bold tracking-widest px-4 py-2 rounded-xl"
               style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>{data?.code}</code>
@@ -67,15 +67,15 @@ export default function ReferralPage() {
             </button>
           </div>
           <button type="button" onClick={copyLink} className="text-sm underline" style={{ color: "#A8967E" }}>
-            Copiază link complet de înregistrare
+            Copy full sign-up link
           </button>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Invitați", value: data?.referrals.length ?? 0, icon: Users, color: "#6366F1" },
-            { label: "Convertiți", value: converted, icon: TrendingUp, color: "#10B981" },
+            { label: "Invited", value: data?.referrals.length ?? 0, icon: Users, color: "#6366F1" },
+            { label: "Converted", value: converted, icon: TrendingUp, color: "#10B981" },
             { label: "Reward total", value: `$${totalReward}`, icon: Gift, color: "#F59E0B" },
           ].map(s => { const Icon = s.icon; return (
             <div key={s.label} className="rounded-xl p-3 text-center" style={card}>
@@ -88,8 +88,8 @@ export default function ReferralPage() {
 
         {/* How it works */}
         <div className="rounded-2xl p-4 space-y-2" style={{ ...card, border: "1px solid rgba(16,185,129,0.15)" }}>
-          <p className="text-xs font-bold" style={{ color: "#10B981" }}>Cum funcționează</p>
-          {["Trimiți codul unui coleg", "Colegul se înregistrează cu codul tău și primește 20% discount", "Tu primești $20 credit la fiecare conversie"].map((s, i) => (
+          <p className="text-xs font-bold" style={{ color: "#10B981" }}>How it works</p>
+          {["Share your code with a colleague", "They sign up with your code and get 20% off", "You earn $20 credit for every conversion"].map((s, i) => (
             <div key={i} className="flex items-start gap-2 text-xs" style={{ color: "#78614E" }}>
               <span className="font-bold shrink-0" style={{ color: "#10B981" }}>{i+1}.</span> {s}
             </div>
@@ -98,7 +98,7 @@ export default function ReferralPage() {
 
         {/* Invite form */}
         <div className="rounded-2xl p-4 space-y-3" style={card}>
-          <p className="text-sm font-bold" style={{ color: "#292524" }}>Invită prin email</p>
+          <p className="text-sm font-bold" style={{ color: "#292524" }}>Invite via email</p>
           <div className="flex gap-2">
             <input value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && invite()}
               placeholder="email@example.com"
@@ -108,7 +108,7 @@ export default function ReferralPage() {
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
               style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
               {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : sent ? <Check className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
-              {sent ? "Trimis!" : "Invită"}
+              {sent ? "Sent!" : "Invite"}
             </button>
           </div>
         </div>
@@ -116,7 +116,7 @@ export default function ReferralPage() {
         {/* Referrals list */}
         {(data?.referrals.length ?? 0) > 0 && (
           <div className="space-y-2">
-            <p className="text-xs font-semibold px-1" style={{ color: "#A8967E" }}>Invitații tale</p>
+            <p className="text-xs font-semibold px-1" style={{ color: "#A8967E" }}>Your invites</p>
             {data?.referrals.map(r => {
               const st = STATUS[r.status] ?? STATUS.pending;
               return (

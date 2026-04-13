@@ -155,7 +155,7 @@ export default function EmailCampaignsPage() {
                 </div>
               )}
 
-              <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Nume campanie *</label><input value={form.name} onChange={f("name")} placeholder="ex: Newsletter Aprilie 2026" style={inp} /></div>
+              <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Campaign name *</label><input value={form.name} onChange={f("name")} placeholder="e.g. April 2026 Newsletter" style={inp} /></div>
               <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Subiect email *</label><input value={form.subject} onChange={f("subject")} placeholder="Subiectul emailului" style={inp} /></div>
 
               {previewHtml ? (
@@ -167,18 +167,18 @@ export default function EmailCampaignsPage() {
                 </div>
               ) : (
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Conținut HTML *</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>HTML content *</label>
                   <textarea value={form.body_html} onChange={f("body_html")} rows={8}
-                    placeholder="<h2>Bună,</h2><p>Conținutul emailului...</p>"
+                    placeholder="<h2>Hi,</h2><p>Email content...</p>"
                     className="w-full rounded-lg px-3 py-2.5 text-xs outline-none resize-none font-mono"
                     style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
                 </div>
               )}
 
               <div>
-                <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Destinatari (email-uri separate prin Enter sau virgulă)</label>
+                <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Recipients (emails separated by Enter or comma)</label>
                 <textarea value={form.recipients_text} onChange={f("recipients_text")} rows={3}
-                  placeholder="email1@exemplu.com&#10;email2@exemplu.com"
+                  placeholder="email1@example.com&#10;email2@example.com"
                   className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
                   style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
                 <p className="text-[10px] mt-1" style={{ color: "#A8967E" }}>{parseRecipients(form.recipients_text).length} recipients detected</p>

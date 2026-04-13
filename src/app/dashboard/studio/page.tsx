@@ -330,7 +330,7 @@ function VisualsTab() {
           }}
         >
           {processing ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-          {processing ? "Se procesează..." : `Crop ${selected.size} formate`}
+          {processing ? "Processing..." : `Crop ${selected.size} formats`}
         </button>
 
         {globalError && (
@@ -598,11 +598,11 @@ function YouTubeTab() {
             <Sparkles size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
             AI SEO Suggestions (Haiku)
           </div>
-          <Field label="Despre ce e videoclipul">
+          <Field label="What is the video about">
             <input
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="ex: 5 greșeli frecvente la postări pe Instagram"
+              placeholder="e.g. 5 common mistakes with Instagram posts"
               style={inputStyle}
             />
           </Field>
@@ -618,7 +618,7 @@ function YouTubeTab() {
             <input
               value={niche}
               onChange={(e) => setNiche(e.target.value)}
-              placeholder="ex: marketing digital pentru restaurante"
+              placeholder="e.g. digital marketing for restaurants"
               style={inputStyle}
             />
           </Field>
@@ -642,7 +642,7 @@ function YouTubeTab() {
             }}
           >
             {suggesting ? <Loader2 size={12} className="animate-spin" /> : <Sparkles size={12} />}
-            {suggesting ? "Se generează..." : "Generează sugestii SEO"}
+            {suggesting ? "Generating..." : "Generate SEO suggestions"}
           </button>
           {suggestError && (
             <div
@@ -732,7 +732,7 @@ function YouTubeTab() {
             <Upload size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
             Upload to YouTube
           </div>
-          <Field label="URL video (Supabase Storage sau public)">
+          <Field label="Video URL (Supabase Storage or public)">
             <input
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
@@ -740,14 +740,14 @@ function YouTubeTab() {
               style={inputStyle}
             />
           </Field>
-          <Field label="Titlu (max 100 char)">
+          <Field label="Title (max 100 chars)">
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value.slice(0, 100))}
               style={inputStyle}
             />
           </Field>
-          <Field label="Descriere">
+          <Field label="Description">
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -755,11 +755,11 @@ function YouTubeTab() {
               style={{ ...inputStyle, resize: "vertical" }}
             />
           </Field>
-          <Field label="Tags (separate prin virgulă)">
+          <Field label="Tags (comma-separated)">
             <input value={tags} onChange={(e) => setTags(e.target.value)} style={inputStyle} />
           </Field>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-            <Field label="Categorie">
+            <Field label="Category">
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(Number(e.target.value))}
@@ -778,7 +778,7 @@ function YouTubeTab() {
                 <option value={28}>28 — Science & Tech</option>
               </select>
             </Field>
-            <Field label="Vizibilitate">
+            <Field label="Visibility">
               <select
                 value={privacy}
                 onChange={(e) => setPrivacy(e.target.value as "public" | "unlisted" | "private")}
@@ -839,7 +839,7 @@ function YouTubeTab() {
               }}
             >
               <CheckCircle2 size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
-              Video încărcat:{" "}
+              Video uploaded:{" "}
               <a href={uploadResult.video_url} target="_blank" rel="noopener noreferrer" style={{ color: "#065F46", textDecoration: "underline" }}>
                 {uploadResult.video_url}
               </a>

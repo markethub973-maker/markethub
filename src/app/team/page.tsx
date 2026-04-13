@@ -7,8 +7,8 @@ interface Member { id: string; member_email: string; role: string; status: strin
 
 const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
 const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
-const ROLES = [{ id: "admin", label: "Admin", icon: Shield, color: "#EF4444", desc: "Acces complet" }, { id: "editor", label: "Editor", icon: Edit3, color: "#F59E0B", desc: "Poate edita conținut" }, { id: "viewer", label: "Viewer", icon: Eye, color: "#6366F1", desc: "Doar citire" }];
-const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = { invited: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Invitat" }, active: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Activ" }, suspended: { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Suspendat" } };
+const ROLES = [{ id: "admin", label: "Admin", icon: Shield, color: "#EF4444", desc: "Full access" }, { id: "editor", label: "Editor", icon: Edit3, color: "#F59E0B", desc: "Can edit content" }, { id: "viewer", label: "Viewer", icon: Eye, color: "#6366F1", desc: "Read-only" }];
+const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = { invited: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Invited" }, active: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Active" }, suspended: { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Suspended" } };
 
 export default function TeamPage() {
   const [members, setMembers] = useState<Member[]>([]);
@@ -29,7 +29,7 @@ export default function TeamPage() {
     const res = await fetch("/api/team", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim(), role }) });
     const d = await res.json();
     if (d.member) { setMembers(p => [d.member, ...p]); setEmail(""); }
-    else setError(d.error || "Eroare la invitație");
+    else setError(d.error || "Invitation error");
     setInviting(false);
   };
 
@@ -40,19 +40,19 @@ export default function TeamPage() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("Elimini membrul din echipă?")) return;
+    if (!confirm("Remove this member from the team?")) return;
     await fetch("/api/team", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setMembers(p => p.filter(m => m.id !== id));
   };
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Team Collaboration" subtitle="Invită membri în echipă și gestionează rolurile" />
+      <Header title="Team Collaboration" subtitle="Invite team members and manage roles" />
       <div className="p-4 max-w-3xl mx-auto space-y-4">
 
         {/* Invite form */}
         <div className="rounded-2xl p-4 space-y-3" style={card}>
-          <p className="font-bold text-sm" style={{ color: "#292524" }}>Invită un membru nou</p>
+          <p className="font-bold text-sm" style={{ color: "#292524" }}>Invite a new member</p>
           <div className="flex gap-2 flex-wrap">
             <input value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && invite()}
               placeholder="email@example.com" style={{ ...inp, flex: 1, minWidth: 200 }} />
@@ -63,7 +63,7 @@ export default function TeamPage() {
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold disabled:opacity-40"
               style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
               {inviting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
-              Invită
+              Invite
             </button>
           </div>
           {error && <p className="text-xs text-red-500">{error}</p>}
@@ -86,7 +86,7 @@ export default function TeamPage() {
         ) : members.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Users className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm" style={{ color: "#78614E" }}>Niciun membru invitat încă</p>
+            <p className="text-sm" style={{ color: "#78614E" }}>No members invited yet</p>
           </div>
         ) : (
           <div className="space-y-2">

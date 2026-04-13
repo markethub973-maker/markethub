@@ -334,7 +334,7 @@ export default function ResearchPage() {
           extra_data: { subreddit: p.subreddit, score: p.score, numComments: p.numComments, flair: p.flair, createdAt: p.createdAt },
         }));
       } else {
-        setSaveStatus({ kind: "err", msg: "Salvarea nu e disponibilă pentru acest tab" });
+        setSaveStatus({ kind: "err", msg: "Save not available for this tab" });
         setSavingLeads(false);
         return;
       }
@@ -342,7 +342,7 @@ export default function ResearchPage() {
       const r = await postLeads(leads);
       if (r.ok) {
         const parts = [`${r.count} leads saved`];
-        if (r.skipped) parts.push(`${r.skipped} sărite (deja în DB)`);
+        if (r.skipped) parts.push(`${r.skipped} skipped (already in DB)`);
         setSaveStatus({ kind: "ok", msg: parts.join(" • ") });
       } else {
         setSaveStatus({ kind: "err", msg: r.error || "Error saving" });
@@ -409,14 +409,14 @@ export default function ResearchPage() {
       });
       if (res.ok) {
         refreshRegion();
-        setSaveStatus({ kind: "ok", msg: "🇷🇴 Local Market Mode activat — tab-urile OLX, Pagini Aurii, Storia, Autovit sunt acum vizibile" });
+        setSaveStatus({ kind: "ok", msg: "🇷🇴 Local Market Mode activated — OLX, Pagini Aurii, Storia, and Autovit tabs are now visible" });
         setTimeout(() => setSaveStatus(null), 4000);
       } else {
         const data = await res.json().catch(() => ({}));
-        setSaveStatus({ kind: "err", msg: data.error || "Activarea a eșuat" });
+        setSaveStatus({ kind: "err", msg: data.error || "Activation failed" });
       }
     } catch (e) {
-      setSaveStatus({ kind: "err", msg: "Activarea a eșuat" });
+      setSaveStatus({ kind: "err", msg: "Activation failed" });
     } finally {
       setActivatingMarket(false);
     }
@@ -584,23 +584,23 @@ export default function ResearchPage() {
             <span className="text-3xl flex-shrink-0">🇷🇴</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold" style={{ color: "#292524" }}>
-                Activează Local Market Mode pentru România
+                Activate Romania Local Market Mode
               </p>
               <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
-                Add 4 tab-uri noi în Research Hub: <strong>OLX.ro</strong> (scraper real cu preț, oraș, vânzător), <strong>Pagini Aurii</strong>, <strong>Storia.ro</strong>, <strong>Autovit.ro</strong> — gratis, 1 click.
+                Add 4 new tabs to Research Hub: <strong>OLX.ro</strong> (real scraper with price, city, seller), <strong>Pagini Aurii</strong>, <strong>Storia.ro</strong>, <strong>Autovit.ro</strong> — free, 1 click.
               </p>
             </div>
             <button type="button" onClick={activateRomanianMarket} disabled={activatingMarket}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 transition-all flex-shrink-0"
               style={{ backgroundColor: "#002B7F", color: "white", boxShadow: "0 2px 8px rgba(0,43,127,0.3)" }}>
               {activatingMarket ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-              {activatingMarket ? "Activare…" : "Activează"}
+              {activatingMarket ? "Activating…" : "Activate"}
             </button>
             <button type="button" onClick={dismissMarketBanner}
               className="text-xs px-2 py-1 rounded-lg flex-shrink-0 hover:underline"
               style={{ color: "#A8967E" }}
-              aria-label="Închide banner">
-              Mai târziu
+              aria-label="Dismiss banner">
+              Later
             </button>
           </div>
         )}
@@ -693,7 +693,7 @@ export default function ResearchPage() {
             {saveStatus.kind === "ok" ? <Check className="w-4 h-4 flex-shrink-0" /> : <AlertCircle className="w-4 h-4 flex-shrink-0" />}
             {saveStatus.msg}
             {saveStatus.kind === "ok" && (
-              <a href="/leads" className="ml-2 underline">Vezi în Leads Database →</a>
+              <a href="/leads" className="ml-2 underline">View in Leads Database →</a>
             )}
           </div>
         )}
@@ -801,7 +801,7 @@ export default function ResearchPage() {
                     <button key={v} type="button" onClick={() => setListView(v)}
                       className="px-3 py-1 rounded-md text-xs font-bold transition-all"
                       style={listView === v ? { backgroundColor: YT, color: "white" } : { color: "#78614E" }}>
-                      {v === "compact" ? "Mai puțin" : "Mai mult"}
+                      {v === "compact" ? "Less" : "More"}
                     </button>
                   ))}
                 </div>
@@ -820,11 +820,11 @@ export default function ResearchPage() {
                       {listView === "detailed" && (
                         <>
                           <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("comments")} style={sortBy === "comments" ? { color: YT } : undefined}><MessageCircle className="w-3 h-3 inline mr-1" />Comm.{sortIcon("comments")}</th>
-                          <th className="text-right px-3 py-2 font-bold">Durată</th>
+                          <th className="text-right px-3 py-2 font-bold">Duration</th>
                           <th className="text-left px-3 py-2 font-bold">Canal</th>
                         </>
                       )}
-                      <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
+                      <th className="px-3 py-2"><span className="sr-only">Actions</span></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -854,7 +854,7 @@ export default function ResearchPage() {
                               <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                                 className="inline-flex items-center gap-0.5 font-semibold" style={{ color: YT }}>
                                 {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                                {isOpen ? "Mai puțin" : "Mai mult"}
+                                {isOpen ? "Less" : "More"}
                               </button>
                             </td>
                           </tr>
@@ -962,7 +962,7 @@ export default function ResearchPage() {
                     <button key={v} type="button" onClick={() => setListView(v)}
                       className="px-3 py-1 rounded-md text-xs font-bold transition-all"
                       style={listView === v ? { backgroundColor: IG, color: "white" } : { color: "#78614E" }}>
-                      {v === "compact" ? "Mai puțin" : "Mai mult"}
+                      {v === "compact" ? "Less" : "More"}
                     </button>
                   ))}
                 </div>
@@ -986,7 +986,7 @@ export default function ResearchPage() {
                           <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("posted")} style={sortBy === "posted" ? { color: IG } : undefined}>Postat{sortIcon("posted")}</th>
                         </>
                       )}
-                      <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
+                      <th className="px-3 py-2"><span className="sr-only">Actions</span></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1029,7 +1029,7 @@ export default function ResearchPage() {
                               <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                                 className="inline-flex items-center gap-0.5 font-semibold" style={{ color: IG }}>
                                 {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                                {isOpen ? "Mai puțin" : "Mai mult"}
+                                {isOpen ? "Less" : "More"}
                               </button>
                             </td>
                           </tr>
@@ -1084,7 +1084,7 @@ export default function ResearchPage() {
                       style={listView === v
                         ? { backgroundColor: TT, color: "#FFF8F0" }
                         : { color: "#78614E" }}>
-                      {v === "compact" ? "Mai puțin" : "Mai mult"}
+                      {v === "compact" ? "Less" : "More"}
                     </button>
                   ))}
                 </div>
@@ -1109,7 +1109,7 @@ export default function ResearchPage() {
                           <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("posted")} style={sortBy === "posted" ? { color: TT } : undefined}>Postat{sortIcon("posted")}</th>
                         </>
                       )}
-                      <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
+                      <th className="px-3 py-2"><span className="sr-only">Actions</span></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1150,7 +1150,7 @@ export default function ResearchPage() {
                               <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                                 className="inline-flex items-center gap-0.5 font-semibold" style={{ color: TT }}>
                                 {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                                {isOpen ? "Mai puțin" : "Mai mult"}
+                                {isOpen ? "Less" : "More"}
                               </button>
                             </td>
                           </tr>
@@ -1218,7 +1218,7 @@ export default function ResearchPage() {
                     <button key={v} type="button" onClick={() => setListView(v)}
                       className="px-3 py-1 rounded-md text-xs font-bold transition-all"
                       style={listView === v ? { backgroundColor: FB, color: "white" } : { color: "#78614E" }}>
-                      {v === "compact" ? "Mai puțin" : "Mai mult"}
+                      {v === "compact" ? "Less" : "More"}
                     </button>
                   ))}
                 </div>
@@ -1236,12 +1236,12 @@ export default function ResearchPage() {
                       <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("shares")} style={sortBy === "shares" ? { color: FB } : undefined}><Share2 className="w-3 h-3 inline mr-1" />Shares{sortIcon("shares")}</th>
                       {listView === "detailed" && (
                         <>
-                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("reactions")} style={sortBy === "reactions" ? { color: FB } : undefined}>Reacții{sortIcon("reactions")}</th>
+                          <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("reactions")} style={sortBy === "reactions" ? { color: FB } : undefined}>Reactions{sortIcon("reactions")}</th>
                           <th className="text-left px-3 py-2 font-bold">Text</th>
                           <th className="text-right px-3 py-2 font-bold cursor-pointer select-none" onClick={() => toggleSort("posted")} style={sortBy === "posted" ? { color: FB } : undefined}>Postat{sortIcon("posted")}</th>
                         </>
                       )}
-                      <th className="px-3 py-2"><span className="sr-only">Acțiuni</span></th>
+                      <th className="px-3 py-2"><span className="sr-only">Actions</span></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1280,7 +1280,7 @@ export default function ResearchPage() {
                               <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                                 className="inline-flex items-center gap-0.5 font-semibold" style={{ color: FB }}>
                                 {isOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-                                {isOpen ? "Mai puțin" : "Mai mult"}
+                                {isOpen ? "Less" : "More"}
                               </button>
                             </td>
                           </tr>
@@ -1338,7 +1338,7 @@ export default function ResearchPage() {
             )}
 
             <div className="flex items-center justify-between gap-3 flex-wrap">
-              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} postări</p>
+              <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>{results.total} posts</p>
               <SaveLeadsButton color={FB} count={(results.posts || []).length} />
             </div>
 
@@ -1392,7 +1392,7 @@ export default function ResearchPage() {
                       {(p.text || "").length > 220 && (
                         <button type="button" onClick={() => setExpandedRows(s => ({ ...s, [rowKey]: !s[rowKey] }))}
                           className="text-xs font-semibold flex-shrink-0" style={{ color: FB }}>
-                          {isOpen ? "Mai puțin" : "Mai mult"}
+                          {isOpen ? "Less" : "More"}
                         </button>
                       )}
                     </div>
@@ -1555,7 +1555,7 @@ export default function ResearchPage() {
                             )}
                             {item.sellerName && (
                               <p className="text-xs" style={{ color: "#A8967E" }}>
-                                Vânzător: <span className="font-semibold" style={{ color: "#78614E" }}>{item.sellerName}</span>
+                                Seller: <span className="font-semibold" style={{ color: "#78614E" }}>{item.sellerName}</span>
                                 {item.sellerType && ` · ${item.sellerType}`}
                               </p>
                             )}

@@ -34,14 +34,14 @@ export default function WhiteLabelPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="White-label Settings" subtitle="Personalizează platforma cu branding-ul agenției tale" />
+      <Header title="White-label Settings" subtitle="Customize the platform with your agency's branding" />
       <div className="p-4 max-w-2xl mx-auto space-y-4">
 
         {/* Preview toggle */}
         <button type="button" onClick={() => setPreview(v => !v)}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
           style={{ ...card, color: "#78614E", boxShadow: "0 1px 3px rgba(120,97,78,0.06)" }}>
-          <Eye className="w-4 h-4" /> {preview ? "Editare" : "Preview"}
+          <Eye className="w-4 h-4" /> {preview ? "Edit" : "Preview"}
         </button>
 
         {preview ? (
@@ -57,17 +57,17 @@ export default function WhiteLabelPage() {
                   {settings.agency_name?.[0] ?? "A"}
                 </div>
               )}
-              <span className="font-bold text-white">{settings.agency_name || "Numele Agenției"}</span>
+              <span className="font-bold text-white">{settings.agency_name || "Agency Name"}</span>
             </div>
             <div className="p-6" style={{ backgroundColor: "#FFFCF7" }}>
               <p className="text-sm" style={{ color: "#78614E" }}>Customized marketing platform for your clients.<br />Access to analytics, reports and more.</p>
               <div className="mt-4 inline-block px-4 py-2 rounded-lg text-sm font-bold text-white"
                 style={{ backgroundColor: settings.accent_color || "#D97706" }}>
-                Accesează Dashboard
+                Open Dashboard
               </div>
             </div>
             <div className="px-6 py-3 text-xs" style={{ backgroundColor: "rgba(245,215,160,0.1)", borderTop: "1px solid rgba(245,215,160,0.2)", color: "#A8967E" }}>
-              {settings.footer_text || `© ${new Date().getFullYear()} ${settings.agency_name || "Agenția Ta"} · ${settings.support_email || "contact@agentie.ro"}`}
+              {settings.footer_text || `© ${new Date().getFullYear()} ${settings.agency_name || "Your Agency"} · ${settings.support_email || "contact@youragency.com"}`}
             </div>
           </div>
         ) : (
@@ -77,20 +77,20 @@ export default function WhiteLabelPage() {
             <div className="rounded-2xl p-4 space-y-3" style={card}>
               <div className="flex items-center gap-2 mb-1">
                 <Palette className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                <p className="font-bold text-sm" style={{ color: "#292524" }}>Identitate vizuală</p>
+                <p className="font-bold text-sm" style={{ color: "#292524" }}>Visual identity</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Numele agenției</label><input value={settings.agency_name} onChange={f("agency_name")} placeholder="Ex: Digital Studio SRL" style={inp} /></div>
-                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>URL logo (imagine)</label><input value={settings.agency_logo} onChange={f("agency_logo")} placeholder="https://..." style={inp} /></div>
+                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Agency name</label><input value={settings.agency_name} onChange={f("agency_name")} placeholder="e.g. Digital Studio LLC" style={inp} /></div>
+                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Logo URL (image)</label><input value={settings.agency_logo} onChange={f("agency_logo")} placeholder="https://..." style={inp} /></div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Culoare primară</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Primary color</label>
                   <div className="flex gap-2">
                     <input type="color" value={settings.primary_color} onChange={f("primary_color")} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
                     <input value={settings.primary_color} onChange={f("primary_color")} style={{ ...inp, flex: 1 }} />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Culoare accent</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Accent color</label>
                   <div className="flex gap-2">
                     <input type="color" value={settings.accent_color} onChange={f("accent_color")} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
                     <input value={settings.accent_color} onChange={f("accent_color")} style={{ ...inp, flex: 1 }} />
@@ -106,17 +106,17 @@ export default function WhiteLabelPage() {
                 <p className="font-bold text-sm" style={{ color: "#292524" }}>Domain & Contact</p>
               </div>
               <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Custom domain (optional)</label><input value={settings.custom_domain} onChange={f("custom_domain")} placeholder="e.g. portal.youragency.com" style={inp} /></div>
-              <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Email suport</label><input value={settings.support_email} onChange={f("support_email")} placeholder="suport@agentiatamea.ro" style={inp} /></div>
+              <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Support email</label><input value={settings.support_email} onChange={f("support_email")} placeholder="support@youragency.com" style={inp} /></div>
             </div>
 
             {/* Footer */}
             <div className="rounded-2xl p-4 space-y-3" style={card}>
               <div className="flex items-center gap-2 mb-1">
                 <FileText className="w-4 h-4" style={{ color: "#10B981" }} />
-                <p className="font-bold text-sm" style={{ color: "#292524" }}>Footer custom</p>
+                <p className="font-bold text-sm" style={{ color: "#292524" }}>Custom footer</p>
               </div>
               <textarea value={settings.footer_text} onChange={f("footer_text")} rows={2}
-                placeholder={`© ${new Date().getFullYear()} Agenția Ta · contact@agentie.ro`}
+                placeholder={`© ${new Date().getFullYear()} Your Agency · contact@youragency.com`}
                 className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
                 style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
             </div>

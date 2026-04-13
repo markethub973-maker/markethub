@@ -373,19 +373,19 @@ export default function ClientPortalPage() {
                 {approvals.counts.pending > 0 && (
                   <span className="px-2 py-0.5 rounded-full font-semibold"
                     style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B" }}>
-                    {approvals.counts.pending} în așteptare
+                    {approvals.counts.pending} pending
                   </span>
                 )}
                 {approvals.counts.approved > 0 && (
                   <span className="px-2 py-0.5 rounded-full font-semibold"
                     style={{ backgroundColor: "rgba(16,185,129,0.12)", color: "#10B981" }}>
-                    {approvals.counts.approved} aprobate
+                    {approvals.counts.approved} approved
                   </span>
                 )}
                 {approvals.counts.rejected > 0 && (
                   <span className="px-2 py-0.5 rounded-full font-semibold"
                     style={{ backgroundColor: "rgba(239,68,68,0.12)", color: "#EF4444" }}>
-                    {approvals.counts.rejected} respinse
+                    {approvals.counts.rejected} rejected
                   </span>
                 )}
               </div>
@@ -400,10 +400,10 @@ export default function ClientPortalPage() {
                       : "#F59E0B";
                 const statusLabel =
                   a.approval_status === "approved"
-                    ? "✓ Aprobat"
+                    ? "✓ Approved"
                     : a.approval_status === "rejected"
-                      ? "✗ Respins"
-                      : "⏳ În așteptare";
+                      ? "✗ Rejected"
+                      : "⏳ Pending";
                 return (
                   <a
                     key={a.id}

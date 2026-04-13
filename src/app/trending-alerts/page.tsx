@@ -72,7 +72,7 @@ export default function TrendingAlertsPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Trending Products Alert" subtitle="Detectează produse în trend pe TikTok și Instagram" />
+      <Header title="Trending Products Alert" subtitle="Detect trending products on TikTok and Instagram" />
       <div className="p-4 max-w-4xl mx-auto space-y-4">
 
         {/* Actions */}
@@ -86,14 +86,14 @@ export default function TrendingAlertsPage() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
             style={{ backgroundColor: "#7C3AED", color: "white" }}>
             {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            {scanning ? "Scanez..." : "Scanează acum"}
+            {scanning ? "Scanning..." : "Scan now"}
           </button>
         </div>
 
         {/* Config */}
         {showConfig && (
           <div className="rounded-2xl p-4 space-y-3" style={{ ...card, border: "1px solid rgba(124,58,237,0.2)" }}>
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>⚙️ Keywords de urmărit</p>
+            <p className="font-bold text-sm" style={{ color: "#292524" }}>⚙️ Keywords to track</p>
             <div className="flex flex-wrap gap-1.5">
               {config.keywords.map(k => (
                 <span key={k} className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
@@ -108,7 +108,7 @@ export default function TrendingAlertsPage() {
             <div className="flex gap-2">
               <input value={newKeyword} onChange={e => setNewKeyword(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && addKeyword()}
-                placeholder="ex: Stanley Cup, LED Mask, Collagen..."
+                placeholder="e.g. Stanley Cup, LED Mask, Collagen..."
                 style={{ ...inp, flex: 1 }} />
               <button type="button" onClick={addKeyword}
                 className="px-3 py-2 rounded-lg" style={{ backgroundColor: "#7C3AED", color: "white" }}>

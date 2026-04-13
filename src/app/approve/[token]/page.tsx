@@ -63,10 +63,10 @@ export default function ApprovalPage() {
         setPost(d.post);
         setComments(d.comments ?? []);
       } else {
-        setError("Link invalid sau expirat.");
+        setError("Invalid or expired link.");
       }
     } catch {
-      setError("Eroare de rețea.");
+      setError("Network error.");
     } finally {
       setLoading(false);
     }
@@ -96,10 +96,10 @@ export default function ApprovalPage() {
         setDone(action === "approve" ? "approved" : "rejected");
         await load();
       } else {
-        setError(d.error || "Eroare");
+        setError(d.error || "Error");
       }
     } catch {
-      setError("Eroare de rețea.");
+      setError("Network error.");
     } finally {
       setActing(false);
     }
@@ -123,10 +123,10 @@ export default function ApprovalPage() {
         setCommentInput("");
         await load();
       } else {
-        setError(d.error || "Nu am putut salva comentariul");
+        setError(d.error || "Could not save your comment");
       }
     } catch {
-      setError("Eroare de rețea.");
+      setError("Network error.");
     } finally {
       setCommentBusy(false);
     }
@@ -181,7 +181,7 @@ export default function ApprovalPage() {
             MarketHub Pro
           </h1>
           <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
-            Aprobare conținut
+            Content approval
           </p>
         </div>
 
@@ -206,7 +206,7 @@ export default function ApprovalPage() {
                 >
                   {post.platform ?? "—"} ·{" "}
                   {post.date
-                    ? new Date(post.date).toLocaleDateString("ro-RO", {
+                    ? new Date(post.date).toLocaleDateString("en-US", {
                         weekday: "long",
                         day: "numeric",
                         month: "long",
@@ -256,10 +256,10 @@ export default function ApprovalPage() {
                   className="text-lg font-bold mb-1"
                   style={{ color: "#10B981" }}
                 >
-                  Conținut aprobat
+                  Content approved
                 </h2>
                 <p className="text-xs" style={{ color: "#78614E" }}>
-                  Va fi publicat conform planificării.
+                  It will be published as scheduled.
                 </p>
               </>
             ) : (
@@ -272,10 +272,10 @@ export default function ApprovalPage() {
                   className="text-lg font-bold mb-1"
                   style={{ color: "#EF4444" }}
                 >
-                  Conținut respins
+                  Content rejected
                 </h2>
                 <p className="text-xs" style={{ color: "#78614E" }}>
-                  Echipa va reveni cu o variantă nouă.
+                  The team will come back with a new version.
                 </p>
               </>
             )}
@@ -300,7 +300,7 @@ export default function ApprovalPage() {
                 className="text-xs font-bold uppercase tracking-wider"
                 style={{ color: "#78614E" }}
               >
-                Discuție ({comments.length})
+                Discussion ({comments.length})
               </span>
             </div>
             <div className="space-y-3">
@@ -329,7 +329,7 @@ export default function ApprovalPage() {
                         className="font-normal ml-2"
                         style={{ color: "#A8967E" }}
                       >
-                        {new Date(c.created_at).toLocaleString("ro-RO", {
+                        {new Date(c.created_at).toLocaleString("en-US", {
                           day: "numeric",
                           month: "short",
                           hour: "2-digit",
@@ -363,12 +363,12 @@ export default function ApprovalPage() {
               className="text-xs font-semibold uppercase tracking-wider block mb-2"
               style={{ color: "#78614E" }}
             >
-              Numele tău (opțional)
+              Your name (optional)
             </label>
             <input
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              placeholder="Nume client"
+              placeholder="Client name"
               className="w-full rounded-xl px-3 py-2 text-sm outline-none mb-3"
               style={{
                 border: "1px solid rgba(245,215,160,0.3)",
@@ -380,12 +380,12 @@ export default function ApprovalPage() {
               className="text-xs font-semibold uppercase tracking-wider block mb-2"
               style={{ color: "#78614E" }}
             >
-              Lasă un comentariu
+              Leave a comment
             </label>
             <textarea
               value={commentInput}
               onChange={(e) => setCommentInput(e.target.value)}
-              placeholder="Ex: 'Poți schimba cuvântul X?' sau 'Imaginea mai luminoasă, te rog'"
+              placeholder="e.g. 'Can you change the word X?' or 'A brighter image, please'"
               rows={3}
               className="w-full rounded-xl px-3 py-2.5 text-sm outline-none resize-none"
               style={{
@@ -410,7 +410,7 @@ export default function ApprovalPage() {
               ) : (
                 <Send className="w-4 h-4" />
               )}
-              Trimite comentariu
+              Send comment
             </button>
           </div>
         )}
@@ -428,7 +428,7 @@ export default function ApprovalPage() {
               className="text-xs font-semibold uppercase tracking-wider block mb-2"
               style={{ color: "#78614E" }}
             >
-              Notă finală (opțional)
+              Final note (optional)
             </label>
             <textarea
               value={note}
@@ -455,7 +455,7 @@ export default function ApprovalPage() {
                 ) : (
                   <CheckCircle className="w-4 h-4" />
                 )}
-                Aprobă
+                Approve
               </button>
               <button
                 type="button"
@@ -469,7 +469,7 @@ export default function ApprovalPage() {
                 ) : (
                   <XCircle className="w-4 h-4" />
                 )}
-                Respinge
+                Reject
               </button>
             </div>
           </div>

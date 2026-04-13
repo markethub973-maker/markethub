@@ -80,7 +80,7 @@ export default function SocialListeningPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Social Listening" subtitle="Monitorizează mențiunile brandului tău pe toate platformele" />
+      <Header title="Social Listening" subtitle="Monitor mentions of your brand across all platforms" />
       <div className="p-4 max-w-4xl mx-auto space-y-4">
 
         {/* Actions */}
@@ -94,21 +94,21 @@ export default function SocialListeningPage() {
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
             style={{ background: "linear-gradient(135deg,#6366F1,#4F46E5)", color: "white" }}>
             {scanning ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
-            {scanning ? "Scanez..." : "Scanează acum"}
+            {scanning ? "Scanning..." : "Scan now"}
           </button>
           <span className="flex items-center text-xs ml-auto" style={{ color: "#A8967E" }}>
-            🕐 Scan automat zilnic la 08:00
+            🕐 Auto-scan daily at 08:00
           </span>
         </div>
 
         {/* Config panel */}
         {showConfig && (
           <div className="rounded-2xl p-4 space-y-4" style={{ ...card, border: "1px solid rgba(99,102,241,0.2)" }}>
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>⚙️ Configurare Social Listening</p>
+            <p className="font-bold text-sm" style={{ color: "#292524" }}>⚙️ Social Listening configuration</p>
 
             {/* Keywords */}
             <div>
-              <label className="block text-xs font-medium mb-2" style={{ color: "#78614E" }}>Keywords de monitorizat (brand, produs, competitor)</label>
+              <label className="block text-xs font-medium mb-2" style={{ color: "#78614E" }}>Keywords to monitor (brand, product, competitor)</label>
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {config.keywords.map(k => (
                   <span key={k} className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
@@ -123,7 +123,7 @@ export default function SocialListeningPage() {
               <div className="flex gap-2">
                 <input value={newKeyword} onChange={e => setNewKeyword(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && addKeyword()}
-                  placeholder="ex: MarketHub, Nike, competitor..." style={{ ...inp, flex: 1 }} />
+                  placeholder="e.g. MarketHub, Nike, competitor..." style={{ ...inp, flex: 1 }} />
                 <button type="button" onClick={addKeyword}
                   className="px-3 py-2 rounded-lg" style={{ backgroundColor: "#6366F1", color: "white" }}>
                   <Plus className="w-4 h-4" />
@@ -133,7 +133,7 @@ export default function SocialListeningPage() {
 
             {/* Platforms */}
             <div>
-              <label className="block text-xs font-medium mb-2" style={{ color: "#78614E" }}>Platforme de scanat</label>
+              <label className="block text-xs font-medium mb-2" style={{ color: "#78614E" }}>Platforms to scan</label>
               <div className="flex gap-2 flex-wrap">
                 {ALL_PLATFORMS.map(p => {
                   const Icon = PLATFORM_ICONS[p.charAt(0).toUpperCase() + p.slice(1)] ?? Bell;
@@ -198,7 +198,7 @@ export default function SocialListeningPage() {
             <button type="button" onClick={() => setFilterKeyword("all")}
               className="text-xs px-3 py-1.5 rounded-full font-medium transition-all"
               style={filterKeyword === "all" ? { backgroundColor: "#292524", color: "#FFF8F0" } : { ...card, color: "#78614E" }}>
-              Toate
+              All
             </button>
             {allKeywords.map(k => (
               <button key={k} type="button" onClick={() => setFilterKeyword(k)}
@@ -218,11 +218,11 @@ export default function SocialListeningPage() {
             <p className="text-sm font-medium mb-1" style={{ color: "#78614E" }}>
               {config.keywords?.length === 0 ? "Configure keywords to start monitoring" : "No mentions detected yet"}
             </p>
-            <p className="text-xs" style={{ color: "#A8967E" }}>Apasă „Scanează acum" sau așteaptă scan-ul zilnic automat</p>
+            <p className="text-xs" style={{ color: "#A8967E" }}>Click &quot;Scan now&quot; or wait for the automatic daily scan</p>
           </div>
         ) : (
           <div className="space-y-2">
-            <p className="text-xs px-1" style={{ color: "#A8967E" }}>{filtered.length} mențiuni</p>
+            <p className="text-xs px-1" style={{ color: "#A8967E" }}>{filtered.length} mentions</p>
             {filtered.map(m => {
               const Icon = PLATFORM_ICONS[m.platform] ?? Bell;
               const color = PLATFORM_COLORS[m.platform] ?? "#A8967E";

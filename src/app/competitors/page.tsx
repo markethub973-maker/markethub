@@ -140,7 +140,7 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
           </select>
         ) : (
           <input value={selected} onChange={e => setSelected(e.target.value)}
-            placeholder="Scrie numele brandului..."
+            placeholder="Type the brand name..."
             className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
             style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
         )}
@@ -148,7 +148,7 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
           style={{ backgroundColor: "#7C3AED", color: "white" }}>
           {analyzing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-          {analyzing ? "Analizez..." : "Analizează"}
+          {analyzing ? "Analyzing..." : "Analyze"}
         </button>
       </div>
 
@@ -163,9 +163,9 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
           {/* Primary monetization */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {[
-              { label: "Monetizare principală", value: result.primary_monetization, color: "#7C3AED" },
-              { label: "Tip funnel", value: result.funnel_type, color: "#6366F1" },
-              { label: "Preț estimat", value: result.price_range, color: "#F59E0B" },
+              { label: "Primary monetization", value: result.primary_monetization, color: "#7C3AED" },
+              { label: "Funnel type", value: result.funnel_type, color: "#6366F1" },
+              { label: "Estimated price", value: result.price_range, color: "#F59E0B" },
             ].map(s => (
               <div key={s.label} className="rounded-xl p-3" style={{ backgroundColor: `${s.color}08`, border: `1px solid ${s.color}20` }}>
                 <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#A8967E" }}>{s.label}</p>

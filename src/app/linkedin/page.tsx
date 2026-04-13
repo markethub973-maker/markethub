@@ -42,7 +42,7 @@ export default function LinkedInPage() {
   useEffect(() => { load(); }, []);
 
   const disconnect = async () => {
-    if (!confirm("Deconectează contul LinkedIn? Va trebui să te reconectezi ca să postezi pe LinkedIn din Calendar.")) return;
+    if (!confirm("Disconnect your LinkedIn account? You will need to reconnect in order to post to LinkedIn from the Calendar.")) return;
     setDisconnecting(true);
     try {
       await fetch("/api/auth/linkedin-post/disconnect", { method: "POST" });
@@ -70,9 +70,9 @@ export default function LinkedInPage() {
               style={{ backgroundColor: "rgba(10,102,194,0.1)" }}>
               <Linkedin className="w-7 h-7" style={{ color: "#0A66C2" }} />
             </div>
-            <h2 className="text-lg font-bold mb-1" style={{ color: "#292524" }}>Conectează-ți contul LinkedIn</h2>
+            <h2 className="text-lg font-bold mb-1" style={{ color: "#292524" }}>Connect your LinkedIn account</h2>
             <p className="text-sm mb-5" style={{ color: "#78614E" }}>
-              Conectează-te cu LinkedIn ca să poți publica automat postări din Calendar direct pe profilul tău.
+              Connect with LinkedIn so you can automatically publish posts from the Calendar directly to your profile.
             </p>
             {state.error && (
               <p className="text-sm mb-4" style={{ color: "#EF4444" }}>{state.error}</p>
@@ -81,7 +81,7 @@ export default function LinkedInPage() {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white"
               style={{ backgroundColor: "#0A66C2" }}>
               <Linkedin className="w-4 h-4" />
-              Conectează cu LinkedIn
+              Connect with LinkedIn
             </a>
           </div>
         )}
@@ -111,12 +111,12 @@ export default function LinkedInPage() {
                     <p className="text-sm" style={{ color: "#78614E" }}>
                       {state.profile.email}
                       {state.profile.email_verified && (
-                        <span className="ml-2 text-xs font-medium" style={{ color: "#10B981" }}>✓ verificat</span>
+                        <span className="ml-2 text-xs font-medium" style={{ color: "#10B981" }}>✓ verified</span>
                       )}
                     </p>
                   )}
                   <p className="text-xs mt-2" style={{ color: "#A8967E" }}>
-                    Conectat cu scope <code>w_member_social</code> — permite publicare postări
+                    Connected with scope <code>w_member_social</code> — allows publishing posts
                   </p>
                 </div>
               </div>
@@ -128,25 +128,25 @@ export default function LinkedInPage() {
                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold text-white"
                 style={{ backgroundColor: "#0A66C2" }}>
                 <Calendar className="w-4 h-4" />
-                Postează din Calendar
+                Post from Calendar
               </Link>
               <button type="button" onClick={disconnect} disabled={disconnecting}
                 className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold disabled:opacity-50"
                 style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#EF4444", border: "1px solid rgba(239,68,68,0.2)" }}>
                 {disconnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogOut className="w-4 h-4" />}
-                Deconectează
+                Disconnect
               </button>
             </div>
 
             {/* Info box — be honest about what this integration does */}
             <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: "rgba(10,102,194,0.06)", border: "1px solid rgba(10,102,194,0.15)", color: "#78614E" }}>
-              <p className="font-medium mb-1" style={{ color: "#292524" }}>Ce pot face cu integrarea LinkedIn?</p>
+              <p className="font-medium mb-1" style={{ color: "#292524" }}>What can I do with the LinkedIn integration?</p>
               <ul className="space-y-1 text-xs">
-                <li>• Publica postări text + imagine direct din Calendar</li>
-                <li>• Postezi pe profilul tău personal (nu pe Company Pages)</li>
+                <li>• Publish text + image posts directly from the Calendar</li>
+                <li>• Post to your personal profile (not Company Pages)</li>
               </ul>
               <p className="mt-3 text-xs" style={{ color: "#A8967E" }}>
-                LinkedIn nu expune public followers/connections/headline via OAuth — pentru analytics trebuie aplicație separată cu review Marketing Developer Platform.
+                LinkedIn does not expose followers/connections/headline publicly via OAuth — analytics requires a separate app reviewed under the Marketing Developer Platform.
               </p>
             </div>
           </>

@@ -65,7 +65,7 @@ export default function AffiliatePage() {
   };
 
   const del = async (id: string) => {
-    if (!confirm("Ștergi link-ul?")) return;
+    if (!confirm("Delete this link?")) return;
     await fetch("/api/affiliate", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setLinks(p => p.filter(l => l.id !== id));
   };
@@ -88,15 +88,15 @@ export default function AffiliatePage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Affiliate Link Hub" subtitle="Gestionează linkuri afiliate și urmărește click-urile" />
+      <Header title="Affiliate Link Hub" subtitle="Manage affiliate links and track clicks" />
 
       <div className="p-4 max-w-4xl mx-auto space-y-4">
 
         {/* KPIs */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Total linkuri", value: links.length, icon: Link2, color: "#6366F1" },
-            { label: "Comision mediu", value: `${totalCommission > 0 ? (totalCommission / links.length).toFixed(1) : 0}%`, icon: DollarSign, color: "#F59E0B" },
+            { label: "Total links", value: links.length, icon: Link2, color: "#6366F1" },
+            { label: "Average commission", value: `${totalCommission > 0 ? (totalCommission / links.length).toFixed(1) : 0}%`, icon: DollarSign, color: "#F59E0B" },
             { label: "Total clicks", value: totalClicks, icon: TrendingUp, color: "#10B981" },
           ].map(s => {
             const Icon = s.icon;
@@ -137,7 +137,7 @@ export default function AffiliatePage() {
             <table className="w-full text-xs min-w-[600px]">
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                  {["Nume", "Platformă", "Produs", "Comision", "Clicks", "Adăugat", ""].map(h => (
+                  {["Name", "Platform", "Product", "Commission", "Clicks", "Added", ""].map(h => (
                     <th key={h} className="text-left px-3 py-2.5 font-semibold" style={{ color: "#A8967E" }}>{h}</th>
                   ))}
                 </tr>
@@ -197,34 +197,34 @@ export default function AffiliatePage() {
             <div className="overflow-y-auto p-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Nume *</label>
-                  <input value={form.name} onChange={f("name")} placeholder="ex: Amazon Affiliate" style={inp} />
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Name *</label>
+                  <input value={form.name} onChange={f("name")} placeholder="e.g. Amazon Affiliate" style={inp} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Platformă</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Platform</label>
                   <select value={form.platform} onChange={f("platform")} style={inp}>
                     {PLATFORMS.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Comision (%)</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Commission (%)</label>
                   <input type="number" value={form.commission || ""} onChange={e => setForm(p => ({ ...p, commission: parseFloat(e.target.value) || 0 }))} placeholder="5" style={inp} />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>URL afiliat *</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Affiliate URL *</label>
                   <input value={form.url} onChange={f("url")} placeholder="https://..." style={inp} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Produs</label>
-                  <input value={form.product} onChange={f("product")} placeholder="ex: Camera Canon" style={inp} />
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Product</label>
+                  <input value={form.product} onChange={f("product")} placeholder="e.g. Canon Camera" style={inp} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Categorie</label>
-                  <input value={form.category} onChange={f("category")} placeholder="ex: Tech" style={inp} />
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Category</label>
+                  <input value={form.category} onChange={f("category")} placeholder="e.g. Tech" style={inp} />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Note</label>
-                  <textarea value={form.notes} onChange={f("notes")} rows={2} placeholder="Note..." style={{ ...inp, resize: "none" } as any} />
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Notes</label>
+                  <textarea value={form.notes} onChange={f("notes")} rows={2} placeholder="Notes..." style={{ ...inp, resize: "none" } as any} />
                 </div>
               </div>
               <button type="button" onClick={save} disabled={saving || !form.name.trim() || !form.url.trim()}

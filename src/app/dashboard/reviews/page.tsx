@@ -339,7 +339,7 @@ export default function ReviewsPage() {
           }}
         >
           {syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-          Sincronizează
+          Sync
         </button>
       </div>
       {syncError && (
@@ -396,7 +396,7 @@ export default function ReviewsPage() {
                 textTransform: "capitalize",
               }}
             >
-              {s === "all" ? "Toate" : s}
+              {s === "all" ? "All" : s}
               {counts && s !== "all" && counts.by_status[s] > 0 && (
                 <span style={{ marginLeft: 6, fontSize: 10, opacity: 0.8 }}>
                   {counts.by_status[s]}
@@ -423,7 +423,7 @@ export default function ReviewsPage() {
                 cursor: "pointer",
               }}
             >
-              {r === 0 ? "Toate" : `≤${r}★`}
+              {r === 0 ? "All" : `≤${r}★`}
             </button>
           ))}
         </div>
@@ -832,7 +832,7 @@ export default function ReviewsPage() {
                       ) : (
                         <Sparkles size={10} />
                       )}
-                      {drafting ? "Se genereaza..." : "AI Draft"}
+                      {drafting ? "Generating..." : "AI Draft"}
                     </button>
                   </div>
                   {draftError && (

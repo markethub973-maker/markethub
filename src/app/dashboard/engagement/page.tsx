@@ -327,7 +327,7 @@ export default function EngagementPage() {
           }}
         >
           {syncing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-          {syncing ? "Sincronizare..." : "Sincronizează Instagram"}
+          {syncing ? "Syncing..." : "Sync Instagram"}
         </button>
       </div>
 
@@ -435,7 +435,7 @@ export default function EngagementPage() {
               marginBottom: 10,
             }}
           >
-            Platformă
+            Platform
           </div>
           {(["all", "instagram", "facebook", "linkedin", "tiktok", "youtube"] as PlatformFilter[]).map(
             (p) => (
@@ -461,7 +461,7 @@ export default function EngagementPage() {
               >
                 <span style={{ textTransform: "capitalize" }}>
                   {p !== "all" ? PLATFORM_ICONS[p] + " " : ""}
-                  {p === "all" ? "Toate" : p}
+                  {p === "all" ? "All" : p}
                 </span>
                 {counts && p !== "all" && counts.by_platform[p] > 0 && (
                   <span
@@ -495,17 +495,17 @@ export default function EngagementPage() {
           {loading && !data && (
             <div style={{ padding: 30, textAlign: "center", color: "#A8967E" }}>
               <Loader2 size={20} className="animate-spin" style={{ margin: "0 auto 8px" }} />
-              Se încarcă...
+              Loading...
             </div>
           )}
           {!loading && messages.length === 0 && (
             <div style={{ padding: 40, textAlign: "center", color: "#A8967E" }}>
               <Inbox size={36} style={{ margin: "0 auto 12px" }} />
               <div style={{ fontWeight: 600, color: "#78614E", marginBottom: 4 }}>
-                Nimic în inbox
+                Nothing in inbox
               </div>
               <div style={{ fontSize: 12 }}>
-                Click pe &quot;Sincronizează Instagram&quot; pentru a aduce comentariile noi.
+                Click &quot;Sync Instagram&quot; to fetch new comments.
               </div>
             </div>
           )}
@@ -637,10 +637,10 @@ export default function EngagementPage() {
             >
               <MessageCircle size={40} style={{ marginBottom: 12 }} />
               <div style={{ fontWeight: 600, color: "#78614E", marginBottom: 4 }}>
-                Selectează un mesaj
+                Select a message
               </div>
               <div style={{ fontSize: 12 }}>
-                Alege unul din listă pentru a vedea detalii și a răspunde
+                Pick one from the list to see details and reply
               </div>
             </div>
           )}
@@ -777,7 +777,7 @@ export default function EngagementPage() {
                   {convertResult.ok ? (
                     <>
                       <CheckCircle2 size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
-                      Lead creat în CRM Kanban — <a href="/dashboard/crm" style={{ color: "#6D28D9", textDecoration: "underline" }}>Vezi în pipeline</a>
+                      Lead created in CRM Kanban — <a href="/dashboard/crm" style={{ color: "#6D28D9", textDecoration: "underline" }}>View in pipeline</a>
                     </>
                   ) : (
                     <>⚠ {convertResult.error}</>
@@ -909,9 +909,9 @@ export default function EngagementPage() {
                     }}
                   >
                     <CheckCircle2 size={10} style={{ display: "inline", marginRight: 3 }} />
-                    Răspunsul tău ·{" "}
+                    Your reply ·{" "}
                     {selected.replied_at
-                      ? new Date(selected.replied_at).toLocaleString("ro-RO")
+                      ? new Date(selected.replied_at).toLocaleString("en-US")
                       : ""}
                   </div>
                   <p
@@ -947,12 +947,12 @@ export default function EngagementPage() {
                       fontWeight: 700,
                     }}
                   >
-                    Răspunde
+                    Reply
                   </div>
                   <textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
-                    placeholder={`Răspunde la comentariul lui ${selected.author_name || "user"}...`}
+                    placeholder={`Reply to ${selected.author_name || "user"}'s comment...`}
                     rows={3}
                     style={{
                       width: "100%",
@@ -1004,7 +1004,7 @@ export default function EngagementPage() {
                     ) : (
                       <Send size={12} />
                     )}
-                    {replying ? "Se trimite..." : "Trimite răspunsul"}
+                    {replying ? "Sending..." : "Send reply"}
                   </button>
                 </div>
               )}

@@ -142,7 +142,7 @@ export default function CrmPage() {
   }
 
   async function deleteLead(id: string) {
-    if (!confirm("Șterge lead-ul definitiv?")) return;
+    if (!confirm("Delete this lead permanently?")) return;
     const res = await fetch("/api/crm/leads", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -157,7 +157,7 @@ export default function CrmPage() {
   // ── Stage actions ────────────────────────────────────────────────────────
 
   async function addStage() {
-    const name = prompt("Numele stage-ului nou:");
+    const name = prompt("New stage name:");
     if (!name?.trim()) return;
     const res = await fetch("/api/crm/stages", {
       method: "POST",
@@ -182,7 +182,7 @@ export default function CrmPage() {
   }
 
   async function deleteStage(id: string) {
-    if (!confirm("Șterge coloana? Lead-urile rămân fără stage (merg la 'No stage').")) return;
+    if (!confirm("Delete this column? Leads will be moved to 'No stage'.")) return;
     await fetch("/api/crm/stages", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
@@ -359,7 +359,7 @@ export default function CrmPage() {
             cursor: "pointer",
           }}
         >
-          <Plus size={14} /> Add coloană
+          <Plus size={14} /> Add column
         </button>
       </div>
 
@@ -635,7 +635,7 @@ function KanbanColumn(props: {
                 setNewLeadName("");
               }
             }}
-            placeholder="Nume lead..."
+            placeholder="Lead name..."
             autoFocus
             style={{
               width: "100%",
@@ -887,14 +887,14 @@ function LeadDetailDrawer({
       </div>
 
       <div style={{ padding: 20, flex: 1, display: "flex", flexDirection: "column", gap: 12 }}>
-        <Field label="Nume">
+        <Field label="Name">
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             style={inputStyle}
           />
         </Field>
-        <Field label="Telefon">
+        <Field label="Phone">
           <input
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -916,14 +916,14 @@ function LeadDetailDrawer({
             style={inputStyle}
           />
         </Field>
-        <Field label="Oraș">
+        <Field label="City">
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
             style={inputStyle}
           />
         </Field>
-        <Field label="Valoare estimată ($)">
+        <Field label="Estimated value ($)">
           <input
             type="number"
             value={estimatedValue}
@@ -931,7 +931,7 @@ function LeadDetailDrawer({
             style={inputStyle}
           />
         </Field>
-        <Field label="Data estimată close">
+        <Field label="Estimated close date">
           <input
             type="date"
             value={closeDate}
@@ -939,7 +939,7 @@ function LeadDetailDrawer({
             style={inputStyle}
           />
         </Field>
-        <Field label="Note">
+        <Field label="Notes">
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}

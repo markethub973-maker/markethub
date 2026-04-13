@@ -262,9 +262,9 @@ export default function LeadsPage() {
       if (!res.ok) {
         setEnrichMsg(json?.error || `HTTP ${res.status}`);
       } else {
-        const parts = [`${json.enriched} îmbogățite`];
-        if (json.skipped) parts.push(`${json.skipped} sărite`);
-        if (json.errors) parts.push(`${json.errors} erori`);
+        const parts = [`${json.enriched} enriched`];
+        if (json.skipped) parts.push(`${json.skipped} skipped`);
+        if (json.errors) parts.push(`${json.errors} errors`);
         setEnrichMsg(parts.join(" • "));
         await fetchLeads();
       }
@@ -888,8 +888,8 @@ export default function LeadsPage() {
                 className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50"
                 style={{ backgroundColor: "#6366F1", color: "white" }}>
                 {generatingEmail
-                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Generez email-ul...</>
-                  : <><Sparkles className="w-4 h-4" /> Generează cu AI</>}
+                  ? <><Loader2 className="w-4 h-4 animate-spin" /> Generating email...</>
+                  : <><Sparkles className="w-4 h-4" /> Generate with AI</>}
               </button>
             )}
 
@@ -937,18 +937,18 @@ export default function LeadsPage() {
                     {generatingEmail
                       ? <Loader2 className="w-3 h-3 animate-spin" />
                       : <RefreshCw className="w-3 h-3" />}
-                    Regenerează
+                    Regenerate
                   </button>
                   <button type="button"
                     onClick={handleOpenInGmail}
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-sm font-bold"
                     style={{ backgroundColor: GREEN, color: "white" }}>
                     <Send className="w-3.5 h-3.5" />
-                    Deschide în Gmail
+                    Open in Gmail
                   </button>
                 </div>
                 <p className="text-[10px] text-center" style={{ color: "#C4AA8A" }}>
-                  Se va deschide Gmail Compose într-un tab nou cu draft-ul pre-completat. Lead-ul trece automat în &quot;Contacted&quot;.
+                  Gmail Compose opens in a new tab with the draft pre-filled. The lead automatically moves to &quot;Contacted&quot;.
                 </p>
               </div>
             )}

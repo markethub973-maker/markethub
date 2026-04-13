@@ -9,9 +9,9 @@ const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0
 const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
 const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   prospect: { bg: "rgba(99,102,241,0.1)", color: "#6366F1", label: "Prospect" },
-  contacted: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Contactat" },
-  partner: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Partener" },
-  inactive: { bg: "rgba(100,116,139,0.1)", color: "#64748B", label: "Inactiv" },
+  contacted: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Contacted" },
+  partner: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Partner" },
+  inactive: { bg: "rgba(100,116,139,0.1)", color: "#64748B", label: "Inactive" },
 };
 const fmt = (n: number) => n >= 1e6 ? (n/1e6).toFixed(1)+"M" : n >= 1e3 ? (n/1e3).toFixed(1)+"K" : String(n);
 const empty = { name: "", ig_username: "", tt_username: "", niche: "", email: "", location: "", price_post: 0, status: "prospect", notes: "" };
@@ -43,7 +43,7 @@ export default function InfluencersPage() {
   };
 
   const del = async (id: string) => {
-    if (!confirm("Ștergi influencerul?")) return;
+    if (!confirm("Delete this influencer?")) return;
     await fetch("/api/influencers", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
     setInfluencers(p => p.filter(x => x.id !== id));
   };
@@ -69,9 +69,9 @@ export default function InfluencersPage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Total influenceri", value: influencers.length, color: "#6366F1" },
-            { label: "Parteneri activi", value: influencers.filter(i => i.status === "partner").length, color: "#10B981" },
-            { label: "Prospectați", value: influencers.filter(i => i.status === "prospect").length, color: "#F59E0B" },
+            { label: "Total influencers", value: influencers.length, color: "#6366F1" },
+            { label: "Active partners", value: influencers.filter(i => i.status === "partner").length, color: "#10B981" },
+            { label: "Prospects", value: influencers.filter(i => i.status === "prospect").length, color: "#F59E0B" },
           ].map(s => (
             <div key={s.label} className="rounded-xl p-3 text-center" style={card}>
               <p className="text-xl font-bold" style={{ color: s.color }}>{s.value}</p>
@@ -172,12 +172,12 @@ export default function InfluencersPage() {
             </div>
             <div className="overflow-y-auto p-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Nume *</label><input value={form.name} onChange={f("name")} style={inp} /></div>
+                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Name *</label><input value={form.name} onChange={f("name")} style={inp} /></div>
                 <div><label className="block text-xs font-medium mb-1" style={{ color: "#E1306C" }}>IG username</label><input value={form.ig_username} onChange={f("ig_username")} placeholder="@username" style={inp} /></div>
                 <div><label className="block text-xs font-medium mb-1" style={{ color: "#00F2EA" }}>TikTok username</label><input value={form.tt_username} onChange={f("tt_username")} placeholder="@username" style={inp} /></div>
-                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Nișă</label>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Niche</label>
                   <select value={form.niche} onChange={f("niche")} style={inp}>
-                    <option value="">Alege...</option>
+                    <option value="">Select...</option>
                     {NICHES.map(n => <option key={n}>{n}</option>)}
                   </select>
                 </div>
@@ -187,9 +187,9 @@ export default function InfluencersPage() {
                   </select>
                 </div>
                 <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Email</label><input value={form.email} onChange={f("email")} style={inp} /></div>
-                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Locație</label><input value={form.location} onChange={f("location")} placeholder="ex: București" style={inp} /></div>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Location</label><input value={form.location} onChange={f("location")} placeholder="e.g. Bucharest" style={inp} /></div>
                 <div><label className="block text-xs font-medium mb-1" style={{ color: "#10B981" }}>Price/post ($)</label><input type="number" value={form.price_post || ""} onChange={e => setForm(p => ({ ...p, price_post: parseFloat(e.target.value) || 0 }))} style={inp} /></div>
-                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Note</label><textarea value={form.notes} onChange={f("notes")} rows={2} style={{ ...inp, resize: "none" } as any} /></div>
+                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Notes</label><textarea value={form.notes} onChange={f("notes")} rows={2} style={{ ...inp, resize: "none" } as any} /></div>
               </div>
               {form.ig_username && !editId && <p className="text-xs" style={{ color: "#A8967E" }}>💡 IG data (followers, engagement) will be imported automatically on save</p>}
               <button type="button" onClick={save} disabled={saving || !form.name.trim()}

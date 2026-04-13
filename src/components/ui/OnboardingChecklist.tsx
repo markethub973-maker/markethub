@@ -175,7 +175,7 @@ export default function OnboardingChecklist() {
               <button
                 type="button"
                 onClick={() => toggleStep(step.id)}
-                aria-label={isDone ? `Debifează ${step.label}` : `Bifează ${step.label}`}
+                aria-label={isDone ? `Uncheck ${step.label}` : `Check ${step.label}`}
                 className="flex-shrink-0 transition-transform active:scale-90"
               >
                 {isDone

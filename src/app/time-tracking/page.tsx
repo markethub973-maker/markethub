@@ -78,15 +78,15 @@ export default function TimeTrackingPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="Time Tracking" subtitle="Urmărește orele lucrate per client și generează rapoarte" />
+      <Header title="Time Tracking" subtitle="Track hours worked per client and generate reports" />
       <div className="p-4 max-w-4xl mx-auto space-y-4">
 
         {/* Live Timer */}
         <div className="rounded-2xl p-4" style={{ ...card, border: "1px solid rgba(99,102,241,0.2)" }}>
-          <p className="text-xs font-semibold mb-3" style={{ color: "#6366F1" }}>⏱ Timer live</p>
+          <p className="text-xs font-semibold mb-3" style={{ color: "#6366F1" }}>⏱ Live timer</p>
           <div className="flex gap-2 flex-wrap items-center">
             <input value={timerClient} onChange={e => setTimerClient(e.target.value)} placeholder="Client" style={{ ...inp, maxWidth: 150 }} />
-            <input value={timerDesc} onChange={e => setTimerDesc(e.target.value)} placeholder="Ce lucrezi?" style={{ ...inp, flex: 1 }} />
+            <input value={timerDesc} onChange={e => setTimerDesc(e.target.value)} placeholder="What are you working on?" style={{ ...inp, flex: 1 }} />
             <div className="text-2xl font-mono font-bold shrink-0" style={{ color: timerRunning ? "#6366F1" : "#A8967E", minWidth: 90 }}>{fmtTime(timerSeconds)}</div>
             <button type="button" onClick={timerRunning ? stopTimer : startTimer}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold shrink-0"
@@ -100,9 +100,9 @@ export default function TimeTrackingPage() {
         <div className="flex gap-2 flex-wrap items-center">
           <input type="month" value={month} onChange={e => setMonth(e.target.value)} style={{ ...inp, maxWidth: 150 }} />
           {[
-            { label: "Total ore", value: totalHours.toFixed(1) + "h", color: "#6366F1" },
+            { label: "Total hours", value: totalHours.toFixed(1) + "h", color: "#6366F1" },
             { label: "Billable", value: billableHours.toFixed(1) + "h", color: "#F59E0B" },
-            { label: "Venituri", value: "$" + totalEarnings.toFixed(0), color: "#10B981" },
+            { label: "Revenue", value: "$" + totalEarnings.toFixed(0), color: "#10B981" },
           ].map(s => (
             <div key={s.label} className="rounded-xl px-4 py-2.5 text-center" style={card}>
               <p className="text-base font-bold" style={{ color: s.color }}>{s.value}</p>
@@ -142,7 +142,7 @@ export default function TimeTrackingPage() {
           <div className="overflow-x-auto rounded-xl" style={card}>
             <table className="w-full text-xs min-w-[500px]">
               <thead><tr style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                {["Data", "Client", "Descriere", "Ore", "Tarif", "Total", ""].map(h => (
+                {["Date", "Client", "Description", "Hours", "Rate", "Total", ""].map(h => (
                   <th key={h} className="text-left px-3 py-2.5 font-semibold" style={{ color: "#A8967E" }}>{h}</th>
                 ))}
               </tr></thead>
@@ -173,16 +173,16 @@ export default function TimeTrackingPage() {
           <div className="w-full md:max-w-md rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7" }}>
             <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
               <Clock className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>Adaugă înregistrare</p>
+              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>Add entry</p>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
             </div>
             <div className="p-4 space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Client</label><input value={form.client} onChange={f("client")} style={inp} /></div>
-                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Data</label><input type="date" value={form.date} onChange={f("date")} style={inp} /></div>
-                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Descriere</label><input value={form.description} onChange={f("description")} placeholder="Ce ai lucrat?" style={inp} /></div>
-                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Ore</label><input type="number" step="0.25" value={form.hours} onChange={e => setForm(p => ({ ...p, hours: parseFloat(e.target.value) || 0 }))} style={inp} /></div>
-                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Tarif ($/h)</label><input type="number" value={form.rate} onChange={e => setForm(p => ({ ...p, rate: parseFloat(e.target.value) || 0 }))} style={inp} /></div>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Date</label><input type="date" value={form.date} onChange={f("date")} style={inp} /></div>
+                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Description</label><input value={form.description} onChange={f("description")} placeholder="What did you work on?" style={inp} /></div>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Hours</label><input type="number" step="0.25" value={form.hours} onChange={e => setForm(p => ({ ...p, hours: parseFloat(e.target.value) || 0 }))} style={inp} /></div>
+                <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Rate ($/h)</label><input type="number" value={form.rate} onChange={e => setForm(p => ({ ...p, rate: parseFloat(e.target.value) || 0 }))} style={inp} /></div>
                 <div className="col-span-2 flex items-center gap-2">
                   <input type="checkbox" id="billable" checked={form.billable} onChange={e => setForm(p => ({ ...p, billable: e.target.checked }))} />
                   <label htmlFor="billable" className="text-sm" style={{ color: "#78614E" }}>Billable</label>
