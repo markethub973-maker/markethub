@@ -1,36 +1,36 @@
 name: API Smoke Tests (post-deploy + hourly)
 
-  on:
-    schedule:
-      - cron: "0 * * * *"
-    workflow_dispatch:
-      inputs:
-        base_url:
-          description: "Override SMOKE_BASE_URL (default markethubpromo.com)"
-          required: false
-          default: ""
-    deployment_status: {}
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Override SMOKE_BASE_URL (default markethubpromo.com)"
+        required: false
+        default: ""
+  deployment_status: {}
 
-  concurrency:
-    group: smoke-tests
-    cancel-in-progress: false
+concurrency:
+  group: smoke-tests
+  cancel-in-progress: false
 
-  jobs:
-    smoke:
-      if: ${{ github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success' }}
-      runs-on: ubuntu-latest
-      timeout-minutes: 10
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: "20"
-            cache: "npm"
+jobs:
+  smoke:
+    if: ${{ github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
 
-        - name: Install dependencies
-          run: npm ci --no-audit --no-fund
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
 
-        - name: Run smoke tests
-          env:
-            SMOKE_BASE_URL: ${{ github.event.inputs.base_url || github.event.deployment_status.environment_url || 'https://markethubpromo.com' }}
-          run: npm run test:smoke
+      - name: Run smoke tests
+        env:
+          SMOKE_BASE_URL: ${{ github.event.inputs.base_url || github.event.deployment_status.environment_url || 'https://markethubpromo.com' }}
+        run: npm run test:smoke
