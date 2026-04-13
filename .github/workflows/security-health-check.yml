@@ -1,0 +1,23 @@
+name: Security Health Check (every 6h)                                                                                                                                                     
+                                                                                                                                                                                             
+  on:
+    schedule:                                                                                                                                                                                
+      - cron: "0 */6 * * *"                                       
+    workflow_dispatch: {}
+
+  concurrency:
+    group: security-health-check
+    cancel-in-progress: false                                                                                                                                                                
+   
+  jobs:                                                                                                                                                                                      
+    run:                                                          
+      runs-on: ubuntu-latest
+      timeout-minutes: 5
+      steps:                                                                                                                                                                                 
+        - name: Run Security Health Check
+          run: |                                                                                                                                                                             
+            curl --silent --show-error --fail-with-body \         
+              --max-time 60 \                                                                                                                                                                
+              -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+              -H "User-Agent: gha-security-hc/1" \                                                                                                                                           
+              https://markethubpromo.com/api/security/health-check
