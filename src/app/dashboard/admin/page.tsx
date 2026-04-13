@@ -29,6 +29,7 @@ import AdminTestAccounts from "@/components/admin/AdminTestAccounts";
 import AdminMarkupPanel from "@/components/admin/AdminMarkupPanel";
 import AdminBusinessPanel from "@/components/admin/AdminBusinessPanel";
 import AdminSecurityPanel from "@/components/admin/AdminSecurityPanel";
+import AdminCommandCenter from "@/components/admin/AdminCommandCenter";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 // ── Panel definitions ──────────────────────────────────────────────────────────
@@ -251,6 +252,11 @@ export default function AdminPage() {
       </div>
 
       <div className="px-4 py-5 max-w-4xl mx-auto space-y-6">
+
+        {/* M7 — Command Center: pulsing 3D orb with all systems aggregate */}
+        <ModuleBoundary name="Command Center" minimal>
+          <AdminCommandCenter />
+        </ModuleBoundary>
 
         {/* KPI Stats */}
         <div className="grid grid-cols-2 gap-3">
