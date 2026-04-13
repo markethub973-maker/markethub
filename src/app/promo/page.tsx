@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   Zap, BarChart2, Search, Brain, Instagram, Youtube, TrendingUp,
@@ -6,6 +7,13 @@ import {
   Megaphone, PenTool, BookOpen, BarChart, MessageSquare,
 } from "lucide-react";
 import FaqItem from "./FaqItem";
+
+export const metadata: Metadata = {
+  title: "Social Media Marketing Platform for Agencies & Creators",
+  description:
+    "Cross-platform analytics, content calendar with auto-publish, CRM + lead finder, AI agents, and 31 ready-to-run automations. 14-day free trial.",
+  alternates: { canonical: "https://markethubpromo.com/promo" },
+};
 
 // ── Brand colors ──────────────────────────────────────────────────────────────
 const C = {
