@@ -46,6 +46,7 @@ export default function AdminSupportTickets() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Ticket | null>(null);
   const [reply, setReply] = useState("");
+  const [resolutionNote, setResolutionNote] = useState("");
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -73,9 +74,14 @@ export default function AdminSupportTickets() {
         ticket_id: ticket.id,
         status: "resolved",
         admin_reply: reply.trim() || undefined,
+        // When a resolution_note is provided, the backend auto-saves the
+        // pair (symptom, solution) into resolved_issues (M5 Learning DB) so
+        // future similar tickets / consultant queries can find the answer.
+        resolution_note: resolutionNote.trim() || undefined,
       }),
     });
     setReply("");
+    setResolutionNote("");
     setSelected(null);
     setSaving(false);
     await load();
@@ -235,6 +241,32 @@ export default function AdminSupportTickets() {
                             outline: "none",
                           }}
                         />
+
+                        {/* M5 Learning DB — capture resolution for future auto-answers */}
+                        <label
+                          className="block text-[10px] font-bold mt-2 mb-1"
+                          style={{ color: "#8B5CF6" }}
+                        >
+                          🧠 Learning Note (optional — saves to Learning DB so AI can reuse)
+                        </label>
+                        <textarea
+                          value={resolutionNote}
+                          onChange={(e) => setResolutionNote(e.target.value)}
+                          rows={2}
+                          placeholder="e.g. &quot;User had expired IG token — guided them to Settings → Integrations → Reconnect. Common issue, happens every 60 days.&quot;"
+                          className="w-full rounded-lg px-3 py-2 text-xs resize-none"
+                          style={{
+                            backgroundColor: "rgba(139,92,246,0.04)",
+                            border: "1px solid rgba(139,92,246,0.25)",
+                            color: "#292524",
+                            outline: "none",
+                          }}
+                        />
+                        <p className="text-[9px] mt-1" style={{ color: "#A8967E" }}>
+                          Fill this only when resolving. The consultant AI will surface
+                          this solution for future similar questions.
+                        </p>
+
                         <div className="flex gap-2 mt-2">
                           {t.status === "new" && (
                             <button

@@ -104,6 +104,7 @@ const navGroups = [
       { href: "/white-label", label: "White-label", icon: Palette },
       { href: "/api-keys", label: "API Keys", icon: Key },
       { href: "/email-campaigns", label: "Email Campaigns", icon: Send },
+      { href: "/dashboard/automations", label: "Automations", icon: Zap },
     ],
   },
 ];
