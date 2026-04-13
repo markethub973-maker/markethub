@@ -640,6 +640,73 @@ export default function SettingsPage() {
           </div>
         )}
 
+        {/* Privacy & Data section — always visible */}
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(139,92,246,0.2)" }}>
+          <h2 className="text-lg font-bold mb-2" style={{ color: "#292524" }}>
+            Privacy & Data
+          </h2>
+          <p className="text-xs mb-5" style={{ color: "#78614E" }}>
+            Manage your cookie preferences, export your data, or close your account.
+          </p>
+
+          <div className="space-y-3">
+            <button
+              type="button"
+              onClick={() => {
+                try {
+                  window.localStorage.removeItem("mkh_cookie_consent");
+                  delete (window as unknown as { __mkh_consent?: string }).__mkh_consent;
+                } catch { /* no-op */ }
+                window.location.reload();
+              }}
+              className="w-full text-left rounded-lg p-3 flex items-center justify-between transition-all hover:bg-black/5"
+              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                  Change cookie preferences
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
+                  Re-show the consent banner so you can change Accept / Reject
+                </p>
+              </div>
+              <span className="text-xs font-bold" style={{ color: "#8B5CF6" }}>Reset →</span>
+            </button>
+
+            <a
+              href="/api/user/export-data"
+              className="block rounded-lg p-3 flex items-center justify-between transition-all hover:bg-black/5"
+              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                  Export your data (GDPR)
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
+                  Download a JSON archive of all your account data
+                </p>
+              </div>
+              <span className="text-xs font-bold" style={{ color: "#10B981" }}>Download →</span>
+            </a>
+
+            <a
+              href="/privacy"
+              className="block rounded-lg p-3 flex items-center justify-between transition-all hover:bg-black/5"
+              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <div>
+                <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                  Privacy policy
+                </p>
+                <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
+                  How we collect, use, and protect your data
+                </p>
+              </div>
+              <span className="text-xs font-bold" style={{ color: "#3B82F6" }}>View →</span>
+            </a>
+          </div>
+        </div>
+
       </div>
     </div>
   );
