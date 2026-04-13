@@ -81,7 +81,7 @@ export async function searchResolvedIssues(
 
   const service = createServiceClient();
 
-  // Turn query into tsquery-friendly OR-terms (strip punctuation, keep words).
+  // Keep only meaningful words (≥3 chars), strip punctuation, cap to 8.
   const terms = q
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, " ")
@@ -89,41 +89,41 @@ export async function searchResolvedIssues(
     .filter((t) => t.length >= 3)
     .slice(0, 8);
   if (terms.length === 0) return [];
-  const tsquery = terms.join(" | ");
+  // websearch_to_tsquery uses literal " OR " for disjunction (not "|").
+  const tsquery = terms.join(" OR ");
 
   let builder = service
     .from("resolved_issues")
     .select("id,category,symptom,solution,platform,usage_count,created_at")
-    .textSearch(
-      "symptom",
-      tsquery,
-      { type: "websearch", config: "simple" },
-    )
+    .textSearch("symptom", tsquery, { type: "websearch", config: "simple" })
     .order("usage_count", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(opts.limit ?? 5);
-
   if (opts.category) builder = builder.eq("category", opts.category);
   if (opts.platform) builder = builder.eq("platform", opts.platform);
 
   const { data, error } = await builder;
-  if (error || !data) {
-    // Fallback: ILIKE on symptom (the textSearch on a single column won't match
-    // if symptom doesn't contain the term but solution does).
-    const ilike = service
-      .from("resolved_issues")
-      .select("id,category,symptom,solution,platform,usage_count,created_at")
-      .or(
-        terms
-          .map((t) => `symptom.ilike.%${t}%,solution.ilike.%${t}%`)
-          .join(","),
-      )
-      .order("usage_count", { ascending: false })
-      .limit(opts.limit ?? 5);
-    const { data: fb } = await ilike;
-    return (fb ?? []) as ResolvedIssueMatch[];
+
+  // FTS only scans `symptom`. If it returns nothing (term only appears in
+  // solution/root_cause), fall through to ILIKE across both columns.
+  if (!error && data && data.length > 0) {
+    return data as ResolvedIssueMatch[];
   }
-  return data as ResolvedIssueMatch[];
+
+  let ilike = service
+    .from("resolved_issues")
+    .select("id,category,symptom,solution,platform,usage_count,created_at")
+    .or(
+      terms
+        .map((t) => `symptom.ilike.%${t}%,solution.ilike.%${t}%,root_cause.ilike.%${t}%`)
+        .join(","),
+    )
+    .order("usage_count", { ascending: false })
+    .limit(opts.limit ?? 5);
+  if (opts.category) ilike = ilike.eq("category", opts.category);
+  if (opts.platform) ilike = ilike.eq("platform", opts.platform);
+  const { data: fb } = await ilike;
+  return (fb ?? []) as ResolvedIssueMatch[];
 }
 
 /** Bump usage_count when a stored solution is surfaced. */
