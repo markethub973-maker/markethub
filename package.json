@@ -31,7 +31,9 @@
     "libphonenumber-js": "^1.12.41",
     "lucide-react": "^0.577.0",
     "next": "^16.2.3",
+    "otpauth": "^9.5.0",
     "pg": "^8.20.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.8.0",
@@ -43,6 +45,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "20.19.37",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/react-simple-maps": "^3.0.6",
