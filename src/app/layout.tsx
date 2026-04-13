@@ -5,6 +5,7 @@ import "./globals.css";
 import AuthGuard from "@/components/auth/AuthGuard";
 import ReportIssueButton from "@/components/ui/ReportIssueButton";
 import AskConsultant from "@/components/ui/AskConsultant";
+import CookieConsent from "@/components/ui/CookieConsent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -95,14 +96,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={inter.className}>
-        {/* Microsoft Clarity — loads after page interactive so it never blocks rendering. */}
+        {/* Microsoft Clarity — loads after page interactive AND only if the
+           user has accepted analytics cookies (window.__mkh_consent === "all").
+           See CookieConsent component. Listens for the "mkh:consent-accepted"
+           event so accepting AFTER page load also triggers loading. */}
         <Script id="ms-clarity" strategy="afterInteractive">
           {`
-            (function(c,l,a,r,i,t,y){
-              c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-              t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-              y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-            })(window, document, "clarity", "script", "${CLARITY_PROJECT_ID}");
+            (function(){
+              function loadClarity(){
+                if (window.__mkh_loaded_clarity) return;
+                window.__mkh_loaded_clarity = true;
+                (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+                })(window, document, "clarity", "script", "${CLARITY_PROJECT_ID}");
+              }
+              if (window.__mkh_consent === "all") {
+                loadClarity();
+              } else {
+                window.addEventListener("mkh:consent-accepted", loadClarity, { once: true });
+              }
+            })();
           `}
         </Script>
         <AuthGuard>{children}</AuthGuard>
@@ -110,6 +125,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ReportIssueButton />
         {/* M9 Sprint 1 — floating AI consultant (bottom-left) */}
         <AskConsultant />
+        {/* GDPR cookie consent banner — gates analytics loading */}
+        <CookieConsent />
       </body>
     </html>
   );
