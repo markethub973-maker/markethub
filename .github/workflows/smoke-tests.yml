@@ -1,14 +1,11 @@
-name: API Smoke Tests (post-deploy + hourly)                                                                                                                                       
-                                                                                                                                                                                     
-  # Runs `npm run test:smoke` against production every hour and after every                                                                                                          
-  # deployment_status event. Fails loud if a critical endpoint regresses.                                                                                                            
-                                                                                                                                                                                     
-  on:                                                             
-    schedule:                                                                                                                                                                        
-      - cron: "0 * * * *" # every hour on the hour                
-    workflow_dispatch:                                                                                                                                                               
+name: API Smoke Tests (post-deploy + hourly)
+
+  on:
+    schedule:
+      - cron: "0 * * * *"
+    workflow_dispatch:
       inputs:
-        base_url:                                                                                                                                                                    
+        base_url:
           description: "Override SMOKE_BASE_URL (default markethubpromo.com)"
           required: false
           default: ""
@@ -20,35 +17,20 @@ name: API Smoke Tests (post-deploy + hourly)
 
   jobs:
     smoke:
-      # Only run on successful deployments (skip pending/error states)
-      if: ${{ github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success' }}                                                                       
-      runs-on: ubuntu-latest                                                                                                                                                         
-      timeout-minutes: 10                                                                                                                                                            
-      steps:                                                                                                                                                                         
-        - uses: actions/checkout@v4                               
-        - uses: actions/setup-node@v4                                                                                                                                                
+      if: ${{ github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success' }}
+      runs-on: ubuntu-latest
+      timeout-minutes: 10
+      steps:
+        - uses: actions/checkout@v4
+        - uses: actions/setup-node@v4
           with:
-            node-version: "20"                                                                                                                                                       
-            cache: "npm"                                          
+            node-version: "20"
+            cache: "npm"
 
-        - name: Install dependencies                                                                                                                                                 
+        - name: Install dependencies
           run: npm ci --no-audit --no-fund
-                                                                                                                                                                                     
-        - name: Run smoke tests                                   
+
+        - name: Run smoke tests
           env:
-            SMOKE_BASE_URL: ${{ github.event.inputs.base_url || github.event.deployment_status.environment_url || 'https://markethubpromo.com' }}                                    
-          run: npm run test:smoke                                                                                                                                                    
-                                                                                                                                                                                     
-        - name: Notify Telegram on failure                                                                                                                                           
-          if: ${{ failure() && env.HAS_TG == 'true' }}            
-          env:                                                                                                                                                                       
-            HAS_TG: ${{ secrets.TELEGRAM_BOT_TOKEN != '' && secrets.TELEGRAM_ADMIN_CHAT_ID != '' }}
-          run: |                                                                                                                                                                     
-            curl --silent --show-error --fail \                   
-              -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \                                                                                  
-              -H "Content-Type: application/json" \                                                                                                                                  
-              -d "{                                                                                                                                                                  
-                \"chat_id\": \"${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}\",                                                                                                              
-                \"parse_mode\": \"HTML\",                                                                                                                                            
-                \"text\": \"🚨 <b>Smoke tests FAILED</b>\nRun: <a href='https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'>view</a>\"
-              }" 
+            SMOKE_BASE_URL: ${{ github.event.inputs.base_url || github.event.deployment_status.environment_url || 'https://markethubpromo.com' }}
+          run: npm run test:smoke
