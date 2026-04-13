@@ -47,3 +47,4 @@ next-env.d.ts
 # Workflow files that require manual GitHub UI upload (PAT lacks workflow scope)
 .github/workflows/cost-monitor.yml
 .github/workflows/smoke-tests.yml
+.github/workflows/security-health-check.yml
