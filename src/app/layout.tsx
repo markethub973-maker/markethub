@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/components/auth/AuthGuard";
 import ReportIssueButton from "@/components/ui/ReportIssueButton";
+import AskConsultant from "@/components/ui/AskConsultant";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,6 +34,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthGuard>{children}</AuthGuard>
         {/* M4 Sprint 1 — floating help button visible on every page */}
         <ReportIssueButton />
+        {/* M9 Sprint 1 — floating AI consultant (bottom-left) */}
+        <AskConsultant />
       </body>
     </html>
   );
