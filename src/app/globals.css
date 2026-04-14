@@ -164,35 +164,61 @@
   --color-border-hover: #3A3F3C;
 }
 
-/* ─── 3D depth shadows (per theme — enhanced on dark themes) ─────── */
+/* ─── 3D glass cards (depth + transparency + blur) ───────────────── */
 :root {
-  /* Layered soft shadows — works on light backgrounds */
+  /* Layered shadows — more pronounced for visible 3D lift */
   --shadow-card:
-    0 1px 2px rgba(30, 22, 10, 0.04),
-    0 2px 8px rgba(30, 22, 10, 0.06),
-    0 8px 24px rgba(30, 22, 10, 0.04);
-  --shadow-card-hover:
     0 2px 4px rgba(30, 22, 10, 0.06),
-    0 8px 16px rgba(30, 22, 10, 0.10),
-    0 16px 40px rgba(30, 22, 10, 0.08);
+    0 8px 20px rgba(30, 22, 10, 0.10),
+    0 20px 40px rgba(30, 22, 10, 0.08);
+  --shadow-card-hover:
+    0 4px 8px rgba(30, 22, 10, 0.08),
+    0 14px 32px rgba(30, 22, 10, 0.14),
+    0 32px 64px rgba(30, 22, 10, 0.10);
   --shadow-card-deep:
-    0 4px 8px rgba(30, 22, 10, 0.06),
-    0 12px 24px rgba(30, 22, 10, 0.10),
-    0 24px 48px rgba(30, 22, 10, 0.08);
+    0 6px 12px rgba(30, 22, 10, 0.10),
+    0 20px 40px rgba(30, 22, 10, 0.14),
+    0 40px 80px rgba(30, 22, 10, 0.10);
+
+  /* Glass surface — translucent white with blur */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.70);
+  --glass-highlight: rgba(255, 255, 255, 0.90);
 }
 
-/* ─── Auto-apply 3D card shadow to the common card pattern ─────────
+/* ─── Auto glass-card styling on the common card pattern ───────────
    Any element whose inline border uses the standard 1px rgba(0,0,0,0.06)
-   wrapper (the dominant card style across the platform) gets the card
-   shadow automatically — no migration needed. */
-[style*="border: 1px solid rgba(0,0,0,0.06)"],
-[style*="border: \"1px solid rgba(0,0,0,0.06)\""] {
-  box-shadow: var(--shadow-card);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+   wrapper (the dominant card style across the platform) gets the full
+   glass + 3D treatment: translucent bg, backdrop blur, soft inner
+   highlight on the top edge, layered shadow, hover lift. */
+[style*="border: 1px solid rgba(0,0,0,0.06)"] {
+  background-color: var(--glass-bg) !important;
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid var(--glass-border) !important;
+  box-shadow:
+    var(--shadow-card),
+    inset 0 1px 0 var(--glass-highlight);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
 }
-[style*="border: 1px solid rgba(0,0,0,0.06)"]:hover,
-[style*="border: \"1px solid rgba(0,0,0,0.06)\""]:hover {
-  box-shadow: var(--shadow-card-hover);
+[style*="border: 1px solid rgba(0,0,0,0.06)"]:hover {
+  background-color: var(--glass-bg-strong) !important;
+  box-shadow:
+    var(--shadow-card-hover),
+    inset 0 1px 0 var(--glass-highlight);
+  transform: translateY(-1px);
+}
+
+/* Same treatment for rounded pill with similar border */
+[style*="border: 1px solid rgba(245,215,160"] {
+  background-color: var(--glass-bg) !important;
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow:
+    var(--shadow-card),
+    inset 0 1px 0 var(--glass-highlight);
+  transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
 }
 
 /* ─── Base styles ─────────────────────────────────────────────── */
