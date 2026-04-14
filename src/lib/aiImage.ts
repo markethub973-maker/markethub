@@ -19,6 +19,8 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/service";
+import { loadBrandVoice } from "@/lib/brandVoice";
+import { dispatchWebhookEvent } from "@/lib/outboundWebhooks";
 
 type Provider = "fal" | "replicate" | "openai" | "stability";
 
@@ -80,14 +82,31 @@ export async function generateImage(input: GenerateInput): Promise<GenerateResul
   const { width, height } = aspectToDimensions(input.aspect_ratio);
   const service = createServiceClient();
 
-  // 1. Insert row up-front
+  // Brand voice → image style prefix. If the user has set a voice
+  // profile, prepend a short "Style:" cue distilled from it so
+  // generations look like their brand instead of generic stock.
+  // We append to the prompt rather than replacing — user intent stays
+  // primary, voice is decoration.
+  let finalPrompt = input.prompt;
+  try {
+    const bv = await loadBrandVoice(input.userId);
+    if (bv?.tone || bv?.vocabulary) {
+      const styleCue = [bv.tone, bv.vocabulary].filter(Boolean).join(" · ").slice(0, 240);
+      if (styleCue) finalPrompt = `${input.prompt}\n\nStyle: ${styleCue}`;
+    }
+  } catch {
+    /* fall back to raw prompt */
+  }
+
+  // 1. Insert row up-front (store the AUGMENTED prompt so the gallery
+  // shows what was actually rendered)
   const { data: row } = await service
     .from("ai_image_generations")
     .insert({
       user_id: input.userId,
       provider,
       model,
-      prompt: input.prompt,
+      prompt: finalPrompt,
       negative_prompt: input.negative_prompt ?? null,
       width,
       height,
@@ -102,10 +121,10 @@ export async function generateImage(input: GenerateInput): Promise<GenerateResul
   const id = (row?.id as string) ?? null;
   if (!id) return { ok: false, id: null, error: "Failed to record generation" };
 
-  // 2. Call provider
+  // 2. Call provider with augmented prompt
   const started = Date.now();
   try {
-    const result = await callProvider(provider, input, width, height);
+    const result = await callProvider(provider, { ...input, prompt: finalPrompt }, width, height);
     const duration = Date.now() - started;
 
     await service
@@ -120,6 +139,18 @@ export async function generateImage(input: GenerateInput): Promise<GenerateResul
         finished_at: new Date().toISOString(),
       })
       .eq("id", id);
+
+    // Webhook fan-out on success
+    if (result.ok && result.image_url) {
+      void dispatchWebhookEvent(input.userId, "image.generated", {
+        generation_id: id,
+        image_url: result.image_url,
+        prompt: finalPrompt,
+        aspect_ratio: input.aspect_ratio ?? "1:1",
+        cost_usd: cost_per_image,
+        provider,
+      });
+    }
 
     return {
       ok: result.ok,

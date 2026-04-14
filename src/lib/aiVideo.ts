@@ -12,6 +12,7 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/service";
+import { dispatchWebhookEvent } from "@/lib/outboundWebhooks";
 
 type Provider = "fal" | "replicate";
 
@@ -106,6 +107,18 @@ export async function generateVideo(input: GenerateVideoInput): Promise<Generate
         finished_at: new Date().toISOString(),
       })
       .eq("id", id);
+
+    if (result.ok && result.video_url) {
+      void dispatchWebhookEvent(input.userId, "video.generated", {
+        generation_id: id,
+        video_url: result.video_url,
+        mode,
+        duration_sec: input.duration_sec ?? 5,
+        aspect_ratio: input.aspect_ratio ?? "9:16",
+        cost_usd: cost_per_video,
+        provider,
+      });
+    }
 
     return {
       ok: result.ok,

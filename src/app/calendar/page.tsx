@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import AiImageQuickGen from "@/components/calendar/AiImageQuickGen";
+import AssetPicker from "@/components/calendar/AssetPicker";
 import HashtagSuggester from "@/components/calendar/HashtagSuggester";
 import EngagementPredictor from "@/components/calendar/EngagementPredictor";
 import {
@@ -514,9 +515,18 @@ export default function CalendarPage() {
                     style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
-                    Image URL <span style={{ color: "#C4AA8A", fontWeight: 400 }}>— required for auto-posting to Instagram</span>
-                  </label>
+                  <div className="flex items-center justify-between mb-1 gap-2 flex-wrap">
+                    <label className="block text-xs font-semibold" style={{ color: "#78614E" }}>
+                      Image URL <span style={{ color: "#C4AA8A", fontWeight: 400 }}>— required for auto-posting to Instagram</span>
+                    </label>
+                    <div className="flex items-center gap-1.5">
+                      <AssetPicker onSelect={(url) => setForm(f => ({ ...f, image_url: url }))} />
+                      <AiImageQuickGen
+                        caption={form.caption}
+                        onGenerated={(url) => setForm(f => ({ ...f, image_url: url }))}
+                      />
+                    </div>
+                  </div>
                   <input type="url" placeholder="https://cdn.example.com/image.jpg" value={form.image_url}
                     onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
