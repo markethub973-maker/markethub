@@ -129,7 +129,9 @@ export async function GET(req: NextRequest) {
 
   const cronSecret = req.headers.get("x-brain-cron-secret");
   if (cronSecret && process.env.BRAIN_CRON_SECRET && cronSecret === process.env.BRAIN_CRON_SECRET) {
-    operatorId = process.env.BRAIN_OPERATOR_USER_ID ?? null;
+    // Allow override via ?operator=<uuid> so a single cron can loop multiple operators.
+    const overrideId = req.nextUrl.searchParams.get("operator");
+    operatorId = overrideId ?? process.env.BRAIN_OPERATOR_USER_ID ?? null;
     if (!operatorId) {
       return NextResponse.json({ error: "BRAIN_OPERATOR_USER_ID not set" }, { status: 500 });
     }
