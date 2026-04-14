@@ -1,46 +1,46 @@
 "use client";
 
 /**
- * ThemeSwitcher — dropdown with 4 preset themes + custom-color picker.
+ * ThemeSwitcher — globally-floating button (top-right) that opens a
+ * full-overlay panel with 4 preset themes + custom-color picker.
  *
- * Click → opens panel. Click a preset → applies instantly. Click
- * "Custom" → reveals two color pickers (primary + accent) that update
- * live as the user drags. Selections persist in localStorage via the
- * ThemeProvider.
+ * Rendered via React portal into document.body so it escapes ANY
+ * sidebar / overflow / z-index context. Visible on every page.
  */
 
 import { useTheme, THEMES, ThemeId } from "./ThemeProvider";
 import { useEffect, useRef, useState } from "react";
-import { Palette, Check, RotateCcw } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Palette, Check, RotateCcw, X } from "lucide-react";
 
 export default function ThemeSwitcher() {
   const { theme, customColors, setTheme, setCustomColors } = useTheme();
   const [open, setOpen] = useState(false);
-  const [showCustom, setShowCustom] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Close panel on outside click
+  useEffect(() => { setMounted(true); }, []);
+
+  // Close on outside click + Escape
   useEffect(() => {
     if (!open) return;
     const onClick = (e: MouseEvent) => {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
         setOpen(false);
-        setShowCustom(false);
       }
     };
+    const onEsc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
     document.addEventListener("mousedown", onClick);
-    return () => document.removeEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onEsc);
+    };
   }, [open]);
 
   const pick = (id: ThemeId) => {
-    if (id === "custom") {
-      setShowCustom(true);
-      setTheme("custom");
-      return;
-    }
     setTheme(id);
-    setShowCustom(false);
-    setOpen(false);
+    if (id !== "custom") setOpen(false);
   };
 
   const onPrimary = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,167 +50,202 @@ export default function ThemeSwitcher() {
     setCustomColors({ ...customColors, accent: e.target.value });
   };
 
-  return (
-    <div className="relative" ref={panelRef}>
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-lg border transition"
+  // Floating trigger — always visible top-right, above every other layer
+  const trigger = (
+    <button
+      type="button"
+      onClick={() => setOpen(true)}
+      className="fixed top-3 right-3 w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+      style={{
+        zIndex: 9998,
+        background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`,
+        color: "white",
+        border: "2px solid rgba(255,255,255,0.6)",
+      }}
+      aria-label="Change theme"
+      title="Change theme"
+    >
+      <Palette className="w-4 h-4" />
+    </button>
+  );
+
+  // Panel — also portaled, fixed position, with backdrop
+  const panel = open && (
+    <div
+      className="fixed inset-0 flex items-start justify-end p-3"
+      style={{
+        zIndex: 9999,
+        backgroundColor: "rgba(0,0,0,0.35)",
+        backdropFilter: "blur(2px)",
+      }}
+    >
+      <div
+        ref={panelRef}
+        className="w-80 max-w-[calc(100vw-24px)] rounded-2xl shadow-2xl overflow-hidden mt-12"
         style={{
-          backgroundColor: "var(--color-bg-secondary)",
-          borderColor: "var(--color-border)",
-          color: "var(--color-text)",
+          backgroundColor: "var(--color-bg)",
+          border: "1px solid var(--color-border)",
         }}
-        aria-label="Change theme"
-        title="Theme"
       >
-        <span
-          className="w-4 h-4 rounded-full inline-block"
-          style={{
-            background: `linear-gradient(135deg, var(--color-primary) 50%, var(--color-accent) 50%)`,
-            border: "1px solid rgba(0,0,0,0.06)",
-          }}
-        />
-        <Palette className="w-3.5 h-3.5" />
-      </button>
-
-      {open && (
+        {/* Header */}
         <div
-          className="absolute right-0 mt-2 w-72 rounded-xl shadow-2xl z-50 overflow-hidden"
-          style={{
-            backgroundColor: "var(--color-bg)",
-            border: "1px solid var(--color-border)",
-          }}
+          className="px-4 py-3 flex items-center gap-2"
+          style={{ borderBottom: "1px solid var(--color-border)", backgroundColor: "var(--color-bg-secondary)" }}
         >
-          <div className="px-3 py-2" style={{ borderBottom: "1px solid var(--color-border)" }}>
-            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--color-text-secondary)" }}>
-              Theme
-            </p>
-          </div>
+          <Palette className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+          <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
+            Theme
+          </p>
+          <button
+            type="button"
+            onClick={() => setOpen(false)}
+            aria-label="Close"
+            className="p-1 rounded"
+            style={{ color: "var(--color-text-secondary)" }}
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
 
-          <div className="py-1">
-            {THEMES.map((t) => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => pick(t.id)}
-                className="w-full flex items-center gap-3 px-3 py-2 transition text-left"
-                style={{
-                  backgroundColor: theme === t.id ? "var(--color-primary-light)" : "transparent",
-                }}
-                onMouseEnter={(e) => {
-                  if (theme !== t.id) e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
-                }}
-                onMouseLeave={(e) => {
-                  if (theme !== t.id) e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
-                <span className="flex gap-1 flex-shrink-0">
-                  <span
-                    className="w-4 h-4 rounded-full inline-block"
-                    style={{
-                      background: t.id === "custom" ? customColors.primary : t.primary,
-                      border: "1px solid rgba(0,0,0,0.08)",
-                    }}
-                  />
-                  <span
-                    className="w-4 h-4 rounded-full inline-block"
-                    style={{
-                      background: t.id === "custom" ? customColors.accent : t.accent,
-                      border: "1px solid rgba(0,0,0,0.08)",
-                    }}
-                  />
-                </span>
-                <span className="text-sm flex-1" style={{ color: "var(--color-text)" }}>
-                  {t.label}
-                </span>
-                {theme === t.id && (
-                  <Check className="w-3.5 h-3.5" style={{ color: "var(--color-primary)" }} />
-                )}
-              </button>
-            ))}
-          </div>
-
-          {/* Custom color pickers — show when "custom" is active */}
-          {(theme === "custom" || showCustom) && (
-            <div
-              className="px-3 py-3 space-y-3"
-              style={{ borderTop: "1px solid var(--color-border)", backgroundColor: "var(--color-bg-secondary)" }}
+        {/* Preset list */}
+        <div className="py-1">
+          {THEMES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => pick(t.id)}
+              className="w-full flex items-center gap-3 px-4 py-2.5 transition text-left"
+              style={{
+                backgroundColor: theme === t.id ? "var(--color-primary-light)" : "transparent",
+              }}
+              onMouseEnter={(e) => {
+                if (theme !== t.id) e.currentTarget.style.backgroundColor = "var(--color-bg-secondary)";
+              }}
+              onMouseLeave={(e) => {
+                if (theme !== t.id) e.currentTarget.style.backgroundColor = "transparent";
+              }}
             >
-              <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--color-text-secondary)" }}>
-                Your colors
-              </p>
-
-              <div className="flex items-center gap-2">
-                <label className="text-xs flex-1" style={{ color: "var(--color-text-secondary)" }}>
-                  Primary
-                </label>
-                <input
-                  type="color"
-                  value={customColors.primary}
-                  onChange={onPrimary}
-                  className="w-9 h-9 rounded cursor-pointer"
-                  style={{ border: "1px solid var(--color-border)" }}
-                  aria-label="Primary color"
-                />
-                <input
-                  type="text"
-                  value={customColors.primary}
-                  onChange={(e) => /^#[0-9A-Fa-f]{0,6}$/.test(e.target.value) && setCustomColors({ ...customColors, primary: e.target.value })}
-                  className="w-20 rounded px-2 py-1 text-xs font-mono"
+              <span className="flex gap-1 flex-shrink-0">
+                <span
+                  className="w-5 h-5 rounded-full inline-block"
                   style={{
-                    backgroundColor: "var(--color-bg)",
-                    border: "1px solid var(--color-border)",
-                    color: "var(--color-text)",
-                    outline: "none",
+                    background: t.id === "custom" ? customColors.primary : t.primary,
+                    border: "1px solid rgba(0,0,0,0.08)",
                   }}
                 />
-              </div>
-
-              <div className="flex items-center gap-2">
-                <label className="text-xs flex-1" style={{ color: "var(--color-text-secondary)" }}>
-                  Accent
-                </label>
-                <input
-                  type="color"
-                  value={customColors.accent}
-                  onChange={onAccent}
-                  className="w-9 h-9 rounded cursor-pointer"
-                  style={{ border: "1px solid var(--color-border)" }}
-                  aria-label="Accent color"
-                />
-                <input
-                  type="text"
-                  value={customColors.accent}
-                  onChange={(e) => /^#[0-9A-Fa-f]{0,6}$/.test(e.target.value) && setCustomColors({ ...customColors, accent: e.target.value })}
-                  className="w-20 rounded px-2 py-1 text-xs font-mono"
+                <span
+                  className="w-5 h-5 rounded-full inline-block"
                   style={{
-                    backgroundColor: "var(--color-bg)",
-                    border: "1px solid var(--color-border)",
-                    color: "var(--color-text)",
-                    outline: "none",
+                    background: t.id === "custom" ? customColors.accent : t.accent,
+                    border: "1px solid rgba(0,0,0,0.08)",
                   }}
                 />
-              </div>
+              </span>
+              <span className="text-sm flex-1 font-medium" style={{ color: "var(--color-text)" }}>
+                {t.label}
+              </span>
+              {theme === t.id && (
+                <Check className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              )}
+            </button>
+          ))}
+        </div>
 
+        {/* Custom color pickers — show when "custom" is active */}
+        {theme === "custom" && (
+          <div
+            className="px-4 py-4 space-y-3"
+            style={{ borderTop: "1px solid var(--color-border)", backgroundColor: "var(--color-bg-secondary)" }}
+          >
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--color-text-secondary)" }}>
+              Your colors
+            </p>
+
+            <div className="flex items-center gap-3">
+              <label className="text-xs flex-1 font-semibold" style={{ color: "var(--color-text)" }}>
+                Primary
+              </label>
+              <input
+                type="color"
+                value={customColors.primary}
+                onChange={onPrimary}
+                className="w-10 h-10 rounded cursor-pointer"
+                style={{ border: "1px solid var(--color-border)" }}
+                aria-label="Primary color"
+              />
+              <input
+                type="text"
+                value={customColors.primary}
+                onChange={(e) => /^#[0-9A-Fa-f]{0,6}$/.test(e.target.value) && setCustomColors({ ...customColors, primary: e.target.value })}
+                className="w-24 rounded px-2 py-1.5 text-xs font-mono"
+                style={{
+                  backgroundColor: "var(--color-bg)",
+                  border: "1px solid var(--color-border)",
+                  color: "var(--color-text)",
+                  outline: "none",
+                }}
+              />
+            </div>
+
+            <div className="flex items-center gap-3">
+              <label className="text-xs flex-1 font-semibold" style={{ color: "var(--color-text)" }}>
+                Accent
+              </label>
+              <input
+                type="color"
+                value={customColors.accent}
+                onChange={onAccent}
+                className="w-10 h-10 rounded cursor-pointer"
+                style={{ border: "1px solid var(--color-border)" }}
+                aria-label="Accent color"
+              />
+              <input
+                type="text"
+                value={customColors.accent}
+                onChange={(e) => /^#[0-9A-Fa-f]{0,6}$/.test(e.target.value) && setCustomColors({ ...customColors, accent: e.target.value })}
+                className="w-24 rounded px-2 py-1.5 text-xs font-mono"
+                style={{
+                  backgroundColor: "var(--color-bg)",
+                  border: "1px solid var(--color-border)",
+                  color: "var(--color-text)",
+                  outline: "none",
+                }}
+              />
+            </div>
+
+            <div className="flex items-center gap-2 pt-1">
               <button
                 type="button"
-                onClick={() => { setCustomColors({ primary: "#F59E0B", accent: "#EC8054" }); }}
-                className="text-[10px] flex items-center gap-1 underline"
+                onClick={() => setCustomColors({ primary: "#F59E0B", accent: "#EC8054" })}
+                className="text-[11px] flex items-center gap-1 underline"
                 style={{ color: "var(--color-text-secondary)" }}
               >
-                <RotateCcw className="w-2.5 h-2.5" />
-                Reset to default
+                <RotateCcw className="w-3 h-3" />
+                Reset
               </button>
-
-              <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>
-                Lighter / semi-transparent shades are derived automatically.
-                Saved on this device.
-              </p>
+              <span className="text-[10px] flex-1 text-right" style={{ color: "var(--color-text-muted)" }}>
+                Lighter shades auto-derived
+              </span>
             </div>
-          )}
+          </div>
+        )}
+
+        {/* Footer */}
+        <div
+          className="px-4 py-2 text-[10px]"
+          style={{ borderTop: "1px solid var(--color-border)", color: "var(--color-text-muted)", backgroundColor: "var(--color-bg-secondary)" }}
+        >
+          Changes save instantly on this device.
         </div>
-      )}
+      </div>
     </div>
+  );
+
+  if (!mounted) return null;
+  return (
+    <>
+      {createPortal(trigger, document.body)}
+      {createPortal(panel, document.body)}
+    </>
   );
 }

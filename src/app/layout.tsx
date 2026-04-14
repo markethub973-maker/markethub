@@ -6,6 +6,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import AskConsultant from "@/components/ui/AskConsultant";
 import CookieConsent from "@/components/ui/CookieConsent";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -162,6 +163,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
         <ThemeProvider>
           <AuthGuard>{children}</AuthGuard>
+          {/* Floating theme switcher — top-right, visible on every page,
+              portal-rendered so it escapes any sidebar/overflow context. */}
+          <ThemeSwitcher />
           {/* M9 Sprint 1 — floating AI consultant (bottom-left).
               The bottom-right "Help" widget (chat / tour / report issue) is
               rendered inside AuthGuard as OnboardingWidget. */}

@@ -12,7 +12,6 @@ import {
   UserCheck, FileText, Linkedin, UserPlus, Clock, Gift, Calculator, Palette, Key, Send,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
 import {
   canAccessRoute, getRouteGate, PLAN_LABELS, PLAN_COLORS, PLAN_PRICES,
   PLAN_ORDER, plansWithAccess, type PlanId,
@@ -509,11 +508,6 @@ export default function Sidebar() {
               </Link>
             </div>
           )}
-
-          {/* Theme switcher — picks color theme + custom colors */}
-          <div className="mt-2 px-4 flex justify-end">
-            <ThemeSwitcher />
-          </div>
 
           <button
             type="button"
