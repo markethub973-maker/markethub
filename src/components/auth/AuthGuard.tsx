@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Sidebar from "@/components/layout/Sidebar";
-import SetupAgent from "@/components/ui/SetupAgent";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
 import TrialWarningBanner from "@/components/TrialWarningBanner";
@@ -71,7 +70,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (!checked) return null;
 
-  // Admin dashboard: sidebar + main layout (no SetupAgent)
+  // Admin dashboard: sidebar + main layout
   if (pathname.startsWith("/dashboard/admin")) {
     return (
       <>
@@ -97,7 +96,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           </ModuleBoundary>
         </div>
       </main>
-      {pathname !== "/ai-hub" && <SetupAgent />}
       <OnboardingWidget />
     </>
   );
