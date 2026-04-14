@@ -304,6 +304,16 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/brain-private";
       return NextResponse.rewrite(url);
     }
+    // Outreach batch sender (sub-page of dashboard)
+    if (pathname === "/outreach" || pathname === "/brain-private/outreach") {
+      url.pathname = "/brain-private/outreach";
+      return NextResponse.rewrite(url);
+    }
+    // The batch API needs to stay reachable on the subdomain so the UI
+    // fetch works without CORS gymnastics.
+    if (pathname.startsWith("/api/brain/outreach-batch")) {
+      return NextResponse.next();
+    }
 
     // Everything else → 404 (app is not reachable here)
     return new NextResponse(null, { status: 404 });
