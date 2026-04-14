@@ -309,9 +309,21 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/brain-private/outreach";
       return NextResponse.rewrite(url);
     }
-    // The batch API needs to stay reachable on the subdomain so the UI
-    // fetch works without CORS gymnastics.
-    if (pathname.startsWith("/api/brain/outreach-batch")) {
+    // Pipeline view (sub-page of dashboard)
+    if (pathname === "/pipeline" || pathname === "/brain-private/pipeline") {
+      url.pathname = "/brain-private/pipeline";
+      return NextResponse.rewrite(url);
+    }
+    // Demo generator (sub-page of dashboard)
+    if (pathname === "/demo" || pathname === "/brain-private/demo") {
+      url.pathname = "/brain-private/demo";
+      return NextResponse.rewrite(url);
+    }
+    // Brain APIs the dashboard uses — allow through on this subdomain.
+    if (
+      pathname.startsWith("/api/brain/outreach-batch") ||
+      pathname.startsWith("/api/brain/demo")
+    ) {
       return NextResponse.next();
     }
 

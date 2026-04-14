@@ -169,6 +169,8 @@ export default async function BrainCommandCenter() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
               { label: "Send outreach batch", href: "/outreach" },
+              { label: "View pipeline", href: "/pipeline" },
+              { label: "Generate demo for prospect", href: "/demo" },
               { label: "Review outreach queue", href: "https://markethubpromo.com/growth/lead-finder" },
               { label: "Today's content draft", href: "https://markethubpromo.com/studio/campaign" },
               { label: "Open Accelerator sales", href: "https://dashboard.stripe.com/payments?activity=succeeded" },
