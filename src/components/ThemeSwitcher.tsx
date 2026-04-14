@@ -19,35 +19,69 @@ export default function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // Snapshot of the active theme + colors WHEN the panel was opened.
+  // Lets the user preview live and either Apply (keep) or Cancel
+  // (revert all changes) before closing.
+  const snapshot = useRef<{ theme: ThemeId; colors: typeof customColors } | null>(null);
+  const [draftPicked, setDraftPicked] = useState(false); // tracks whether anything has changed since open
+
   useEffect(() => { setMounted(true); }, []);
 
-  // Close on outside click + Escape
+  // When opening: snapshot the current state so Cancel knows what to revert to
+  useEffect(() => {
+    if (open) {
+      snapshot.current = { theme, colors: { ...customColors } };
+      setDraftPicked(false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  // Cancel = revert to snapshot
+  const cancel = () => {
+    if (snapshot.current) {
+      const { theme: t0, colors: c0 } = snapshot.current;
+      setCustomColors(c0);
+      setTheme(t0);
+    }
+    setOpen(false);
+  };
+
+  // Apply = keep current state, just close
+  const apply = () => {
+    setOpen(false);
+  };
+
+  // Outside click + Escape both behave like Cancel (safer default)
   useEffect(() => {
     if (!open) return;
     const onClick = (e: MouseEvent) => {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-        setOpen(false);
+        cancel();
       }
     };
-    const onEsc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const onEsc = (e: KeyboardEvent) => { if (e.key === "Escape") cancel(); };
     document.addEventListener("mousedown", onClick);
     document.addEventListener("keydown", onEsc);
     return () => {
       document.removeEventListener("mousedown", onClick);
       document.removeEventListener("keydown", onEsc);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const pick = (id: ThemeId) => {
     setTheme(id);
-    if (id !== "custom") setOpen(false);
+    setDraftPicked(true);
+    // No auto-close anymore — user must hit Apply to confirm
   };
 
   const onPrimary = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomColors({ ...customColors, primary: e.target.value });
+    setDraftPicked(true);
   };
   const onAccent = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCustomColors({ ...customColors, accent: e.target.value });
+    setDraftPicked(true);
   };
 
   // Floating trigger — always visible top-right, above every other layer
@@ -99,8 +133,8 @@ export default function ThemeSwitcher() {
           </p>
           <button
             type="button"
-            onClick={() => setOpen(false)}
-            aria-label="Close"
+            onClick={cancel}
+            aria-label="Cancel and close"
             className="p-1 rounded"
             style={{ color: "var(--color-text-secondary)" }}
           >
@@ -231,12 +265,39 @@ export default function ThemeSwitcher() {
           </div>
         )}
 
-        {/* Footer */}
+        {/* Footer with Apply / Cancel */}
         <div
-          className="px-4 py-2 text-[10px]"
-          style={{ borderTop: "1px solid var(--color-border)", color: "var(--color-text-muted)", backgroundColor: "var(--color-bg-secondary)" }}
+          className="px-4 py-3 flex items-center gap-2"
+          style={{ borderTop: "1px solid var(--color-border)", backgroundColor: "var(--color-bg-secondary)" }}
         >
-          Changes save instantly on this device.
+          <p className="text-[10px] flex-1" style={{ color: "var(--color-text-muted)" }}>
+            {draftPicked ? "Preview active — click Apply to save" : "Pick a theme to preview"}
+          </p>
+          <button
+            type="button"
+            onClick={cancel}
+            className="px-3 py-1.5 rounded-md text-xs font-bold transition"
+            style={{
+              backgroundColor: "transparent",
+              color: "var(--color-text-secondary)",
+              border: "1px solid var(--color-border)",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={apply}
+            disabled={!draftPicked}
+            className="px-4 py-1.5 rounded-md text-xs font-bold transition disabled:opacity-40"
+            style={{
+              backgroundColor: "var(--color-primary)",
+              color: "white",
+              border: "1px solid var(--color-primary)",
+            }}
+          >
+            Apply
+          </button>
         </div>
       </div>
     </div>
