@@ -673,6 +673,31 @@ def receive():
                 <code>data.cost_usd</code>. Done — every AI image is archived.
               </p>
             </div>
+
+            <div
+              className="rounded-xl p-4"
+              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+                Auto-fill alt-text on every uploaded image (WordPress)
+              </p>
+              <p className="text-xs mb-2" style={{ color: "#78614E" }}>
+                1. In your WordPress plugin or cron script, hook into{" "}
+                <code>wp_handle_upload</code> (or listen for new Media
+                Library entries).
+                2. POST the new image URL to <code>/api/v1/alt-text</code>
+                with your Bearer token — optionally pass the post title
+                as <code>context</code>.
+                3. Save the returned <code>alt_text</code> into the
+                attachment&apos;s <code>_wp_attachment_image_alt</code>{" "}
+                meta. Result: every uploaded image is accessibility-ready
+                and SEO-indexed within seconds, no manual work.
+              </p>
+              <p className="text-[11px]" style={{ color: "#A8967E" }}>
+                Same pattern works for Shopify (Admin API{" "}
+                <code>image.alt</code>), Webflow, or any headless CMS.
+              </p>
+            </div>
           </div>
         </section>
 
