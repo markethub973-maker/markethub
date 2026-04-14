@@ -7,6 +7,7 @@ import {
   Zap, Eye, EyeOff, Lock, Mail, User, Check, X, Loader2,
   Instagram, Clock, Users, Briefcase, BarChart2, Bot, Shield, Star,
 } from "lucide-react";
+import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter";
 
 interface Plan {
   id: string;
@@ -327,6 +328,7 @@ export default function RegisterPage() {
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+                  <PasswordStrengthMeter password={password} />
                 </div>
 
                 {error && (
