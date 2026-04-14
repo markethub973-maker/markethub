@@ -1,5 +1,140 @@
 @import "tailwindcss";
 
+/* ============================================
+   MarketHub Pro — Theme System
+   4 themes switchable via [data-theme] on <html>
+   Default = "amber" to match the current visual identity.
+   ============================================ */
+
+/* Default theme: Amber (warm cream — matches existing platform).
+   Light + semi-transparent variants for soft glassmorphism feel. */
+:root,
+[data-theme="amber"] {
+  --color-primary: #F59E0B;
+  --color-primary-hover: #D97706;
+  --color-primary-light: rgba(245, 158, 11, 0.10);   /* semi-transparent */
+  --color-primary-dark: #92580A;
+
+  --color-accent: #EC8054;
+  --color-accent-hover: #D6633A;
+  --color-accent-light: rgba(236, 128, 84, 0.10);
+  --color-accent-dark: #6E2E10;
+
+  --color-bg: #FFFCF7;          /* very light cream */
+  --color-bg-secondary: rgba(245, 232, 210, 0.35);   /* soft cream wash */
+  --color-bg-tertiary: rgba(245, 232, 210, 0.55);
+
+  --color-text: #2D2620;
+  --color-text-secondary: #7A6A5A;
+  --color-text-muted: #B5A898;
+
+  --color-border: rgba(168, 130, 90, 0.18);
+  --color-border-hover: rgba(168, 130, 90, 0.30);
+
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger:  #EF4444;
+}
+
+/* Emerald + Pink — fresh, growth-focused, very light */
+[data-theme="emerald"] {
+  --color-primary: #10B981;
+  --color-primary-hover: #059669;
+  --color-primary-light: rgba(16, 185, 129, 0.08);
+  --color-primary-dark: #047857;
+
+  --color-accent: #F472B6;
+  --color-accent-hover: #EC4899;
+  --color-accent-light: rgba(244, 114, 182, 0.10);
+  --color-accent-dark: #BE185D;
+
+  --color-bg: #FBFEFD;
+  --color-bg-secondary: rgba(220, 252, 231, 0.30);
+  --color-bg-tertiary: rgba(220, 252, 231, 0.50);
+
+  --color-text: #14302A;
+  --color-text-secondary: #4F6B62;
+  --color-text-muted: #A0B5AC;
+
+  --color-border: rgba(16, 185, 129, 0.15);
+  --color-border-hover: rgba(16, 185, 129, 0.30);
+
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger:  #EF4444;
+}
+
+/* Indigo + Coral — soft tech startup */
+[data-theme="indigo"] {
+  --color-primary: #818CF8;
+  --color-primary-hover: #6366F1;
+  --color-primary-light: rgba(129, 140, 248, 0.10);
+  --color-primary-dark: #4338CA;
+
+  --color-accent: #FB923C;
+  --color-accent-hover: #F97316;
+  --color-accent-light: rgba(251, 146, 60, 0.10);
+  --color-accent-dark: #C2410C;
+
+  --color-bg: #FBFBFE;
+  --color-bg-secondary: rgba(224, 224, 255, 0.25);
+  --color-bg-tertiary: rgba(224, 224, 255, 0.45);
+
+  --color-text: #1E1B4B;
+  --color-text-secondary: #5E5C7A;
+  --color-text-muted: #A5A4C0;
+
+  --color-border: rgba(129, 140, 248, 0.15);
+  --color-border-hover: rgba(129, 140, 248, 0.30);
+
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger:  #EF4444;
+}
+
+/* Mono + Lime — clean minimalist */
+[data-theme="mono"] {
+  --color-primary: #404040;
+  --color-primary-hover: #262626;
+  --color-primary-light: rgba(64, 64, 64, 0.06);
+  --color-primary-dark: #171717;
+
+  --color-accent: #84CC16;
+  --color-accent-hover: #65A30D;
+  --color-accent-light: rgba(132, 204, 22, 0.10);
+  --color-accent-dark: #3F6212;
+
+  --color-bg: #FCFCFC;
+  --color-bg-secondary: rgba(245, 245, 245, 0.50);
+  --color-bg-tertiary: rgba(229, 229, 229, 0.50);
+
+  --color-text: #171717;
+  --color-text-secondary: #525252;
+  --color-text-muted: #A3A3A3;
+
+  --color-border: rgba(64, 64, 64, 0.10);
+  --color-border-hover: rgba(64, 64, 64, 0.20);
+
+  --color-success: #84CC16;
+  --color-warning: #F59E0B;
+  --color-danger:  #EF4444;
+}
+
+/* Optional dark mode override (works on top of any theme).
+   Apply with `<html data-mode="dark">`. Not yet wired into the
+   ThemeSwitcher UI — reserved for future. */
+[data-mode="dark"] {
+  --color-bg: #0F1210;
+  --color-bg-secondary: #181B19;
+  --color-bg-tertiary: #222624;
+  --color-text: #F5F7F6;
+  --color-text-secondary: #A8B0AC;
+  --color-text-muted: #6B7370;
+  --color-border: #2A2E2C;
+  --color-border-hover: #3A3F3C;
+}
+
+/* ─── Base styles ─────────────────────────────────────────────── */
 * {
   box-sizing: border-box;
 }
@@ -8,14 +143,53 @@ body {
   margin: 0;
   padding: 0;
   font-family: Inter, Arial, sans-serif;
-  background: #FFF8F0;
-  color: #292524;
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
+/* Scrollbar — picks up theme accent automatically */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
-::-webkit-scrollbar-track { background: #F5EFE6; }
-::-webkit-scrollbar-thumb { background: #D6C9B8; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #B5A898; }
+::-webkit-scrollbar-track { background: var(--color-bg-tertiary); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-hover);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* ─── Theme-aware utility classes ─────────────────────────────── */
+/* Use these instead of hardcoded Tailwind colors so components
+   change automatically when the user picks a different theme.
+   Plain CSS so they work with any Tailwind version. */
+
+.bg-primary { background-color: var(--color-primary); }
+.bg-primary-light { background-color: var(--color-primary-light); }
+.bg-accent { background-color: var(--color-accent); }
+.bg-accent-light { background-color: var(--color-accent-light); }
+.bg-surface { background-color: var(--color-bg); }
+.bg-surface-secondary { background-color: var(--color-bg-secondary); }
+
+.text-primary-color { color: var(--color-primary); }
+.text-accent-color { color: var(--color-accent); }
+.text-main { color: var(--color-text); }
+.text-muted-theme { color: var(--color-text-secondary); }
+
+.border-default { border-color: var(--color-border); }
+.border-primary-color { border-color: var(--color-primary); }
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #fff;
+  transition: background-color 0.15s ease;
+}
+.btn-primary:hover { background-color: var(--color-primary-hover); }
+
+.btn-accent {
+  background-color: var(--color-accent);
+  color: #fff;
+  transition: background-color 0.15s ease;
+}
+.btn-accent:hover { background-color: var(--color-accent-hover); }

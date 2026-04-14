@@ -14,6 +14,7 @@ import Link from "next/link";
 import { ArrowRight, Sparkles, ExternalLink, MessageCircle } from "lucide-react";
 import type { FeatureCatalogEntry } from "@/lib/featuresData";
 import FeatureWorkflowDemo from "./FeatureWorkflowDemo";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 interface Props {
   feature: FeatureCatalogEntry;
@@ -31,6 +32,7 @@ export default function FeatureLanding({ feature: f }: Props) {
           ← All features
         </Link>
         <div className="flex-1" />
+        <ThemeSwitcher />
         <Link href="/login" className="text-xs" style={{ color: "#78614E" }}>Sign in</Link>
         <Link
           href="/register"

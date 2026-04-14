@@ -1,0 +1,171 @@
+"use client";
+
+/**
+ * MarketHub Pro Theme System
+ *
+ * 4 preset themes (amber default, emerald, indigo, mono) + a fully
+ * customizable theme where the user picks their own primary + accent
+ * colors. All themes set CSS variables on <html> so any component
+ * using `var(--color-primary)` / `bg-primary` / `btn-primary` etc.
+ * updates instantly without re-render.
+ *
+ * Storage: localStorage `markethub-theme` (preset id) + `markethub-custom-colors`
+ * (JSON {primary, accent}) when the user goes custom.
+ */
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  ReactNode,
+} from "react";
+
+export type ThemeId = "amber" | "emerald" | "indigo" | "mono" | "custom";
+
+export interface CustomColors {
+  primary: string;   // hex
+  accent: string;    // hex
+}
+
+export interface ThemePreset {
+  id: ThemeId;
+  label: string;
+  primary: string;
+  accent: string;
+  isCustom?: boolean;
+}
+
+export const THEMES: ThemePreset[] = [
+  { id: "amber",   label: "Amber",          primary: "#F59E0B", accent: "#EC8054" },
+  { id: "emerald", label: "Emerald + Pink", primary: "#10B981", accent: "#F472B6" },
+  { id: "indigo",  label: "Indigo + Coral", primary: "#818CF8", accent: "#FB923C" },
+  { id: "mono",    label: "Mono + Lime",    primary: "#404040", accent: "#84CC16" },
+  { id: "custom",  label: "Custom…",        primary: "#F59E0B", accent: "#EC8054", isCustom: true },
+];
+
+interface ThemeContextValue {
+  theme: ThemeId;
+  customColors: CustomColors;
+  setTheme: (t: ThemeId) => void;
+  setCustomColors: (c: CustomColors) => void;
+  resetToPreset: (t: Exclude<ThemeId, "custom">) => void;
+}
+
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
+
+const STORAGE_KEY = "markethub-theme";
+const CUSTOM_KEY = "markethub-custom-colors";
+const DEFAULT_CUSTOM: CustomColors = { primary: "#F59E0B", accent: "#EC8054" };
+
+// ── helpers ────────────────────────────────────────────────────────────────
+function isValidHex(c: string): boolean {
+  return /^#[0-9A-Fa-f]{6}$/.test(c);
+}
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  if (!isValidHex(hex)) return null;
+  return {
+    r: parseInt(hex.slice(1, 3), 16),
+    g: parseInt(hex.slice(3, 5), 16),
+    b: parseInt(hex.slice(5, 7), 16),
+  };
+}
+function rgba(hex: string, alpha: number): string {
+  const c = hexToRgb(hex);
+  if (!c) return hex;
+  return `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha})`;
+}
+/** Darken a hex by % (rough — for hover state). */
+function darken(hex: string, pct = 15): string {
+  const c = hexToRgb(hex);
+  if (!c) return hex;
+  const f = (1 - pct / 100);
+  const ch = (n: number) => Math.max(0, Math.min(255, Math.round(n * f)));
+  const toHex = (n: number) => n.toString(16).padStart(2, "0");
+  return `#${toHex(ch(c.r))}${toHex(ch(c.g))}${toHex(ch(c.b))}`;
+}
+
+/** Apply custom colors to <html> by overriding CSS vars at runtime. */
+function applyCustomColors(colors: CustomColors) {
+  const root = document.documentElement;
+  if (!isValidHex(colors.primary) || !isValidHex(colors.accent)) return;
+  root.setAttribute("data-theme", "custom");
+  root.style.setProperty("--color-primary", colors.primary);
+  root.style.setProperty("--color-primary-hover", darken(colors.primary, 12));
+  root.style.setProperty("--color-primary-light", rgba(colors.primary, 0.10));
+  root.style.setProperty("--color-primary-dark", darken(colors.primary, 35));
+  root.style.setProperty("--color-accent", colors.accent);
+  root.style.setProperty("--color-accent-hover", darken(colors.accent, 12));
+  root.style.setProperty("--color-accent-light", rgba(colors.accent, 0.10));
+  root.style.setProperty("--color-accent-dark", darken(colors.accent, 35));
+  root.style.setProperty("--color-border", rgba(colors.primary, 0.15));
+  root.style.setProperty("--color-border-hover", rgba(colors.primary, 0.30));
+}
+
+/** Clear inline overrides — preset CSS class kicks back in. */
+function clearCustomColors() {
+  const root = document.documentElement;
+  ["--color-primary", "--color-primary-hover", "--color-primary-light", "--color-primary-dark",
+   "--color-accent", "--color-accent-hover", "--color-accent-light", "--color-accent-dark",
+   "--color-border", "--color-border-hover"].forEach((v) => root.style.removeProperty(v));
+}
+
+export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [theme, setThemeState] = useState<ThemeId>("amber");
+  const [customColors, setCustomColorsState] = useState<CustomColors>(DEFAULT_CUSTOM);
+
+  // Hydrate from storage on mount
+  useEffect(() => {
+    try {
+      const saved = (localStorage.getItem(STORAGE_KEY) ?? "amber") as ThemeId;
+      const customRaw = localStorage.getItem(CUSTOM_KEY);
+      const custom: CustomColors = customRaw ? JSON.parse(customRaw) : DEFAULT_CUSTOM;
+      if (custom.primary && custom.accent) setCustomColorsState(custom);
+      const valid: ThemeId[] = ["amber", "emerald", "indigo", "mono", "custom"];
+      const t = valid.includes(saved) ? saved : "amber";
+      setThemeState(t);
+      if (t === "custom") {
+        applyCustomColors(custom);
+      } else {
+        clearCustomColors();
+        document.documentElement.setAttribute("data-theme", t);
+      }
+    } catch { /* localStorage blocked */ }
+  }, []);
+
+  const setTheme = useCallback((t: ThemeId) => {
+    setThemeState(t);
+    try { localStorage.setItem(STORAGE_KEY, t); } catch { /* noop */ }
+    if (t === "custom") {
+      applyCustomColors(customColors);
+    } else {
+      clearCustomColors();
+      document.documentElement.setAttribute("data-theme", t);
+    }
+  }, [customColors]);
+
+  const setCustomColors = useCallback((c: CustomColors) => {
+    setCustomColorsState(c);
+    try { localStorage.setItem(CUSTOM_KEY, JSON.stringify(c)); } catch { /* noop */ }
+    if (theme === "custom") {
+      applyCustomColors(c);
+    }
+  }, [theme]);
+
+  const resetToPreset = useCallback((t: Exclude<ThemeId, "custom">) => {
+    setTheme(t);
+  }, [setTheme]);
+
+  return (
+    <ThemeContext.Provider value={{ theme, customColors, setTheme, setCustomColors, resetToPreset }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error("useTheme must be used inside <ThemeProvider>");
+  return ctx;
+}

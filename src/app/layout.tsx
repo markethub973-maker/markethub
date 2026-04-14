@@ -5,6 +5,7 @@ import "./globals.css";
 import AuthGuard from "@/components/auth/AuthGuard";
 import AskConsultant from "@/components/ui/AskConsultant";
 import CookieConsent from "@/components/ui/CookieConsent";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -93,9 +94,47 @@ export const metadata: Metadata = {
   category: "marketing",
 };
 
+// Inline anti-flash theme script — runs BEFORE React hydration so the
+// saved theme + custom-color overrides apply instantly and the user
+// never sees a flash of the default theme.
+const themeInitScript = `
+  (function() {
+    try {
+      var saved = localStorage.getItem('markethub-theme') || 'amber';
+      document.documentElement.setAttribute('data-theme', saved);
+      if (saved === 'custom') {
+        var raw = localStorage.getItem('markethub-custom-colors');
+        if (raw) {
+          var c = JSON.parse(raw);
+          var hex = /^#[0-9A-Fa-f]{6}$/;
+          if (c.primary && c.accent && hex.test(c.primary) && hex.test(c.accent)) {
+            function toRgb(h){return{r:parseInt(h.slice(1,3),16),g:parseInt(h.slice(3,5),16),b:parseInt(h.slice(5,7),16)};}
+            function rgba(h,a){var r=toRgb(h);return 'rgba('+r.r+','+r.g+','+r.b+','+a+')';}
+            function dk(h,p){var r=toRgb(h),f=1-p/100,h2=function(n){return Math.max(0,Math.min(255,Math.round(n*f))).toString(16).padStart(2,'0');};return '#'+h2(r.r)+h2(r.g)+h2(r.b);}
+            var s = document.documentElement.style;
+            s.setProperty('--color-primary', c.primary);
+            s.setProperty('--color-primary-hover', dk(c.primary, 12));
+            s.setProperty('--color-primary-light', rgba(c.primary, 0.10));
+            s.setProperty('--color-primary-dark', dk(c.primary, 35));
+            s.setProperty('--color-accent', c.accent);
+            s.setProperty('--color-accent-hover', dk(c.accent, 12));
+            s.setProperty('--color-accent-light', rgba(c.accent, 0.10));
+            s.setProperty('--color-accent-dark', dk(c.accent, 35));
+            s.setProperty('--color-border', rgba(c.primary, 0.15));
+            s.setProperty('--color-border-hover', rgba(c.primary, 0.30));
+          }
+        }
+      }
+    } catch (e) {}
+  })();
+`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="amber" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className={inter.className}>
         {/* Microsoft Clarity — loads after page interactive AND only if the
            user has accepted analytics cookies (window.__mkh_consent === "all").
@@ -121,13 +160,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             })();
           `}
         </Script>
-        <AuthGuard>{children}</AuthGuard>
-        {/* M9 Sprint 1 — floating AI consultant (bottom-left).
-            The bottom-right "Help" widget (chat / tour / report issue) is
-            rendered inside AuthGuard as OnboardingWidget. */}
-        <AskConsultant />
-        {/* GDPR cookie consent banner — gates analytics loading */}
-        <CookieConsent />
+        <ThemeProvider>
+          <AuthGuard>{children}</AuthGuard>
+          {/* M9 Sprint 1 — floating AI consultant (bottom-left).
+              The bottom-right "Help" widget (chat / tour / report issue) is
+              rendered inside AuthGuard as OnboardingWidget. */}
+          <AskConsultant />
+          {/* GDPR cookie consent banner — gates analytics loading */}
+          <CookieConsent />
+        </ThemeProvider>
       </body>
     </html>
   );
