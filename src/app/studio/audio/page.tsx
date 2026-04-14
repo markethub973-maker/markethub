@@ -6,9 +6,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
-import { Music, Mic, Volume2, Loader2, Download, Play, Pause, Sparkles, AlertCircle, Wand2 } from "lucide-react";
+import { Music, Mic, Volume2, Loader2, Download, Play, Pause, Sparkles, AlertCircle, Wand2, UserCheck } from "lucide-react";
 
-type Mode = "tts" | "music" | "sfx";
+type Mode = "tts" | "music" | "sfx" | "clone";
 
 interface Gen {
   id: string;
@@ -24,9 +24,10 @@ interface Gen {
 }
 
 const MODES: { value: Mode; label: string; icon: React.ElementType; desc: string; placeholder: string }[] = [
-  { value: "tts",   label: "Text → Speech", icon: Mic,     desc: "Natural voiceover from text",    placeholder: "Welcome to MarketHub Pro. The all-in-one social media platform for agencies." },
-  { value: "music", label: "Music",         icon: Music,   desc: "Background track for video",     placeholder: "Upbeat tropical house, summer vibes, no vocals" },
-  { value: "sfx",   label: "Sound Effects", icon: Volume2, desc: "One-shot sounds (whoosh, etc.)", placeholder: "Camera shutter click followed by short whoosh" },
+  { value: "tts",   label: "Text → Speech", icon: Mic,       desc: "Natural voiceover from text",       placeholder: "Welcome to MarketHub Pro. The all-in-one social media platform for agencies." },
+  { value: "music", label: "Music",         icon: Music,     desc: "Background track for video",        placeholder: "Upbeat tropical house, summer vibes, no vocals" },
+  { value: "sfx",   label: "Sound Effects", icon: Volume2,   desc: "One-shot sounds (whoosh, etc.)",    placeholder: "Camera shutter click followed by short whoosh" },
+  { value: "clone", label: "Your Voice",    icon: UserCheck, desc: "Clone your own voice (zero-shot)",  placeholder: "Hey everyone, welcome back to the channel — today we're diving into..." },
 ];
 
 const TTS_VOICES = [
@@ -41,6 +42,13 @@ export default function AiAudioStudioPage() {
   const [prompt, setPrompt] = useState("");
   const [voice, setVoice] = useState(TTS_VOICES[0].value);
   const [duration, setDuration] = useState(10);
+  // Voice cloning (mode = "clone")
+  const [refAudioUrl, setRefAudioUrl] = useState(() =>
+    typeof window === "undefined" ? "" : localStorage.getItem("mh_ref_audio_url") ?? ""
+  );
+  const [refText, setRefText] = useState(() =>
+    typeof window === "undefined" ? "" : localStorage.getItem("mh_ref_text") ?? ""
+  );
   const [busy, setBusy] = useState(false);
   const [latest, setLatest] = useState<Gen | null>(null);
   const [gallery, setGallery] = useState<Gen[]>([]);
@@ -67,7 +75,21 @@ export default function AiAudioStudioPage() {
     try {
       const body: Record<string, unknown> = { mode, prompt: prompt.trim() };
       if (mode === "tts") body.voice = voice;
-      if (mode !== "tts") body.duration_sec = duration;
+      if (mode === "music" || mode === "sfx") body.duration_sec = duration;
+      if (mode === "clone") {
+        if (!refAudioUrl.trim() || !refText.trim()) {
+          setErr("For voice cloning, paste a sample URL and the exact transcript first.");
+          setBusy(false);
+          return;
+        }
+        body.ref_audio_url = refAudioUrl.trim();
+        body.ref_text = refText.trim();
+        // Persist for next session — user's reference clip rarely changes
+        try {
+          localStorage.setItem("mh_ref_audio_url", refAudioUrl.trim());
+          localStorage.setItem("mh_ref_text", refText.trim());
+        } catch { /* no-op */ }
+      }
       const res = await fetch("/api/studio/audio", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -119,7 +141,7 @@ export default function AiAudioStudioPage() {
 
       <main className="max-w-4xl mx-auto px-6 py-6 space-y-6">
         {/* Mode picker */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {MODES.map((m) => (
             <button
               key={m.value}
@@ -154,7 +176,7 @@ export default function AiAudioStudioPage() {
           </div>
 
           <label className="block text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "#78614E" }}>
-            {mode === "tts" ? "Script (max 2000 chars)" : "Prompt"}
+            {mode === "tts" || mode === "clone" ? "Script (max 2000 chars)" : "Prompt"}
           </label>
           <textarea
             value={prompt}
@@ -195,7 +217,7 @@ export default function AiAudioStudioPage() {
             </div>
           )}
 
-          {mode !== "tts" && (
+          {(mode === "music" || mode === "sfx") && (
             <div className="mb-4">
               <label className="block text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "#78614E" }}>
                 Duration: {duration}s
@@ -208,6 +230,46 @@ export default function AiAudioStudioPage() {
                 onChange={(e) => setDuration(parseInt(e.target.value))}
                 className="w-full"
               />
+            </div>
+          )}
+
+          {mode === "clone" && (
+            <div className="mb-4 space-y-3 rounded-lg p-3" style={{ backgroundColor: "rgba(139,92,246,0.06)", border: "1px solid rgba(139,92,246,0.2)" }}>
+              <div className="flex items-center gap-2">
+                <UserCheck className="w-4 h-4" style={{ color: "#8B5CF6" }} />
+                <p className="text-xs font-bold" style={{ color: "#5B21B6" }}>Your reference voice</p>
+                <span className="ml-auto text-[10px]" style={{ color: "#A8967E" }}>saved locally</span>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "#78614E" }}>
+                  Reference audio URL (5-15s of you talking, any public https)
+                </label>
+                <input
+                  type="url"
+                  value={refAudioUrl}
+                  onChange={(e) => setRefAudioUrl(e.target.value)}
+                  placeholder="https://.../my-voice-sample.mp3"
+                  className="w-full rounded-md px-3 py-2 text-sm"
+                  style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.25)", color: "#292524", outline: "none" }}
+                />
+                <p className="text-[10px] mt-1" style={{ color: "#78614E" }}>
+                  Tip: record a short clean clip, upload to Dropbox / Google Drive (public link) or use an Asset Library audio URL.
+                </p>
+              </div>
+              <div>
+                <label className="block text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "#78614E" }}>
+                  Exact transcript of the reference clip
+                </label>
+                <textarea
+                  value={refText}
+                  onChange={(e) => setRefText(e.target.value)}
+                  rows={2}
+                  maxLength={1000}
+                  placeholder="Write EXACTLY what you say in the reference clip, word for word."
+                  className="w-full rounded-md px-3 py-2 text-sm resize-none"
+                  style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.25)", color: "#292524", outline: "none" }}
+                />
+              </div>
             </div>
           )}
 
@@ -229,6 +291,7 @@ export default function AiAudioStudioPage() {
             {mode === "tts" && "~$0.001 per second of speech · 5-15s render"}
             {mode === "music" && "~$0.002 per second · 15-30s render"}
             {mode === "sfx" && "~$0.01 per second · 5-10s render"}
+            {mode === "clone" && "~$0.002 per second · zero-shot voice cloning via F5-TTS"}
           </p>
 
           {err && (

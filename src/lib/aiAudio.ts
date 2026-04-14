@@ -23,14 +23,19 @@ const MODELS = {
   tts:    { endpoint: "fal-ai/kokoro/american-english", cost_per_sec: 0.001 },
   music:  { endpoint: "fal-ai/cassetteai/music-generator", cost_per_sec: 0.002 },
   sfx:    { endpoint: "fal-ai/elevenlabs/sound-effects", cost_per_sec: 0.01 },
+  // Zero-shot voice cloning — user provides 5-15s of their own voice
+  // as a reference clip, F5-TTS synthesizes new text in the same voice.
+  clone:  { endpoint: "fal-ai/f5-tts", cost_per_sec: 0.002 },
 };
 
 export interface AudioInput {
   userId: string;
-  mode: "tts" | "music" | "sfx";
+  mode: "tts" | "music" | "sfx" | "clone";
   prompt: string;
   voice?: string;          // for tts only — e.g. "af_bella"
   duration_sec?: number;   // hint for music/sfx (5-30)
+  ref_audio_url?: string;  // for clone — public URL of reference voice sample
+  ref_text?: string;       // for clone — exact transcript of the reference clip
   source_context?: string;
   source_ref?: string;
 }
@@ -156,6 +161,17 @@ async function callFal(input: AudioInput, endpoint: string): Promise<FalResult> 
       body = {
         text: input.prompt,
         duration_seconds: Math.min(Math.max(input.duration_sec ?? 5, 1), 22),
+      };
+      break;
+    case "clone":
+      if (!input.ref_audio_url || !input.ref_text) {
+        return { ok: false, error: "ref_audio_url and ref_text are required for voice cloning" };
+      }
+      body = {
+        gen_text: input.prompt,
+        ref_audio_url: input.ref_audio_url,
+        ref_text: input.ref_text,
+        remove_silence: true,
       };
       break;
   }
