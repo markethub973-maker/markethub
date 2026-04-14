@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import AiImageQuickGen from "@/components/calendar/AiImageQuickGen";
 import HashtagSuggester from "@/components/calendar/HashtagSuggester";
+import EngagementPredictor from "@/components/calendar/EngagementPredictor";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
   Edit3, Trash2, Check, CalendarDays, LayoutGrid, List, Loader2, RefreshCw, Zap,
@@ -526,6 +527,16 @@ export default function CalendarPage() {
                       onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
                   )}
                 </div>
+              </div>
+
+              <div className="pt-2">
+                <EngagementPredictor
+                  caption={form.caption}
+                  platform={form.platform}
+                  hashtags={form.hashtags}
+                  hasImage={Boolean(form.image_url)}
+                  scheduledFor={form.date && form.time ? `${form.date}T${form.time}:00Z` : undefined}
+                />
               </div>
 
               <div className="flex items-center gap-3 pt-2">
