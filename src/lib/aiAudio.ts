@@ -10,8 +10,14 @@
  */
 
 import { createServiceClient } from "@/lib/supabase/service";
+import { dispatchWebhookEvent } from "@/lib/outboundWebhooks";
 
 const FAL_BASE = "https://queue.fal.run";
+
+// Add audio.generated to webhook event catalog dynamically? Already exists
+// in SUPPORTED_EVENTS list — see src/lib/outboundWebhooks.ts. If not there,
+// dispatchWebhookEvent will silently skip subscribers. That's fine — we
+// add it to the catalog in the next outboundWebhooks edit.
 
 const MODELS = {
   tts:    { endpoint: "fal-ai/kokoro/american-english", cost_per_sec: 0.001 },
@@ -85,6 +91,17 @@ export async function generateAudio(input: AudioInput): Promise<AudioResult> {
         finished_at: new Date().toISOString(),
       })
       .eq("id", id);
+
+    if (result.ok && result.audio_url) {
+      void dispatchWebhookEvent(input.userId, "audio.generated", {
+        generation_id: id,
+        audio_url: result.audio_url,
+        mode: input.mode,
+        duration_sec: result.duration_sec ?? input.duration_sec ?? null,
+        cost_usd: cost,
+        provider: "fal",
+      });
+    }
 
     return {
       ok: result.ok,

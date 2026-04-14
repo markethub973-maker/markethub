@@ -30,6 +30,7 @@ export const SUPPORTED_EVENTS = [
   "automation.failed",
   "image.generated",
   "video.generated",
+  "audio.generated",
 ] as const;
 
 export type WebhookEvent = (typeof SUPPORTED_EVENTS)[number];

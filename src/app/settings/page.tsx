@@ -8,6 +8,7 @@ import AccountConnections from "@/components/settings/AccountConnections";
 import RegionSettings from "@/components/settings/RegionSettings";
 import ApiTokensPanel from "@/components/settings/ApiTokensPanel";
 import AiUsageWidget from "@/components/settings/AiUsageWidget";
+import WebhooksPanel from "@/components/settings/WebhooksPanel";
 import { createClient } from "@/lib/supabase/client";
 import {
   Zap, User, Plug, CreditCard, CheckCircle, XCircle,
@@ -650,6 +651,11 @@ export default function SettingsPage() {
         {/* API Tokens section — always visible for Pro+ */}
         <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,158,11,0.25)" }}>
           <ApiTokensPanel />
+        </div>
+
+        {/* Webhooks section — Pro+ */}
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,158,11,0.25)" }}>
+          <WebhooksPanel />
         </div>
 
         {/* Privacy & Data section — always visible */}

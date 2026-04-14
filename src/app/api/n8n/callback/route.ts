@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { verifyN8NCallbackSignature } from "@/lib/n8n";
+import { dispatchWebhookEvent } from "@/lib/outboundWebhooks";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
   const service = createServiceClient();
   const { data: run } = await service
     .from("automation_runs")
-    .select("started_at")
+    .select("started_at,user_id,template_slug")
     .eq("id", body.run_id)
     .maybeSingle();
 
@@ -59,6 +60,19 @@ export async function POST(req: NextRequest) {
     .eq("id", body.run_id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Webhook fan-out
+  if (run?.user_id) {
+    const event = body.status === "succeeded" ? "automation.completed" : "automation.failed";
+    void dispatchWebhookEvent(run.user_id as string, event, {
+      run_id: body.run_id,
+      template_slug: run.template_slug as string,
+      status: body.status,
+      duration_ms: duration,
+      output: body.output ?? null,
+      error: body.error ?? null,
+    });
+  }
 
   return NextResponse.json({ ok: true });
 }
