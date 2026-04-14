@@ -113,6 +113,14 @@ export const FULL_TOUR: TourStep[] = [
     position: "bottom",
   },
   {
+    id: "studio-repurpose",
+    page: "/studio/repurpose",
+    target: "page-header",
+    title: "Content Repurposer 🔀",
+    description: "Paste one caption, get platform-optimized variants for Instagram, LinkedIn, Twitter, TikTok and YouTube Shorts — each following that platform's proven rules.",
+    position: "bottom",
+  },
+  {
     id: "studio-queue",
     page: "/studio/queue",
     target: "page-header",
@@ -205,6 +213,9 @@ export const PAGE_GUIDES: Record<string, TourStep[]> = {
   ],
   "/studio/queue": [
     { id: "pg-queue-header", page: "/studio/queue", target: "page-header", title: "Publish Queue", description: "Every scheduled post across platforms — with status, retry and manual publish.", position: "bottom" },
+  ],
+  "/studio/repurpose": [
+    { id: "pg-rep-header", page: "/studio/repurpose", target: "page-header", title: "Content Repurposer", description: "Paste one caption, pick targets, click Repurpose. Each platform variant follows its own rules.", position: "bottom" },
   ],
   "/studio/assets": [
     { id: "pg-assets-header", page: "/studio/assets", target: "page-header", title: "Asset Library", description: "Every AI asset in one place. Images have an 'Alt' button for one-click accessibility text.", position: "bottom" },
