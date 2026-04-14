@@ -336,6 +336,49 @@ svg .recharts-layer rect {
   stroke-width: 2;
 }
 
+/* ─── Glass GRADIENT overlay on chart shapes ──────────────────────
+   SVG fills are flat colors, so we paint a top-down white→transparent
+   gradient OVER the chart and blend it with `overlay`. That lightens
+   the top half (highlight) and darkens the bottom (shadow), giving
+   every colored bar and pie sector a real 3D glass look. */
+.recharts-wrapper,
+.recharts-surface {
+  position: relative;
+}
+.recharts-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.15) 30%,
+    rgba(255, 255, 255, 0.00) 55%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+/* Second highlight pass — diagonal shine stripe on charts */
+.recharts-wrapper::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.00) 30%,
+    rgba(255, 255, 255, 0.35) 45%,
+    rgba(255, 255, 255, 0.00) 60%
+  );
+  mix-blend-mode: overlay;
+  border-radius: inherit;
+}
+
 /* ─── Base styles ─────────────────────────────────────────────── */
 * {
   box-sizing: border-box;
