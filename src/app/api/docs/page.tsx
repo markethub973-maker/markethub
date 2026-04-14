@@ -84,6 +84,82 @@ const ENDPOINTS: Endpoint[] = [
   },
   {
     method: "GET",
+    path: "/api/v1/posts",
+    title: "List scheduled posts",
+    description:
+      "Paginated list of your scheduled + published posts across all platforms. Filter by status or date range.",
+    params: [
+      { name: "limit", required: false, type: "number", desc: "1-100, default 20" },
+      {
+        name: "status",
+        required: false,
+        type: "string",
+        desc: "scheduled | published | draft | failed",
+      },
+      { name: "from", required: false, type: "YYYY-MM-DD", desc: "Lower bound on scheduled_for" },
+      { name: "to", required: false, type: "YYYY-MM-DD", desc: "Upper bound on scheduled_for" },
+    ],
+    example_curl: `curl -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  "https://markethubpromo.com/api/v1/posts?status=scheduled&limit=10"`,
+    example_response: `{
+  "ok": true,
+  "posts": [
+    {
+      "id": "uuid",
+      "title": "Monday kickoff",
+      "caption": "Let's go 🚀",
+      "platforms": ["instagram", "linkedin"],
+      "media_urls": ["https://..."],
+      "status": "scheduled",
+      "scheduled_for": "2026-04-15T09:00:00Z",
+      "published_at": null,
+      "created_at": "2026-04-14T07:00:00Z"
+    }
+  ]
+}`,
+  },
+  {
+    method: "GET",
+    path: "/api/v1/leads",
+    title: "List CRM leads",
+    description:
+      "Paginated leads (CRM + Lead Finder) belonging to the authenticated user.",
+    params: [
+      { name: "limit", required: false, type: "number", desc: "1-100, default 20" },
+      {
+        name: "pipeline_status",
+        required: false,
+        type: "string",
+        desc: "new | qualified | contacted | won | lost",
+      },
+      { name: "source", required: false, type: "string", desc: "e.g. google_maps, facebook_groups, reddit" },
+      { name: "contacted", required: false, type: "boolean", desc: "true / false" },
+    ],
+    example_curl: `curl -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  "https://markethubpromo.com/api/v1/leads?pipeline_status=qualified"`,
+    example_response: `{
+  "ok": true,
+  "leads": [
+    {
+      "id": "uuid",
+      "name": "Acme Cafe",
+      "category": "Restaurant",
+      "city": "Bucharest",
+      "phone": "+40...",
+      "website": "acmecafe.ro",
+      "email": "hello@acmecafe.ro",
+      "rating": 4.6,
+      "source": "google_maps",
+      "pipeline_status": "qualified",
+      "contacted": false,
+      "estimated_value": 1200,
+      "created_at": "..."
+    }
+  ]
+}`,
+  },
+  {
+    method: "GET",
     path: "/api/health",
     title: "Health check",
     description:
