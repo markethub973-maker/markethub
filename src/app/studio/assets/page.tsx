@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
-import { Image as ImageIcon, Film, Music, Search, Copy, Check, Download, Loader2, Layers, ExternalLink } from "lucide-react";
+import { Image as ImageIcon, Film, Music, Search, Copy, Check, Download, Loader2, Layers, ExternalLink, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 type Type = "image" | "video" | "audio";
@@ -41,6 +41,8 @@ export default function AssetLibraryPage() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [altLoading, setAltLoading] = useState<string | null>(null);
+  const [altResult, setAltResult] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -71,6 +73,27 @@ export default function AssetLibraryPage() {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 1500);
     } catch { /* no-op */ }
+  };
+
+  const genAlt = async (id: string, url: string | null, prompt: string) => {
+    if (!url || altLoading) return;
+    setAltLoading(id);
+    try {
+      const res = await fetch("/api/ai/alt-text", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image_url: url, context: prompt }),
+      });
+      const d = await res.json();
+      if (res.ok && d.alt_text) {
+        setAltResult((prev) => ({ ...prev, [id]: d.alt_text }));
+        try {
+          await navigator.clipboard.writeText(d.alt_text);
+        } catch { /* no-op */ }
+      }
+    } finally {
+      setAltLoading(null);
+    }
   };
 
   const toggleSelect = (composite: string) => {
@@ -335,6 +358,23 @@ export default function AssetLibraryPage() {
                     </p>
                   </div>
 
+                  {/* Alt-text result — shows below actions when generated */}
+                  {altResult[a.id] && (
+                    <p
+                      className="text-[10px] px-2 py-1 border-t"
+                      style={{
+                        color: "#292524",
+                        backgroundColor: "rgba(139,92,246,0.08)",
+                        borderColor: "rgba(0,0,0,0.06)",
+                        lineHeight: 1.3,
+                      }}
+                      title="Alt-text copied to clipboard"
+                    >
+                      <Sparkles className="w-2.5 h-2.5 inline mr-1" style={{ color: "#8B5CF6" }} />
+                      {altResult[a.id]}
+                    </p>
+                  )}
+
                   {/* Actions */}
                   <div className="flex border-t" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
                     <button
@@ -346,6 +386,19 @@ export default function AssetLibraryPage() {
                       {copiedId === a.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                       {copiedId === a.id ? "Copied" : "Copy URL"}
                     </button>
+                    {a.type === "image" && a.url && (
+                      <button
+                        type="button"
+                        onClick={() => genAlt(a.id, a.url, a.prompt)}
+                        disabled={altLoading === a.id}
+                        className="flex-1 py-1.5 text-[10px] font-bold flex items-center justify-center gap-1 transition-all hover:bg-black/5 disabled:opacity-50"
+                        style={{ color: "#8B5CF6", borderLeft: "1px solid rgba(0,0,0,0.06)" }}
+                        title="Generate accessibility alt-text (copies to clipboard)"
+                      >
+                        {altLoading === a.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                        Alt
+                      </button>
+                    )}
                     {a.url && (
                       <a
                         href={a.url}
