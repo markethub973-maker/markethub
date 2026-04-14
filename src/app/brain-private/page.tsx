@@ -64,16 +64,36 @@ async function fetchAdvisor(): Promise<AdvisorResp | null> {
   }
 }
 
-async function recentOfferSales(): Promise<number> {
-  // Rough pipeline: count Stripe-paid Accelerator sales from logs. Without a
-  // dedicated table, return 0. This widget updates itself as soon as we wire
-  // the webhook into a "offer_sales" table (follow-up).
-  return 0;
+async function recentOfferSales(): Promise<{ count: number; revenue: number }> {
+  // Live from Stripe — count Accelerator payments in last 30 days.
+  const apiKey = process.env.STRIPE_SECRET_KEY;
+  if (!apiKey) return { count: 0, revenue: 0 };
+  const since = Math.floor((Date.now() - 30 * 24 * 60 * 60 * 1000) / 1000);
+  try {
+    const res = await fetch(
+      `https://api.stripe.com/v1/checkout/sessions?limit=100&created[gte]=${since}`,
+      { headers: { Authorization: `Bearer ${apiKey}` } },
+    );
+    if (!res.ok) return { count: 0, revenue: 0 };
+    const d = (await res.json()) as { data?: Array<Record<string, unknown>> };
+    const accelerator = (d.data ?? []).filter((s) => {
+      const md = (s.metadata as Record<string, string> | undefined) ?? {};
+      return md.offer === "ai_marketing_accelerator" && s.payment_status === "paid";
+    });
+    const revenue = accelerator.reduce(
+      (sum, s) => sum + ((s.amount_total as number | undefined) ?? 0) / 100,
+      0,
+    );
+    return { count: accelerator.length, revenue };
+  } catch {
+    return { count: 0, revenue: 0 };
+  }
 }
 
 export default async function BrainCommandCenter() {
   const advisor = await fetchAdvisor();
-  const sales = await recentOfferSales();
+  const salesData = await recentOfferSales();
+  const sales = salesData.count;
   const state = advisor?.state;
   const recs = advisor?.recommendations ?? [];
   const headline = advisor?.summary_headline ?? "";
@@ -82,7 +102,8 @@ export default async function BrainCommandCenter() {
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   const target = 3000;
-  const mrr = state?.mrr_usd ?? 0;
+  // Total revenue to date = SaaS MRR + Accelerator sales (one-time)
+  const mrr = (state?.mrr_usd ?? 0) + salesData.revenue;
   const progress = Math.min(100, Math.round((mrr / target) * 100));
 
   return (
@@ -171,6 +192,7 @@ export default async function BrainCommandCenter() {
               { label: "Send outreach batch", href: "/outreach" },
               { label: "View pipeline", href: "/pipeline" },
               { label: "Generate demo for prospect", href: "/demo" },
+              { label: "Mine leads (Apify)", href: "/mine-leads" },
               { label: "Review outreach queue", href: "https://markethubpromo.com/growth/lead-finder" },
               { label: "Today's content draft", href: "https://markethubpromo.com/studio/campaign" },
               { label: "Open Accelerator sales", href: "https://dashboard.stripe.com/payments?activity=succeeded" },

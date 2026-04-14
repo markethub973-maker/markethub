@@ -107,3 +107,50 @@ export async function generateJson<T = unknown>(
   const text = await generateText(system, user, opts);
   return extractJson<T>(text);
 }
+
+/**
+ * Dual-agent pipeline: one provider writes, the OTHER reviews for language
+ * correctness (non-existent words, awkward grammar, tone drift). Produces
+ * noticeably more natural copy in RO/EN/DE/ES/IT at the cost of one extra
+ * round-trip. Use for high-stakes outputs (cold outreach, client demos).
+ */
+export interface ReviewedJsonResult<T> {
+  first: T | null;
+  reviewed: T | null;
+  notes?: string;
+}
+
+export async function generateJsonReviewed<T extends Record<string, unknown>>(
+  system: string,
+  user: string,
+  language: string, // e.g. "ro", "en", "de"
+  opts: GenerateOpts = {},
+): Promise<ReviewedJsonResult<T>> {
+  // PASS 1 — writer (Claude by default)
+  const first = await generateJson<T>(system, user, { ...opts, preferProvider: "claude" });
+  if (!first) return { first: null, reviewed: null };
+
+  // PASS 2 — reviewer (OpenAI) checks for language correctness
+  const reviewSystem = `You are a bilingual copy editor reviewing a draft written by another AI in language code "${language}".
+
+Rules:
+- Keep the meaning, structure, JSON keys, and length IDENTICAL.
+- Fix any invented/non-existent words, wrong conjugations, diacritics issues.
+- Make the prose sound like a native speaker — warm and human, not academic, not corporate, not slangy.
+- If the draft is already native-quality, return it unchanged.
+- Output ONLY the corrected JSON in the same shape as the input.`;
+
+  const reviewerInput = `Language: ${language}
+Draft JSON to review:
+${JSON.stringify(first)}`;
+
+  const reviewed = await generateJson<T>(reviewSystem, reviewerInput, {
+    preferProvider: "openai",
+    maxTokens: opts.maxTokens ?? 800,
+  });
+
+  return {
+    first,
+    reviewed: reviewed ?? first, // if reviewer fails, keep first
+  };
+}

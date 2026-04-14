@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { generateJson } from "@/lib/llm";
+import { generateJsonReviewed } from "@/lib/llm";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -123,13 +123,14 @@ Rules:
 
 OUTPUT STRICT JSON: {"subject":"...","body":"..."}`;
 
-  const parsed = await generateJson<{ subject?: string; body?: string }>(
+  const { reviewed } = await generateJsonReviewed<{ subject?: string; body?: string } & Record<string, unknown>>(
     system,
     `Target business:\nDomain: ${lead.domain}\nLanguage: ${lead.language}\nSite excerpt (first 2k chars of homepage):\n${lead.snippet}`,
+    lead.language,
     { maxTokens: 600 },
   );
-  if (!parsed || !parsed.subject || !parsed.body) return null;
-  return { subject: parsed.subject.slice(0, 120), body: parsed.body };
+  if (!reviewed || !reviewed.subject || !reviewed.body) return null;
+  return { subject: String(reviewed.subject).slice(0, 120), body: String(reviewed.body) };
 }
 
 async function sendEmail(to: string, subject: string, bodyText: string): Promise<boolean> {

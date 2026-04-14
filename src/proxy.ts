@@ -319,6 +319,11 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/brain-private/demo";
       return NextResponse.rewrite(url);
     }
+    // Lead miner (sub-page of dashboard)
+    if (pathname === "/mine-leads" || pathname === "/brain-private/mine-leads") {
+      url.pathname = "/brain-private/mine-leads";
+      return NextResponse.rewrite(url);
+    }
     // Brain APIs the dashboard uses — allow through on this subdomain.
     if (
       pathname.startsWith("/api/brain/outreach-batch") ||
