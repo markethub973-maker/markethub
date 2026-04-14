@@ -198,16 +198,16 @@ export default function ChannelsPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg focus:outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7", color: "#292524" }}
+            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }}
           />
         </div>
 
         {/* YouTube Search Results */}
         {search.trim().length >= 2 && (
-          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
             <div className="px-5 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(245,215,160,0.15)" }}>
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="#FF0000"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-              <span className="text-xs font-semibold" style={{ color: "#292524" }}>Results for "{search}"</span>
+              <span className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>Results for "{search}"</span>
               {ytLoading && <span className="text-xs ml-auto" style={{ color: "#C4AA8A" }}>Searching...</span>}
             </div>
             <div className="divide-y" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
@@ -217,11 +217,11 @@ export default function ChannelsPage() {
                 <div key={ch.id} className="flex items-center gap-4 px-5 py-3">
                   {ch.thumbnail && <img src={ch.thumbnail} alt="" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate" style={{ color: "#292524" }}>{ch.name}</p>
+                    <p className="text-sm font-semibold truncate" style={{ color: "var(--color-text)" }}>{ch.name}</p>
                     <p className="text-xs truncate" style={{ color: "#A8967E" }}>{ch.description}</p>
                   </div>
                   <div className="text-right flex-shrink-0 space-y-0.5">
-                    <p className="text-xs font-bold" style={{ color: "#292524" }}>{formatNumber(ch.subscribers)} sub</p>
+                    <p className="text-xs font-bold" style={{ color: "var(--color-text)" }}>{formatNumber(ch.subscribers)} sub</p>
                     <p className="text-xs" style={{ color: "#C4AA8A" }}>{formatNumber(ch.videoCount)} videos</p>
                   </div>
                   <a href={ch.permalink} target="_blank" rel="noopener noreferrer"
@@ -240,7 +240,7 @@ export default function ChannelsPage() {
           {/* Global Button */}
           <button type="button" onClick={handleGlobal}
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all"
-            style={isGlobal ? { backgroundColor: "#F59E0B", color: "#1C1814", border: "1px solid #F59E0B" } : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+            style={isGlobal ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B" } : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
           >
             <Globe className="w-3 h-3" /> Global
           </button>
@@ -249,19 +249,19 @@ export default function ChannelsPage() {
           <div className="relative" ref={dropdownRef}>
             <button type="button" onClick={() => setDropdownOpen(prev => !prev)}
               className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all"
-              style={!isGlobal ? { backgroundColor: "#F59E0B", color: "#1C1814", border: "1px solid #F59E0B" } : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+              style={!isGlobal ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B" } : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
             >
               {!isGlobal ? selectedCountry?.label : "🗺️ International"}
               <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
             </button>
             {dropdownOpen && (
               <div className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
-                style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
+                style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
               >
                 {ALL_COUNTRIES.map(c => (
                   <button key={c.code} type="button" onClick={() => handleSelectCountry(c)}
                     className="w-full text-left px-4 py-2.5 text-xs transition-colors"
-                    style={{ color: selectedCountry?.code === c.code ? "#D97706" : "#5C4A35", backgroundColor: selectedCountry?.code === c.code ? "rgba(245,158,11,0.08)" : "transparent", fontWeight: selectedCountry?.code === c.code ? "600" : "400" }}
+                    style={{ color: selectedCountry?.code === c.code ? "var(--color-primary-hover)" : "#5C4A35", backgroundColor: selectedCountry?.code === c.code ? "rgba(245,158,11,0.08)" : "transparent", fontWeight: selectedCountry?.code === c.code ? "600" : "400" }}
                     onMouseEnter={e => { if (selectedCountry?.code !== c.code) e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.2)"; }}
                     onMouseLeave={e => { if (selectedCountry?.code !== c.code) e.currentTarget.style.backgroundColor = "transparent"; }}
                   >{c.label}</button>
@@ -276,7 +276,7 @@ export default function ChannelsPage() {
             title="Sort channels"
             aria-label="Sort channels"
             className="px-3 py-2 text-sm rounded-lg focus:outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7", color: "#5C4A35" }}
+            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg-secondary)", color: "#5C4A35" }}
           >
             <option value="subscribers">Most Subscribers</option>
             <option value="views">Most Views</option>
@@ -290,8 +290,8 @@ export default function ChannelsPage() {
                 onClick={() => compareList.length === 2 ? setShowCompare(true) : null}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-colors"
                 style={compareList.length === 2
-                  ? { backgroundColor: "#F59E0B", color: "#1C1814" }
-                  : { backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706", border: "1px solid rgba(245,158,11,0.25)" }}
+                  ? { backgroundColor: "var(--color-primary)", color: "#1C1814" }
+                  : { backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.25)" }}
               >
                 <ArrowLeftRight className="w-4 h-4" />
                 {compareList.length === 2 ? "Compare now!" : `Selected ${compareList.length}/2`}
@@ -310,7 +310,7 @@ export default function ChannelsPage() {
         </div>
 
         {compareList.length === 1 && (
-          <p className="text-xs" style={{ color: "#F59E0B" }}>
+          <p className="text-xs" style={{ color: "var(--color-primary)" }}>
             ✓ <b>{compareList[0].name}</b> selected — choose another channel to compare
           </p>
         )}
@@ -325,7 +325,7 @@ export default function ChannelsPage() {
               return (
                 <div key={ch.id} className="rounded-xl p-5 transition-shadow hover:shadow-md"
                   style={{
-                    backgroundColor: "#FFFCF7",
+                    backgroundColor: "var(--color-bg-secondary)",
                     border: isSelected ? "2px solid #F59E0B" : "1px solid rgba(245,215,160,0.25)",
                     boxShadow: "0 1px 3px rgba(120,97,78,0.08)"
                   }}
@@ -345,11 +345,11 @@ export default function ChannelsPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <h3 className="font-bold truncate" style={{ color: "#292524" }}>{ch.name}</h3>
+                        <h3 className="font-bold truncate" style={{ color: "var(--color-text)" }}>{ch.name}</h3>
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         <PlatformBadge platform="youtube" />
-                        <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>Trending {currentLabel}</span>
+                        <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>Trending {currentLabel}</span>
                       </div>
                     </div>
                   </div>
@@ -365,7 +365,7 @@ export default function ChannelsPage() {
                         <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>
                           {s.icon}{s.label}
                         </div>
-                        <p className="text-base font-bold" style={{ color: s.label === "ER Trending" ? "#16a34a" : "#292524" }}>{s.val}</p>
+                        <p className="text-base font-bold" style={{ color: s.label === "ER Trending" ? "#16a34a" : "var(--color-text)" }}>{s.val}</p>
                       </div>
                     ))}
                   </div>
@@ -376,7 +376,7 @@ export default function ChannelsPage() {
                       onClick={() => toggleCompare(ch)}
                       className="font-semibold transition-colors px-2 py-1 rounded"
                       style={isSelected
-                        ? { color: "#F59E0B", backgroundColor: "rgba(245,158,11,0.1)" }
+                        ? { color: "var(--color-primary)", backgroundColor: "rgba(245,158,11,0.1)" }
                         : { color: "#A8967E" }
                       }
                     >
@@ -386,7 +386,7 @@ export default function ChannelsPage() {
                       type="button"
                       onClick={() => setAnalyticsChannel(ch)}
                       className="font-semibold hover:underline"
-                      style={{ color: "#F59E0B" }}
+                      style={{ color: "var(--color-primary)" }}
                     >
                       Analytics →
                     </button>

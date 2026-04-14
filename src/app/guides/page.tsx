@@ -10,10 +10,10 @@ export const metadata: Metadata = {
 
 export default function GuidesIndexPage() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <header className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-        <Link href="/" className="text-sm font-bold" style={{ color: "#292524" }}>
-          <span style={{ color: "#F59E0B" }}>MarketHub Pro</span>
+        <Link href="/" className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
+          <span style={{ color: "var(--color-primary)" }}>MarketHub Pro</span>
         </Link>
         <Link href="/features" className="text-xs ml-2" style={{ color: "#78614E" }}>Features</Link>
         <div className="flex-1" />
@@ -21,7 +21,7 @@ export default function GuidesIndexPage() {
         <Link
           href="/register"
           className="text-xs font-bold px-3 py-1.5 rounded-md"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+          style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
         >
           Start free
         </Link>
@@ -31,12 +31,12 @@ export default function GuidesIndexPage() {
         <section className="text-center space-y-3">
           <span
             className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded-full"
-            style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}
+            style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}
           >
             <BookOpen className="w-3 h-3" />
             Practical guides
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold" style={{ color: "#292524" }}>
+          <h1 className="text-4xl md:text-5xl font-bold" style={{ color: "var(--color-text)" }}>
             Step-by-step playbooks.
           </h1>
           <p className="text-base max-w-2xl mx-auto" style={{ color: "#78614E", lineHeight: 1.5 }}>
@@ -62,10 +62,10 @@ export default function GuidesIndexPage() {
                     <span>·</span>
                     <span>{g.audience}</span>
                   </div>
-                  <p className="text-base font-bold" style={{ color: "#292524" }}>{g.title}</p>
+                  <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>{g.title}</p>
                   <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.5 }}>{g.tagline}</p>
                 </div>
-                <ArrowRight className="w-4 h-4 flex-shrink-0 mt-1" style={{ color: "#D97706" }} />
+                <ArrowRight className="w-4 h-4 flex-shrink-0 mt-1" style={{ color: "var(--color-primary-hover)" }} />
               </div>
             </Link>
           ))}
@@ -75,13 +75,13 @@ export default function GuidesIndexPage() {
           className="rounded-2xl p-6 text-center"
           style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(139,92,246,0.08))", border: "1px solid rgba(245,158,11,0.2)" }}
         >
-          <p className="text-sm" style={{ color: "#292524" }}>
+          <p className="text-sm" style={{ color: "var(--color-text)" }}>
             Need help with something not in this list? Inside the app, click <strong>Ask consultant</strong> bottom-left — works in any language.
           </p>
           <Link
             href="/register"
             className="inline-flex items-center gap-2 mt-3 px-5 py-2.5 rounded-xl text-sm font-bold"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             Start free trial
             <ArrowRight className="w-4 h-4" />

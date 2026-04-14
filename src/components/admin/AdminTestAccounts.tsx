@@ -13,7 +13,7 @@ const PLAN_LABELS: Record<string, string> = {
 
 const PLAN_COLORS: Record<string, string> = {
   free_test: "#78614E",
-  lite: "#F59E0B",
+  lite: "var(--color-primary)",
   pro: "#8B5CF6",
   business: "#E1306C",
   enterprise: "#16A34A",

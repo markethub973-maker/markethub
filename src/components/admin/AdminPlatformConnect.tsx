@@ -182,17 +182,17 @@ export default function AdminPlatformConnect() {
 
   return (
     <div className="rounded-2xl p-6"
-      style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+      style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center text-lg"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
             <Zap className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>Admin Platform Connect</h2>
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>Admin Platform Connect</h2>
             <p className="text-xs" style={{ color: "#A8967E" }}>
               {loading ? "Loading..." : `${connectedCount} / ${PLATFORMS.length} platforms connected`}
             </p>
@@ -221,7 +221,7 @@ export default function AdminPlatformConnect() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{p.icon}</span>
-                  <span className="font-bold text-sm" style={{ color: "#292524" }}>{p.label}</span>
+                  <span className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{p.label}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   {connected
@@ -252,7 +252,7 @@ export default function AdminPlatformConnect() {
                           }))}
                           placeholder={field.placeholder}
                           className="w-full px-3 py-2 text-xs rounded-lg focus:outline-none pr-8"
-                          style={{ backgroundColor: "rgba(255,255,255,0.8)", border: "1px solid rgba(245,215,160,0.35)", color: "#292524", fontFamily: field.secret ? "monospace" : "inherit" }}
+                          style={{ backgroundColor: "rgba(255,255,255,0.8)", border: "1px solid rgba(245,215,160,0.35)", color: "var(--color-text)", fontFamily: field.secret ? "monospace" : "inherit" }}
                         />
                         {field.secret && val && (
                           <button type="button"

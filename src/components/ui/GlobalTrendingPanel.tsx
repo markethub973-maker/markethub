@@ -4,8 +4,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { TrendingUp, Eye, ThumbsUp, MessageCircle, Globe, Download, ExternalLink, ChevronDown } from "lucide-react";
 import { formatNumber, exportCSV, exportJSON } from "@/lib/utils";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
-const YT = "#F59E0B";
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const YT = "var(--color-primary)";
 const GT = "#4285F4";
 
 const ALL_COUNTRIES = [
@@ -137,9 +137,9 @@ export default function GlobalTrendingPanel() {
       <div className="flex flex-wrap items-center gap-3 px-5 py-3" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
         <div className="flex items-center gap-2">
           <Globe className="w-4 h-4" style={{ color: YT }} />
-          <span className="font-semibold text-sm" style={{ color: "#292524" }}>Global Trending</span>
+          <span className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>Global Trending</span>
           {!isGlobal && selectedCountry && (
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>
               {countryFlag} {selectedCountry.label.split(" ").slice(1).join(" ")}
             </span>
           )}
@@ -150,7 +150,7 @@ export default function GlobalTrendingPanel() {
           className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all"
           style={isGlobal
             ? { backgroundColor: YT, color: "#1C1814", border: `1px solid ${YT}` }
-            : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
+            : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
           <Globe className="w-3 h-3" /> Global
         </button>
 
@@ -160,18 +160,18 @@ export default function GlobalTrendingPanel() {
             className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all"
             style={!isGlobal
               ? { backgroundColor: YT, color: "#1C1814", border: `1px solid ${YT}` }
-              : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
+              : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
             {!isGlobal ? selectedCountry?.label : "🗺️ International"}
             <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
           </button>
           {dropdownOpen && (
             <div className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}>
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}>
               {ALL_COUNTRIES.map(c => (
                 <button key={c.code} type="button" onClick={() => handleSelectCountry(c)}
                   className="w-full text-left px-4 py-2.5 text-xs transition-colors"
                   style={{
-                    color: selectedCountry?.code === c.code ? "#D97706" : "#5C4A35",
+                    color: selectedCountry?.code === c.code ? "var(--color-primary-hover)" : "#5C4A35",
                     backgroundColor: selectedCountry?.code === c.code ? "rgba(245,158,11,0.08)" : "transparent",
                     fontWeight: selectedCountry?.code === c.code ? "600" : "400",
                   }}
@@ -251,7 +251,7 @@ export default function GlobalTrendingPanel() {
                 </span>
                 <img src={v.thumbnail} alt="" className="w-24 h-14 rounded-lg object-cover flex-shrink-0" />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold leading-snug line-clamp-2 group-hover:underline" style={{ color: "#292524" }}>{v.title}</p>
+                  <p className="text-sm font-semibold leading-snug line-clamp-2 group-hover:underline" style={{ color: "var(--color-text)" }}>{v.title}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{v.channel}</p>
                   <div className="flex items-center gap-3 mt-1.5">
                     <span className="flex items-center gap-1 text-xs" style={{ color: YT }}>
@@ -297,7 +297,7 @@ export default function GlobalTrendingPanel() {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold" style={{ color: "#292524" }}>{trend.title}</span>
+                    <span className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{trend.title}</span>
                     <span className="text-xs font-bold px-1.5 py-0.5 rounded-full flex-shrink-0"
                       style={{ backgroundColor: "rgba(66,133,244,0.1)", color: GT }}>
                       {trend.traffic}

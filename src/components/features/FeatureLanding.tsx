@@ -21,11 +21,11 @@ interface Props {
 
 export default function FeatureLanding({ feature: f }: Props) {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       {/* Top bar */}
       <header className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-        <Link href="/" className="text-sm font-bold flex items-center gap-2" style={{ color: "#292524" }}>
-          <span style={{ color: "#F59E0B" }}>MarketHub Pro</span>
+        <Link href="/" className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--color-text)" }}>
+          <span style={{ color: "var(--color-primary)" }}>MarketHub Pro</span>
         </Link>
         <Link href="/features" className="text-xs ml-2" style={{ color: "#78614E" }}>
           ← All features
@@ -35,7 +35,7 @@ export default function FeatureLanding({ feature: f }: Props) {
         <Link
           href="/register"
           className="text-xs font-bold px-3 py-1.5 rounded-md"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+          style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
         >
           Start free
         </Link>
@@ -47,12 +47,12 @@ export default function FeatureLanding({ feature: f }: Props) {
           <div className="lg:col-span-3 space-y-5">
             <span
               className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded-full"
-              style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}
+              style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}
             >
               <span>{f.emoji}</span>
               {f.title}
             </span>
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight" style={{ color: "#292524" }}>
+            <h1 className="text-4xl md:text-5xl font-bold leading-tight" style={{ color: "var(--color-text)" }}>
               {f.hero_h1}
             </h1>
             <p className="text-lg" style={{ color: "#78614E", lineHeight: 1.5 }}>
@@ -62,7 +62,7 @@ export default function FeatureLanding({ feature: f }: Props) {
               <Link
                 href={f.cta_primary.href}
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
               >
                 {f.cta_primary.label}
                 <ArrowRight className="w-4 h-4" />
@@ -71,7 +71,7 @@ export default function FeatureLanding({ feature: f }: Props) {
                 <Link
                   href={f.cta_secondary.href}
                   className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
-                  style={{ backgroundColor: "rgba(0,0,0,0.04)", color: "#292524" }}
+                  style={{ backgroundColor: "rgba(0,0,0,0.04)", color: "var(--color-text)" }}
                 >
                   {f.cta_secondary.label}
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -92,8 +92,8 @@ export default function FeatureLanding({ feature: f }: Props) {
               className="rounded-xl p-5"
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
-              <Sparkles className="w-5 h-5 mb-2" style={{ color: "#F59E0B" }} />
-              <p className="text-sm font-bold mb-1" style={{ color: "#292524" }}>{o.label}</p>
+              <Sparkles className="w-5 h-5 mb-2" style={{ color: "var(--color-primary)" }} />
+              <p className="text-sm font-bold mb-1" style={{ color: "var(--color-text)" }}>{o.label}</p>
               <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.5 }}>{o.body}</p>
             </div>
           ))}
@@ -101,7 +101,7 @@ export default function FeatureLanding({ feature: f }: Props) {
 
         {/* HOW IT WORKS */}
         <section>
-          <h2 className="text-2xl font-bold mb-5" style={{ color: "#292524" }}>How it works</h2>
+          <h2 className="text-2xl font-bold mb-5" style={{ color: "var(--color-text)" }}>How it works</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {f.steps.map((s, i) => (
               <div
@@ -111,11 +111,11 @@ export default function FeatureLanding({ feature: f }: Props) {
               >
                 <div
                   className="absolute -top-3 -left-3 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
-                  style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "white" }}
+                  style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "white" }}
                 >
                   {i + 1}
                 </div>
-                <p className="text-sm font-bold mb-2 mt-1" style={{ color: "#292524" }}>{s.title}</p>
+                <p className="text-sm font-bold mb-2 mt-1" style={{ color: "var(--color-text)" }}>{s.title}</p>
                 <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.5 }}>{s.body}</p>
               </div>
             ))}
@@ -124,7 +124,7 @@ export default function FeatureLanding({ feature: f }: Props) {
 
         {/* USE CASES */}
         <section>
-          <h2 className="text-xl font-bold mb-3" style={{ color: "#292524" }}>Built for</h2>
+          <h2 className="text-xl font-bold mb-3" style={{ color: "var(--color-text)" }}>Built for</h2>
           <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {f.use_cases.map((u, i) => (
               <li
@@ -132,8 +132,8 @@ export default function FeatureLanding({ feature: f }: Props) {
                 className="rounded-lg px-4 py-3 flex items-center gap-2"
                 style={{ backgroundColor: "rgba(245,158,11,0.04)", border: "1px solid rgba(245,158,11,0.15)" }}
               >
-                <span style={{ color: "#D97706" }}>→</span>
-                <p className="text-sm" style={{ color: "#292524" }}>{u}</p>
+                <span style={{ color: "var(--color-primary-hover)" }}>→</span>
+                <p className="text-sm" style={{ color: "var(--color-text)" }}>{u}</p>
               </li>
             ))}
           </ul>
@@ -151,7 +151,7 @@ export default function FeatureLanding({ feature: f }: Props) {
             <MessageCircle className="w-5 h-5" style={{ color: "white" }} />
           </div>
           <div className="flex-1 min-w-[200px]">
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Not sure if {f.title} is for you?
             </p>
             <p className="text-xs" style={{ color: "#78614E" }}>
@@ -172,7 +172,7 @@ export default function FeatureLanding({ feature: f }: Props) {
           className="rounded-2xl p-8 text-center"
           style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(139,92,246,0.08))", border: "1px solid rgba(245,158,11,0.2)" }}
         >
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
             Try {f.title} free.
           </h2>
           <p className="text-sm mb-5" style={{ color: "#78614E" }}>
@@ -182,7 +182,7 @@ export default function FeatureLanding({ feature: f }: Props) {
             <Link
               href="/register"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+              style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
             >
               Start free trial
               <ArrowRight className="w-4 h-4" />
@@ -190,7 +190,7 @@ export default function FeatureLanding({ feature: f }: Props) {
             <Link
               href="/features"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
-              style={{ backgroundColor: "white", color: "#292524", border: "1px solid rgba(0,0,0,0.08)" }}
+              style={{ backgroundColor: "white", color: "var(--color-text)", border: "1px solid rgba(0,0,0,0.08)" }}
             >
               See all features
             </Link>

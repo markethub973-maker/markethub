@@ -10,7 +10,7 @@ interface SecurityEvent {
 
 const SEV_COLORS: Record<string, { bg: string; color: string }> = {
   critical: { bg: "rgba(239,68,68,0.15)",  color: "#EF4444" },
-  high:     { bg: "rgba(245,158,11,0.12)", color: "#F59E0B" },
+  high:     { bg: "rgba(245,158,11,0.12)", color: "var(--color-primary)" },
   medium:   { bg: "rgba(99,102,241,0.1)",  color: "#6366F1" },
   low:      { bg: "rgba(100,116,139,0.1)", color: "#64748B" },
   info:     { bg: "rgba(16,185,129,0.08)", color: "#10B981" },
@@ -59,11 +59,11 @@ export default function AdminSecurityPanel() {
         {[
           { label: "Total activ", value: unresolved.length, color: "#F5D7A0" },
           { label: "Critical", value: stats.critical ?? 0, color: "#EF4444" },
-          { label: "High", value: stats.high ?? 0, color: "#F59E0B" },
+          { label: "High", value: stats.high ?? 0, color: "var(--color-primary)" },
           { label: "Medium", value: stats.medium ?? 0, color: "#6366F1" },
           { label: "Low/Info", value: (stats.low ?? 0) + (stats.info ?? 0), color: "#10B981" },
         ].map(s => (
-          <div key={s.label} className="rounded-xl p-3 text-center" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+          <div key={s.label} className="rounded-xl p-3 text-center" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
             <p className="text-xl font-bold" style={{ color: s.color }}>{s.value}</p>
             <p className="text-xs" style={{ color: "#A8967E" }}>{s.label}</p>
           </div>
@@ -76,7 +76,7 @@ export default function AdminSecurityPanel() {
           <button key={f} type="button" onClick={() => setFilter(f)}
             className="text-xs px-3 py-1.5 rounded-lg font-medium transition-all capitalize"
             style={filter === f
-              ? { backgroundColor: f === "all" ? "#292524" : SEV_COLORS[f]?.bg ?? "#292524", color: f === "all" ? "#FFF8F0" : SEV_COLORS[f]?.color ?? "#FFF8F0" }
+              ? { backgroundColor: f === "all" ? "var(--color-text)" : SEV_COLORS[f]?.bg ?? "var(--color-text)", color: f === "all" ? "var(--color-bg)" : SEV_COLORS[f]?.color ?? "var(--color-bg)" }
               : { backgroundColor: "rgba(245,215,160,0.1)", color: "#78614E" }}>
             {f}
           </button>
@@ -90,7 +90,7 @@ export default function AdminSecurityPanel() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-8">
           <CheckCircle className="w-8 h-8 mx-auto mb-2" style={{ color: "#10B981" }} />
@@ -102,11 +102,11 @@ export default function AdminSecurityPanel() {
             const sev = SEV_COLORS[e.severity] ?? SEV_COLORS.info;
             return (
               <div key={e.id} className="rounded-xl px-3 py-2.5 flex items-center gap-3"
-                style={{ backgroundColor: e.resolved ? "rgba(245,215,160,0.04)" : "#FFFCF7", border: `1px solid ${e.resolved ? "rgba(245,215,160,0.1)" : "rgba(245,215,160,0.25)"}`, opacity: e.resolved ? 0.6 : 1 }}>
+                style={{ backgroundColor: e.resolved ? "rgba(245,215,160,0.04)" : "var(--color-bg-secondary)", border: `1px solid ${e.resolved ? "rgba(245,215,160,0.1)" : "rgba(245,215,160,0.25)"}`, opacity: e.resolved ? 0.6 : 1 }}>
                 <span className="text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0"
                   style={{ backgroundColor: sev.bg, color: sev.color }}>{e.severity.toUpperCase()}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold truncate" style={{ color: "#292524" }}>{e.event_type}</p>
+                  <p className="text-xs font-semibold truncate" style={{ color: "var(--color-text)" }}>{e.event_type}</p>
                   <p className="text-[10px] truncate" style={{ color: "#A8967E" }}>
                     {e.ip && `IP: ${e.ip}`}{e.path && ` · ${e.path}`} · {fmtDate(e.created_at)}
                   </p>

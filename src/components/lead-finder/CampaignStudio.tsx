@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send, Sparkles, RefreshCw, Lightbulb, GitBranch, Target, Maximize2, Minimize2, Bot } from "lucide-react";
 
-const AMBER = "#F59E0B";
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 const BG_SCREEN = "#0F0D0B";
 const BG_MSG_AI = "#1C1814";

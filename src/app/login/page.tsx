@@ -33,17 +33,17 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FFF8F0" }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--color-bg)" }}>
       <div className="w-full max-w-md px-6">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div
             className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}
           >
             <Zap className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold" style={{ color: "#292524" }}>MarketHub Pro</h1>
+          <h1 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>MarketHub Pro</h1>
           <p className="text-sm mt-1" style={{ color: "#A8967E" }}>Social Video Intelligence</p>
         </div>
 
@@ -51,12 +51,12 @@ export default function LoginPage() {
         <div
           className="rounded-2xl p-8"
           style={{
-            backgroundColor: "#FFFCF7",
+            backgroundColor: "var(--color-bg-secondary)",
             border: "1px solid rgba(245,215,160,0.35)",
             boxShadow: "0 4px 24px rgba(120,97,78,0.12)",
           }}
         >
-          <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Welcome back!</h2>
+          <h2 className="text-xl font-bold mb-1" style={{ color: "var(--color-text)" }}>Welcome back!</h2>
           <p className="text-sm mb-6" style={{ color: "#A8967E" }}>Sign into your account</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
@@ -74,7 +74,7 @@ export default function LoginPage() {
                   placeholder="email@example.com"
                   required
                   className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none transition-all"
-                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
+                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
                   onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
                   onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.4)")}
                 />
@@ -95,7 +95,7 @@ export default function LoginPage() {
                   placeholder="••••••••••••"
                   required
                   className="w-full pl-10 pr-10 py-3 text-sm rounded-lg focus:outline-none transition-all"
-                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
+                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
                   onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
                   onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.4)")}
                 />
@@ -125,7 +125,7 @@ export default function LoginPage() {
               type="submit"
               disabled={loading}
               className="w-full py-3 rounded-lg text-sm font-bold transition-opacity"
-              style={{ backgroundColor: "#F59E0B", color: "#1C1814", opacity: loading ? 0.7 : 1 }}
+              style={{ backgroundColor: "var(--color-primary)", color: "#1C1814", opacity: loading ? 0.7 : 1 }}
             >
               {loading ? "Loading..." : "Sign in"}
             </button>
@@ -133,7 +133,7 @@ export default function LoginPage() {
 
           <p className="text-center text-xs mt-5" style={{ color: "#A8967E" }}>
             Don't have an account?{" "}
-            <Link href="/register" style={{ color: "#F59E0B", fontWeight: 600 }}>
+            <Link href="/register" style={{ color: "var(--color-primary)", fontWeight: 600 }}>
               Sign up free
             </Link>
           </p>
@@ -141,8 +141,8 @@ export default function LoginPage() {
 
         <p className="text-center text-xs mt-6" style={{ color: "#C4AA8A" }}>
           © 2026 MarketHub Pro ·{" "}
-          <a href="/privacy" style={{ color: "#F59E0B" }}>Privacy</a> ·{" "}
-          <a href="/terms" style={{ color: "#F59E0B" }}>Terms</a>
+          <a href="/privacy" style={{ color: "var(--color-primary)" }}>Privacy</a> ·{" "}
+          <a href="/terms" style={{ color: "var(--color-primary)" }}>Terms</a>
         </p>
       </div>
     </div>

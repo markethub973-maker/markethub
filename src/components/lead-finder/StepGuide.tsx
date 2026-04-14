@@ -2,7 +2,7 @@
 
 import { CheckCircle2, Circle, ArrowRight, Lightbulb } from "lucide-react";
 
-const AMBER = "#F59E0B";
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 
 interface StepAction {
@@ -120,14 +120,14 @@ export default function StepGuide({ step, offerType, offerText, audienceType, lo
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-bold" style={{ color: AMBER }}>Step {step}/5 guide</p>
-          <p className="text-sm font-bold" style={{ color: "#292524" }}>{config.title}</p>
+          <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{config.title}</p>
           <p className="text-xs" style={{ color: "#A8967E" }}>{config.subtitle}</p>
         </div>
         <div className="flex flex-col items-center gap-1">
           <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold"
             style={{
               background: `conic-gradient(${AMBER} ${progress * 3.6}deg, rgba(245,215,160,0.15) 0deg)`,
-              color: "#292524",
+              color: "var(--color-text)",
             }}>
             {progress}%
           </div>
@@ -142,7 +142,7 @@ export default function StepGuide({ step, offerType, offerText, audienceType, lo
               ? <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: GREEN }} />
               : <Circle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "rgba(245,215,160,0.3)" }} />}
             <div>
-              <p className="text-xs font-semibold" style={{ color: action.done ? GREEN : "#292524" }}>{action.label}</p>
+              <p className="text-xs font-semibold" style={{ color: action.done ? GREEN : "var(--color-text)" }}>{action.label}</p>
               <p className="text-xs" style={{ color: "#A8967E" }}>{action.detail}</p>
             </div>
           </div>

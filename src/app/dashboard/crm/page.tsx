@@ -283,7 +283,7 @@ export default function CrmPage() {
   // ── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "#292524" }}>
+    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "var(--color-text)" }}>
       {/* Top bar */}
       <div
         style={{
@@ -292,7 +292,7 @@ export default function CrmPage() {
           gap: 16,
           padding: "16px 24px",
           borderBottom: "1px solid rgba(245,215,160,0.25)",
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
         }}
       >
         <Link
@@ -304,7 +304,7 @@ export default function CrmPage() {
             padding: "6px 12px",
             background: "rgba(245,158,11,0.08)",
             borderRadius: 6,
-            color: "#F59E0B",
+            color: "var(--color-primary)",
             textDecoration: "none",
             fontSize: 12,
           }}
@@ -339,7 +339,7 @@ export default function CrmPage() {
               fontSize: 12,
               background: "transparent",
               width: 180,
-              color: "#292524",
+              color: "var(--color-text)",
             }}
           />
         </div>
@@ -350,7 +350,7 @@ export default function CrmPage() {
             alignItems: "center",
             gap: 6,
             padding: "8px 16px",
-            background: "#F59E0B",
+            background: "var(--color-primary)",
             color: "#1C1814",
             border: "none",
             borderRadius: 8,
@@ -548,7 +548,7 @@ function KanbanColumn(props: {
               padding: "4px 6px",
               outline: "none",
               background: "white",
-              color: "#292524",
+              color: "var(--color-text)",
             }}
           />
         ) : (
@@ -565,7 +565,7 @@ function KanbanColumn(props: {
               margin: 0,
               flex: 1,
               cursor: isUnstaged ? "default" : "text",
-              color: "#292524",
+              color: "var(--color-text)",
             }}
           >
             {stage.name}
@@ -645,7 +645,7 @@ function KanbanColumn(props: {
               fontSize: 12,
               outline: "none",
               background: "white",
-              color: "#292524",
+              color: "var(--color-text)",
             }}
           />
           <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
@@ -654,7 +654,7 @@ function KanbanColumn(props: {
               style={{
                 flex: 1,
                 padding: "4px 8px",
-                background: "#F59E0B",
+                background: "var(--color-primary)",
                 color: "#1C1814",
                 border: "none",
                 borderRadius: 4,
@@ -713,7 +713,7 @@ function KanbanColumn(props: {
               style={{
                 fontSize: 12,
                 fontWeight: 700,
-                color: "#292524",
+                color: "var(--color-text)",
                 marginBottom: 4,
               }}
             >
@@ -963,7 +963,7 @@ function LeadDetailDrawer({
           style={{
             flex: 1,
             padding: "10px 16px",
-            background: "#F59E0B",
+            background: "var(--color-primary)",
             color: "#1C1814",
             border: "none",
             borderRadius: 8,
@@ -1008,7 +1008,7 @@ const inputStyle: React.CSSProperties = {
   outline: "none",
   fontFamily: "inherit",
   background: "white",
-  color: "#292524",
+  color: "var(--color-text)",
 };
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

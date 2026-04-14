@@ -6,7 +6,7 @@ import Header from "@/components/layout/Header";
 import { Newspaper, Globe, ExternalLink, Clock, Download, ChevronDown, Search } from "lucide-react";
 import { exportCSV, exportJSON } from "@/lib/utils";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
 // All supported countries — hardcoded on frontend (same as Trending page pattern)
 const ALL_NEWS_COUNTRIES = [
@@ -176,8 +176,8 @@ export default function NewsPage() {
           <button type="button" onClick={handleGlobalClick}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-all"
             style={isGlobal
-              ? { backgroundColor: "rgba(245,158,11,0.15)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.3)" }
-              : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)" }
+              ? { backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.3)" }
+              : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)" }
             }
           >
             <Globe className="w-4 h-4" /> Global
@@ -188,8 +188,8 @@ export default function NewsPage() {
             <button type="button" onClick={() => setDropdownOpen(prev => !prev)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
               style={!isGlobal
-                ? { backgroundColor: "rgba(245,158,11,0.15)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.3)" }
-                : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)" }
+                ? { backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.3)" }
+                : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)" }
               }
             >
               {!isGlobal && currentCountry
@@ -201,7 +201,7 @@ export default function NewsPage() {
 
             {dropdownOpen && (
               <div className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden flex flex-col"
-                style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", width: "240px" }}
+                style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", width: "240px" }}
               >
                 {/* Search inside dropdown */}
                 <div className="p-2 flex-shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
@@ -212,7 +212,7 @@ export default function NewsPage() {
                     onChange={e => setCountrySearch(e.target.value)}
                     placeholder="Search country..."
                     className="w-full px-3 py-1.5 text-sm rounded-lg focus:outline-none"
-                    style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "#292524", border: "1px solid rgba(245,215,160,0.25)" }}
+                    style={{ backgroundColor: "rgba(245,215,160,0.12)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.25)" }}
                   />
                 </div>
                 {/* Scrollable list */}
@@ -224,7 +224,7 @@ export default function NewsPage() {
                     <button key={c.code} type="button" onClick={() => handleSelectCountry(c.code)}
                       className="w-full text-left px-4 py-2.5 text-sm transition-colors flex items-center gap-2"
                       style={{
-                        color: selectedCountry === c.code && !isGlobal ? "#F59E0B" : "#5C4A35",
+                        color: selectedCountry === c.code && !isGlobal ? "var(--color-primary)" : "#5C4A35",
                         backgroundColor: selectedCountry === c.code && !isGlobal ? "rgba(245,158,11,0.08)" : "transparent",
                         fontWeight: selectedCountry === c.code && !isGlobal ? "600" : "400",
                       }}
@@ -280,7 +280,7 @@ export default function NewsPage() {
           <>
             {/* Filter indicator */}
             {newsFilter && (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706", border: "1px solid rgba(245,158,11,0.2)" }}>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.2)" }}>
                 <Search className="w-3.5 h-3.5" />
                 Filtering by: <strong>&quot;{newsFilter}&quot;</strong>
                 <button type="button" onClick={() => setNewsFilter("")} className="ml-auto text-xs underline">Clear</button>
@@ -292,7 +292,7 @@ export default function NewsPage() {
               <div className="rounded-xl overflow-hidden" style={cardStyle}>
                 <div className="flex items-center gap-2 px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
                   <span className="text-base">{data.country.flag}</span>
-                  <h3 className="font-semibold" style={{ color: "#292524" }}>Top Headlines — {data.country.name}</h3>
+                  <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Top Headlines — {data.country.name}</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x" style={{ borderColor: "rgba(245,215,160,0.15)" }}>
                   {data.headlines.filter(a => !newsFilter || a.title.toLowerCase().includes(newsFilter) || (a.description || "").toLowerCase().includes(newsFilter)).map((a, i) => (
@@ -301,14 +301,14 @@ export default function NewsPage() {
                       onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.07)")}
                       onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}>
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>
                           {a.source}
                         </span>
                         <span className="flex items-center gap-1 text-xs" style={{ color: "#C4AA8A" }}>
                           <Clock className="w-3 h-3" />{timeAgo(a.publishedAt)}
                         </span>
                       </div>
-                      <p className="text-sm font-semibold leading-snug group-hover:underline line-clamp-3" style={{ color: "#292524" }}>{a.title}</p>
+                      <p className="text-sm font-semibold leading-snug group-hover:underline line-clamp-3" style={{ color: "var(--color-text)" }}>{a.title}</p>
                       {a.description && (
                         <p className="text-xs mt-2 line-clamp-2" style={{ color: "#A8967E" }}>{a.description}</p>
                       )}
@@ -322,8 +322,8 @@ export default function NewsPage() {
             {data.social?.length > 0 && (
               <div className="rounded-xl overflow-hidden" style={cardStyle}>
                 <div className="flex items-center gap-2 px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                  <Globe className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                  <h3 className="font-semibold" style={{ color: "#292524" }}>Creator Economy & Social Media — Global</h3>
+                  <Globe className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+                  <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Creator Economy & Social Media — Global</h3>
                 </div>
                 <div className="divide-y" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
                   {data.social.filter(a => !newsFilter || a.title.toLowerCase().includes(newsFilter) || (a.description || "").toLowerCase().includes(newsFilter)).map((a, i) => (
@@ -336,14 +336,14 @@ export default function NewsPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>
                             {a.source}
                           </span>
                           <span className="flex items-center gap-1 text-xs" style={{ color: "#C4AA8A" }}>
                             <Clock className="w-3 h-3" />{timeAgo(a.publishedAt)}
                           </span>
                         </div>
-                        <p className="text-sm font-semibold leading-snug group-hover:underline line-clamp-2" style={{ color: "#292524" }}>{a.title}</p>
+                        <p className="text-sm font-semibold leading-snug group-hover:underline line-clamp-2" style={{ color: "var(--color-text)" }}>{a.title}</p>
                         {a.description && (
                           <p className="text-xs mt-1 line-clamp-1" style={{ color: "#A8967E" }}>{a.description}</p>
                         )}

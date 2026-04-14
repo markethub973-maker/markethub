@@ -5,11 +5,11 @@ import Header from "@/components/layout/Header";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Users, MapPin, Globe2, AlertCircle, RefreshCw } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const MALE = "#1877F2";
 const FEMALE = "#E1306C";
 const UNKNOWN = "#A8967E";
-const AGE_COLOR = "#F59E0B";
+const AGE_COLOR = "var(--color-primary)";
 
 export default function DemographicsPage() {
   const [data, setData] = useState<any>(null);
@@ -65,7 +65,7 @@ export default function DemographicsPage() {
                 Note: Demographic data requires an Instagram Business account with at least 100 followers.
               </p>
               <button onClick={reload} className="mt-3 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
-                style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.2)" }}>
+                style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.2)" }}>
                 <RefreshCw className="w-3 h-3" /> Retry
               </button>
             </div>
@@ -94,7 +94,7 @@ export default function DemographicsPage() {
         {/* KPI row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Followers", value: data.followers?.toLocaleString(), color: "#F59E0B", icon: <Users className="w-4 h-4" /> },
+            { label: "Total Followers", value: data.followers?.toLocaleString(), color: "var(--color-primary)", icon: <Users className="w-4 h-4" /> },
             { label: "% Men", value: `${data.genderSplit.male}%`, color: MALE, icon: null },
             { label: "% Women", value: `${data.genderSplit.female}%`, color: FEMALE, icon: null },
             { label: "Top Country", value: topCountry?.country || "—", color: "#10B981", icon: <Globe2 className="w-4 h-4" /> },
@@ -113,7 +113,7 @@ export default function DemographicsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Gender pie */}
           <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Gender Distribution</h3>
+            <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--color-text)" }}>Gender Distribution</h3>
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie data={genderPie} dataKey="value" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${name} ${value}%`} labelLine={false}>
@@ -127,13 +127,13 @@ export default function DemographicsPage() {
 
           {/* Age brackets */}
           <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Age Distribution</h3>
+            <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--color-text)" }}>Age Distribution</h3>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={data.ageBrackets} margin={{ left: -20, right: 10 }}>
                 <XAxis dataKey="age" tick={{ fontSize: 11, fill: "#A8967E" }} />
                 <YAxis tick={{ fontSize: 11, fill: "#A8967E" }} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)", borderRadius: 8 }}
+                  contentStyle={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)", borderRadius: 8 }}
                   formatter={(v: any) => [`${v} people`]}
                 />
                 <Bar dataKey="count" fill={AGE_COLOR} radius={[4, 4, 0, 0]} />
@@ -145,7 +145,7 @@ export default function DemographicsPage() {
         {/* Gender x Age heatmap */}
         {data.genderAge && (
           <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>Gender × Age - Detailed</h3>
+            <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--color-text)" }}>Gender × Age - Detailed</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs">
                 <thead>
@@ -163,7 +163,7 @@ export default function DemographicsPage() {
                     const u = data.genderAge?.U?.[row.age] || 0;
                     return (
                       <tr key={row.age} className="border-t" style={{ borderColor: "rgba(245,215,160,0.15)" }}>
-                        <td className="py-2 pr-4 font-semibold" style={{ color: "#292524" }}>{row.age}</td>
+                        <td className="py-2 pr-4 font-semibold" style={{ color: "var(--color-text)" }}>{row.age}</td>
                         <td className="py-2 px-3 text-center" style={{ color: MALE }}>{m.toLocaleString()}</td>
                         <td className="py-2 px-3 text-center" style={{ color: FEMALE }}>{f.toLocaleString()}</td>
                         <td className="py-2 px-3 text-center" style={{ color: UNKNOWN }}>{u.toLocaleString()}</td>
@@ -181,20 +181,20 @@ export default function DemographicsPage() {
           {/* Top Cities */}
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center gap-2 mb-4">
-              <MapPin className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <h3 className="text-sm font-semibold" style={{ color: "#292524" }}>Top Cities</h3>
+              <MapPin className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <h3 className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>Top Cities</h3>
             </div>
             <div className="space-y-2.5">
               {data.topCities.map((c: any, i: number) => (
                 <div key={c.city}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs" style={{ color: "#78614E" }}>
-                      <span className="font-semibold mr-1" style={{ color: "#292524" }}>#{i + 1}</span>{c.city}
+                      <span className="font-semibold mr-1" style={{ color: "var(--color-text)" }}>#{i + 1}</span>{c.city}
                     </span>
-                    <span className="text-xs font-semibold" style={{ color: "#F59E0B" }}>{c.count.toLocaleString()}</span>
+                    <span className="text-xs font-semibold" style={{ color: "var(--color-primary)" }}>{c.count.toLocaleString()}</span>
                   </div>
                   <div className="h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,215,160,0.2)" }}>
-                    <div className="h-full rounded-full" style={{ width: `${Math.round((c.count / maxCity) * 100)}%`, backgroundColor: "#F59E0B" }} />
+                    <div className="h-full rounded-full" style={{ width: `${Math.round((c.count / maxCity) * 100)}%`, backgroundColor: "var(--color-primary)" }} />
                   </div>
                 </div>
               ))}
@@ -206,14 +206,14 @@ export default function DemographicsPage() {
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center gap-2 mb-4">
               <Globe2 className="w-4 h-4" style={{ color: "#10B981" }} />
-              <h3 className="text-sm font-semibold" style={{ color: "#292524" }}>Top Countries</h3>
+              <h3 className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>Top Countries</h3>
             </div>
             <div className="space-y-2.5">
               {data.topCountries.map((c: any, i: number) => (
                 <div key={c.country}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs" style={{ color: "#78614E" }}>
-                      <span className="font-semibold mr-1" style={{ color: "#292524" }}>#{i + 1}</span>{c.country}
+                      <span className="font-semibold mr-1" style={{ color: "var(--color-text)" }}>#{i + 1}</span>{c.country}
                     </span>
                     <span className="text-xs font-semibold" style={{ color: "#10B981" }}>{c.count.toLocaleString()}</span>
                   </div>

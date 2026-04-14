@@ -8,12 +8,12 @@ export const metadata = {
 };
 
 const C = {
-  bg: "#FFF8F0",
-  card: "#FFFCF7",
-  amber: "#F59E0B",
-  amberDark: "#D97706",
+  bg: "var(--color-bg)",
+  card: "var(--color-bg-secondary)",
+  amber: "var(--color-primary)",
+  amberDark: "var(--color-primary-hover)",
   amberBorder: "rgba(245,215,160,0.4)",
-  text: "#292524",
+  text: "var(--color-text)",
   muted: "#78614E",
 };
 

@@ -5,7 +5,7 @@ import { Send, Loader2, CheckCircle2 } from "lucide-react";
 
 const CATEGORIES = ["Bug report", "Feature request", "Billing question", "Integration help", "Other"] as const;
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.4)", borderRadius: 12 };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.4)", borderRadius: 12 };
 
 export default function HelpForm() {
   const [category, setCategory] = useState<string>("Other");
@@ -48,7 +48,7 @@ export default function HelpForm() {
     return (
       <div className="rounded-xl p-6 text-center" style={card}>
         <CheckCircle2 className="w-10 h-10 mx-auto mb-3" style={{ color: "#10B981" }} />
-        <p className="font-bold mb-1" style={{ color: "#292524" }}>Message sent!</p>
+        <p className="font-bold mb-1" style={{ color: "var(--color-text)" }}>Message sent!</p>
         <p className="text-sm" style={{ color: "#78614E" }}>We&apos;ll reply within 24 hours.</p>
       </div>
     );
@@ -62,7 +62,7 @@ export default function HelpForm() {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
           className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
+          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
         >
           {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
         </select>
@@ -76,7 +76,7 @@ export default function HelpForm() {
           onChange={(e) => setSubject(e.target.value)}
           placeholder="Brief summary"
           className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
+          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
         />
       </div>
 
@@ -90,7 +90,7 @@ export default function HelpForm() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
+          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
         />
       </div>
 
@@ -105,7 +105,7 @@ export default function HelpForm() {
           rows={5}
           required
           className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none"
-          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
+          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
         />
       </div>
 
@@ -117,7 +117,7 @@ export default function HelpForm() {
         type="submit"
         disabled={sending || message.trim().length < 10}
         className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-sm font-bold disabled:opacity-50"
-        style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+        style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
       >
         {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
         {sending ? "Sending..." : "Send message"}

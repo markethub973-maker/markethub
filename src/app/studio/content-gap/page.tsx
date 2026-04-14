@@ -75,7 +75,7 @@ export default function ContentGapPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Content Gap Analyzer" subtitle="What competitors cover that you don't — with post ideas you can ship today" />
 
       <main className="max-w-5xl mx-auto px-6 py-6 space-y-5">
@@ -84,8 +84,8 @@ export default function ContentGapPage() {
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
           <div className="flex items-center gap-2">
-            <Target className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+            <Target className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Paste captions (one per line or blank-line separated)
             </h2>
           </div>
@@ -106,7 +106,7 @@ export default function ContentGapPage() {
                 rows={8}
                 placeholder={SAMPLE_COMP}
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none font-mono"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none", fontSize: 11 }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none", fontSize: 11 }}
               />
             </div>
             <div>
@@ -124,7 +124,7 @@ export default function ContentGapPage() {
                 rows={8}
                 placeholder={SAMPLE_MY}
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none font-mono"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none", fontSize: 11 }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none", fontSize: 11 }}
               />
             </div>
           </div>
@@ -139,7 +139,7 @@ export default function ContentGapPage() {
               onChange={(e) => setNiche(e.target.value)}
               placeholder="e.g. small marketing agencies in EU, 5-15 employees"
               className="w-full rounded-lg px-3 py-2 text-sm"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             />
           </div>
 
@@ -148,7 +148,7 @@ export default function ContentGapPage() {
             onClick={run}
             disabled={!canSubmit}
             className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>) : (<><Compass className="w-4 h-4" /> Find content gaps</>)}
           </button>
@@ -162,7 +162,7 @@ export default function ContentGapPage() {
             style={{ backgroundColor: "white", border: "1px dashed rgba(0,0,0,0.1)" }}
           >
             <TrendingUp className="w-6 h-6 mx-auto mb-2" style={{ color: "#10B981" }} />
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               No clear gaps — you're covering their topics already 🎉
             </p>
             <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -185,12 +185,12 @@ export default function ContentGapPage() {
                 <div className="flex items-start gap-3">
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 font-bold text-sm"
-                    style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#D97706" }}
+                    style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary-hover)" }}
                   >
                     {i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold" style={{ color: "#292524" }}>
+                    <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                       {g.cluster_label}
                     </p>
                     <p className="text-xs mt-1" style={{ color: "#78614E", lineHeight: 1.5 }}>
@@ -205,8 +205,8 @@ export default function ContentGapPage() {
                       className="rounded-md p-2 flex items-center gap-2"
                       style={{ backgroundColor: "rgba(245,158,11,0.04)", border: "1px solid rgba(245,158,11,0.15)" }}
                     >
-                      <Sparkles className="w-3 h-3 flex-shrink-0" style={{ color: "#D97706" }} />
-                      <p className="text-xs flex-1" style={{ color: "#292524", lineHeight: 1.4 }}>
+                      <Sparkles className="w-3 h-3 flex-shrink-0" style={{ color: "var(--color-primary-hover)" }} />
+                      <p className="text-xs flex-1" style={{ color: "var(--color-text)", lineHeight: 1.4 }}>
                         {idea}
                       </p>
                       <button
@@ -225,7 +225,7 @@ export default function ContentGapPage() {
                         type="button"
                         onClick={() => window.open(`/calendar?caption=${encodeURIComponent(idea)}`, "_blank")}
                         className="text-[10px] font-bold px-1.5 py-0.5 rounded inline-flex items-center gap-1"
-                        style={{ backgroundColor: "#D97706", color: "white" }}
+                        style={{ backgroundColor: "var(--color-primary-hover)", color: "white" }}
                       >
                         <CalIcon className="w-2.5 h-2.5" />
                         Draft

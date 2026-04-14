@@ -31,8 +31,8 @@ function getDemographics(channel: Channel) {
 
   const maleShare = cat.includes("tech") ? 78 : cat.includes("sport") ? 72 : cat.includes("dance") ? 38 : cat.includes("food") ? 45 : 52;
   const genderData = [
-    { name: "Male", value: maleShare, color: "#F59E0B" },
-    { name: "Female", value: 100 - maleShare, color: "#D97706" },
+    { name: "Male", value: maleShare, color: "var(--color-primary)" },
+    { name: "Female", value: 100 - maleShare, color: "var(--color-primary-hover)" },
   ];
 
   const countriesBase = channel.platform === "youtube"
@@ -78,20 +78,20 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
         label: `Video ${i + 1}`,
       }));
 
-  const tooltipStyle = { fontSize: 11, borderRadius: 8, border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7", color: "#292524" };
+  const tooltipStyle = { fontSize: 11, borderRadius: 8, border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: "rgba(28,24,20,0.7)" }}>
       <div
         className="w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl"
-        style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 24px 60px rgba(28,24,20,0.3)" }}
+        style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 24px 60px rgba(28,24,20,0.3)" }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 sticky top-0 z-10" style={{ backgroundColor: "#FFFCF7", borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
+        <div className="flex items-center justify-between px-6 py-4 sticky top-0 z-10" style={{ backgroundColor: "var(--color-bg-secondary)", borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
           <div className="flex items-center gap-3">
             <img src={channel.avatar} alt={channel.name} className="w-10 h-10 rounded-full" />
             <div>
-              <h2 className="font-bold text-lg" style={{ color: "#292524" }}>{channel.name}</h2>
+              <h2 className="font-bold text-lg" style={{ color: "var(--color-text)" }}>{channel.name}</h2>
               <p className="text-xs" style={{ color: "#A8967E" }}>{channel.platform} · {channel.category}</p>
             </div>
           </div>
@@ -113,16 +113,16 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
               { icon: <TrendingUp className="w-4 h-4" />, label: "Engagement", value: channel.engagementRate + "%" },
             ].map(s => (
               <div key={s.label} className="rounded-xl p-4 text-center" style={{ backgroundColor: "rgba(245,215,160,0.1)", border: "1px solid rgba(245,215,160,0.2)" }}>
-                <div className="flex justify-center mb-1" style={{ color: "#F59E0B" }}>{s.icon}</div>
+                <div className="flex justify-center mb-1" style={{ color: "var(--color-primary)" }}>{s.icon}</div>
                 <p className="text-xs mb-1" style={{ color: "#A8967E" }}>{s.label}</p>
-                <p className="text-lg font-bold" style={{ color: "#292524" }}>{s.value}</p>
+                <p className="text-lg font-bold" style={{ color: "var(--color-text)" }}>{s.value}</p>
               </div>
             ))}
           </div>
 
           {/* Recent Videos Chart */}
           <div>
-            <h3 className="font-semibold mb-1" style={{ color: "#292524" }}>
+            <h3 className="font-semibold mb-1" style={{ color: "var(--color-text)" }}>
               {recentVideos.length > 0 ? "Latest videos (real data)" : "Video performance (estimated)"}
             </h3>
             <p className="text-xs mb-3" style={{ color: "#A8967E" }}>Views per video (millions)</p>
@@ -134,7 +134,7 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
                   <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#C4AA8A" }} />
                   <YAxis tick={{ fontSize: 10, fill: "#C4AA8A" }} />
                   <Tooltip contentStyle={tooltipStyle} formatter={(v: any) => [v + "M views", ""]} />
-                  <Bar dataKey="views" fill="#F59E0B" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="views" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -142,10 +142,10 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
 
           {/* Demographics */}
           <div>
-            <h3 className="font-semibold mb-4 flex items-center gap-2" style={{ color: "#292524" }}>
-              <User2 className="w-4 h-4" style={{ color: "#F59E0B" }} />
+            <h3 className="font-semibold mb-4 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
+              <User2 className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
               Audience Demographics
-              <span className="text-xs font-normal px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>statistical estimate by category</span>
+              <span className="text-xs font-normal px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>statistical estimate by category</span>
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -196,7 +196,7 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
                     <div key={c.country} className="flex items-center gap-2">
                       <span className="text-xs flex-1" style={{ color: "#5C4A35" }}>{c.country}</span>
                       <div className="w-20 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,215,160,0.2)" }}>
-                        <div className="h-full rounded-full" style={{ width: c.pct + "%", backgroundColor: "#F59E0B" }} />
+                        <div className="h-full rounded-full" style={{ width: c.pct + "%", backgroundColor: "var(--color-primary)" }} />
                       </div>
                       <span className="text-xs w-8 text-right font-semibold" style={{ color: "#5C4A35" }}>{c.pct}%</span>
                     </div>
@@ -209,7 +209,7 @@ export default function ChannelAnalyticsModal({ channel, onClose }: Props) {
           {/* Growth */}
           <div className="rounded-xl p-4 flex items-center justify-between" style={{ backgroundColor: channel.growthPercent >= 0 ? "rgba(16,185,129,0.06)" : "rgba(239,68,68,0.06)", border: `1px solid ${channel.growthPercent >= 0 ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)"}` }}>
             <div>
-              <p className="text-sm font-semibold" style={{ color: "#292524" }}>Monthly Growth</p>
+              <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>Monthly Growth</p>
               <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>vs. previous month</p>
             </div>
             <span className={`text-2xl font-black ${channel.growthPercent >= 0 ? "text-emerald-600" : "text-red-500"}`}>

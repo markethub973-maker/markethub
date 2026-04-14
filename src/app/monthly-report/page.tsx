@@ -120,30 +120,30 @@ export default function MonthlyReportPage() {
 
     const verdict = VERDICT_STYLE[result.performance_verdict] ?? VERDICT_STYLE.average;
     const verdictColors: Record<string, string> = {
-      excellent: "#16A34A", good: "#059669", average: "#D97706", below_average: "#EA580C", poor: "#DC2626",
+      excellent: "#16A34A", good: "#059669", average: "var(--color-primary-hover)", below_average: "#EA580C", poor: "#DC2626",
     };
-    const verdictColor = verdictColors[result.performance_verdict] ?? "#D97706";
+    const verdictColor = verdictColors[result.performance_verdict] ?? "var(--color-primary-hover)";
 
     const styles = StyleSheet.create({
-      page: { padding: 40, fontFamily: "Helvetica", backgroundColor: "#FFFCF7" },
-      header: { backgroundColor: "#292524", borderRadius: 8, padding: 20, marginBottom: 16 },
+      page: { padding: 40, fontFamily: "Helvetica", backgroundColor: "var(--color-bg-secondary)" },
+      header: { backgroundColor: "var(--color-text)", borderRadius: 8, padding: 20, marginBottom: 16 },
       headerTitle: { color: "#FFFFFF", fontSize: 18, fontWeight: "bold", marginBottom: 4 },
       headerSub: { color: "#C4AA8A", fontSize: 10 },
-      sectionTitle: { fontSize: 11, fontWeight: "bold", color: "#292524", marginBottom: 6 },
+      sectionTitle: { fontSize: 11, fontWeight: "bold", color: "var(--color-text)", marginBottom: 6 },
       card: { backgroundColor: "#FFFFFF", borderRadius: 6, padding: 12, marginBottom: 10, border: "1 solid #E8D9C5" },
       verdict: { borderRadius: 6, padding: 12, marginBottom: 10 },
       label: { fontSize: 8, color: "#78614E", marginBottom: 2, textTransform: "uppercase" },
-      body: { fontSize: 10, color: "#292524", lineHeight: 1.5 },
+      body: { fontSize: 10, color: "var(--color-text)", lineHeight: 1.5 },
       small: { fontSize: 9, color: "#78614E", lineHeight: 1.5 },
-      kpiRow: { flexDirection: "row", alignItems: "flex-start", padding: 6, backgroundColor: "#FFFCF7", borderRadius: 4, marginBottom: 4 },
+      kpiRow: { flexDirection: "row", alignItems: "flex-start", padding: 6, backgroundColor: "var(--color-bg-secondary)", borderRadius: 4, marginBottom: 4 },
       kpiTrend: { fontSize: 12, fontWeight: "bold", width: 14, marginRight: 8 },
       kpiMeta: { fontSize: 8, color: "#78614E", marginTop: 1 },
       bullet: { flexDirection: "row", marginBottom: 3 },
       bulletDot: { fontSize: 10, marginRight: 5 },
-      recRow: { flexDirection: "row", marginBottom: 8, padding: 8, backgroundColor: "#FFFCF7", borderRadius: 4, border: "1 solid #F5D7A0" },
-      badge: { width: 20, height: 20, borderRadius: 10, backgroundColor: "#F59E0B", alignItems: "center", justifyContent: "center", marginRight: 8 },
+      recRow: { flexDirection: "row", marginBottom: 8, padding: 8, backgroundColor: "var(--color-bg-secondary)", borderRadius: 4, border: "1 solid #F5D7A0" },
+      badge: { width: 20, height: 20, borderRadius: 10, backgroundColor: "var(--color-primary)", alignItems: "center", justifyContent: "center", marginRight: 8 },
       badgeText: { color: "#FFFFFF", fontSize: 9, fontWeight: "bold" },
-      forecast: { backgroundColor: "#292524", borderRadius: 6, padding: 14 },
+      forecast: { backgroundColor: "var(--color-text)", borderRadius: 6, padding: 14 },
       forecastTitle: { color: "#F5D7A0", fontSize: 11, fontWeight: "bold", marginBottom: 4 },
       forecastBody: { color: "#C4AA8A", fontSize: 10, lineHeight: 1.5 },
       footer: { marginTop: 16, borderTop: "1 solid #E8D9C5", paddingTop: 8 },
@@ -160,7 +160,7 @@ export default function MonthlyReportPage() {
           React.createElement(Text, { style: styles.headerSub }, "Monthly Performance Report · MarketHub Pro")
         ),
         // Verdict
-        React.createElement(View, { style: { ...styles.verdict, backgroundColor: "#FFFCF7", border: `1 solid ${verdictColor}40` } },
+        React.createElement(View, { style: { ...styles.verdict, backgroundColor: "var(--color-bg-secondary)", border: `1 solid ${verdictColor}40` } },
           React.createElement(Text, { style: { fontSize: 11, fontWeight: "bold", color: verdictColor, marginBottom: 4 } },
             `${verdict.label} Performance`
           ),
@@ -176,8 +176,8 @@ export default function MonthlyReportPage() {
               ),
               React.createElement(View, { style: { flex: 1 } },
                 React.createElement(View, { style: { flexDirection: "row", gap: 8 } },
-                  React.createElement(Text, { style: { fontSize: 9, fontWeight: "bold", color: "#292524" } }, kpi.metric),
-                  React.createElement(Text, { style: { fontSize: 9, color: "#F59E0B", fontWeight: "bold" } }, kpi.value)
+                  React.createElement(Text, { style: { fontSize: 9, fontWeight: "bold", color: "var(--color-text)" } }, kpi.metric),
+                  React.createElement(Text, { style: { fontSize: 9, color: "var(--color-primary)", fontWeight: "bold" } }, kpi.value)
                 ),
                 React.createElement(Text, { style: styles.kpiMeta }, kpi.interpretation)
               )
@@ -214,7 +214,7 @@ export default function MonthlyReportPage() {
                 React.createElement(Text, { style: styles.badgeText }, String(r.priority))
               ),
               React.createElement(View, { style: { flex: 1 } },
-                React.createElement(Text, { style: { fontSize: 10, fontWeight: "bold", color: "#292524", marginBottom: 2 } }, r.action),
+                React.createElement(Text, { style: { fontSize: 10, fontWeight: "bold", color: "var(--color-text)", marginBottom: 2 } }, r.action),
                 React.createElement(Text, { style: { fontSize: 8, color: "#78614E" } },
                   `Impact: ${r.expected_impact} · Timeline: ${r.timeframe}`
                 )

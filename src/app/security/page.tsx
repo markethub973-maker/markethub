@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function SecurityPage() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <main className="max-w-3xl mx-auto px-6 py-12">
         <Link
           href="/"
@@ -28,7 +28,7 @@ export default function SecurityPage() {
           >
             <Shield className="w-6 h-6" />
           </div>
-          <h1 className="text-3xl font-bold" style={{ color: "#292524" }}>
+          <h1 className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
             Security
           </h1>
         </div>
@@ -42,18 +42,18 @@ export default function SecurityPage() {
         <section className="mb-8">
           <h2
             className="text-lg font-bold mb-3 flex items-center gap-2"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Mail className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Mail className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             How to report
           </h2>
-          <ul className="space-y-2 text-sm" style={{ color: "#292524" }}>
+          <ul className="space-y-2 text-sm" style={{ color: "var(--color-text)" }}>
             <li>
               Email{" "}
               <a
                 href="mailto:security@markethubpromo.com"
                 className="font-semibold underline"
-                style={{ color: "#D97706" }}
+                style={{ color: "var(--color-primary-hover)" }}
               >
                 security@markethubpromo.com
               </a>{" "}
@@ -73,12 +73,12 @@ export default function SecurityPage() {
         <section className="mb-8">
           <h2
             className="text-lg font-bold mb-3 flex items-center gap-2"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Lock className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Lock className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             Our commitments
           </h2>
-          <ul className="space-y-2 text-sm" style={{ color: "#292524" }}>
+          <ul className="space-y-2 text-sm" style={{ color: "var(--color-text)" }}>
             <li>Acknowledge your report within <strong>48 hours</strong>.</li>
             <li>
               Provide a triage decision (accepted / wontfix with reason) within
@@ -93,15 +93,15 @@ export default function SecurityPage() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-lg font-bold mb-3" style={{ color: "#292524" }}>
+          <h2 className="text-lg font-bold mb-3" style={{ color: "var(--color-text)" }}>
             Scope
           </h2>
-          <p className="text-sm mb-3" style={{ color: "#292524" }}>
+          <p className="text-sm mb-3" style={{ color: "var(--color-text)" }}>
             <strong>In scope:</strong>
           </p>
           <ul
             className="text-sm space-y-1 list-disc pl-6 mb-4"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
             <li>markethubpromo.com (production)</li>
             <li>www.markethubpromo.com</li>
@@ -109,12 +109,12 @@ export default function SecurityPage() {
             <li>OAuth integrations (Instagram, TikTok, YouTube, LinkedIn, Facebook)</li>
             <li>Stripe webhook receivers</li>
           </ul>
-          <p className="text-sm mb-3" style={{ color: "#292524" }}>
+          <p className="text-sm mb-3" style={{ color: "var(--color-text)" }}>
             <strong>Out of scope:</strong>
           </p>
           <ul
             className="text-sm space-y-1 list-disc pl-6"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
             <li>Denial-of-service / volumetric attacks</li>
             <li>Social engineering of staff or customers</li>
@@ -131,12 +131,12 @@ export default function SecurityPage() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-lg font-bold mb-3" style={{ color: "#292524" }}>
+          <h2 className="text-lg font-bold mb-3" style={{ color: "var(--color-text)" }}>
             What we&apos;ve already deployed
           </h2>
           <ul
             className="text-sm space-y-1 list-disc pl-6"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
             <li>HSTS preload, CSP, X-Frame-Options DENY, comprehensive header set</li>
             <li>Cloudflare WAF with custom rules + edge rate limiting</li>
@@ -162,9 +162,9 @@ export default function SecurityPage() {
         >
           <h2
             className="text-lg font-bold mb-2 flex items-center gap-2"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Award className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Award className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             Acknowledgments
           </h2>
           <p className="text-sm" style={{ color: "#78614E" }}>

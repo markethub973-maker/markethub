@@ -5,10 +5,10 @@ import { Plus, Trash2, Mail, Shield, Eye, Edit3, Loader2, Check, X, Users } from
 
 interface Member { id: string; member_email: string; role: string; status: string; invited_at: string; accepted_at: string | null; }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
-const ROLES = [{ id: "admin", label: "Admin", icon: Shield, color: "#EF4444", desc: "Full access" }, { id: "editor", label: "Editor", icon: Edit3, color: "#F59E0B", desc: "Can edit content" }, { id: "viewer", label: "Viewer", icon: Eye, color: "#6366F1", desc: "Read-only" }];
-const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = { invited: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Invited" }, active: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Active" }, suspended: { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Suspended" } };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
+const ROLES = [{ id: "admin", label: "Admin", icon: Shield, color: "#EF4444", desc: "Full access" }, { id: "editor", label: "Editor", icon: Edit3, color: "var(--color-primary)", desc: "Can edit content" }, { id: "viewer", label: "Viewer", icon: Eye, color: "#6366F1", desc: "Read-only" }];
+const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = { invited: { bg: "rgba(245,158,11,0.1)", color: "var(--color-primary)", label: "Invited" }, active: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Active" }, suspended: { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Suspended" } };
 
 export default function TeamPage() {
   const [members, setMembers] = useState<Member[]>([]);
@@ -52,7 +52,7 @@ export default function TeamPage() {
 
         {/* Invite form */}
         <div className="rounded-2xl p-4 space-y-3" style={card}>
-          <p className="font-bold text-sm" style={{ color: "#292524" }}>Invite a new member</p>
+          <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Invite a new member</p>
           <div className="flex gap-2 flex-wrap">
             <input value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && invite()}
               placeholder="email@example.com" style={{ ...inp, flex: 1, minWidth: 200 }} />
@@ -82,7 +82,7 @@ export default function TeamPage() {
 
         {/* Members list */}
         {loading ? (
-          <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+          <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
         ) : members.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Users className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
@@ -97,11 +97,11 @@ export default function TeamPage() {
               return (
                 <div key={m.id} className="rounded-xl px-4 py-3 flex items-center gap-3" style={card}>
                   <div className="w-9 h-9 rounded-full flex items-center justify-center shrink-0 text-sm font-bold"
-                    style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B" }}>
+                    style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)" }}>
                     {m.member_email[0].toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate" style={{ color: "#292524" }}>{m.member_email}</p>
+                    <p className="text-sm font-semibold truncate" style={{ color: "var(--color-text)" }}>{m.member_email}</p>
                     <div className="flex items-center gap-2 mt-0.5">
                       <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
                         style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>

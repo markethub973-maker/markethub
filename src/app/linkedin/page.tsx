@@ -4,7 +4,7 @@ import Header from "@/components/layout/Header";
 import { Loader2, Calendar, LogOut, CheckCircle2, Linkedin } from "lucide-react";
 import Link from "next/link";
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
 
 type LinkedInProfile = {
   sub: string;
@@ -70,7 +70,7 @@ export default function LinkedInPage() {
               style={{ backgroundColor: "rgba(10,102,194,0.1)" }}>
               <Linkedin className="w-7 h-7" style={{ color: "#0A66C2" }} />
             </div>
-            <h2 className="text-lg font-bold mb-1" style={{ color: "#292524" }}>Connect your LinkedIn account</h2>
+            <h2 className="text-lg font-bold mb-1" style={{ color: "var(--color-text)" }}>Connect your LinkedIn account</h2>
             <p className="text-sm mb-5" style={{ color: "#78614E" }}>
               Connect with LinkedIn so you can automatically publish posts from the Calendar directly to your profile.
             </p>
@@ -104,7 +104,7 @@ export default function LinkedInPage() {
                 )}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h2 className="font-bold text-xl" style={{ color: "#292524" }}>{state.profile.name}</h2>
+                    <h2 className="font-bold text-xl" style={{ color: "var(--color-text)" }}>{state.profile.name}</h2>
                     <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color: "#10B981" }} />
                   </div>
                   {state.profile.email && (
@@ -140,7 +140,7 @@ export default function LinkedInPage() {
 
             {/* Info box — be honest about what this integration does */}
             <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: "rgba(10,102,194,0.06)", border: "1px solid rgba(10,102,194,0.15)", color: "#78614E" }}>
-              <p className="font-medium mb-1" style={{ color: "#292524" }}>What can I do with the LinkedIn integration?</p>
+              <p className="font-medium mb-1" style={{ color: "var(--color-text)" }}>What can I do with the LinkedIn integration?</p>
               <ul className="space-y-1 text-xs">
                 <li>• Publish text + image posts directly from the Calendar</li>
                 <li>• Post to your personal profile (not Company Pages)</li>

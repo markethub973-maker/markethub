@@ -17,13 +17,13 @@ export const metadata: Metadata = {
 
 // ── Brand colors ──────────────────────────────────────────────────────────────
 const C = {
-  bg: "#FFF8F0",
-  card: "#FFFCF7",
-  amber: "#F59E0B",
-  amberDark: "#D97706",
+  bg: "var(--color-bg)",
+  card: "var(--color-bg-secondary)",
+  amber: "var(--color-primary)",
+  amberDark: "var(--color-primary-hover)",
   amberLight: "rgba(245,158,11,0.1)",
   amberBorder: "rgba(245,215,160,0.4)",
-  text: "#292524",
+  text: "var(--color-text)",
   muted: "#78614E",
   light: "#A8967E",
   lighter: "#C4AA8A",
@@ -41,7 +41,7 @@ const FEATURES = [
   },
   {
     icon: <Zap className="w-5 h-5" />,
-    color: "#F59E0B",
+    color: "var(--color-primary)",
     title: "Campaign Auto-Pilot — brief → full plan",
     description:
       "Type a campaign brief, get a 5-post content plan in 10 seconds: hooks, captions, hashtags, image prompts, suggested times. Generate all images, schedule all posts — one click each.",
@@ -49,7 +49,7 @@ const FEATURES = [
   },
   {
     icon: <Search className="w-5 h-5" />,
-    color: "#F59E0B",
+    color: "var(--color-primary)",
     title: "AI Lead Finder — 50+ leads/week",
     description:
       "Describe your offer. AI scans 8 platforms simultaneously, scores every lead by fit (1–10), flags competitors, and writes personalized outreach in your language. You review and send.",
@@ -106,7 +106,7 @@ const FEATURES = [
 ];
 
 const AGENTS = [
-  { name: "Market Researcher", color: "#D97706", emoji: "🔍" },
+  { name: "Market Researcher", color: "var(--color-primary-hover)", emoji: "🔍" },
   { name: "Pricing Strategist", color: "#16A34A", emoji: "💰" },
   { name: "Copywriter", color: "#8B5CF6", emoji: "✍️" },
   { name: "Ad Copy Creator", color: "#F97316", emoji: "📢" },
@@ -121,7 +121,7 @@ const AGENTS = [
   { name: "Brand Guidelines", color: "#0EA5E9", emoji: "🎯" },
   { name: "Ad Analysis", color: "#EF4444", emoji: "🕵️" },
   { name: "Deep Research", color: "#6366F1", emoji: "🧪" },
-  { name: "Support & Setup", color: "#F59E0B", emoji: "⚡" },
+  { name: "Support & Setup", color: "var(--color-primary)", emoji: "⚡" },
 ];
 
 const PLANS = [
@@ -140,7 +140,7 @@ const PLANS = [
     price: 24,
     actions: "20",
     model: "Standard AI",
-    color: "#F59E0B",
+    color: "var(--color-primary)",
     features: ["20 Premium AI Actions/mo", "Basic AI unlimited", "12 tracked channels", "2 Instagram accounts", "All 16 AI Agents", "Client Portal"],
   },
   {
@@ -204,7 +204,7 @@ const FAQS = [
 const BLOG_POSTS = [
   {
     tag: "Lead Generation",
-    tagColor: "#F59E0B",
+    tagColor: "var(--color-primary)",
     title: "How to find 50+ qualified leads per week using AI — without cold calling",
     excerpt:
       "Most marketing agencies spend 3+ hours daily searching for potential clients across Google, social media and directories. Here's how AI can automate this entire process and deliver scored, ranked leads every morning.",

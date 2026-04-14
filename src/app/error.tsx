@@ -47,7 +47,7 @@ export default function Error({
   return (
     <div
       className="min-h-screen flex items-center justify-center px-6 py-12"
-      style={{ backgroundColor: "#FFFCF7" }}
+      style={{ backgroundColor: "var(--color-bg-secondary)" }}
     >
       <div className="max-w-md w-full text-center">
         <div
@@ -60,7 +60,7 @@ export default function Error({
           <AlertTriangle className="w-10 h-10" style={{ color: "#DC2626" }} />
         </div>
 
-        <h1 className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>
+        <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
           Something went wrong
         </h1>
         <p className="text-sm mb-6" style={{ color: "#78614E" }}>
@@ -85,7 +85,7 @@ export default function Error({
             <div className="flex items-center gap-2">
               <code
                 className="text-xs font-mono flex-1 truncate"
-                style={{ color: "#292524" }}
+                style={{ color: "var(--color-text)" }}
               >
                 {eventId}
               </code>
@@ -111,7 +111,7 @@ export default function Error({
             onClick={reset}
             className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
               boxShadow: "0 4px 12px rgba(245,158,11,0.3)",
             }}
@@ -124,7 +124,7 @@ export default function Error({
             className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all"
             style={{
               backgroundColor: "white",
-              color: "#292524",
+              color: "var(--color-text)",
               border: "1px solid rgba(245,215,160,0.4)",
             }}
           >
@@ -158,7 +158,7 @@ export default function Error({
             </summary>
             <pre
               className="text-[10px] mt-2 whitespace-pre-wrap break-all"
-              style={{ color: "#292524" }}
+              style={{ color: "var(--color-text)" }}
             >
               {error.message}
               {error.digest && `\n\nDigest: ${error.digest}`}

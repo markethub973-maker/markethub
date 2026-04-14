@@ -31,7 +31,7 @@ interface Ticket {
 const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   new:            { bg: "rgba(59,130,246,0.12)", color: "#3B82F6", label: "New" },
   ai_responded:   { bg: "rgba(139,92,246,0.12)", color: "#8B5CF6", label: "AI Responded" },
-  investigating:  { bg: "rgba(245,158,11,0.12)", color: "#F59E0B", label: "Investigating" },
+  investigating:  { bg: "rgba(245,158,11,0.12)", color: "var(--color-primary)", label: "Investigating" },
   escalated:      { bg: "rgba(239,68,68,0.12)",  color: "#EF4444", label: "Escalated" },
   resolved:       { bg: "rgba(16,185,129,0.12)", color: "#10B981", label: "Resolved" },
   closed:         { bg: "rgba(100,116,139,0.1)", color: "#64748B", label: "Closed" },
@@ -103,7 +103,7 @@ export default function AdminSupportTickets() {
       {/* Header + refresh */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold" style={{ color: "#292524" }}>Support Tickets</h2>
+          <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>Support Tickets</h2>
           <p className="text-xs" style={{ color: "#78614E" }}>
             {total} total · {counts.escalated ?? 0} escalated · {counts.new ?? 0} new
           </p>
@@ -112,7 +112,7 @@ export default function AdminSupportTickets() {
           type="button"
           onClick={load}
           className="p-2 rounded-lg"
-          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B" }}
+          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)" }}
         >
           <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
         </button>
@@ -127,7 +127,7 @@ export default function AdminSupportTickets() {
             onClick={() => setFilter(f)}
             className="px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
             style={{
-              backgroundColor: filter === f ? "#292524" : "rgba(120,97,78,0.1)",
+              backgroundColor: filter === f ? "var(--color-text)" : "rgba(120,97,78,0.1)",
               color: filter === f ? "white" : "#78614E",
             }}
           >
@@ -139,7 +139,7 @@ export default function AdminSupportTickets() {
       {/* List */}
       {loading && tickets.length === 0 ? (
         <div className="flex justify-center py-12">
-          <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} />
+          <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} />
         </div>
       ) : tickets.length === 0 ? (
         <div className="rounded-2xl p-8 text-center" style={{ backgroundColor: "rgba(120,97,78,0.04)" }}>
@@ -177,7 +177,7 @@ export default function AdminSupportTickets() {
                     </span>
                   )}
                   {t.language && t.language !== "en" && (
-                    <span className="text-[10px] uppercase" style={{ color: "#F59E0B" }}>
+                    <span className="text-[10px] uppercase" style={{ color: "var(--color-primary)" }}>
                       · {t.language}
                     </span>
                   )}
@@ -191,7 +191,7 @@ export default function AdminSupportTickets() {
                   </span>
                 </div>
                 {t.subject && (
-                  <p className="text-sm font-semibold mb-1" style={{ color: "#292524" }}>
+                  <p className="text-sm font-semibold mb-1" style={{ color: "var(--color-text)" }}>
                     {t.subject}
                   </p>
                 )}
@@ -211,14 +211,14 @@ export default function AdminSupportTickets() {
                     {/* Full message */}
                     <div className="rounded-lg p-2.5" style={{ backgroundColor: "rgba(120,97,78,0.05)" }}>
                       <p className="text-[10px] font-bold mb-1" style={{ color: "#78614E" }}>User said:</p>
-                      <p className="text-xs whitespace-pre-wrap" style={{ color: "#292524" }}>{t.message}</p>
+                      <p className="text-xs whitespace-pre-wrap" style={{ color: "var(--color-text)" }}>{t.message}</p>
                     </div>
 
                     {/* AI response */}
                     {t.ai_response && (
                       <div className="rounded-lg p-2.5" style={{ backgroundColor: "rgba(245,158,11,0.06)" }}>
-                        <p className="text-[10px] font-bold mb-1" style={{ color: "#D97706" }}>🤖 AI Response:</p>
-                        <p className="text-xs whitespace-pre-wrap" style={{ color: "#292524" }}>{t.ai_response}</p>
+                        <p className="text-[10px] font-bold mb-1" style={{ color: "var(--color-primary-hover)" }}>🤖 AI Response:</p>
+                        <p className="text-xs whitespace-pre-wrap" style={{ color: "var(--color-text)" }}>{t.ai_response}</p>
                       </div>
                     )}
 
@@ -237,7 +237,7 @@ export default function AdminSupportTickets() {
                           style={{
                             backgroundColor: "white",
                             border: "1px solid rgba(245,215,160,0.4)",
-                            color: "#292524",
+                            color: "var(--color-text)",
                             outline: "none",
                           }}
                         />
@@ -258,7 +258,7 @@ export default function AdminSupportTickets() {
                           style={{
                             backgroundColor: "rgba(139,92,246,0.04)",
                             border: "1px solid rgba(139,92,246,0.25)",
-                            color: "#292524",
+                            color: "var(--color-text)",
                             outline: "none",
                           }}
                         />
@@ -273,7 +273,7 @@ export default function AdminSupportTickets() {
                               type="button"
                               onClick={() => investigating(t)}
                               className="flex-1 py-2 rounded-lg text-xs font-bold"
-                              style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B" }}
+                              style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary)" }}
                             >
                               Mark investigating
                             </button>

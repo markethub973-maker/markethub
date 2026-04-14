@@ -57,7 +57,7 @@ interface PanelDef {
 
 const PANELS: PanelDef[] = [
   // Business Management — primul, cel mai important
-  { id: "business", label: "Administrare Business", icon: Shield, color: "#F59E0B", bg: "rgba(245,158,11,0.15)", group: "💼 Business" },
+  { id: "business", label: "Administrare Business", icon: Shield, color: "var(--color-primary)", bg: "rgba(245,158,11,0.15)", group: "💼 Business" },
   // Support Tickets — M4 Sprint 1
   { id: "support", label: "Support Tickets", icon: Bug, color: "#EF4444", bg: "rgba(239,68,68,0.1)", group: "💼 Business" },
   // Users & Revenue
@@ -65,24 +65,24 @@ const PANELS: PanelDef[] = [
   { id: "analytics",   label: "Revenue Chart",   icon: BarChart3,    color: "#10B981", bg: "rgba(16,185,129,0.1)", group: "Users & Revenue" },
   { id: "testaccounts",label: "Test Accounts",   icon: FlaskConical, color: "#8B5CF6", bg: "rgba(139,92,246,0.1)", group: "Users & Revenue" },
   // Billing & Plans
-  { id: "billing",     label: "Pricing",         icon: DollarSign,   color: "#F59E0B", bg: "rgba(245,158,11,0.1)", group: "Billing & Plans" },
-  { id: "flags",       label: "Feature Flags",   icon: Zap,          color: "#F59E0B", bg: "rgba(245,158,11,0.1)", group: "Billing & Plans" },
+  { id: "billing",     label: "Pricing",         icon: DollarSign,   color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)", group: "Billing & Plans" },
+  { id: "flags",       label: "Feature Flags",   icon: Zap,          color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)", group: "Billing & Plans" },
   { id: "discounts",   label: "Discount Codes",  icon: Tag,          color: "#EF4444", bg: "rgba(239,68,68,0.1)",  group: "Billing & Plans" },
   // Platform & API
   { id: "tokens",      label: "API Tokens",      icon: Key,          color: "#0EA5E9", bg: "rgba(14,165,233,0.1)", group: "Platform & API" },
   { id: "platform",    label: "Platform Connect", icon: Link2,       color: "#0EA5E9", bg: "rgba(14,165,233,0.1)", group: "Platform & API" },
   { id: "credentials", label: "Credentials",     icon: Settings,     color: "#64748B", bg: "rgba(100,116,139,0.1)",group: "Platform & API" },
   { id: "anthropic",   label: "AI Usage",        icon: Cpu,          color: "#7C3AED", bg: "rgba(124,58,237,0.1)", group: "Platform & API" },
-  { id: "markup",      label: "API Markup",      icon: DollarSign,   color: "#D97706", bg: "rgba(217,119,6,0.1)",  group: "Platform & API" },
+  { id: "markup",      label: "API Markup",      icon: DollarSign,   color: "var(--color-primary-hover)", bg: "rgba(217,119,6,0.1)",  group: "Platform & API" },
   // Security & QA
   { id: "security",    label: "Security Events", icon: Shield,       color: "#EF4444", bg: "rgba(239,68,68,0.12)", group: "Security & QA" },
   { id: "secagents",   label: "Security Agents", icon: Activity,     color: "#10B981", bg: "rgba(16,185,129,0.12)",group: "Security & QA" },
-  { id: "twofa",       label: "Admin 2FA",       icon: Shield,       color: "#F59E0B", bg: "rgba(245,158,11,0.12)",group: "Security & QA" },
-  { id: "emailpreview",label: "Email Preview",   icon: Mail,         color: "#D97706", bg: "rgba(217,119,6,0.12)", group: "Security & QA" },
+  { id: "twofa",       label: "Admin 2FA",       icon: Shield,       color: "var(--color-primary)", bg: "rgba(245,158,11,0.12)",group: "Security & QA" },
+  { id: "emailpreview",label: "Email Preview",   icon: Mail,         color: "var(--color-primary-hover)", bg: "rgba(217,119,6,0.12)", group: "Security & QA" },
   { id: "aiusage",     label: "AI Usage",        icon: Cpu,          color: "#8B5CF6", bg: "rgba(139,92,246,0.12)",group: "Platform & API" },
   { id: "audit",       label: "Audit Log",       icon: BookOpen,     color: "#6366F1", bg: "rgba(99,102,241,0.1)", group: "Security & QA" },
   { id: "health",      label: "Health Check",    icon: Activity,     color: "#10B981", bg: "rgba(16,185,129,0.1)", group: "Security & QA" },
-  { id: "tests",       label: "Integration Tests",icon: Bug,         color: "#F59E0B", bg: "rgba(245,158,11,0.1)", group: "Security & QA" },
+  { id: "tests",       label: "Integration Tests",icon: Bug,         color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)", group: "Security & QA" },
   { id: "plantest",    label: "Plan Test Agent", icon: FlaskConical, color: "#8B5CF6", bg: "rgba(139,92,246,0.1)", group: "Security & QA" },
   { id: "restore",     label: "Restore / Backup",icon: RefreshCw,    color: "#EF4444", bg: "rgba(239,68,68,0.1)",  group: "Security & QA" },
   // Marketing Tools
@@ -142,7 +142,7 @@ function AdminModal({ panel, onClose }: { panel: PanelDef; onClose: () => void }
       <div
         className="relative flex flex-col w-full md:max-w-4xl md:mx-auto md:my-6 md:rounded-2xl overflow-hidden"
         style={{
-          backgroundColor: "#FFFCF7",
+          backgroundColor: "var(--color-bg-secondary)",
           flex: 1,
           maxHeight: "100dvh",
         }}
@@ -150,12 +150,12 @@ function AdminModal({ panel, onClose }: { panel: PanelDef; onClose: () => void }
         {/* Modal header */}
         <div
           className="flex items-center gap-3 px-4 py-3 shrink-0"
-          style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}
+          style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}
         >
           <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: panel.bg }}>
             <Icon className="w-4 h-4" style={{ color: panel.color }} />
           </div>
-          <p className="font-bold text-base flex-1" style={{ color: "#292524" }}>{panel.label}</p>
+          <p className="font-bold text-base flex-1" style={{ color: "var(--color-text)" }}>{panel.label}</p>
           <button
             onClick={onClose}
             className="p-1.5 rounded-lg transition-colors"
@@ -258,7 +258,7 @@ export default function AdminPage() {
             style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}>
             <Shield className="w-4 h-4 text-white" />
           </div>
-          <span className="font-bold text-sm" style={{ color: "#FFF8F0" }}>Admin</span>
+          <span className="font-bold text-sm" style={{ color: "var(--color-bg)" }}>Admin</span>
         </div>
         <button onClick={handleLogout}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium"
@@ -289,8 +289,8 @@ export default function AdminPage() {
 
         {/* Revenue analytics inline (small) */}
         {analyticsData && (
-          <div className="rounded-2xl p-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
-            <p className="text-sm font-bold mb-3" style={{ color: "#292524" }}>Revenue Analytics</p>
+          <div className="rounded-2xl p-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
+            <p className="text-sm font-bold mb-3" style={{ color: "var(--color-text)" }}>Revenue Analytics</p>
             <AdminAnalyticsChart data={analyticsData} />
           </div>
         )}
@@ -310,7 +310,7 @@ export default function AdminPage() {
                       onClick={() => setOpenPanel(panel.id)}
                       className="flex items-center gap-3 p-3 rounded-xl text-left transition-all active:scale-95"
                       style={{
-                        backgroundColor: "#FFFCF7",
+                        backgroundColor: "var(--color-bg-secondary)",
                         border: "1px solid rgba(245,215,160,0.25)",
                         boxShadow: "0 1px 3px rgba(120,97,78,0.06)",
                       }}
@@ -319,7 +319,7 @@ export default function AdminPage() {
                         style={{ backgroundColor: panel.bg }}>
                         <Icon className="w-4 h-4" style={{ color: panel.color }} />
                       </div>
-                      <span className="text-xs font-semibold flex-1 leading-tight" style={{ color: "#292524" }}>
+                      <span className="text-xs font-semibold flex-1 leading-tight" style={{ color: "var(--color-text)" }}>
                         {panel.label}
                       </span>
                       <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "#C4AA8A" }} />
@@ -336,26 +336,26 @@ export default function AdminPage() {
           <p className="text-xs font-bold uppercase tracking-wider mb-2 px-1" style={{ color: "#A8967E" }}>Quick Links</p>
           <div className="grid grid-cols-2 gap-2">
             {[
-              { href: "/dashboard/admin/cockpit", label: "🚀 Cockpit — Mission Control", icon: Activity, color: "#F59E0B" },
+              { href: "/dashboard/admin/cockpit", label: "🚀 Cockpit — Mission Control", icon: Activity, color: "var(--color-primary)" },
               { href: "/dashboard/engagement", label: "💬 Unified Inbox", icon: Users, color: "#E1306C" },
-              { href: "/dashboard/reviews", label: "⭐ Review Management", icon: Activity, color: "#F59E0B" },
+              { href: "/dashboard/reviews", label: "⭐ Review Management", icon: Activity, color: "var(--color-primary)" },
               { href: "/dashboard/crm", label: "📊 CRM Kanban", icon: Users, color: "#8B5CF6" },
               { href: "/dashboard/studio", label: "🎨 Content Studio", icon: Zap, color: "#FF0000" },
               { href: "/dashboard/reports", label: "📨 Reports — WA + Telegram", icon: Activity, color: "#25D366" },
               { href: "/dashboard/admin/users", label: "Users & Revenue", icon: Users, color: "#6366F1" },
-              { href: "/dashboard/admin/lead-wizard", label: "Lead Wizard", icon: Zap, color: "#F59E0B" },
+              { href: "/dashboard/admin/lead-wizard", label: "Lead Wizard", icon: Zap, color: "var(--color-primary)" },
               { href: "/dashboard/admin/maintenance", label: "Maintenance Findings", icon: Activity, color: "#10B981" },
             ].map((link) => {
               const Icon = link.icon;
               return (
                 <a key={link.href} href={link.href}
                   className="flex items-center gap-3 p-3 rounded-xl transition-all"
-                  style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+                  style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
                     style={{ backgroundColor: `${link.color}15` }}>
                     <Icon className="w-4 h-4" style={{ color: link.color }} />
                   </div>
-                  <span className="text-xs font-semibold flex-1 leading-tight" style={{ color: "#292524" }}>
+                  <span className="text-xs font-semibold flex-1 leading-tight" style={{ color: "var(--color-text)" }}>
                     {link.label}
                   </span>
                   <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "#C4AA8A" }} />

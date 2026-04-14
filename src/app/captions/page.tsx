@@ -144,7 +144,7 @@ export default function CaptionsPage() {
   const selectedPlatform = platforms.find((p) => p.id === platform);
 
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: "#13100D", color: "#FFF8F0" }}>
+    <div className="min-h-screen p-6" style={{ backgroundColor: "#13100D", color: "var(--color-bg)" }}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -191,7 +191,7 @@ export default function CaptionsPage() {
                     placeholder="Ex: Summer collection launch, Italian restaurant promo, online marketing course..."
                     rows={3}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }}
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }}
                   />
                 </div>
 
@@ -263,7 +263,7 @@ export default function CaptionsPage() {
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }}
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }}
                   >
                     {languages.map((l) => (
                       <option key={l} value={l}>{l}</option>
@@ -306,7 +306,7 @@ export default function CaptionsPage() {
                     onChange={(e) => setMaxLength(e.target.value)}
                     placeholder="Ex: 300"
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }}
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }}
                   />
                 </div>
 
@@ -401,7 +401,7 @@ export default function CaptionsPage() {
                     </div>
                   </div>
 
-                  <p className="text-sm whitespace-pre-line leading-relaxed" style={{ color: "#FFF8F0" }}>
+                  <p className="text-sm whitespace-pre-line leading-relaxed" style={{ color: "var(--color-bg)" }}>
                     {c.caption}
                   </p>
 
@@ -474,7 +474,7 @@ export default function CaptionsPage() {
                       </button>
                     </div>
                   </div>
-                  <p className="text-sm whitespace-pre-line leading-relaxed" style={{ color: "#FFF8F0" }}>
+                  <p className="text-sm whitespace-pre-line leading-relaxed" style={{ color: "var(--color-bg)" }}>
                     {s.caption}
                   </p>
                   {s.hashtags?.length > 0 && (

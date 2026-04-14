@@ -69,7 +69,7 @@ export default function ProfitStatsCard({ actionsCount }: ProfitStatsCardProps) 
           <TrendingUp className="w-4 h-4 text-white" />
         </div>
         <div>
-          <h3 className="font-bold text-sm" style={{ color: "#292524" }}>
+          <h3 className="font-bold text-sm" style={{ color: "var(--color-text)" }}>
             AI Impact on Your Business
           </h3>
           <p className="text-xs" style={{ color: "#A8967E" }}>This month · {actionsCount} premium actions used</p>
@@ -84,10 +84,10 @@ export default function ProfitStatsCard({ actionsCount }: ProfitStatsCardProps) 
           style={{ backgroundColor: "rgba(245,215,160,0.15)", border: "1px solid rgba(245,215,160,0.3)" }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <Clock className="w-4 h-4" style={{ color: "#F59E0B" }} />
+            <Clock className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
             <span className="text-xs font-medium" style={{ color: "#78614E" }}>Time saved</span>
           </div>
-          <p className="text-2xl font-bold" style={{ color: "#292524" }}>
+          <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
             {animHours.toFixed(1)}
             <span className="text-sm font-medium ml-1" style={{ color: "#A8967E" }}>hrs</span>
           </p>

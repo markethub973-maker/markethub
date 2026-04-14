@@ -137,13 +137,13 @@ export default function AdminFeatureProgress() {
   });
 
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
 
       {/* Header */}
       <div className="p-6 border-b" style={{ borderColor: "rgba(245,215,160,0.25)", background: "linear-gradient(135deg, rgba(194,133,76,0.06), rgba(245,215,160,0.1))" }}>
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>📋 Feature Progress Tracker</h2>
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>📋 Feature Progress Tracker</h2>
             <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
               Auto-updated with every conversation session · Last sync: {new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
             </p>
@@ -156,7 +156,7 @@ export default function AdminFeatureProgress() {
         {/* Summary bar */}
         <div className="mt-4 grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
-            { label: "Total Features", value: summary.total, color: "#292524" },
+            { label: "Total Features", value: summary.total, color: "var(--color-text)" },
             { label: "✅ Done", value: summary.done, color: "#16a34a" },
             { label: "🧪 Testing", value: summary.testing, color: "#d97706" },
             { label: "🔄 In Progress", value: summary.inProgress, color: "#2563eb" },
@@ -190,7 +190,7 @@ export default function AdminFeatureProgress() {
             <button key={cat} onClick={() => setFilterCategory(cat)}
               className="text-xs px-2.5 py-1 rounded-full font-medium transition-all"
               style={filterCategory === cat
-                ? { backgroundColor: cat === "All" ? "#292524" : CATEGORY_COLORS[cat as Category], color: "white" }
+                ? { backgroundColor: cat === "All" ? "var(--color-text)" : CATEGORY_COLORS[cat as Category], color: "white" }
                 : { backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
               {cat}
             </button>
@@ -205,7 +205,7 @@ export default function AdminFeatureProgress() {
             <button key={st} onClick={() => setFilterStatus(st)}
               className="text-xs px-2.5 py-1 rounded-full font-medium transition-all"
               style={filterStatus === st
-                ? { backgroundColor: st === "All" ? "#292524" : STATUS_CONFIG[st as Status].bg, color: st === "All" ? "white" : STATUS_CONFIG[st as Status].color, border: `1px solid ${st === "All" ? "transparent" : STATUS_CONFIG[st as Status].color}` }
+                ? { backgroundColor: st === "All" ? "var(--color-text)" : STATUS_CONFIG[st as Status].bg, color: st === "All" ? "white" : STATUS_CONFIG[st as Status].color, border: `1px solid ${st === "All" ? "transparent" : STATUS_CONFIG[st as Status].color}` }
                 : { backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
               {st === "All" ? "All statuses" : STATUS_CONFIG[st as Status].label}
             </button>
@@ -235,7 +235,7 @@ export default function AdminFeatureProgress() {
                 <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: CATEGORY_COLORS[feature.category] }} />
 
                 {/* Name */}
-                <span className="text-sm font-medium flex-1 min-w-0 truncate" style={{ color: "#292524" }}>
+                <span className="text-sm font-medium flex-1 min-w-0 truncate" style={{ color: "var(--color-text)" }}>
                   {feature.name}
                 </span>
 

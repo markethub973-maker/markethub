@@ -182,7 +182,7 @@ export default function WebhooksPanel() {
         <div className="flex items-center gap-3">
           <Webhook className="w-6 h-6" style={{ color: "#10B981" }} />
           <div>
-            <p className="text-base font-bold" style={{ color: "#292524" }}>
+            <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>
               Webhook created — save the secret NOW
             </p>
             <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -216,7 +216,7 @@ export default function WebhooksPanel() {
             type="button"
             onClick={() => setSecret(null)}
             className="flex-1 py-2.5 rounded-lg text-xs font-bold"
-            style={{ backgroundColor: "#292524", color: "white" }}
+            style={{ backgroundColor: "var(--color-text)", color: "white" }}
           >
             I&apos;ve saved it
           </button>
@@ -229,8 +229,8 @@ export default function WebhooksPanel() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Webhook className="w-5 h-5" style={{ color: "#F59E0B" }} />
-          <h3 className="text-base font-bold" style={{ color: "#292524" }}>
+          <Webhook className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+          <h3 className="text-base font-bold" style={{ color: "var(--color-text)" }}>
             Webhooks
           </h3>
         </div>
@@ -240,7 +240,7 @@ export default function WebhooksPanel() {
             onClick={() => setShowForm(true)}
             className="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-md"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >
@@ -275,9 +275,9 @@ export default function WebhooksPanel() {
             placeholder="https://your-server.com/webhooks/markethub"
             className="w-full rounded-lg px-3 py-2 text-sm"
             style={{
-              backgroundColor: "#FFF8F0",
+              backgroundColor: "var(--color-bg)",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -288,9 +288,9 @@ export default function WebhooksPanel() {
             placeholder="Description (e.g. 'Production Slack relay')"
             className="w-full rounded-lg px-3 py-2 text-sm"
             style={{
-              backgroundColor: "#FFF8F0",
+              backgroundColor: "var(--color-bg)",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -313,8 +313,8 @@ export default function WebhooksPanel() {
                     }}
                     className="text-[10px] font-mono font-semibold px-2 py-1 rounded-md transition-all"
                     style={{
-                      backgroundColor: on ? "#F59E0B" : "rgba(0,0,0,0.04)",
-                      color: on ? "#1C1814" : "#292524",
+                      backgroundColor: on ? "var(--color-primary)" : "rgba(0,0,0,0.04)",
+                      color: on ? "#1C1814" : "var(--color-text)",
                     }}
                   >
                     {on && <Check className="w-2.5 h-2.5 inline mr-0.5" />}
@@ -343,7 +343,7 @@ export default function WebhooksPanel() {
             disabled={creating || !newUrl.trim() || newEvents.size === 0}
             className="w-full py-2.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-40"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >
@@ -370,7 +370,7 @@ export default function WebhooksPanel() {
           const isExpanded = expanded === wh.id;
           const lastStatusColor = !wh.enabled ? "#EF4444"
             : wh.last_delivery_status && wh.last_delivery_status >= 200 && wh.last_delivery_status < 300 ? "#10B981"
-            : wh.last_delivery_status ? "#F59E0B"
+            : wh.last_delivery_status ? "var(--color-primary)"
             : "#A8967E";
           const tr = testResult[wh.id];
           return (
@@ -383,7 +383,7 @@ export default function WebhooksPanel() {
                 <Webhook className="w-4 h-4 flex-shrink-0" style={{ color: lastStatusColor }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-mono font-semibold truncate" style={{ color: "#292524" }}>
+                    <p className="text-sm font-mono font-semibold truncate" style={{ color: "var(--color-text)" }}>
                       {wh.url}
                     </p>
                     {!wh.enabled && (
@@ -467,7 +467,7 @@ export default function WebhooksPanel() {
                       <code
                         key={e}
                         className="text-[10px] font-mono px-1.5 py-0.5 rounded"
-                        style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}
+                        style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}
                       >
                         {e}
                       </code>
@@ -493,7 +493,7 @@ export default function WebhooksPanel() {
                             style={{ color: ok ? "#10B981" : "#EF4444" }}
                           >
                             <span className="font-bold w-12">{d.http_status ?? "ERR"}</span>
-                            <code className="font-mono" style={{ color: "#292524" }}>{d.event}</code>
+                            <code className="font-mono" style={{ color: "var(--color-text)" }}>{d.event}</code>
                             <span style={{ color: "#A8967E" }}>·</span>
                             <span style={{ color: "#78614E" }}>
                               {new Date(d.delivered_at).toLocaleString()} ({d.duration_ms}ms)

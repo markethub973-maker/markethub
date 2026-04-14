@@ -69,7 +69,7 @@ export default async function OGImage() {
                 width: 56,
                 height: 56,
                 borderRadius: 16,
-                background: "linear-gradient(135deg, #F59E0B, #D97706)",
+                background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -82,7 +82,7 @@ export default async function OGImage() {
               style={{
                 fontSize: 32,
                 fontWeight: 700,
-                color: "#292524",
+                color: "var(--color-text)",
               }}
             >
               MarketHub Pro
@@ -96,14 +96,14 @@ export default async function OGImage() {
                 fontSize: 72,
                 fontWeight: 800,
                 lineHeight: 1.05,
-                color: "#292524",
+                color: "var(--color-text)",
                 margin: 0,
                 letterSpacing: "-0.02em",
                 maxWidth: 900,
               }}
             >
               Social Media Marketing,{" "}
-              <span style={{ color: "#D97706" }}>fully automated</span>
+              <span style={{ color: "var(--color-primary-hover)" }}>fully automated</span>
             </h1>
             <p
               style={{
@@ -137,7 +137,7 @@ export default async function OGImage() {
                     background: "white",
                     border: "1px solid rgba(245,215,160,0.5)",
                     fontSize: 20,
-                    color: "#292524",
+                    color: "var(--color-text)",
                     fontWeight: 600,
                   }}
                 >
@@ -148,7 +148,7 @@ export default async function OGImage() {
             <div
               style={{
                 fontSize: 24,
-                color: "#D97706",
+                color: "var(--color-primary-hover)",
                 fontWeight: 700,
               }}
             >

@@ -31,7 +31,7 @@ interface Plan {
 }
 
 const PLAN_COLORS: Record<string, string> = {
-  lite:       "#F59E0B",
+  lite:       "var(--color-primary)",
   pro:        "#8B5CF6",
   business:   "#E1306C",
   enterprise: "#16A34A",
@@ -108,25 +108,25 @@ export default function UpgradeRequiredPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16"
-      style={{ backgroundColor: "#FFF8F0" }}>
+      style={{ backgroundColor: "var(--color-bg)" }}>
 
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
       <div className="flex justify-center mb-5">
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+          style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
           <Clock className="w-8 h-8 text-white" />
         </div>
       </div>
 
       <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold mb-5"
-        style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706", border: "1px solid rgba(245,158,11,0.25)" }}>
+        style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.25)" }}>
         Your free trial has ended
       </div>
 
       <h1 className="text-3xl md:text-4xl font-black mb-3 text-center max-w-xl"
-        style={{ color: "#292524" }}>
+        style={{ color: "var(--color-text)" }}>
         Enjoyed MarketHub Pro?<br />
-        <span style={{ color: "#F59E0B" }}>Keep the momentum going.</span>
+        <span style={{ color: "var(--color-primary)" }}>Keep the momentum going.</span>
       </h1>
 
       <p className="text-base text-center max-w-lg mb-3" style={{ color: "#78716C" }}>
@@ -148,12 +148,12 @@ export default function UpgradeRequiredPage() {
       {/* ── Plan cards ──────────────────────────────────────────────────────── */}
       {loading ? (
         <div className="flex justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
+          <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--color-primary)" }} />
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 w-full max-w-6xl mb-12">
           {plans.map(plan => {
-            const color = PLAN_COLORS[plan.id] ?? "#F59E0B";
+            const color = PLAN_COLORS[plan.id] ?? "var(--color-primary)";
             const isPopular = plan.id === "pro";
             const isBusy = upgrading === plan.id;
 
@@ -161,7 +161,7 @@ export default function UpgradeRequiredPage() {
               <div key={plan.id}
                 className="rounded-2xl p-5 flex flex-col transition-all hover:scale-[1.02]"
                 style={{
-                  backgroundColor: isPopular ? color : "#FFFCF7",
+                  backgroundColor: isPopular ? color : "var(--color-bg-secondary)",
                   border: isPopular ? "none" : `1px solid rgba(245,215,160,0.3)`,
                   boxShadow: isPopular ? `0 12px 40px ${color}40` : "0 2px 8px rgba(120,97,78,0.06)",
                 }}>
@@ -179,7 +179,7 @@ export default function UpgradeRequiredPage() {
                     style={{ backgroundColor: isPopular ? "rgba(255,255,255,0.2)" : `${color}15`, color: isPopular ? "#fff" : color }}>
                     {PLAN_ICONS[plan.id] ?? <Zap className="w-4 h-4" />}
                   </div>
-                  <span className="font-bold" style={{ color: isPopular ? "#fff" : "#292524" }}>
+                  <span className="font-bold" style={{ color: isPopular ? "#fff" : "var(--color-text)" }}>
                     {plan.name}
                   </span>
                 </div>
@@ -281,11 +281,11 @@ export default function UpgradeRequiredPage() {
       <div className="flex flex-col items-center gap-3">
         <p className="text-sm text-center max-w-md" style={{ color: "#A8967E" }}>
           Still deciding? You can{" "}
-          <Link href="/pricing" className="underline font-medium" style={{ color: "#F59E0B" }}>
+          <Link href="/pricing" className="underline font-medium" style={{ color: "var(--color-primary)" }}>
             compare all plans
           </Link>{" "}
           or contact us at{" "}
-          <a href="mailto:support@markethubpro.com" className="underline" style={{ color: "#F59E0B" }}>
+          <a href="mailto:support@markethubpro.com" className="underline" style={{ color: "var(--color-primary)" }}>
             support@markethubpro.com
           </a>
         </p>

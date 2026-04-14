@@ -30,7 +30,7 @@ interface Variant {
 }
 
 const ANGLE_META: Record<string, { label: string; color: string; desc: string }> = {
-  "seasonal":        { label: "Seasonal",        color: "#F59E0B", desc: "Tied to the current moment" },
+  "seasonal":        { label: "Seasonal",        color: "var(--color-primary)", desc: "Tied to the current moment" },
   "counterexample":  { label: "Counterexample",  color: "#8B5CF6", desc: "Flipped framing, same lesson" },
   "specific-story":  { label: "Specific Story",  color: "#10B981", desc: "Concrete anchor / stat" },
 };
@@ -99,7 +99,7 @@ export default function RecyclePage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Evergreen Post Recycler" subtitle="Turn past hits into fresh posts — 3 angles per click" />
 
       <main className="max-w-6xl mx-auto px-6 py-6 grid grid-cols-1 lg:grid-cols-5 gap-5">
@@ -111,7 +111,7 @@ export default function RecyclePage() {
           >
             <div className="flex items-center gap-2 mb-2">
               <Recycle className="w-4 h-4" style={{ color: "#10B981" }} />
-              <h2 className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+              <h2 className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                 Your published posts
               </h2>
               <span className="text-[10px]" style={{ color: "#A8967E" }}>
@@ -143,7 +143,7 @@ export default function RecyclePage() {
                     >
                       <div className="flex-1 min-w-0">
                         {p.title && (
-                          <p className="text-xs font-bold truncate" style={{ color: "#292524" }}>
+                          <p className="text-xs font-bold truncate" style={{ color: "var(--color-text)" }}>
                             {p.title}
                           </p>
                         )}
@@ -183,7 +183,7 @@ export default function RecyclePage() {
               style={{ backgroundColor: "white", border: "1px dashed rgba(0,0,0,0.1)" }}
             >
               <Recycle className="w-8 h-8 mx-auto mb-2" style={{ color: "#A8967E" }} />
-              <p className="text-sm font-bold" style={{ color: "#292524" }}>
+              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                 Pick a published post to recycle
               </p>
               <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -201,7 +201,7 @@ export default function RecyclePage() {
                 <p className="text-[10px] font-bold uppercase mb-1" style={{ color: "#059669" }}>
                   Original
                 </p>
-                <p className="text-xs" style={{ color: "#292524", lineHeight: 1.5 }}>
+                <p className="text-xs" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
                   {picked.caption}
                 </p>
               </div>
@@ -231,7 +231,7 @@ export default function RecyclePage() {
                   >
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4" style={{ color: meta.color }} />
-                      <p className="text-sm font-bold" style={{ color: "#292524" }}>
+                      <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                         {meta.label}
                       </p>
                       <p className="text-[10px] flex-1" style={{ color: "#A8967E" }}>
@@ -256,7 +256,7 @@ export default function RecyclePage() {
                         Schedule
                       </button>
                     </div>
-                    <p className="text-sm whitespace-pre-wrap" style={{ color: "#292524", lineHeight: 1.5 }}>
+                    <p className="text-sm whitespace-pre-wrap" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
                       {v.caption}
                     </p>
                   </div>

@@ -92,7 +92,7 @@ const STATUS_CONFIG: Record<AlertStatus, { color: string; bg: string; label: str
 };
 
 const cardStyle = {
-  backgroundColor: "#FFFCF7",
+  backgroundColor: "var(--color-bg-secondary)",
   border: "1px solid rgba(245,215,160,0.25)",
   boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
 };
@@ -339,7 +339,7 @@ export default function AlertsPage() {
           {[
             { label: "Active Rules",     value: activeCount,             color: "#16A34A", icon: "🟢" },
             { label: "Triggered Alerts", value: triggeredCount,          color: "#DC2626", icon: "🔴" },
-            { label: "Keyword Monitors", value: keywords.length,         color: "#F59E0B", icon: "🔍" },
+            { label: "Keyword Monitors", value: keywords.length,         color: "var(--color-primary)", icon: "🔍" },
             { label: "Alert History",    value: events.length,           color: "#6366F1", icon: "📋" },
           ].map(s => (
             <div key={s.label} className="rounded-xl p-4 text-center" style={cardStyle}>
@@ -354,19 +354,19 @@ export default function AlertsPage() {
         <div className="rounded-2xl p-6 space-y-4" style={cardStyle}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5" style={{ color: "#F59E0B" }} />
-              <h3 className="font-bold" style={{ color: "#292524" }}>Metric Alert Rules</h3>
+              <AlertTriangle className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+              <h3 className="font-bold" style={{ color: "var(--color-text)" }}>Metric Alert Rules</h3>
             </div>
             <div className="flex gap-2">
               <button type="button" onClick={checkRules} disabled={checking || activeCount === 0}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-40"
-                style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706", border: "1px solid rgba(245,158,11,0.2)" }}>
+                style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.2)" }}>
                 <RefreshCw className={`w-3 h-3 ${checking ? "animate-spin" : ""}`} />
                 {checking ? "Checking..." : "Check Now"}
               </button>
               <button type="button" onClick={() => setShowRuleForm(v => !v)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
-                style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}>
                 <Plus className="w-3 h-3" /> New Rule
               </button>
             </div>
@@ -376,21 +376,21 @@ export default function AlertsPage() {
           {showRuleForm && (
             <div className="rounded-xl p-4 space-y-3"
               style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.3)" }}>
-              <h4 className="text-sm font-bold" style={{ color: "#292524" }}>Create Alert Rule</h4>
+              <h4 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Create Alert Rule</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold block mb-1" style={{ color: "#78614E" }}>Rule Name</label>
                   <input type="text" placeholder="Ex: IG Followers Low" value={form.name}
                     onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                 </div>
                 <div>
                   <label className="text-xs font-semibold block mb-1" style={{ color: "#78614E" }}>Metric</label>
                   <select value={form.metric} onChange={e => setForm(p => ({ ...p, metric: e.target.value as MetricKey }))}
                     aria-label="Select metric"
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }}>
+                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
                     {Object.entries(METRIC_LABELS).map(([k, v]) => (
                       <option key={k} value={k}>{v.label}</option>
                     ))}
@@ -401,7 +401,7 @@ export default function AlertsPage() {
                   <select value={form.condition} onChange={e => setForm(p => ({ ...p, condition: e.target.value as Condition }))}
                     aria-label="Select condition"
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }}>
+                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
                     {Object.entries(CONDITION_LABELS).map(([k, v]) => (
                       <option key={k} value={k}>{v}</option>
                     ))}
@@ -415,7 +415,7 @@ export default function AlertsPage() {
                     aria-label="Threshold value"
                     onChange={e => setForm(p => ({ ...p, threshold: Number(e.target.value) }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                 </div>
               </div>
               {/* Email notification */}
@@ -432,7 +432,7 @@ export default function AlertsPage() {
                   <input type="email" placeholder="email@example.com" value={form.email}
                     onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
                     className="flex-1 px-3 py-1.5 text-xs rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                    style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                 )}
               </div>
               <p className="text-xs" style={{ color: "#C4AA8A" }}>
@@ -441,7 +441,7 @@ export default function AlertsPage() {
               <div className="flex gap-2 pt-1">
                 <button type="button" onClick={addRule} disabled={!form.name.trim()}
                   className="px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-40"
-                  style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                  style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}>
                   Add Rule
                 </button>
                 <button type="button" onClick={() => setShowRuleForm(false)}
@@ -470,7 +470,7 @@ export default function AlertsPage() {
                     <div className="flex items-center gap-3 flex-wrap">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-sm" style={{ color: "#292524" }}>{rule.name}</span>
+                          <span className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>{rule.name}</span>
                           <span className="text-xs px-2 py-0.5 rounded-full font-semibold flex items-center gap-1"
                             style={{ backgroundColor: sc.bg, color: sc.color, border: `1px solid ${sc.color}40` }}>
                             {sc.icon}{sc.label}
@@ -523,7 +523,7 @@ export default function AlertsPage() {
               className="flex items-center justify-between w-full">
               <div className="flex items-center gap-2">
                 <Zap className="w-5 h-5" style={{ color: "#6366F1" }} />
-                <h3 className="font-bold" style={{ color: "#292524" }}>Alert History ({events.length})</h3>
+                <h3 className="font-bold" style={{ color: "var(--color-text)" }}>Alert History ({events.length})</h3>
               </div>
               {expandedHistory ? <ChevronUp className="w-4 h-4" style={{ color: "#A8967E" }} /> : <ChevronDown className="w-4 h-4" style={{ color: "#A8967E" }} />}
             </button>
@@ -534,7 +534,7 @@ export default function AlertsPage() {
                     style={{ backgroundColor: "rgba(239,68,68,0.04)", border: "1px solid rgba(239,68,68,0.15)" }}>
                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#DC2626" }} />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold" style={{ color: "#292524" }}>{event.ruleName}</p>
+                      <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{event.ruleName}</p>
                       <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>{event.message}</p>
                       <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>
                         {new Date(event.timestamp).toLocaleString("en-GB")}
@@ -567,7 +567,7 @@ export default function AlertsPage() {
         <div className="rounded-2xl p-6 space-y-4" style={cardStyle}>
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp className="w-5 h-5" style={{ color: "#cc0000" }} />
-            <h3 className="font-bold" style={{ color: "#292524" }}>Keyword Trending Monitors</h3>
+            <h3 className="font-bold" style={{ color: "var(--color-text)" }}>Keyword Trending Monitors</h3>
           </div>
           <p className="text-xs" style={{ color: "#A8967E" }}>
             Track keywords — get alerted when they appear in YouTube trending videos.
@@ -578,7 +578,7 @@ export default function AlertsPage() {
               onKeyDown={e => e.key === "Enter" && addKeyword()}
               placeholder="Ex: gaming, AI, beauty..."
               className="flex-1 px-4 py-2.5 text-sm rounded-lg focus:outline-none"
-              style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+              style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
             <button type="button" onClick={addKeyword}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold"
               style={{ backgroundColor: "#cc0000", color: "white" }}>
@@ -593,7 +593,7 @@ export default function AlertsPage() {
                   style={{ backgroundColor: video ? "rgba(22,163,74,0.05)" : "rgba(245,215,160,0.08)", border: `1px solid ${video ? "rgba(22,163,74,0.2)" : "rgba(245,215,160,0.2)"}` }}>
                   <Bell className="w-4 h-4 shrink-0" style={{ color: video ? "#cc0000" : "#C4AA8A" }} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold" style={{ color: "#292524" }}>#{alert.keyword}</p>
+                    <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>#{alert.keyword}</p>
                     {video && <p className="text-xs truncate" style={{ color: "#78614E" }}>Found: {video.title} · {formatNumber(video.views)} views</p>}
                     {!video && <p className="text-xs" style={{ color: "#C4AA8A" }}>Monitoring · Added {alert.createdAt}</p>}
                   </div>

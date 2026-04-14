@@ -31,11 +31,11 @@ interface Onboarding {
 
 // ── Styles ─────────────────────────────────────────────────────────────────────
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8 };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8 };
 const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   active:   { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Activ" },
-  paused:   { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Pauză" },
+  paused:   { bg: "rgba(245,158,11,0.1)", color: "var(--color-primary)", label: "Pauză" },
   ended:    { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Încheiat" },
   prospect: { bg: "rgba(99,102,241,0.1)", color: "#6366F1", label: "Prospect" },
 };
@@ -53,7 +53,7 @@ function SearchBar({ value, onChange }: { value: string; onChange: (v: string) =
     <div className="flex items-center gap-2 rounded-xl px-3 mb-3" style={{ ...card, border: "1px solid rgba(245,215,160,0.3)" }}>
       <Search className="w-4 h-4 shrink-0" style={{ color: "#C4AA8A" }} />
       <input value={value} onChange={e => onChange(e.target.value)} placeholder="Caută..."
-        className="flex-1 py-2.5 text-sm bg-transparent outline-none" style={{ color: "#292524" }} />
+        className="flex-1 py-2.5 text-sm bg-transparent outline-none" style={{ color: "var(--color-text)" }} />
       {value && <button type="button" onClick={() => onChange("")} style={{ color: "#C4AA8A" }}><X className="w-4 h-4" /></button>}
     </div>
   );
@@ -63,7 +63,7 @@ function SearchBar({ value, onChange }: { value: string; onChange: (v: string) =
 
 const PAYMENT_STATUS: Record<string, { bg: string; color: string; label: string }> = {
   paid:    { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Plătit" },
-  pending: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Pending" },
+  pending: { bg: "rgba(245,158,11,0.1)", color: "var(--color-primary)", label: "Pending" },
   overdue: { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Restant" },
 };
 
@@ -155,7 +155,7 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
       <div className="grid grid-cols-3 gap-2 mb-4">
         {[
           { label: "Active clients", value: clients.filter(c => c.status === "active").length, color: "#10B981" },
-          { label: "MRR total", value: fmtCurrency(totalMRR), color: "#F59E0B" },
+          { label: "MRR total", value: fmtCurrency(totalMRR), color: "var(--color-primary)" },
           { label: "Overdue", value: overdueCount, color: overdueCount > 0 ? "#EF4444" : "#A8967E" },
         ].map(s => (
           <div key={s.label} className="rounded-xl p-3 text-center" style={card}>
@@ -174,7 +174,7 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
       </button>
 
       {loading ? (
-        <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
       ) : filtered.length === 0 ? (
         <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>No clients found</p>
       ) : (
@@ -194,11 +194,11 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
                   <tr key={c.id} style={{ borderBottom: "1px solid rgba(245,215,160,0.1)" }}
                     className="hover:bg-amber-50/30 transition-colors">
                     <td className="px-3 py-2.5">
-                      <p className="font-semibold" style={{ color: "#292524" }}>{c.name}</p>
+                      <p className="font-semibold" style={{ color: "var(--color-text)" }}>{c.name}</p>
                       {c.company && <p className="text-[10px]" style={{ color: "#A8967E" }}>{c.company}</p>}
                     </td>
                     <td className="px-3 py-2.5" style={{ color: "#78614E" }}>{c.service || "—"}</td>
-                    <td className="px-3 py-2.5 font-semibold" style={{ color: "#F59E0B" }}>{fmtCurrency(c.monthly_value)}</td>
+                    <td className="px-3 py-2.5 font-semibold" style={{ color: "var(--color-primary)" }}>{fmtCurrency(c.monthly_value)}</td>
                     <td className="px-3 py-2.5">
                       <div className="flex flex-col gap-0.5">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold w-fit"
@@ -222,12 +222,12 @@ function FinanceView({ onEdit }: { onEdit: (c: Client | null) => void }) {
                           <button type="button" onClick={() => sendReminder(c.id)}
                             disabled={notifying === c.id} title="Send payment reminder"
                             className="p-1.5 rounded-lg"
-                            style={{ backgroundColor: c.payment_status === "overdue" ? "rgba(239,68,68,0.08)" : "rgba(245,158,11,0.08)", color: c.payment_status === "overdue" ? "#EF4444" : "#F59E0B" }}>
+                            style={{ backgroundColor: c.payment_status === "overdue" ? "rgba(239,68,68,0.08)" : "rgba(245,158,11,0.08)", color: c.payment_status === "overdue" ? "#EF4444" : "var(--color-primary)" }}>
                             {notifying === c.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bell className="w-3.5 h-3.5" />}
                           </button>
                         )}
                         <button type="button" onClick={() => onEdit(c)}
-                          className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+                          className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
                           <Edit3 className="w-3.5 h-3.5" />
                         </button>
                         <button type="button" onClick={() => del(c.id)}
@@ -282,7 +282,7 @@ function ContractsView({ onEdit }: { onEdit: (c: Contract | null) => void }) {
       </button>
 
       {loading ? (
-        <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
       ) : filtered.length === 0 ? (
         <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>No contracts</p>
       ) : (
@@ -299,9 +299,9 @@ function ContractsView({ onEdit }: { onEdit: (c: Contract | null) => void }) {
               {filtered.map(c => (
                 <tr key={c.id} style={{ borderBottom: "1px solid rgba(245,215,160,0.1)" }}
                   className="hover:bg-amber-50/30 transition-colors">
-                  <td className="px-3 py-2.5 font-semibold" style={{ color: "#292524" }}>{c.client_name}</td>
+                  <td className="px-3 py-2.5 font-semibold" style={{ color: "var(--color-text)" }}>{c.client_name}</td>
                   <td className="px-3 py-2.5" style={{ color: "#78614E" }}>{TYPE_LABELS[c.type] ?? c.type}</td>
-                  <td className="px-3 py-2.5 font-semibold" style={{ color: "#F59E0B" }}>{fmtCurrency(c.value)}</td>
+                  <td className="px-3 py-2.5 font-semibold" style={{ color: "var(--color-primary)" }}>{fmtCurrency(c.value)}</td>
                   <td className="px-3 py-2.5">
                     {c.signed
                       ? <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: "rgba(16,185,129,0.1)", color: "#10B981" }}>✓ Da</span>
@@ -317,7 +317,7 @@ function ContractsView({ onEdit }: { onEdit: (c: Contract | null) => void }) {
                         </a>
                       )}
                       <button type="button" onClick={() => onEdit(c)}
-                        className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+                        className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
                       <button type="button" onClick={() => del(c.id)}
@@ -383,7 +383,7 @@ function OnboardingView({ onEdit }: { onEdit: (o: Onboarding | null) => void }) 
       </button>
 
       {loading ? (
-        <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
       ) : filtered.length === 0 ? (
         <p className="text-sm text-center py-8" style={{ color: "#A8967E" }}>No clients in onboarding</p>
       ) : (
@@ -395,15 +395,15 @@ function OnboardingView({ onEdit }: { onEdit: (o: Onboarding | null) => void }) 
               <div key={item.id} className="rounded-xl p-4" style={card}>
                 <div className="flex items-start justify-between gap-2 mb-3">
                   <div>
-                    <p className="font-bold text-sm" style={{ color: "#292524" }}>{item.client_name}</p>
+                    <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{item.client_name}</p>
                     {item.ig_username && (
                       <p className="text-[10px] mt-0.5" style={{ color: "#A8967E" }}>@{item.ig_username}</p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
-                    <span className="text-xs font-bold" style={{ color: pct === 100 ? "#10B981" : "#F59E0B" }}>{pct}%</span>
+                    <span className="text-xs font-bold" style={{ color: pct === 100 ? "#10B981" : "var(--color-primary)" }}>{pct}%</span>
                     <button type="button" onClick={() => onEdit(item)}
-                      className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+                      className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
                     <button type="button" onClick={() => del(item.id)}
@@ -416,7 +416,7 @@ function OnboardingView({ onEdit }: { onEdit: (o: Onboarding | null) => void }) 
                 {/* Progress bar */}
                 <div className="h-1.5 rounded-full mb-3" style={{ backgroundColor: "rgba(245,215,160,0.3)" }}>
                   <div className="h-full rounded-full transition-all"
-                    style={{ width: `${pct}%`, backgroundColor: pct === 100 ? "#10B981" : "#F59E0B" }} />
+                    style={{ width: `${pct}%`, backgroundColor: pct === 100 ? "#10B981" : "var(--color-primary)" }} />
                 </div>
 
                 {/* Steps */}
@@ -664,7 +664,7 @@ export default function AdminBusinessPanel() {
   const SECTIONS = [
     { id: "finance",    label: "Finanțe",   emoji: "💰", icon: DollarSign, color: "#10B981", bg: "rgba(16,185,129,0.1)", desc: "Clienți, MRR, status contracte" },
     { id: "contracts",  label: "Contracte", emoji: "📄", icon: FileText,   color: "#6366F1", bg: "rgba(99,102,241,0.1)",  desc: "Documente legale, semnături" },
-    { id: "onboarding", label: "Onboarding",emoji: "🚀", icon: Rocket,     color: "#F59E0B", bg: "rgba(245,158,11,0.1)",  desc: "Acces clienți noi, checklist" },
+    { id: "onboarding", label: "Onboarding",emoji: "🚀", icon: Rocket,     color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)",  desc: "Acces clienți noi, checklist" },
   ];
 
   const viewTitle: Record<string, string> = {
@@ -697,7 +697,7 @@ export default function AdminBusinessPanel() {
             <ArrowLeft className="w-4 h-4" />
             Înapoi
           </button>
-          <p className="font-bold text-sm" style={{ color: "#292524" }}>{viewTitle[view]}</p>
+          <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{viewTitle[view]}</p>
         </div>
       )}
 
@@ -709,13 +709,13 @@ export default function AdminBusinessPanel() {
             return (
               <button key={s.id} type="button" onClick={() => setView(s.id as View)}
                 className="flex flex-col items-start gap-3 p-4 rounded-2xl text-left transition-all active:scale-95"
-                style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 2px 8px rgba(120,97,78,0.08)" }}>
+                style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 2px 8px rgba(120,97,78,0.08)" }}>
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
                   style={{ backgroundColor: s.bg }}>
                   {s.emoji}
                 </div>
                 <div>
-                  <p className="font-bold text-sm" style={{ color: "#292524" }}>{s.label}</p>
+                  <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{s.label}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{s.desc}</p>
                 </div>
                 <ChevronRight className="w-4 h-4 self-end" style={{ color: "#C4AA8A" }} />

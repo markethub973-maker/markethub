@@ -90,8 +90,8 @@ function Stars({ rating, size = 14 }: { rating: number; size?: number }) {
         <Star
           key={i}
           size={size}
-          fill={i <= Math.round(rating) ? "#F59E0B" : "transparent"}
-          stroke={i <= Math.round(rating) ? "#F59E0B" : "#C4AA8A"}
+          fill={i <= Math.round(rating) ? "var(--color-primary)" : "transparent"}
+          stroke={i <= Math.round(rating) ? "var(--color-primary)" : "#C4AA8A"}
           strokeWidth={2}
         />
       ))}
@@ -237,7 +237,7 @@ export default function ReviewsPage() {
   const reviews = data?.reviews ?? [];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "#292524" }}>
+    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "var(--color-text)" }}>
       {/* Top bar */}
       <div
         style={{
@@ -246,7 +246,7 @@ export default function ReviewsPage() {
           gap: 16,
           padding: "16px 24px",
           borderBottom: "1px solid rgba(245,215,160,0.25)",
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
         }}
       >
         <Link
@@ -258,7 +258,7 @@ export default function ReviewsPage() {
             padding: "6px 12px",
             background: "rgba(245,158,11,0.08)",
             borderRadius: 6,
-            color: "#F59E0B",
+            color: "var(--color-primary)",
             textDecoration: "none",
             fontSize: 12,
           }}
@@ -279,7 +279,7 @@ export default function ReviewsPage() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <Stars rating={counts.avg_rating} />
-                <span style={{ fontSize: 18, fontWeight: 800, color: "#292524" }}>
+                <span style={{ fontSize: 18, fontWeight: 800, color: "var(--color-text)" }}>
                   {counts.avg_rating.toFixed(1)}
                 </span>
               </div>
@@ -301,7 +301,7 @@ export default function ReviewsPage() {
           gap: 8,
           padding: "12px 24px",
           borderBottom: "1px solid rgba(245,215,160,0.2)",
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
         }}
       >
         <input
@@ -318,7 +318,7 @@ export default function ReviewsPage() {
             fontSize: 13,
             outline: "none",
             background: "white",
-            color: "#292524",
+            color: "var(--color-text)",
           }}
         />
         <button
@@ -329,7 +329,7 @@ export default function ReviewsPage() {
             alignItems: "center",
             gap: 6,
             padding: "8px 16px",
-            background: syncing || !syncUrl.trim() ? "#C4AA8A" : "#F59E0B",
+            background: syncing || !syncUrl.trim() ? "#C4AA8A" : "var(--color-primary)",
             color: "#1C1814",
             border: "none",
             borderRadius: 8,
@@ -374,7 +374,7 @@ export default function ReviewsPage() {
           gap: 16,
           padding: "12px 24px",
           borderBottom: "1px solid rgba(245,215,160,0.2)",
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
           alignItems: "center",
           flexWrap: "wrap",
         }}
@@ -386,8 +386,8 @@ export default function ReviewsPage() {
               onClick={() => setStatusFilter(s)}
               style={{
                 padding: "6px 12px",
-                background: statusFilter === s ? "#F59E0B" : "rgba(245,158,11,0.08)",
-                color: statusFilter === s ? "#1C1814" : "#F59E0B",
+                background: statusFilter === s ? "var(--color-primary)" : "rgba(245,158,11,0.08)",
+                color: statusFilter === s ? "#1C1814" : "var(--color-primary)",
                 border: "none",
                 borderRadius: 6,
                 fontSize: 12,
@@ -415,7 +415,7 @@ export default function ReviewsPage() {
               onClick={() => setMinRating(r)}
               style={{
                 padding: "4px 8px",
-                background: minRating === r ? "#F59E0B" : "transparent",
+                background: minRating === r ? "var(--color-primary)" : "transparent",
                 color: minRating === r ? "#1C1814" : "#78614E",
                 border: "1px solid rgba(245,158,11,0.25)",
                 borderRadius: 4,
@@ -441,7 +441,7 @@ export default function ReviewsPage() {
         <div
           style={{
             borderRight: "1px solid rgba(245,215,160,0.2)",
-            background: "#FFFCF7",
+            background: "var(--color-bg-secondary)",
             overflowY: "auto",
             maxHeight: "calc(100vh - 200px)",
           }}
@@ -524,7 +524,7 @@ export default function ReviewsPage() {
                       : ""}
                   </span>
                 </div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#292524", marginBottom: 2 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-text)", marginBottom: 2 }}>
                   {r.reviewer_name || "Anonymous"}
                   {r.place_name && (
                     <span style={{ fontWeight: 500, color: "#A8967E", marginLeft: 6, fontSize: 10 }}>
@@ -625,7 +625,7 @@ export default function ReviewsPage() {
                   style={{
                     fontSize: 14,
                     fontWeight: 700,
-                    color: "#292524",
+                    color: "var(--color-text)",
                     marginBottom: 4,
                   }}
                 >
@@ -669,7 +669,7 @@ export default function ReviewsPage() {
                       gap: 4,
                       marginTop: 6,
                       fontSize: 11,
-                      color: "#F59E0B",
+                      color: "var(--color-primary)",
                       textDecoration: "none",
                     }}
                   >
@@ -682,7 +682,7 @@ export default function ReviewsPage() {
               <div
                 style={{
                   padding: 16,
-                  background: "#FFFCF7",
+                  background: "var(--color-bg-secondary)",
                   border: "1px solid rgba(245,215,160,0.3)",
                   borderRadius: 10,
                   marginBottom: 16,
@@ -692,7 +692,7 @@ export default function ReviewsPage() {
                   style={{
                     fontSize: 14,
                     lineHeight: 1.6,
-                    color: "#292524",
+                    color: "var(--color-text)",
                     whiteSpace: "pre-wrap",
                     margin: 0,
                   }}
@@ -724,7 +724,7 @@ export default function ReviewsPage() {
                   >
                     Existing reply on platform
                   </div>
-                  <p style={{ fontSize: 13, color: "#292524", margin: 0, whiteSpace: "pre-wrap" }}>
+                  <p style={{ fontSize: 13, color: "var(--color-text)", margin: 0, whiteSpace: "pre-wrap" }}>
                     {selected.owner_reply}
                   </p>
                 </div>
@@ -757,7 +757,7 @@ export default function ReviewsPage() {
                       ? new Date(selected.replied_at).toLocaleString("ro-RO")
                       : ""}
                   </div>
-                  <p style={{ fontSize: 13, color: "#292524", margin: 0, whiteSpace: "pre-wrap" }}>
+                  <p style={{ fontSize: 13, color: "var(--color-text)", margin: 0, whiteSpace: "pre-wrap" }}>
                     {selected.reply_text}
                   </p>
                   {selected.tags.includes("pending_platform_send") && (
@@ -781,7 +781,7 @@ export default function ReviewsPage() {
                 <div
                   style={{
                     padding: 16,
-                    background: "#FFFCF7",
+                    background: "var(--color-bg-secondary)",
                     border: "1px solid rgba(245,215,160,0.3)",
                     borderRadius: 10,
                     marginBottom: 16,
@@ -863,7 +863,7 @@ export default function ReviewsPage() {
                       outline: "none",
                       resize: "vertical",
                       fontFamily: "inherit",
-                      color: "#292524",
+                      color: "var(--color-text)",
                       background: "white",
                     }}
                   />
@@ -887,7 +887,7 @@ export default function ReviewsPage() {
                     style={{
                       marginTop: 10,
                       padding: "10px 20px",
-                      background: replying || !replyText.trim() ? "#C4AA8A" : "#F59E0B",
+                      background: replying || !replyText.trim() ? "#C4AA8A" : "var(--color-primary)",
                       color: "#1C1814",
                       border: "none",
                       borderRadius: 8,

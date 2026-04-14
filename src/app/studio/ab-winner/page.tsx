@@ -69,7 +69,7 @@ export default function ABWinnerPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="A/B Winner Picker" subtitle="Two drafts in, one predicted winner out — with rationale" />
 
       <main className="max-w-5xl mx-auto px-6 py-6 space-y-5">
@@ -78,8 +78,8 @@ export default function ABWinnerPage() {
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
           <div className="flex items-center gap-2">
-            <Swords className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+            <Swords className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Paste your two drafts
             </h2>
           </div>
@@ -96,7 +96,7 @@ export default function ABWinnerPage() {
                 maxLength={3000}
                 placeholder="Your first draft..."
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
               <p className="text-[10px] mt-0.5" style={{ color: "#A8967E" }}>{a.length} chars</p>
             </div>
@@ -111,7 +111,7 @@ export default function ABWinnerPage() {
                 maxLength={3000}
                 placeholder="Your second draft..."
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
               <p className="text-[10px] mt-0.5" style={{ color: "#A8967E" }}>{b.length} chars</p>
             </div>
@@ -124,7 +124,7 @@ export default function ABWinnerPage() {
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
                 className="rounded-md px-2 py-1.5 text-xs"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               >
                 {PLATFORMS.map((p) => (
                   <option key={p} value={p}>{p}</option>
@@ -149,7 +149,7 @@ export default function ABWinnerPage() {
                 onChange={(e) => setGoal(e.target.value)}
                 placeholder="drive signups, build trust, get comments..."
                 className="w-full rounded-md px-2 py-1.5 text-xs"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function ABWinnerPage() {
             onClick={run}
             disabled={!canSubmit}
             className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> Judging...</>) : (<><Swords className="w-4 h-4" /> Pick the winner</>)}
           </button>
@@ -181,23 +181,23 @@ export default function ABWinnerPage() {
                     className="rounded-xl p-4 flex flex-col gap-2 relative"
                     style={{
                       backgroundColor: "white",
-                      border: `2px solid ${isWinner ? "#F59E0B" : "rgba(0,0,0,0.08)"}`,
+                      border: `2px solid ${isWinner ? "var(--color-primary)" : "rgba(0,0,0,0.08)"}`,
                     }}
                   >
                     {isWinner && (
                       <span
                         className="absolute -top-2 -right-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                        style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "white" }}
+                        style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "white" }}
                       >
                         <Trophy className="w-2.5 h-2.5" />
                         Winner
                       </span>
                     )}
                     <div className="flex items-center gap-2">
-                      <p className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                      <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                         Draft {k}
                       </p>
-                      <p className="text-xl font-bold" style={{ color: isWinner ? "#F59E0B" : "#A8967E" }}>
+                      <p className="text-xl font-bold" style={{ color: isWinner ? "var(--color-primary)" : "#A8967E" }}>
                         {score}
                       </p>
                     </div>
@@ -223,8 +223,8 @@ export default function ABWinnerPage() {
               className="rounded-xl p-4"
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
-              <p className="text-sm font-bold mb-2 flex items-center gap-2" style={{ color: "#292524" }}>
-                <Sparkles className="w-4 h-4" style={{ color: "#F59E0B" }} />
+              <p className="text-sm font-bold mb-2 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
+                <Sparkles className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
                 Why Draft {result.winner} wins
                 <span className="ml-auto text-xs font-normal" style={{ color: "#A8967E" }}>
                   {result.confidence}% confidence
@@ -232,7 +232,7 @@ export default function ABWinnerPage() {
               </p>
               <ul className="list-disc pl-5 space-y-1">
                 {result.reasons.map((r, i) => (
-                  <li key={i} className="text-xs" style={{ color: "#292524", lineHeight: 1.5 }}>
+                  <li key={i} className="text-xs" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
                     {r}
                   </li>
                 ))}
@@ -246,21 +246,21 @@ export default function ABWinnerPage() {
                 style={{ backgroundColor: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.25)" }}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4" style={{ color: "#D97706" }} />
-                  <p className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                  <Sparkles className="w-4 h-4" style={{ color: "var(--color-primary-hover)" }} />
+                  <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                     Best of both — merged draft
                   </p>
                   <button
                     type="button"
                     onClick={copyMerged}
                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold"
-                    style={{ backgroundColor: copied ? "#10B981" : "#D97706", color: "white" }}
+                    style={{ backgroundColor: copied ? "#10B981" : "var(--color-primary-hover)", color: "white" }}
                   >
                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     {copied ? "Copied" : "Use this"}
                   </button>
                 </div>
-                <p className="text-sm whitespace-pre-wrap" style={{ color: "#292524", lineHeight: 1.5 }}>
+                <p className="text-sm whitespace-pre-wrap" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
                   {result.best_of_both}
                 </p>
               </section>

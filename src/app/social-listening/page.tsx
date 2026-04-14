@@ -6,8 +6,8 @@ import { Bell, Settings, RefreshCw, Loader2, Trash2, ExternalLink, Plus, X, Chec
 interface Mention { id: string; keyword: string; platform: string; content: string; author: string; url: string; reach: number; sentiment: string; detected_at: string; }
 interface Config { keywords: string[]; platforms: string[]; email: string; active: boolean; notify_email: boolean; }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
 
 const PLATFORM_ICONS: Record<string, React.ElementType> = { TikTok: Zap, Instagram: Instagram, Reddit: MessageSquare, News: Newspaper };
 const PLATFORM_COLORS: Record<string, string> = { TikTok: "#00F2EA", Instagram: "#E1306C", Reddit: "#FF4500", News: "#6366F1" };
@@ -104,7 +104,7 @@ export default function SocialListeningPage() {
         {/* Config panel */}
         {showConfig && (
           <div className="rounded-2xl p-4 space-y-4" style={{ ...card, border: "1px solid rgba(99,102,241,0.2)" }}>
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>⚙️ Social Listening configuration</p>
+            <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>⚙️ Social Listening configuration</p>
 
             {/* Keywords */}
             <div>
@@ -197,7 +197,7 @@ export default function SocialListeningPage() {
           <div className="flex gap-2 flex-wrap">
             <button type="button" onClick={() => setFilterKeyword("all")}
               className="text-xs px-3 py-1.5 rounded-full font-medium transition-all"
-              style={filterKeyword === "all" ? { backgroundColor: "#292524", color: "#FFF8F0" } : { ...card, color: "#78614E" }}>
+              style={filterKeyword === "all" ? { backgroundColor: "var(--color-text)", color: "var(--color-bg)" } : { ...card, color: "#78614E" }}>
               All
             </button>
             {allKeywords.map(k => (
@@ -239,7 +239,7 @@ export default function SocialListeningPage() {
                       {m.reach > 0 && <span className="text-[10px] flex items-center gap-0.5" style={{ color: "#A8967E" }}><TrendingUp className="w-3 h-3" />{fmtNum(m.reach)}</span>}
                       <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: SENTIMENT_COLORS[m.sentiment] ?? "#A8967E" }} title={m.sentiment} />
                     </div>
-                    <p className="text-sm leading-relaxed" style={{ color: "#292524" }}>{m.content.slice(0, 200)}{m.content.length > 200 ? "..." : ""}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: "var(--color-text)" }}>{m.content.slice(0, 200)}{m.content.length > 200 ? "..." : ""}</p>
                     <p className="text-xs mt-1" style={{ color: "#A8967E" }}>{m.author && `@${m.author} · `}{fmtDate(m.detected_at)}</p>
                   </div>
                   <div className="flex gap-1 shrink-0">

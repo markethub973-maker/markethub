@@ -5,8 +5,8 @@ import { Plus, Trash2, Clock, Play, Pause, DollarSign, Loader2, Check, X, BarCha
 
 interface Entry { id: string; client: string; project: string; description: string; hours: number; rate: number; date: string; billable: boolean; invoiced: boolean; }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
 const today = new Date().toISOString().slice(0, 10);
 const curMonth = today.slice(0, 7);
 const empty = { client: "", project: "", description: "", hours: 1, rate: 50, date: today, billable: true };
@@ -101,7 +101,7 @@ export default function TimeTrackingPage() {
           <input type="month" value={month} onChange={e => setMonth(e.target.value)} style={{ ...inp, maxWidth: 150 }} />
           {[
             { label: "Total hours", value: totalHours.toFixed(1) + "h", color: "#6366F1" },
-            { label: "Billable", value: billableHours.toFixed(1) + "h", color: "#F59E0B" },
+            { label: "Billable", value: billableHours.toFixed(1) + "h", color: "var(--color-primary)" },
             { label: "Revenue", value: "$" + totalEarnings.toFixed(0), color: "#10B981" },
           ].map(s => (
             <div key={s.label} className="rounded-xl px-4 py-2.5 text-center" style={card}>
@@ -121,10 +121,10 @@ export default function TimeTrackingPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {byClient.map(c => (
               <div key={c.client} className="rounded-xl p-3" style={card}>
-                <p className="font-bold text-sm truncate" style={{ color: "#292524" }}>{c.client}</p>
+                <p className="font-bold text-sm truncate" style={{ color: "var(--color-text)" }}>{c.client}</p>
                 <p className="text-xs mt-1" style={{ color: "#A8967E" }}>{c.hours.toFixed(1)}h · <span style={{ color: "#10B981" }}>${c.earnings.toFixed(0)}</span></p>
                 <div className="mt-2 h-1.5 rounded-full" style={{ backgroundColor: "rgba(245,215,160,0.3)" }}>
-                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, (c.hours / totalHours) * 100)}%`, backgroundColor: "#F59E0B" }} />
+                  <div className="h-full rounded-full" style={{ width: `${Math.min(100, (c.hours / totalHours) * 100)}%`, backgroundColor: "var(--color-primary)" }} />
                 </div>
               </div>
             ))}
@@ -132,7 +132,7 @@ export default function TimeTrackingPage() {
         )}
 
         {/* Entries */}
-        {loading ? <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        {loading ? <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
         : entries.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Clock className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
@@ -150,7 +150,7 @@ export default function TimeTrackingPage() {
                 {entries.map(e => (
                   <tr key={e.id} style={{ borderBottom: "1px solid rgba(245,215,160,0.1)" }} className="hover:bg-amber-50/30">
                     <td className="px-3 py-2.5" style={{ color: "#A8967E" }}>{e.date}</td>
-                    <td className="px-3 py-2.5 font-semibold" style={{ color: "#292524" }}>{e.client || "—"}</td>
+                    <td className="px-3 py-2.5 font-semibold" style={{ color: "var(--color-text)" }}>{e.client || "—"}</td>
                     <td className="px-3 py-2.5 max-w-[200px] truncate" style={{ color: "#78614E" }}>{e.description || e.project || "—"}</td>
                     <td className="px-3 py-2.5 font-semibold" style={{ color: "#6366F1" }}>{Number(e.hours).toFixed(1)}h</td>
                     <td className="px-3 py-2.5" style={{ color: "#A8967E" }}>{e.billable ? `$${e.rate}/h` : "N/A"}</td>
@@ -170,10 +170,10 @@ export default function TimeTrackingPage() {
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
           onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
-          <div className="w-full md:max-w-md rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7" }}>
-            <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
-              <Clock className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>Add entry</p>
+          <div className="w-full md:max-w-md rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
+            <div className="flex items-center gap-3 px-4 py-3" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}>
+              <Clock className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <p className="font-bold text-sm flex-1" style={{ color: "var(--color-text)" }}>Add entry</p>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
             </div>
             <div className="p-4 space-y-3">

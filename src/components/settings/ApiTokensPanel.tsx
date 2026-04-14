@@ -134,7 +134,7 @@ export default function ApiTokensPanel() {
         <div className="flex items-start gap-3 mb-4">
           <Shield className="w-6 h-6 flex-shrink-0" style={{ color: "#10B981" }} />
           <div className="flex-1">
-            <p className="text-base font-bold" style={{ color: "#292524" }}>
+            <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>
               Token created — save it NOW
             </p>
             <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -180,7 +180,7 @@ export default function ApiTokensPanel() {
           type="button"
           onClick={() => setPlaintext(null)}
           className="w-full py-2.5 rounded-lg text-xs font-bold"
-          style={{ backgroundColor: "#292524", color: "white" }}
+          style={{ backgroundColor: "var(--color-text)", color: "white" }}
         >
           I&apos;ve saved it — done
         </button>
@@ -193,7 +193,7 @@ export default function ApiTokensPanel() {
       {/* Header */}
       <div>
         <div className="flex items-center justify-between mb-1">
-          <h3 className="text-base font-bold" style={{ color: "#292524" }}>
+          <h3 className="text-base font-bold" style={{ color: "var(--color-text)" }}>
             API Tokens
           </h3>
           <Link
@@ -201,7 +201,7 @@ export default function ApiTokensPanel() {
             target="_blank"
             rel="noopener"
             className="inline-flex items-center gap-1 text-xs font-semibold"
-            style={{ color: "#D97706" }}
+            style={{ color: "var(--color-primary-hover)" }}
           >
             Read docs
             <ExternalLink className="w-3 h-3" />
@@ -233,9 +233,9 @@ export default function ApiTokensPanel() {
             maxLength={64}
             className="flex-1 rounded-lg px-3 py-2 text-sm"
             style={{
-              backgroundColor: "#FFF8F0",
+              backgroundColor: "var(--color-bg)",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -248,9 +248,9 @@ export default function ApiTokensPanel() {
             max={1825}
             className="w-full sm:w-36 rounded-lg px-3 py-2 text-sm"
             style={{
-              backgroundColor: "#FFF8F0",
+              backgroundColor: "var(--color-bg)",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -260,7 +260,7 @@ export default function ApiTokensPanel() {
             disabled={creating || !newName.trim()}
             className="px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 disabled:opacity-40"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >
@@ -331,9 +331,9 @@ export default function ApiTokensPanel() {
                     border: "1px solid rgba(0,0,0,0.06)",
                   }}
                 >
-                  <Key className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B" }} />
+                  <Key className="w-4 h-4 flex-shrink-0" style={{ color: "var(--color-primary)" }} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                    <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>
                       {t.name}
                     </p>
                     <p

@@ -26,7 +26,7 @@ interface Prediction {
 function scoreColor(score: number): { bar: string; bg: string; text: string } {
   if (score >= 71) return { bar: "#10B981", bg: "rgba(16,185,129,0.08)", text: "#065F46" };
   if (score >= 51) return { bar: "#84CC16", bg: "rgba(132,204,22,0.08)", text: "#4D7C0F" };
-  if (score >= 31) return { bar: "#F59E0B", bg: "rgba(245,158,11,0.08)", text: "#92400E" };
+  if (score >= 31) return { bar: "var(--color-primary)", bg: "rgba(245,158,11,0.08)", text: "#92400E" };
   return { bar: "#EF4444", bg: "rgba(239,68,68,0.08)", text: "#991B1B" };
 }
 
@@ -162,7 +162,7 @@ export default function EngagementPredictor(props: Props) {
           </div>
 
           {pred.reasoning && (
-            <p className="text-xs mb-2" style={{ color: "#292524", lineHeight: 1.4 }}>
+            <p className="text-xs mb-2" style={{ color: "var(--color-text)", lineHeight: 1.4 }}>
               {pred.reasoning}
             </p>
           )}
@@ -182,7 +182,7 @@ export default function EngagementPredictor(props: Props) {
                   <li
                     key={i}
                     className="text-xs list-disc"
-                    style={{ color: "#292524" }}
+                    style={{ color: "var(--color-text)" }}
                   >
                     {s}
                   </li>

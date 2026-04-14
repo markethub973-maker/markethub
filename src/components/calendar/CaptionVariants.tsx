@@ -21,7 +21,7 @@ interface Props {
 }
 
 const ANGLE_COLOR: Record<string, string> = {
-  punchy:   "#F59E0B",
+  punchy:   "var(--color-primary)",
   story:    "#8B5CF6",
   question: "#10B981",
 };
@@ -74,7 +74,7 @@ export default function CaptionVariants({ caption, platform, onPick }: Props) {
         className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-md"
         style={{
           backgroundColor: "rgba(245,158,11,0.12)",
-          color: "#D97706",
+          color: "var(--color-primary-hover)",
         }}
         title="Generate 3 caption alternatives"
       >
@@ -92,7 +92,7 @@ export default function CaptionVariants({ caption, platform, onPick }: Props) {
         >
           <div
             className="w-full max-w-2xl rounded-2xl overflow-hidden flex flex-col"
-            style={{ backgroundColor: "#FFFCF7", maxHeight: "85dvh" }}
+            style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "85dvh" }}
           >
             <div
               className="flex items-center gap-3 px-5 py-3 border-b"
@@ -101,8 +101,8 @@ export default function CaptionVariants({ caption, platform, onPick }: Props) {
                 background: "linear-gradient(135deg, rgba(245,158,11,0.06), rgba(139,92,246,0.06))",
               }}
             >
-              <Sparkles className="w-5 h-5" style={{ color: "#F59E0B" }} />
-              <p className="flex-1 text-sm font-bold" style={{ color: "#292524" }}>
+              <Sparkles className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+              <p className="flex-1 text-sm font-bold" style={{ color: "var(--color-text)" }}>
                 Caption variants ({platform})
               </p>
               <button type="button" onClick={() => setOpen(false)} style={{ color: "#78614E" }}>
@@ -113,7 +113,7 @@ export default function CaptionVariants({ caption, platform, onPick }: Props) {
             <div className="p-5 overflow-y-auto flex-1">
               {loading && (
                 <div className="py-8 text-center">
-                  <Loader2 className="w-5 h-5 animate-spin inline" style={{ color: "#F59E0B" }} />
+                  <Loader2 className="w-5 h-5 animate-spin inline" style={{ color: "var(--color-primary)" }} />
                   <p className="text-xs mt-2" style={{ color: "#78614E" }}>
                     Spinning up 3 angles...
                   </p>
@@ -160,7 +160,7 @@ export default function CaptionVariants({ caption, platform, onPick }: Props) {
                         </div>
                         <p
                           className="text-sm whitespace-pre-wrap"
-                          style={{ color: "#292524", lineHeight: 1.5 }}
+                          style={{ color: "var(--color-text)", lineHeight: 1.5 }}
                         >
                           {v.caption}
                         </p>

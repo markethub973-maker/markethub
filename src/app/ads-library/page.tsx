@@ -8,7 +8,7 @@ import {
   Copy, Check, Sparkles, Target, Eye, BarChart3, Lightbulb, X, Globe, Film, UserPlus, Loader2
 } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const META = "#1877F2";
 
 const ALL_COUNTRIES = [
@@ -308,7 +308,7 @@ export default function AdsLibraryPage() {
                 value={query} onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && search()}
                 className="w-full pl-9 pr-4 py-3 text-sm rounded-xl focus:outline-none"
-                style={{ border: `1px solid ${META}30`, backgroundColor: "#FFF8F0", color: "#292524" }}
+                style={{ border: `1px solid ${META}30`, backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
                 onFocus={e => (e.currentTarget.style.borderColor = META)}
                 onBlur={e => (e.currentTarget.style.borderColor = `${META}30`)}
               />
@@ -316,7 +316,7 @@ export default function AdsLibraryPage() {
             {/* Global Button */}
             <button type="button" onClick={handleGlobal}
               className="flex items-center gap-1.5 px-4 py-3 text-sm font-medium rounded-xl transition-all whitespace-nowrap"
-              style={isGlobal ? { backgroundColor: META, color: "white", border: `1px solid ${META}` } : { backgroundColor: "#FFF8F0", color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}
+              style={isGlobal ? { backgroundColor: META, color: "white", border: `1px solid ${META}` } : { backgroundColor: "var(--color-bg)", color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}
             >
               <Globe className="w-4 h-4" /> Global
             </button>
@@ -325,14 +325,14 @@ export default function AdsLibraryPage() {
             <div className="relative" ref={dropdownRef}>
               <button type="button" onClick={() => setDropdownOpen(prev => !prev)}
                 className="flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-xl transition-all whitespace-nowrap"
-                style={!isGlobal ? { backgroundColor: META, color: "white", border: `1px solid ${META}` } : { backgroundColor: "#FFF8F0", color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}
+                style={!isGlobal ? { backgroundColor: META, color: "white", border: `1px solid ${META}` } : { backgroundColor: "var(--color-bg)", color: "#78614E", border: "1px solid rgba(245,215,160,0.3)" }}
               >
                 {!isGlobal ? selectedCountry?.label : "🗺️ International"}
                 <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
               </button>
               {dropdownOpen && (
                 <div className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
-                  style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
+                  style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
                 >
                   {ALL_COUNTRIES.map(c => (
                     <button key={c.code} type="button" onClick={() => handleSelectCountry(c)}
@@ -354,10 +354,10 @@ export default function AdsLibraryPage() {
             {query.trim() && (
               <button type="button" onClick={() => toggleSave(query.trim())}
                 className="px-3 py-3 rounded-xl transition-colors"
-                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: isSaved(query.trim()) ? "rgba(245,158,11,0.1)" : "#FFF8F0" }}
+                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: isSaved(query.trim()) ? "rgba(245,158,11,0.1)" : "var(--color-bg)" }}
                 title={isSaved(query.trim()) ? "Remove from saved" : "Save brand"}>
                 {isSaved(query.trim())
-                  ? <BookmarkCheck className="w-4 h-4" style={{ color: "#F59E0B" }} />
+                  ? <BookmarkCheck className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
                   : <Bookmark className="w-4 h-4" style={{ color: "#C4AA8A" }} />}
               </button>
             )}
@@ -375,14 +375,14 @@ export default function AdsLibraryPage() {
               style={activeTab === tab.key ? {
                 backgroundColor: `${META}12`, color: META, border: `1px solid ${META}30`,
               } : {
-                backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)",
+                backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)",
               }}>
               {tab.icon}{tab.label}
             </button>
           ))}
           <button type="button" onClick={() => setShowTips(!showTips)}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ml-auto"
-            style={{ backgroundColor: showTips ? "rgba(245,158,11,0.12)" : "#FFFCF7", color: showTips ? "#D97706" : "#78614E", border: `1px solid ${showTips ? "rgba(245,158,11,0.3)" : "rgba(245,215,160,0.25)"}` }}>
+            style={{ backgroundColor: showTips ? "rgba(245,158,11,0.12)" : "var(--color-bg-secondary)", color: showTips ? "var(--color-primary-hover)" : "#78614E", border: `1px solid ${showTips ? "rgba(245,158,11,0.3)" : "rgba(245,215,160,0.25)"}` }}>
             <Lightbulb className="w-3.5 h-3.5" />
             Analysis guide
           </button>
@@ -392,8 +392,8 @@ export default function AdsLibraryPage() {
         {showTips && (
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <h3 className="font-semibold" style={{ color: "#292524" }}>How to analyze competitor ads</h3>
+              <Sparkles className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>How to analyze competitor ads</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {ANALYSIS_TIPS.map((tip, i) => (
@@ -423,7 +423,7 @@ export default function AdsLibraryPage() {
             <div className="rounded-xl p-5" style={cardStyle}>
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="w-4 h-4" style={{ color: META }} />
-                <h3 className="font-semibold" style={{ color: "#292524" }}>Popular brands</h3>
+                <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Popular brands</h3>
                 <span className="text-xs" style={{ color: "#A8967E" }}>— click to analyze active ads</span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -437,14 +437,14 @@ export default function AdsLibraryPage() {
                       onMouseLeave={e => { e.currentTarget.style.backgroundColor = "rgba(24,119,242,0.04)"; e.currentTarget.style.borderColor = "rgba(24,119,242,0.1)"; }}>
                       <span className="text-lg">{brand.emoji}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold truncate" style={{ color: "#292524" }}>{brand.name}</p>
+                        <p className="text-sm font-semibold truncate" style={{ color: "var(--color-text)" }}>{brand.name}</p>
                         <p className="text-xs" style={{ color: "#A8967E" }}>{brand.category}</p>
                       </div>
                       <ExternalLink className="w-3 h-3 flex-shrink-0" style={{ color: "#C4AA8A" }} />
                     </button>
                     <button type="button" onClick={() => toggleSave(brand.name)}
                       className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{ color: isSaved(brand.name) ? "#F59E0B" : "#C4AA8A" }}>
+                      style={{ color: isSaved(brand.name) ? "var(--color-primary)" : "#C4AA8A" }}>
                       {isSaved(brand.name) ? <BookmarkCheck className="w-3.5 h-3.5" /> : <Bookmark className="w-3.5 h-3.5" />}
                     </button>
                     <button type="button" onClick={() => saveToLeads(brand.name)}
@@ -463,9 +463,9 @@ export default function AdsLibraryPage() {
               <div className="rounded-xl p-5" style={cardStyle}>
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                    <h3 className="font-semibold" style={{ color: "#292524" }}>Recent searches</h3>
-                    <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>{history.length}</span>
+                    <Clock className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+                    <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Recent searches</h3>
+                    <span className="text-xs px-1.5 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>{history.length}</span>
                   </div>
                   <button type="button" onClick={clearHistory}
                     className="text-xs font-semibold px-2 py-1 rounded-lg"
@@ -480,7 +480,7 @@ export default function AdsLibraryPage() {
                       <div key={h.query + h.timestamp} className="flex items-center gap-1 group">
                         <button type="button" onClick={() => { setQuery(h.query); setCountry(h.country); search(h.query, h.country); }}
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors"
-                          style={{ backgroundColor: `${META}08`, color: "#292524", border: `1px solid ${META}15` }}
+                          style={{ backgroundColor: `${META}08`, color: "var(--color-text)", border: `1px solid ${META}15` }}
                           onMouseEnter={e => { e.currentTarget.style.backgroundColor = `${META}18`; e.currentTarget.style.borderColor = META; }}
                           onMouseLeave={e => { e.currentTarget.style.backgroundColor = `${META}08`; e.currentTarget.style.borderColor = `${META}15`; }}>
                           <span className="text-xs">{ctry?.label.split(" ")[0]}</span>
@@ -507,7 +507,7 @@ export default function AdsLibraryPage() {
             <div className="rounded-xl p-5" style={cardStyle}>
               <div className="flex items-center gap-2 mb-3">
                 <Facebook className="w-4 h-4" style={{ color: META }} />
-                <h3 className="font-semibold" style={{ color: "#292524" }}>How it works</h3>
+                <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>How it works</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {[
@@ -531,7 +531,7 @@ export default function AdsLibraryPage() {
             {saved.length === 0 ? (
               <div className="rounded-xl p-8 text-center" style={cardStyle}>
                 <Bookmark className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>No saved brands</p>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>No saved brands</p>
                 <p className="text-xs mt-1" style={{ color: "#A8967E" }}>Search a brand and click the bookmark icon to save it</p>
               </div>
             ) : (
@@ -545,7 +545,7 @@ export default function AdsLibraryPage() {
                           {brand.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold" style={{ color: "#292524" }}>{brand.name}</p>
+                          <p className="font-semibold" style={{ color: "var(--color-text)" }}>{brand.name}</p>
                           <div className="flex items-center gap-2 mt-0.5">
                             <span className="text-xs" style={{ color: "#A8967E" }}>
                               Saved {timeAgo(brand.savedAt)} ago
@@ -602,7 +602,7 @@ export default function AdsLibraryPage() {
                             <textarea value={noteText} onChange={e => setNoteText(e.target.value)}
                               placeholder="Write notes about this brand's ads..."
                               className="flex-1 text-xs p-2 rounded-lg resize-none focus:outline-none"
-                              style={{ border: `1px solid ${META}30`, backgroundColor: "#FFF8F0", color: "#292524", minHeight: "60px" }}
+                              style={{ border: `1px solid ${META}30`, backgroundColor: "var(--color-bg)", color: "var(--color-text)", minHeight: "60px" }}
                               autoFocus />
                             <div className="flex flex-col gap-1">
                               <button type="button" onClick={() => updateNote(brand.name, noteText)}
@@ -658,7 +658,7 @@ export default function AdsLibraryPage() {
             className="fixed right-0 top-0 h-full z-50 flex flex-col"
             style={{
               width: "min(500px, 100vw)",
-              backgroundColor: "#FFFCF7",
+              backgroundColor: "var(--color-bg-secondary)",
               borderLeft: "1px solid rgba(245,215,160,0.4)",
               boxShadow: "-12px 0 40px rgba(120,97,78,0.18)",
               animation: "slideInRight 0.22s ease-out",
@@ -754,7 +754,7 @@ export default function AdsLibraryPage() {
                     <Facebook className="w-7 h-7 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-sm" style={{ color: "#292524" }}>Results for &ldquo;{panelBrand}&rdquo;</p>
+                    <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Results for &ldquo;{panelBrand}&rdquo;</p>
                     <p className="text-xs mt-1.5 leading-relaxed" style={{ color: "#A8967E" }}>
                       Facebook blocks embedded previews for security reasons.<br />
                       Click below to open the results directly.
@@ -772,8 +772,8 @@ export default function AdsLibraryPage() {
               {/* Analysis Checklist */}
               <div className="rounded-xl p-4" style={cardStyle}>
                 <div className="flex items-center gap-2 mb-3">
-                  <Target className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                  <p className="font-semibold text-sm" style={{ color: "#292524" }}>Analysis Checklist</p>
+                  <Target className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+                  <p className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>Analysis Checklist</p>
                   <span className="text-xs ml-auto font-medium"
                     style={{ color: Object.values(checklist).filter(Boolean).length === CHECKLIST_ITEMS.length ? "#16A34A" : "#A8967E" }}>
                     {Object.values(checklist).filter(Boolean).length}/{CHECKLIST_ITEMS.length} done
@@ -835,7 +835,7 @@ export default function AdsLibraryPage() {
 
             {/* Footer Action Bar */}
             <div className="p-4 flex gap-2 flex-shrink-0"
-              style={{ borderTop: "1px solid rgba(245,215,160,0.2)", backgroundColor: "#FFFCF7" }}>
+              style={{ borderTop: "1px solid rgba(245,215,160,0.2)", backgroundColor: "var(--color-bg-secondary)" }}>
               <button type="button" onClick={() => openInFacebook()}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all hover:opacity-90"
                 style={{ background: `linear-gradient(135deg, ${META} 0%, #1a6fd8 100%)`, color: "white", boxShadow: `0 3px 12px ${META}35` }}>
@@ -854,8 +854,8 @@ export default function AdsLibraryPage() {
                 className="px-4 py-3 rounded-xl text-sm font-semibold transition-colors"
                 style={{
                   border: "1px solid rgba(245,215,160,0.3)",
-                  color: isSaved(panelBrand) ? "#F59E0B" : "#C4AA8A",
-                  backgroundColor: isSaved(panelBrand) ? "rgba(245,158,11,0.08)" : "#FFF8F0",
+                  color: isSaved(panelBrand) ? "var(--color-primary)" : "#C4AA8A",
+                  backgroundColor: isSaved(panelBrand) ? "rgba(245,158,11,0.08)" : "var(--color-bg)",
                 }}
                 title={isSaved(panelBrand) ? "Saved" : "Save brand"}>
                 {isSaved(panelBrand) ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}

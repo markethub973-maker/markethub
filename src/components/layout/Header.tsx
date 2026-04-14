@@ -35,7 +35,7 @@ const SEARCH_CONFIG: Record<string, { placeholder: string }> = {
 };
 
 const NOTIF_ICONS: Record<string, React.ReactNode> = {
-  warning: <AlertTriangle size={14} style={{ color: "#F59E0B" }} />,
+  warning: <AlertTriangle size={14} style={{ color: "var(--color-primary)" }} />,
   error:   <XCircle size={14} style={{ color: "#EF4444" }} />,
   info:    <Info size={14} style={{ color: "#3B82F6" }} />,
   success: <CheckCircle size={14} style={{ color: "#16A34A" }} />,
@@ -137,10 +137,10 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
     <header
       data-tour="page-header"
       className="h-16 flex items-center justify-between px-6 sticky top-0 z-30"
-      style={{ backgroundColor: "#FFFCF7", borderBottom: "1px solid rgba(245,215,160,0.25)" }}
+      style={{ backgroundColor: "var(--color-bg-secondary)", borderBottom: "1px solid rgba(245,215,160,0.25)" }}
     >
       <div>
-        <h1 className="text-xl font-bold" style={{ color: "#292524" }}>{title}</h1>
+        <h1 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>{title}</h1>
         {subtitle && <p className="text-xs" style={{ color: "#A8967E" }}>{subtitle}</p>}
       </div>
 
@@ -156,7 +156,7 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
               onChange={e => setSearchQuery(e.target.value)}
               onKeyDown={handleSearch}
               className="pl-9 pr-4 py-2 text-sm rounded-lg w-60 focus:outline-none"
-              style={{ backgroundColor: "#F5EFE6", border: "1px solid rgba(245,215,160,0.3)", color: "#292524" }}
+              style={{ backgroundColor: "#F5EFE6", border: "1px solid rgba(245,215,160,0.3)", color: "var(--color-text)" }}
               onFocus={e => (e.currentTarget.style.border = "1px solid #F59E0B")}
               onBlur={e => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.3)")}
             />
@@ -191,11 +191,11 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
           {showNotifs && (
             <div
               className="absolute right-0 top-full mt-2 w-80 rounded-2xl overflow-hidden z-50"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 8px 32px rgba(120,97,78,0.15)" }}
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 8px 32px rgba(120,97,78,0.15)" }}
             >
               {/* Header */}
               <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                <span className="text-sm font-bold" style={{ color: "#292524" }}>Notifications</span>
+                <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Notifications</span>
                 <button type="button" onClick={() => setShowNotifs(false)} aria-label="Close">
                   <X size={14} style={{ color: "#A8967E" }} />
                 </button>
@@ -213,14 +213,14 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
                       <div className="flex items-start gap-2.5">
                         <div className="mt-0.5 flex-shrink-0">{NOTIF_ICONS[n.type]}</div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold mb-0.5" style={{ color: "#292524" }}>{n.title}</p>
+                          <p className="text-xs font-semibold mb-0.5" style={{ color: "var(--color-text)" }}>{n.title}</p>
                           <p className="text-xs leading-relaxed" style={{ color: "#78716C" }}>{n.message}</p>
                           {n.action_url && (
                             <Link
                               href={n.action_url}
                               onClick={() => setShowNotifs(false)}
                               className="inline-flex items-center gap-1 mt-1.5 text-xs font-semibold"
-                              style={{ color: "#F59E0B" }}
+                              style={{ color: "var(--color-primary)" }}
                             >
                               {n.action_label} <ArrowRight size={10} />
                             </Link>
@@ -238,7 +238,7 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
                   href="/alerts"
                   onClick={() => setShowNotifs(false)}
                   className="text-xs font-semibold"
-                  style={{ color: "#F59E0B" }}
+                  style={{ color: "var(--color-primary)" }}
                 >
                   View all alerts →
                 </Link>
@@ -257,7 +257,7 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
             onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
           >
             <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+              style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
               {username.slice(0, 2).toUpperCase()}
             </div>
             <span className="text-sm font-medium hidden md:block" style={{ color: "#5C4A35" }}>{username}</span>
@@ -267,10 +267,10 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
           {showMenu && (
             <div
               className="absolute right-0 top-full mt-1 w-48 rounded-xl py-1 z-50"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)" }}
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)" }}
             >
               <div className="px-4 py-2.5" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                <p className="text-xs font-semibold" style={{ color: "#292524" }}>{username}</p>
+                <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{username}</p>
                 <p className="text-xs" style={{ color: "#C4AA8A" }}>{plan}</p>
               </div>
               <button

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Plus, Trash2, Loader2, RefreshCw, Tag, ToggleLeft, ToggleRight, X, Check } from "lucide-react";
 
 const cardStyle = {
-  backgroundColor: "#FFFCF7",
+  backgroundColor: "var(--color-bg-secondary)",
   border: "1px solid rgba(245,215,160,0.25)",
   boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
 };
@@ -50,8 +50,8 @@ interface DiscountCode {
 function inputStyle(extra?: object) {
   return {
     border: "1px solid rgba(245,215,160,0.3)",
-    backgroundColor: "#FFF8F0",
-    color: "#292524",
+    backgroundColor: "var(--color-bg)",
+    color: "var(--color-text)",
     ...extra,
   };
 }
@@ -136,7 +136,7 @@ export default function AdminDiscountCodesPanel() {
     <div className="rounded-2xl p-6" style={cardStyle}>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-xl font-bold" style={{ color: "#292524" }}>Discount Codes</h2>
+          <h2 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>Discount Codes</h2>
           <p className="text-sm mt-0.5" style={{ color: "#A8967E" }}>Create and manage promo codes for plan subscriptions</p>
         </div>
         <div className="flex gap-2">
@@ -146,7 +146,7 @@ export default function AdminDiscountCodesPanel() {
           </button>
           <button type="button" onClick={() => { setShowForm(s => !s); setError(""); }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold"
-            style={{ backgroundColor: "#F59E0B", color: "white" }}>
+            style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
             {showForm ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
             {showForm ? "Cancel" : "New Code"}
           </button>
@@ -156,14 +156,14 @@ export default function AdminDiscountCodesPanel() {
       {!tableExists && (
         <div className="mb-4 rounded-xl px-4 py-3 text-xs" style={{ backgroundColor: "rgba(99,102,241,0.06)", color: "#6366F1", border: "1px solid rgba(99,102,241,0.15)" }}>
           <strong>Run this SQL in Supabase first:</strong>
-          <code className="block mt-1 bg-white/50 rounded p-2 font-mono text-[10px]" style={{ color: "#292524" }}>{SQL}</code>
+          <code className="block mt-1 bg-white/50 rounded p-2 font-mono text-[10px]" style={{ color: "var(--color-text)" }}>{SQL}</code>
         </div>
       )}
 
       {/* Create form */}
       {showForm && (
-        <div className="mb-5 rounded-xl p-4 space-y-3" style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.3)" }}>
-          <h3 className="text-sm font-bold" style={{ color: "#292524" }}>Create New Code</h3>
+        <div className="mb-5 rounded-xl p-4 space-y-3" style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.3)" }}>
+          <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Create New Code</h3>
 
           {error && (
             <p className="text-xs px-3 py-2 rounded-lg" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#DC2626" }}>{error}</p>
@@ -220,7 +220,7 @@ export default function AdminDiscountCodesPanel() {
                   <button key={p.id} type="button" onClick={() => togglePlan(p.id)}
                     className="px-2.5 py-1 rounded-full text-xs font-semibold transition-colors"
                     style={{
-                      backgroundColor: sel ? "#F59E0B" : "rgba(245,215,160,0.2)",
+                      backgroundColor: sel ? "var(--color-primary)" : "rgba(245,215,160,0.2)",
                       color: sel ? "white" : "#A8967E",
                     }}>
                     {p.label}
@@ -232,7 +232,7 @@ export default function AdminDiscountCodesPanel() {
 
           <button type="button" onClick={handleCreate} disabled={saving}
             className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-50"
-            style={{ backgroundColor: "#F59E0B", color: "white" }}>
+            style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             Create Code
           </button>
@@ -241,7 +241,7 @@ export default function AdminDiscountCodesPanel() {
 
       {/* Table */}
       {loading ? (
-        <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
       ) : codes.length === 0 ? (
         <div className="text-center py-10">
           <Tag className="w-8 h-8 mx-auto mb-2" style={{ color: "#C4AA8A" }} />
@@ -260,7 +260,7 @@ export default function AdminDiscountCodesPanel() {
                 {/* Code badge */}
                 <div className="flex-shrink-0">
                   <span className="font-mono text-sm font-bold px-2 py-0.5 rounded"
-                    style={{ backgroundColor: inactive ? "rgba(196,170,138,0.12)" : "rgba(245,158,11,0.12)", color: inactive ? "#A8967E" : "#D97706" }}>
+                    style={{ backgroundColor: inactive ? "rgba(196,170,138,0.12)" : "rgba(245,158,11,0.12)", color: inactive ? "#A8967E" : "var(--color-primary-hover)" }}>
                     {code.code}
                   </span>
                 </div>
@@ -268,7 +268,7 @@ export default function AdminDiscountCodesPanel() {
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-semibold" style={{ color: "#292524" }}>–{code.discount_pct}%</span>
+                    <span className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>–{code.discount_pct}%</span>
                     {code.description && <span className="text-xs" style={{ color: "#A8967E" }}>{code.description}</span>}
                     {code.applies_to?.length > 0 && (
                       <span className="text-xs px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(99,102,241,0.08)", color: "#6366F1" }}>
@@ -284,7 +284,7 @@ export default function AdminDiscountCodesPanel() {
                       </span>
                     )}
                     {expired && <span style={{ color: "#DC2626" }}>Expired</span>}
-                    {exhausted && !expired && <span style={{ color: "#D97706" }}>Exhausted</span>}
+                    {exhausted && !expired && <span style={{ color: "var(--color-primary-hover)" }}>Exhausted</span>}
                   </div>
                 </div>
 
@@ -292,7 +292,7 @@ export default function AdminDiscountCodesPanel() {
                 <div className="flex items-center gap-2 flex-shrink-0">
                   <button type="button" onClick={() => toggleActive(code)} disabled={toggling === code.id}
                     title={code.is_active ? "Deactivate" : "Activate"}
-                    style={{ color: code.is_active ? "#F59E0B" : "#C4AA8A" }}>
+                    style={{ color: code.is_active ? "var(--color-primary)" : "#C4AA8A" }}>
                     {toggling === code.id
                       ? <Loader2 className="w-4 h-4 animate-spin" />
                       : code.is_active

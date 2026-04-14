@@ -7,7 +7,7 @@ import {
   ExternalLink, Zap, Link2,
 } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
 interface BioItem {
   id: string;
@@ -34,14 +34,14 @@ const EMPTY_BIO: Bio = {
   title: "",
   description: "",
   avatar_url: "",
-  bg_color: "#FFF8F0",
-  accent_color: "#F59E0B",
+  bg_color: "var(--color-bg)",
+  accent_color: "var(--color-primary)",
   links: [],
   views: 0,
 };
 
-const BG_PRESETS = ["#FFF8F0", "#F0F4FF", "#F0FFF4", "#FFF0F8", "#1C1814", "#0F172A"];
-const ACCENT_PRESETS = ["#F59E0B", "#3B82F6", "#22C55E", "#E1306C", "#8B5CF6", "#FF0050"];
+const BG_PRESETS = ["var(--color-bg)", "#F0F4FF", "#F0FFF4", "#FFF0F8", "#1C1814", "#0F172A"];
+const ACCENT_PRESETS = ["var(--color-primary)", "#3B82F6", "#22C55E", "#E1306C", "#8B5CF6", "#FF0050"];
 
 function newLink(): BioItem {
   return { id: crypto.randomUUID(), title: "", url: "", emoji: "🔗", enabled: true, clicks: 0 };
@@ -106,7 +106,7 @@ export default function BioPage() {
   if (loading) return (
     <div>
       <Header title="Link in Bio" subtitle="Manage your public bio page" />
-      <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>
+      <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
     </div>
   );
 
@@ -123,7 +123,7 @@ export default function BioPage() {
 
             {/* Slug + Live URL */}
             <div className="rounded-xl p-5 space-y-4" style={cardStyle}>
-              <h3 className="text-sm font-bold" style={{ color: "#292524" }}>Your public URL</h3>
+              <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Your public URL</h3>
               <div className="flex items-center gap-2">
                 <span className="text-sm" style={{ color: "#A8967E" }}>markethubpromo.com/l/</span>
                 <input
@@ -131,13 +131,13 @@ export default function BioPage() {
                   onChange={e => setBio(b => ({ ...b, slug: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, "") }))}
                   placeholder="your-name"
                   className="flex-1 px-3 py-2 text-sm rounded-lg focus:outline-none font-mono"
-                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
               </div>
               {publicUrl && (
                 <div className="flex items-center gap-2">
                   <span className="text-xs flex-1 truncate" style={{ color: "#78614E" }}>{publicUrl}</span>
                   <button onClick={copyUrl} className="p-1.5 rounded-lg flex items-center gap-1 text-xs font-semibold"
-                    style={{ backgroundColor: copied ? "rgba(22,163,74,0.1)" : "rgba(245,158,11,0.1)", color: copied ? "#16a34a" : "#D97706" }}>
+                    style={{ backgroundColor: copied ? "rgba(22,163,74,0.1)" : "rgba(245,158,11,0.1)", color: copied ? "#16a34a" : "var(--color-primary-hover)" }}>
                     {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                     {copied ? "Copied!" : "Copy"}
                   </button>
@@ -154,38 +154,38 @@ export default function BioPage() {
 
             {/* Profile */}
             <div className="rounded-xl p-5 space-y-3" style={cardStyle}>
-              <h3 className="text-sm font-bold" style={{ color: "#292524" }}>Profile</h3>
+              <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Profile</h3>
               <div>
                 <label className="text-xs font-semibold block mb-1" style={{ color: "#78614E" }}>Name / Title *</label>
                 <input value={bio.title} onChange={e => setBio(b => ({ ...b, title: e.target.value }))}
                   placeholder="Your Name or Brand" className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
               </div>
               <div>
                 <label className="text-xs font-semibold block mb-1" style={{ color: "#78614E" }}>Bio description</label>
                 <textarea value={bio.description} onChange={e => setBio(b => ({ ...b, description: e.target.value }))}
                   placeholder="Short description visible to visitors" rows={2}
                   className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
               </div>
               <div>
                 <label className="text-xs font-semibold block mb-1" style={{ color: "#78614E" }}>Avatar URL</label>
                 <input value={bio.avatar_url} onChange={e => setBio(b => ({ ...b, avatar_url: e.target.value }))}
                   placeholder="https://example.com/photo.jpg" className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
               </div>
             </div>
 
             {/* Theme */}
             <div className="rounded-xl p-5 space-y-3" style={cardStyle}>
-              <h3 className="text-sm font-bold" style={{ color: "#292524" }}>Theme</h3>
+              <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Theme</h3>
               <div>
                 <label className="text-xs font-semibold block mb-2" style={{ color: "#78614E" }}>Background</label>
                 <div className="flex gap-2 flex-wrap">
                   {BG_PRESETS.map(c => (
                     <button key={c} onClick={() => setBio(b => ({ ...b, bg_color: c }))}
                       className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110"
-                      style={{ backgroundColor: c, borderColor: bio.bg_color === c ? "#F59E0B" : "rgba(245,215,160,0.3)" }} />
+                      style={{ backgroundColor: c, borderColor: bio.bg_color === c ? "var(--color-primary)" : "rgba(245,215,160,0.3)" }} />
                   ))}
                 </div>
               </div>
@@ -195,7 +195,7 @@ export default function BioPage() {
                   {ACCENT_PRESETS.map(c => (
                     <button key={c} onClick={() => setBio(b => ({ ...b, accent_color: c }))}
                       className="w-8 h-8 rounded-full border-2 transition-transform hover:scale-110"
-                      style={{ backgroundColor: c, borderColor: bio.accent_color === c ? "#292524" : "transparent" }} />
+                      style={{ backgroundColor: c, borderColor: bio.accent_color === c ? "var(--color-text)" : "transparent" }} />
                   ))}
                 </div>
               </div>
@@ -204,10 +204,10 @@ export default function BioPage() {
             {/* Links */}
             <div className="rounded-xl p-5 space-y-3" style={cardStyle}>
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold" style={{ color: "#292524" }}>Links</h3>
+                <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Links</h3>
                 <button onClick={addLink}
                   className="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
-                  style={{ backgroundColor: "#F59E0B", color: "white" }}>
+                  style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
                   <Plus className="w-3.5 h-3.5" />Add link
                 </button>
               </div>
@@ -220,7 +220,7 @@ export default function BioPage() {
               <div className="space-y-2">
                 {bio.links.map((item, idx) => (
                   <div key={item.id} className="rounded-xl p-3 space-y-2"
-                    style={{ backgroundColor: item.enabled ? "#FFF8F0" : "rgba(245,215,160,0.05)", border: "1px solid rgba(245,215,160,0.3)" }}>
+                    style={{ backgroundColor: item.enabled ? "var(--color-bg)" : "rgba(245,215,160,0.05)", border: "1px solid rgba(245,215,160,0.3)" }}>
                     <div className="flex items-center gap-2">
                       <div className="flex flex-col gap-0.5">
                         <button onClick={() => moveLink(item.id, -1)} disabled={idx === 0}
@@ -234,10 +234,10 @@ export default function BioPage() {
                       </div>
                       <input value={item.emoji} onChange={e => updateLink(item.id, "emoji", e.target.value)}
                         className="w-10 text-center px-1 py-1 text-lg rounded-lg focus:outline-none"
-                        style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFFCF7" }} maxLength={2} />
+                        style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg-secondary)" }} maxLength={2} />
                       <input value={item.title} onChange={e => updateLink(item.id, "title", e.target.value)}
                         placeholder="Link title" className="flex-1 px-2 py-1.5 text-sm rounded-lg focus:outline-none"
-                        style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFFCF7", color: "#292524" }} />
+                        style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }} />
                       <button onClick={() => updateLink(item.id, "enabled", !item.enabled)}
                         className="w-8 h-5 rounded-full transition-colors flex-shrink-0 relative"
                         style={{ backgroundColor: item.enabled ? bio.accent_color : "rgba(245,215,160,0.3)" }}>
@@ -251,7 +251,7 @@ export default function BioPage() {
                     </div>
                     <input value={item.url} onChange={e => updateLink(item.id, "url", e.target.value)}
                       placeholder="https://..." className="w-full px-2 py-1.5 text-sm rounded-lg focus:outline-none font-mono"
-                      style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFFCF7", color: "#292524" }} />
+                      style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }} />
                     {item.clicks > 0 && (
                       <p className="text-xs" style={{ color: "#A8967E" }}>{item.clicks} clicks</p>
                     )}
@@ -269,7 +269,7 @@ export default function BioPage() {
 
             <button onClick={handleSave} disabled={saving}
               className="w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
-              style={{ backgroundColor: "#F59E0B", color: "white", opacity: saving ? 0.7 : 1 }}>
+              style={{ backgroundColor: "var(--color-primary)", color: "white", opacity: saving ? 0.7 : 1 }}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
               {saving ? "Saving…" : saved ? "Saved!" : "Save changes"}
             </button>
@@ -279,11 +279,11 @@ export default function BioPage() {
           <div className="lg:sticky lg:top-6">
             <div className="rounded-xl p-4" style={cardStyle}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold" style={{ color: "#292524" }}>Live Preview</h3>
+                <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Live Preview</h3>
                 {publicUrl && (
                   <a href={publicUrl} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-1 text-xs font-semibold"
-                    style={{ color: "#F59E0B" }}>
+                    style={{ color: "var(--color-primary)" }}>
                     <Eye className="w-3.5 h-3.5" />Open
                   </a>
                 )}
@@ -303,7 +303,7 @@ export default function BioPage() {
                   </div>
                 )}
 
-                <p className="font-bold text-base mb-1" style={{ color: darkBg ? "#FFF8F0" : "#292524" }}>
+                <p className="font-bold text-base mb-1" style={{ color: darkBg ? "var(--color-bg)" : "var(--color-text)" }}>
                   {bio.title || "Your Name"}
                 </p>
                 {bio.description && (
@@ -316,7 +316,7 @@ export default function BioPage() {
                     <div key={item.id} className="flex items-center gap-2 px-4 py-3 rounded-2xl"
                       style={{ backgroundColor: "white", border: `1px solid ${bio.accent_color}25` }}>
                       {item.emoji && <span className="text-lg">{item.emoji}</span>}
-                      <span className="text-sm font-semibold flex-1 text-left truncate" style={{ color: "#292524" }}>
+                      <span className="text-sm font-semibold flex-1 text-left truncate" style={{ color: "var(--color-text)" }}>
                         {item.title || "Link title"}
                       </span>
                     </div>

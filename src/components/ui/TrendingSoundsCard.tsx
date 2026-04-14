@@ -147,8 +147,8 @@ export default function TrendingSoundsCard() {
           onClick={handleGlobal}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all"
           style={isGlobal
-            ? { backgroundColor: "#F59E0B", color: "#1C1814", border: "1px solid #F59E0B" }
-            : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+            ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B" }
+            : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
         >
           <Globe className="w-3 h-3" /> Global
         </button>
@@ -160,8 +160,8 @@ export default function TrendingSoundsCard() {
             onClick={() => setDropdownOpen(prev => !prev)}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all"
             style={!isGlobal
-              ? { backgroundColor: "#F59E0B", color: "#1C1814", border: "1px solid #F59E0B" }
-              : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+              ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B" }
+              : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
           >
             {!isGlobal ? selectedCountry?.label : "🗺️ International"}
             <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
@@ -169,7 +169,7 @@ export default function TrendingSoundsCard() {
           {dropdownOpen && (
             <div
               className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
             >
               {ALL_COUNTRIES.map(c => (
                 <button
@@ -178,7 +178,7 @@ export default function TrendingSoundsCard() {
                   onClick={() => handleSelectCountry(c)}
                   className="w-full text-left px-4 py-2.5 text-xs transition-colors"
                   style={{
-                    color: selectedCountry?.code === c.code ? "#D97706" : "#5C4A35",
+                    color: selectedCountry?.code === c.code ? "var(--color-primary-hover)" : "#5C4A35",
                     backgroundColor: selectedCountry?.code === c.code ? "rgba(245,158,11,0.08)" : "transparent",
                     fontWeight: selectedCountry?.code === c.code ? "600" : "400",
                   }}

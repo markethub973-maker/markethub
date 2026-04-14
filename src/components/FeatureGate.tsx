@@ -84,7 +84,7 @@ export default function FeatureGate({
   // Not locked → render children as-is
   if (!locked) return <>{children}</>;
 
-  const minColor = PLAN_COLORS[resolvedMinPlan] ?? "#F59E0B";
+  const minColor = PLAN_COLORS[resolvedMinPlan] ?? "var(--color-primary)";
 
   // ── Compact inline badge ──────────────────────────────────────────────────
   if (compact) {
@@ -121,7 +121,7 @@ export default function FeatureGate({
           <Lock size={24} style={{ color: minColor }} />
         </div>
 
-        <h3 className="text-xl font-bold text-center mb-2" style={{ color: "#292524" }}>
+        <h3 className="text-xl font-bold text-center mb-2" style={{ color: "var(--color-text)" }}>
           {resolvedLabel}
         </h3>
         <p className="text-sm text-center mb-2 max-w-sm" style={{ color: "#78716C" }}>
@@ -131,7 +131,7 @@ export default function FeatureGate({
         {/* Current plan note */}
         <p className="text-xs text-center mb-5" style={{ color: "#A8967E" }}>
           Your plan:{" "}
-          <span className="font-bold" style={{ color: PLAN_COLORS[userPlan as PlanId] ?? "#F59E0B" }}>
+          <span className="font-bold" style={{ color: PLAN_COLORS[userPlan as PlanId] ?? "var(--color-primary)" }}>
             {PLAN_LABELS[userPlan as PlanId] ?? userPlan}
           </span>
           {" · "}Available from:{" "}
@@ -186,6 +186,6 @@ export function usePlanAccess(userPlan: string) {
       !!(PLAN_FEATURES[userPlan as PlanId] ?? PLAN_FEATURES.free_test)[feature],
     plan: userPlan as PlanId,
     planLabel: PLAN_LABELS[userPlan as PlanId] ?? userPlan,
-    planColor: PLAN_COLORS[userPlan as PlanId] ?? "#F59E0B",
+    planColor: PLAN_COLORS[userPlan as PlanId] ?? "var(--color-primary)",
   };
 }

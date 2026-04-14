@@ -21,7 +21,7 @@ function BlockedContent() {
             <ShieldX size={32} style={{ color: "#EF4444" }} />
           </div>
         </div>
-        <h1 className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>
+        <h1 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
           Account Suspended
         </h1>
         <p className="text-sm mb-6" style={{ color: "#78716C" }}>
@@ -41,7 +41,7 @@ function BlockedContent() {
         <a
           href="mailto:support@markethubpro.com"
           className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all"
-          style={{ backgroundColor: "#F59E0B", color: "#fff" }}
+          style={{ backgroundColor: "var(--color-primary)", color: "#fff" }}
         >
           <Mail size={16} />
           Contact Support

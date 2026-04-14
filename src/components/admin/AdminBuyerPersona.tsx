@@ -153,7 +153,7 @@ export default function AdminBuyerPersona() {
   const ig = result?.instagram;
 
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+    <div className="rounded-2xl border overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
 
       {/* ── Header ── */}
       <div className="p-6 border-b" style={{ borderColor: "rgba(245,215,160,0.25)", background: "linear-gradient(135deg, rgba(194,133,76,0.08) 0%, rgba(245,215,160,0.1) 100%)" }}>
@@ -162,7 +162,7 @@ export default function AdminBuyerPersona() {
             <Users size={20} style={{ color: "#C2854C" }} />
           </div>
           <div>
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>Buyer Persona Builder</h2>
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>Buyer Persona Builder</h2>
             <p className="text-xs" style={{ color: "#A8967E" }}>Analyze any public Instagram account and generate a detailed ideal buyer profile</p>
           </div>
           <span className="ml-auto text-xs px-2.5 py-1 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#d97706", border: "1px solid rgba(245,158,11,0.2)" }}>
@@ -183,14 +183,14 @@ export default function AdminBuyerPersona() {
               onKeyDown={e => e.key === "Enter" && generate()}
               placeholder="instagram username (e.g. natgeo)"
               className="w-full pl-7 pr-4 py-2.5 rounded-xl text-sm border outline-none"
-              style={{ backgroundColor: "rgba(245,215,160,0.1)", borderColor: "rgba(245,215,160,0.4)", color: "#292524" }}
+              style={{ backgroundColor: "rgba(245,215,160,0.1)", borderColor: "rgba(245,215,160,0.4)", color: "var(--color-text)" }}
             />
           </div>
           <select
             value={niche}
             onChange={e => setNiche(e.target.value)}
             className="px-3 py-2.5 rounded-xl text-sm border outline-none"
-            style={{ backgroundColor: "rgba(245,215,160,0.1)", borderColor: "rgba(245,215,160,0.4)", color: niche ? "#292524" : "#A8967E", minWidth: 160 }}
+            style={{ backgroundColor: "rgba(245,215,160,0.1)", borderColor: "rgba(245,215,160,0.4)", color: niche ? "var(--color-text)" : "#A8967E", minWidth: 160 }}
           >
             <option value="">Niche (optional)</option>
             {NICHE_OPTIONS.map(n => <option key={n} value={n}>{n}</option>)}
@@ -222,7 +222,7 @@ export default function AdminBuyerPersona() {
                 ) : (
                   <div className="w-3.5 h-3.5 rounded-full shrink-0" style={{ backgroundColor: "rgba(245,215,160,0.3)" }} />
                 )}
-                <span style={{ color: i <= loadingStep ? "#292524" : "#A8967E", fontWeight: i === loadingStep ? 500 : 400 }}>{step}</span>
+                <span style={{ color: i <= loadingStep ? "var(--color-text)" : "#A8967E", fontWeight: i === loadingStep ? 500 : 400 }}>{step}</span>
               </div>
             ))}
           </div>
@@ -250,7 +250,7 @@ export default function AdminBuyerPersona() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-xl font-bold" style={{ color: "#292524" }}>{p.persona_name}</h3>
+                  <h3 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>{p.persona_name}</h3>
                   <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(194,133,76,0.15)", color: "#C2854C" }}>
                     {p.content_category}
                   </span>
@@ -277,7 +277,7 @@ export default function AdminBuyerPersona() {
 
             {/* AI Summary */}
             <div className="mt-4 p-4 rounded-xl" style={{ backgroundColor: "rgba(255,255,255,0.6)" }}>
-              <p className="text-sm leading-relaxed" style={{ color: "#292524" }}>{p.ai_summary}</p>
+              <p className="text-sm leading-relaxed" style={{ color: "var(--color-text)" }}>{p.ai_summary}</p>
             </div>
           </div>
 
@@ -286,7 +286,7 @@ export default function AdminBuyerPersona() {
 
             {/* Demographics */}
             <div className="rounded-xl border p-5" style={{ borderColor: "rgba(245,215,160,0.25)" }}>
-              <h4 className="font-bold mb-4 flex items-center gap-2" style={{ color: "#292524" }}>
+              <h4 className="font-bold mb-4 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
                 <Users size={16} style={{ color: "#C2854C" }} /> Demografii
               </h4>
 
@@ -311,7 +311,7 @@ export default function AdminBuyerPersona() {
                     <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,215,160,0.3)" }}>
                       <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: "#C2854C" }} />
                     </div>
-                    <span className="text-xs w-8 text-right" style={{ color: "#292524" }}>{pct}%</span>
+                    <span className="text-xs w-8 text-right" style={{ color: "var(--color-text)" }}>{pct}%</span>
                   </div>
                 ))}
               </div>
@@ -335,14 +335,14 @@ export default function AdminBuyerPersona() {
                 </div>
                 <div className="rounded-lg p-2" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
                   <p style={{ color: "#A8967E" }}>Mediu</p>
-                  <p className="font-semibold" style={{ color: "#292524" }}>{p.demographics.urban_rural}</p>
+                  <p className="font-semibold" style={{ color: "var(--color-text)" }}>{p.demographics.urban_rural}</p>
                 </div>
               </div>
             </div>
 
             {/* Buying Behavior */}
             <div className="rounded-xl border p-5" style={{ borderColor: "rgba(245,215,160,0.25)" }}>
-              <h4 className="font-bold mb-4 flex items-center gap-2" style={{ color: "#292524" }}>
+              <h4 className="font-bold mb-4 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
                 <ShoppingBag size={16} style={{ color: "#C2854C" }} /> Comportament de Cumpărare
               </h4>
 
@@ -351,14 +351,14 @@ export default function AdminBuyerPersona() {
                   <Clock size={14} style={{ color: "#C2854C" }} />
                   <div>
                     <p className="text-xs" style={{ color: "#A8967E" }}>Peak activity</p>
-                    <p className="text-sm font-semibold" style={{ color: "#292524" }}>{p.buying_behavior.peak_activity_hours}</p>
+                    <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{p.buying_behavior.peak_activity_hours}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2.5 p-2.5 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
                   <BarChart2 size={14} style={{ color: "#C2854C" }} />
                   <div>
                     <p className="text-xs" style={{ color: "#A8967E" }}>Format preferat</p>
-                    <p className="text-sm font-semibold" style={{ color: "#292524" }}>{p.buying_behavior.preferred_content_format}</p>
+                    <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{p.buying_behavior.preferred_content_format}</p>
                   </div>
                 </div>
 
@@ -387,7 +387,7 @@ export default function AdminBuyerPersona() {
 
           {/* ── Interests ── */}
           <div className="rounded-xl border p-5" style={{ borderColor: "rgba(245,215,160,0.25)" }}>
-            <h4 className="font-bold mb-4 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h4 className="font-bold mb-4 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <Heart size={16} style={{ color: "#C2854C" }} /> Interese & Pasiuni
             </h4>
             <div className="flex flex-wrap gap-2">
@@ -406,7 +406,7 @@ export default function AdminBuyerPersona() {
 
           {/* ── Affiliate Opportunities ── */}
           <div className="rounded-xl border p-5" style={{ borderColor: "rgba(245,215,160,0.25)" }}>
-            <h4 className="font-bold mb-1 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h4 className="font-bold mb-1 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <TrendingUp size={16} style={{ color: "#C2854C" }} /> Recommended Affiliate Opportunities
             </h4>
             <p className="text-xs mb-4" style={{ color: "#A8967E" }}>Programe de afiliere potrivite pentru audiența acestui cont</p>
@@ -417,7 +417,7 @@ export default function AdminBuyerPersona() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="font-bold" style={{ color: "#292524" }}>{opp.program}</span>
+                        <span className="font-bold" style={{ color: "var(--color-text)" }}>{opp.program}</span>
                         <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(194,133,76,0.1)", color: "#C2854C" }}>
                           {opp.category}
                         </span>
@@ -426,7 +426,7 @@ export default function AdminBuyerPersona() {
                       <p className="text-xs mb-2" style={{ color: "#78614E" }}>{opp.why_it_fits}</p>
                       {/* Example CTA */}
                       <div className="flex items-center gap-2 p-2.5 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.7)" }}>
-                        <p className="text-xs flex-1 italic" style={{ color: "#292524" }}>"{opp.example_cta}"</p>
+                        <p className="text-xs flex-1 italic" style={{ color: "var(--color-text)" }}>"{opp.example_cta}"</p>
                         <button onClick={() => copyText(opp.example_cta, i)}
                           className="shrink-0 p-1 rounded transition-all"
                           style={{ color: copiedIdx === i ? "#22c55e" : "#A8967E" }}>
@@ -452,13 +452,13 @@ export default function AdminBuyerPersona() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
             <div className="rounded-xl border p-5" style={{ borderColor: "rgba(245,215,160,0.25)" }}>
-              <h4 className="font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+              <h4 className="font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
                 <Target size={16} style={{ color: "#C2854C" }} /> Psihografie
               </h4>
               <p className="text-xs mb-3 leading-relaxed" style={{ color: "#78614E" }}>{p.psychographics.lifestyle}</p>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-semibold mb-1.5" style={{ color: "#292524" }}>Valori</p>
+                  <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--color-text)" }}>Valori</p>
                   <div className="flex flex-wrap gap-1">
                     {p.psychographics.values.map(v => (
                       <span key={v} className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(124,58,237,0.08)", color: "#7C3AED" }}>{v}</span>
@@ -466,7 +466,7 @@ export default function AdminBuyerPersona() {
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold mb-1.5" style={{ color: "#292524" }}>Pain Points</p>
+                  <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--color-text)" }}>Pain Points</p>
                   {p.psychographics.pain_points.map((pp, i) => (
                     <div key={i} className="flex items-start gap-2 mb-1">
                       <span className="text-xs mt-0.5 shrink-0">😣</span>
@@ -478,12 +478,12 @@ export default function AdminBuyerPersona() {
             </div>
 
             <div className="rounded-xl border p-5" style={{ borderColor: "rgba(245,215,160,0.25)" }}>
-              <h4 className="font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+              <h4 className="font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
                 <Zap size={16} style={{ color: "#C2854C" }} /> Strategie Conținut
               </h4>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-semibold mb-1.5" style={{ color: "#292524" }}>Piloni conținut</p>
+                  <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--color-text)" }}>Piloni conținut</p>
                   {p.content_strategy.content_pillars.map((cp, i) => (
                     <div key={i} className="flex items-center gap-2 mb-1">
                       <span className="text-xs font-bold w-4" style={{ color: "#C2854C" }}>{i + 1}.</span>
@@ -492,7 +492,7 @@ export default function AdminBuyerPersona() {
                   ))}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold mb-1.5" style={{ color: "#292524" }}>Zile optime postare</p>
+                  <p className="text-xs font-semibold mb-1.5" style={{ color: "var(--color-text)" }}>Zile optime postare</p>
                   <div className="flex flex-wrap gap-1">
                     {p.buying_behavior.best_posting_days.map(d => (
                       <span key={d} className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(194,133,76,0.12)", color: "#C2854C" }}>{d}</span>
@@ -501,7 +501,7 @@ export default function AdminBuyerPersona() {
                 </div>
                 <div className="rounded-lg p-3" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
                   <p className="text-xs" style={{ color: "#A8967E" }}>Frecvență optimă</p>
-                  <p className="text-sm font-semibold" style={{ color: "#292524" }}>{p.content_strategy.optimal_posting_frequency}</p>
+                  <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{p.content_strategy.optimal_posting_frequency}</p>
                 </div>
               </div>
             </div>
@@ -509,7 +509,7 @@ export default function AdminBuyerPersona() {
 
           {/* ── Quick Wins ── */}
           <div className="rounded-xl p-5" style={{ background: "linear-gradient(135deg, rgba(194,133,76,0.1), rgba(245,215,160,0.15))", border: "1px solid rgba(194,133,76,0.25)" }}>
-            <h4 className="font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h4 className="font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <Lightbulb size={16} style={{ color: "#C2854C" }} /> Quick Wins — Acțiuni Imediate
             </h4>
             <p className="text-xs mb-3" style={{ color: "#A8967E" }}>Fă aceste 3 lucruri această săptămână pentru a crește venitul din afiliere:</p>
@@ -518,7 +518,7 @@ export default function AdminBuyerPersona() {
                 <div key={i} className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.6)" }}>
                   <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                     style={{ backgroundColor: "#C2854C", color: "white" }}>{i + 1}</span>
-                  <p className="text-sm" style={{ color: "#292524" }}>{win}</p>
+                  <p className="text-sm" style={{ color: "var(--color-text)" }}>{win}</p>
                 </div>
               ))}
             </div>
@@ -529,7 +529,7 @@ export default function AdminBuyerPersona() {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Star size={15} style={{ color: "#C2854C" }} />
-                <span className="text-sm font-bold" style={{ color: "#292524" }}>Potențial de Monetizare: <span style={{ color: monetizationColor(p.monetization_potential.score) }}>{p.monetization_potential.level.toUpperCase()}</span></span>
+                <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Potențial de Monetizare: <span style={{ color: monetizationColor(p.monetization_potential.score) }}>{p.monetization_potential.level.toUpperCase()}</span></span>
               </div>
               <span className="text-lg font-bold" style={{ color: monetizationColor(p.monetization_potential.score) }}>{p.monetization_potential.score}/100</span>
             </div>

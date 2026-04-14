@@ -67,7 +67,7 @@ export default function AdminSecurityAgents() {
     summary?.overall === "ok"
       ? "#10B981"
       : summary?.overall === "degraded"
-      ? "#F59E0B"
+      ? "var(--color-primary)"
       : "#EF4444";
 
   return (
@@ -82,7 +82,7 @@ export default function AdminSecurityAgents() {
       >
         <Shield className="w-6 h-6" style={{ color: overallColor }} />
         <div className="flex-1">
-          <p className="text-sm font-bold" style={{ color: "#292524" }}>
+          <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
             Security Agents —{" "}
             <span style={{ color: overallColor }}>
               {(summary?.overall ?? "loading").toUpperCase()}
@@ -129,7 +129,7 @@ export default function AdminSecurityAgents() {
               ? AlertTriangle
               : XCircle;
           const color =
-            a.status === "ok" ? "#10B981" : a.status === "stale" ? "#F59E0B" : "#EF4444";
+            a.status === "ok" ? "#10B981" : a.status === "stale" ? "var(--color-primary)" : "#EF4444";
           return (
             <div
               key={a.job}
@@ -141,7 +141,7 @@ export default function AdminSecurityAgents() {
             >
               <Icon className="w-4 h-4 flex-shrink-0" style={{ color }} />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold truncate" style={{ color: "#292524" }}>
+                <p className="text-sm font-semibold truncate" style={{ color: "var(--color-text)" }}>
                   {a.label}
                 </p>
                 <p className="text-[11px]" style={{ color: "#78614E" }}>

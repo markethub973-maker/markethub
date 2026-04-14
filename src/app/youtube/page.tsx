@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2, Youtube, Plus, Star, Trash2, BarChart2, TrendingUp, Eye, Users, Video, RefreshCw, X, ChevronDown, ChevronUp } from "lucide-react";
 
 const RED    = "#EF4444";
-const AMBER  = "#F59E0B";
+const AMBER  = "var(--color-primary)";
 const GREEN  = "#1DB954";
 const YT_RED = "#FF0000";
 
@@ -131,7 +131,7 @@ export default function YouTubePage() {
   const hasGoogle = true; // Google OAuth is always configured if GOOGLE_CLIENT_ID is set
 
   return (
-    <div className="min-h-screen p-4 md:p-6" style={{ backgroundColor: "#1C1814", color: "#292524" }}>
+    <div className="min-h-screen p-4 md:p-6" style={{ backgroundColor: "#1C1814", color: "var(--color-text)" }}>
       <div className="max-w-5xl mx-auto space-y-5">
 
         {/* Header */}

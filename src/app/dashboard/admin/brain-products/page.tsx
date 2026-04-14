@@ -103,12 +103,12 @@ export default function BrainProductsPage() {
   const canSubmit = name.trim().length >= 3 && affiliateUrl.trim().length > 5 && imageUrl.trim().length > 5 && !generating;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <main className="max-w-6xl mx-auto px-6 py-6 space-y-5">
         <div className="flex items-center gap-3 mb-2">
-          <ShoppingBag className="w-6 h-6" style={{ color: "#F59E0B" }} />
+          <ShoppingBag className="w-6 h-6" style={{ color: "var(--color-primary)" }} />
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: "#292524" }}>Brain Products</h1>
+            <h1 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>Brain Products</h1>
             <p className="text-xs" style={{ color: "#78614E" }}>
               Auto-generated affiliate / product landing pages. CEO Brain uses these to drive
               external revenue while you focus on the SaaS business.
@@ -122,8 +122,8 @@ export default function BrainProductsPage() {
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
           <div className="flex items-center gap-2">
-            <Wand2 className="w-4 h-4" style={{ color: "#F59E0B" }} />
-            <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+            <Wand2 className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Generate a new product page
             </h2>
           </div>
@@ -149,7 +149,7 @@ export default function BrainProductsPage() {
               maxLength={500}
               placeholder="Why YOU recommend this. What makes it different. Any specific use case Brain should emphasize."
               className="w-full rounded-lg px-3 py-2 text-sm resize-none"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             />
           </div>
 
@@ -158,7 +158,7 @@ export default function BrainProductsPage() {
             onClick={generate}
             disabled={!canSubmit}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
             {generating ? "Generating page..." : "Generate landing page"}
@@ -170,13 +170,13 @@ export default function BrainProductsPage() {
         {/* Library */}
         {mounted && (
           <section>
-            <h2 className="text-sm font-bold mb-3" style={{ color: "#292524" }}>
+            <h2 className="text-sm font-bold mb-3" style={{ color: "var(--color-text)" }}>
               Your library — {products.length} product{products.length === 1 ? "" : "s"}
             </h2>
             {products.length === 0 ? (
               <div className="rounded-xl py-10 text-center" style={{ backgroundColor: "white", border: "1px dashed rgba(0,0,0,0.1)" }}>
                 <ShoppingBag className="w-6 h-6 mx-auto mb-2" style={{ color: "#A8967E" }} />
-                <p className="text-sm font-bold" style={{ color: "#292524" }}>No products yet</p>
+                <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>No products yet</p>
                 <p className="text-xs mt-1" style={{ color: "#78614E" }}>
                   Fill the form above to generate your first auto-landing page.
                 </p>
@@ -198,7 +198,7 @@ export default function BrainProductsPage() {
                         style={{ backgroundColor: "rgba(0,0,0,0.03)" }}
                       />
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold" style={{ color: "#292524" }}>{p.name}</p>
+                        <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{p.name}</p>
                         <p className="text-[10px] mt-0.5" style={{ color: "#78614E" }}>
                           {p.category}{p.price_display ? ` · ${p.price_display}` : ""}
                         </p>
@@ -207,7 +207,7 @@ export default function BrainProductsPage() {
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {p.tags.slice(0, 4).map((t) => (
-                        <span key={t} className="text-[9px] px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "#D97706" }}>
+                        <span key={t} className="text-[9px] px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "var(--color-primary-hover)" }}>
                           #{t}
                         </span>
                       ))}
@@ -217,7 +217,7 @@ export default function BrainProductsPage() {
                         href={`/shop/${p.slug}`}
                         target="_blank"
                         className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1.5 rounded text-xs font-bold"
-                        style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+                        style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
                       >
                         <ExternalLink className="w-3 h-3" />
                         Preview
@@ -261,7 +261,7 @@ function Field({ label, v, setV, placeholder, full }: { label: string; v: string
         onChange={(e) => setV(e.target.value)}
         placeholder={placeholder}
         className="w-full rounded-lg px-3 py-2 text-sm"
-        style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+        style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
       />
     </div>
   );

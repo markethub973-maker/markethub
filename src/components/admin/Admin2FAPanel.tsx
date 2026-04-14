@@ -162,7 +162,7 @@ export default function Admin2FAPanel() {
         <div className="flex items-start gap-3">
           <ShieldCheck className="w-6 h-6 flex-shrink-0" style={{ color: "#10B981" }} />
           <div className="flex-1">
-            <p className="text-base font-bold" style={{ color: "#292524" }}>
+            <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>
               2FA enabled — save these recovery codes NOW
             </p>
             <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -177,7 +177,7 @@ export default function Admin2FAPanel() {
           style={{
             backgroundColor: "rgba(245,158,11,0.06)",
             border: "1px dashed rgba(245,158,11,0.4)",
-            color: "#292524",
+            color: "var(--color-text)",
           }}
         >
           {recoveryCodes.map((c, i) => (
@@ -212,7 +212,7 @@ export default function Admin2FAPanel() {
           type="button"
           onClick={() => setRecoveryCodes(null)}
           className="w-full py-2.5 rounded-lg text-xs font-bold"
-          style={{ backgroundColor: "#292524", color: "white" }}
+          style={{ backgroundColor: "var(--color-text)", color: "white" }}
         >
           I&apos;ve saved them — done
         </button>
@@ -228,9 +228,9 @@ export default function Admin2FAPanel() {
         style={{ backgroundColor: "white", border: "1px solid rgba(245,158,11,0.3)" }}
       >
         <div className="flex items-start gap-3">
-          <Shield className="w-6 h-6 flex-shrink-0" style={{ color: "#F59E0B" }} />
+          <Shield className="w-6 h-6 flex-shrink-0" style={{ color: "var(--color-primary)" }} />
           <div className="flex-1">
-            <p className="text-base font-bold" style={{ color: "#292524" }}>
+            <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>
               Scan with your authenticator app
             </p>
             <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -269,7 +269,7 @@ export default function Admin2FAPanel() {
             </summary>
             <code
               className="block mt-2 text-xs p-2 rounded text-center break-all"
-              style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "#292524" }}
+              style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "var(--color-text)" }}
             >
               {enrollData.secret_b32}
             </code>
@@ -294,7 +294,7 @@ export default function Admin2FAPanel() {
             style={{
               backgroundColor: "white",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -337,7 +337,7 @@ export default function Admin2FAPanel() {
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-6 h-6 flex-shrink-0" style={{ color: "#EF4444" }} />
           <div className="flex-1">
-            <p className="text-base font-bold" style={{ color: "#292524" }}>
+            <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>
               Disable 2FA
             </p>
             <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -357,7 +357,7 @@ export default function Admin2FAPanel() {
           style={{
             backgroundColor: "white",
             border: "1px solid rgba(239,68,68,0.3)",
-            color: "#292524",
+            color: "var(--color-text)",
             outline: "none",
           }}
         />
@@ -381,7 +381,7 @@ export default function Admin2FAPanel() {
               setErr(null);
             }}
             className="flex-1 py-2.5 rounded-lg text-xs font-bold"
-            style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "#292524" }}
+            style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "var(--color-text)" }}
           >
             Cancel
           </button>
@@ -418,7 +418,7 @@ export default function Admin2FAPanel() {
         <div className="flex items-center gap-3">
           <ShieldCheck className="w-6 h-6" style={{ color: "#10B981" }} />
           <div className="flex-1">
-            <p className="text-base font-bold" style={{ color: "#292524" }}>
+            <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>
               2FA Enabled
             </p>
             <p className="text-xs" style={{ color: "#78614E" }}>
@@ -446,9 +446,9 @@ export default function Admin2FAPanel() {
       style={{ backgroundColor: "white", border: "1px dashed rgba(245,158,11,0.4)" }}
     >
       <div className="flex items-start gap-3 mb-4">
-        <Shield className="w-6 h-6 flex-shrink-0" style={{ color: "#F59E0B" }} />
+        <Shield className="w-6 h-6 flex-shrink-0" style={{ color: "var(--color-primary)" }} />
         <div className="flex-1">
-          <p className="text-base font-bold" style={{ color: "#292524" }}>
+          <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>
             Two-Factor Authentication
           </p>
           <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -468,7 +468,7 @@ export default function Admin2FAPanel() {
         disabled={busy}
         className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40"
         style={{
-          background: "linear-gradient(135deg, #F59E0B, #D97706)",
+          background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
           color: "#1C1814",
         }}
       >

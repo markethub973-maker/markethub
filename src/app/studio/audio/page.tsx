@@ -136,7 +136,7 @@ export default function AiAudioStudioPage() {
   const currentMode = MODES.find((m) => m.value === mode)!;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="AI Audio Studio" subtitle="Voiceovers, music tracks, and sound effects" />
 
       <main className="max-w-4xl mx-auto px-6 py-6 space-y-6">
@@ -149,12 +149,12 @@ export default function AiAudioStudioPage() {
               onClick={() => setMode(m.value)}
               className="rounded-xl p-3 text-left transition-all"
               style={{
-                backgroundColor: mode === m.value ? "#292524" : "white",
-                color: mode === m.value ? "white" : "#292524",
-                border: `1px solid ${mode === m.value ? "#292524" : "rgba(0,0,0,0.06)"}`,
+                backgroundColor: mode === m.value ? "var(--color-text)" : "white",
+                color: mode === m.value ? "white" : "var(--color-text)",
+                border: `1px solid ${mode === m.value ? "var(--color-text)" : "rgba(0,0,0,0.06)"}`,
               }}
             >
-              <m.icon className="w-5 h-5 mb-2" style={{ color: mode === m.value ? "#F59E0B" : "#78614E" }} />
+              <m.icon className="w-5 h-5 mb-2" style={{ color: mode === m.value ? "var(--color-primary)" : "#78614E" }} />
               <p className="text-sm font-bold">{m.label}</p>
               <p className="text-[10px]" style={{ color: mode === m.value ? "#A8967E" : "#78614E" }}>
                 {m.desc}
@@ -169,8 +169,8 @@ export default function AiAudioStudioPage() {
           style={{ backgroundColor: "white", border: "1px solid rgba(245,158,11,0.2)" }}
         >
           <div className="flex items-center gap-2 mb-4">
-            <Wand2 className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>
+            <Wand2 className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
               {currentMode.label}
             </h2>
           </div>
@@ -186,9 +186,9 @@ export default function AiAudioStudioPage() {
             maxLength={2000}
             className="w-full rounded-lg px-3 py-2 text-sm resize-none mb-4"
             style={{
-              backgroundColor: "#FFF8F0",
+              backgroundColor: "var(--color-bg)",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -206,8 +206,8 @@ export default function AiAudioStudioPage() {
                     onClick={() => setVoice(v.value)}
                     className="px-3 py-1.5 rounded-md text-xs font-bold"
                     style={{
-                      backgroundColor: voice === v.value ? "#292524" : "rgba(0,0,0,0.04)",
-                      color: voice === v.value ? "white" : "#292524",
+                      backgroundColor: voice === v.value ? "var(--color-text)" : "rgba(0,0,0,0.04)",
+                      color: voice === v.value ? "white" : "var(--color-text)",
                     }}
                   >
                     {v.label}
@@ -250,7 +250,7 @@ export default function AiAudioStudioPage() {
                   onChange={(e) => setRefAudioUrl(e.target.value)}
                   placeholder="https://.../my-voice-sample.mp3"
                   className="w-full rounded-md px-3 py-2 text-sm"
-                  style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.25)", color: "#292524", outline: "none" }}
+                  style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.25)", color: "var(--color-text)", outline: "none" }}
                 />
                 <p className="text-[10px] mt-1" style={{ color: "#78614E" }}>
                   Tip: record a short clean clip, upload to Dropbox / Google Drive (public link) or use an Asset Library audio URL.
@@ -267,7 +267,7 @@ export default function AiAudioStudioPage() {
                   maxLength={1000}
                   placeholder="Write EXACTLY what you say in the reference clip, word for word."
                   className="w-full rounded-md px-3 py-2 text-sm resize-none"
-                  style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.25)", color: "#292524", outline: "none" }}
+                  style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.25)", color: "var(--color-text)", outline: "none" }}
                 />
               </div>
             </div>
@@ -279,7 +279,7 @@ export default function AiAudioStudioPage() {
             disabled={busy || !prompt.trim()}
             className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >
@@ -329,7 +329,7 @@ export default function AiAudioStudioPage() {
                 href={latest.audio_url}
                 download
                 className="inline-flex items-center gap-1 font-bold"
-                style={{ color: "#D97706" }}
+                style={{ color: "var(--color-primary-hover)" }}
               >
                 <Download className="w-3 h-3" />
                 Download
@@ -364,7 +364,7 @@ export default function AiAudioStudioPage() {
                     disabled={!g.audio_url}
                     className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 disabled:opacity-30"
                     style={{
-                      backgroundColor: "#F59E0B",
+                      backgroundColor: "var(--color-primary)",
                       color: "#1C1814",
                     }}
                   >
@@ -376,7 +376,7 @@ export default function AiAudioStudioPage() {
                     style={{ display: "none" }}
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold line-clamp-1" style={{ color: "#292524" }}>
+                    <p className="text-xs font-semibold line-clamp-1" style={{ color: "var(--color-text)" }}>
                       <span
                         className="text-[9px] font-bold uppercase mr-1.5 px-1.5 py-0.5 rounded"
                         style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "#78614E" }}

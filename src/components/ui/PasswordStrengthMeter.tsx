@@ -66,7 +66,7 @@ function score(pw: string): { score: 0 | 1 | 2 | 3 | 4; hint: string } {
 const LABELS: Record<number, { text: string; color: string }> = {
   0: { text: "Too weak", color: "#EF4444" },
   1: { text: "Weak", color: "#F97316" },
-  2: { text: "Fair", color: "#F59E0B" },
+  2: { text: "Fair", color: "var(--color-primary)" },
   3: { text: "Strong", color: "#84CC16" },
   4: { text: "Excellent", color: "#10B981" },
 };

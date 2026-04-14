@@ -146,8 +146,8 @@ export default function AdminEmailPreview() {
             onClick={() => switchTemplate(name)}
             className="px-3 py-2 rounded-lg text-xs font-bold transition-all"
             style={{
-              backgroundColor: tpl === name ? "#292524" : "rgba(0,0,0,0.04)",
-              color: tpl === name ? "white" : "#292524",
+              backgroundColor: tpl === name ? "var(--color-text)" : "rgba(0,0,0,0.04)",
+              color: tpl === name ? "white" : "var(--color-text)",
             }}
           >
             {TEMPLATES[name].label}
@@ -176,9 +176,9 @@ export default function AdminEmailPreview() {
                 rows={4}
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none"
                 style={{
-                  backgroundColor: "#FFF8F0",
+                  backgroundColor: "var(--color-bg)",
                   border: "1px solid rgba(245,215,160,0.4)",
-                  color: "#292524",
+                  color: "var(--color-text)",
                   outline: "none",
                 }}
               />
@@ -189,9 +189,9 @@ export default function AdminEmailPreview() {
                 onChange={(e) => setField(f.key, e.target.value)}
                 className="w-full rounded-lg px-3 py-2 text-sm"
                 style={{
-                  backgroundColor: "#FFF8F0",
+                  backgroundColor: "var(--color-bg)",
                   border: "1px solid rgba(245,215,160,0.4)",
-                  color: "#292524",
+                  color: "var(--color-text)",
                   outline: "none",
                 }}
               />
@@ -215,7 +215,7 @@ export default function AdminEmailPreview() {
             target="_blank"
             rel="noopener"
             className="text-[10px] underline"
-            style={{ color: "#F59E0B" }}
+            style={{ color: "var(--color-primary)" }}
           >
             Open in new tab
           </a>
@@ -232,8 +232,8 @@ export default function AdminEmailPreview() {
       {/* Test send */}
       <div className="rounded-xl p-4" style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}>
         <div className="flex items-center gap-2 mb-3">
-          <Mail className="w-4 h-4" style={{ color: "#F59E0B" }} />
-          <p className="text-sm font-bold" style={{ color: "#292524" }}>
+          <Mail className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+          <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
             Send a real test
           </p>
         </div>
@@ -249,9 +249,9 @@ export default function AdminEmailPreview() {
             placeholder="you@example.com"
             className="flex-1 rounded-lg px-3 py-2 text-sm"
             style={{
-              backgroundColor: "#FFF8F0",
+              backgroundColor: "var(--color-bg)",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -261,7 +261,7 @@ export default function AdminEmailPreview() {
             disabled={sending || !testEmail}
             className="px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 disabled:opacity-40"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >

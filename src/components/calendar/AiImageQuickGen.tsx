@@ -102,7 +102,7 @@ export default function AiImageQuickGen({ caption, onGenerated }: Props) {
         >
           <div
             className="w-full max-w-md rounded-2xl overflow-hidden flex flex-col"
-            style={{ backgroundColor: "#FFFCF7", maxHeight: "90dvh" }}
+            style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "90dvh" }}
           >
             {/* Header */}
             <div
@@ -113,7 +113,7 @@ export default function AiImageQuickGen({ caption, onGenerated }: Props) {
               }}
             >
               <Sparkles className="w-5 h-5" style={{ color: "#8B5CF6" }} />
-              <p className="flex-1 text-sm font-bold" style={{ color: "#292524" }}>
+              <p className="flex-1 text-sm font-bold" style={{ color: "var(--color-text)" }}>
                 Generate image with AI
               </p>
               <button
@@ -145,7 +145,7 @@ export default function AiImageQuickGen({ caption, onGenerated }: Props) {
                   style={{
                     backgroundColor: "white",
                     border: "1px solid rgba(245,215,160,0.4)",
-                    color: "#292524",
+                    color: "var(--color-text)",
                     outline: "none",
                   }}
                 />
@@ -169,8 +169,8 @@ export default function AiImageQuickGen({ caption, onGenerated }: Props) {
                       onClick={() => setAspect(a.value)}
                       className="px-2.5 py-1.5 rounded-md text-[11px] font-bold"
                       style={{
-                        backgroundColor: aspect === a.value ? "#292524" : "rgba(0,0,0,0.04)",
-                        color: aspect === a.value ? "white" : "#292524",
+                        backgroundColor: aspect === a.value ? "var(--color-text)" : "rgba(0,0,0,0.04)",
+                        color: aspect === a.value ? "white" : "var(--color-text)",
                       }}
                     >
                       {a.label}
@@ -212,7 +212,7 @@ export default function AiImageQuickGen({ caption, onGenerated }: Props) {
             {/* Footer */}
             <div
               className="px-5 py-3 border-t flex items-center justify-between gap-3"
-              style={{ borderColor: "rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}
+              style={{ borderColor: "rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}
             >
               <p className="text-[10px]" style={{ color: "#A8967E" }}>
                 ~$0.003 · 2-3 sec

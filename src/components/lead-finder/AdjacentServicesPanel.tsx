@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, ExternalLink, Zap, Star } from "lucide-react";
 
-const AMBER = "#F59E0B";
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 const BLUE  = "#3B82F6";
 const PURPLE = "#8B5CF6";
@@ -304,7 +304,7 @@ const CONFIGS: Record<string, OfferConfig> = {
 // ── Sub-components ────────────────────────────────────────────────────────────
 const CATEGORY_META: Record<Category, { label: string; color: string }> = {
   social:      { label: "Social Media",     color: "#3B82F6" },
-  outreach:    { label: "Outreach",         color: "#F59E0B" },
+  outreach:    { label: "Outreach",         color: "var(--color-primary)" },
   marketplace: { label: "Marketplace",      color: "#10B981" },
   analytics:   { label: "Analytics",        color: "#8B5CF6" },
   automation:  { label: "Automation",       color: "#EC4899" },
@@ -313,7 +313,7 @@ const CATEGORY_META: Record<Category, { label: string; color: string }> = {
 
 const PRIORITY_META: Record<Priority, { label: string; color: string; bg: string }> = {
   must:        { label: "Essential",       color: "#1DB954", bg: "rgba(29,185,84,0.1)"  },
-  recommended: { label: "Recommended",     color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
+  recommended: { label: "Recommended",     color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)" },
   optional:    { label: "Optional",        color: "#94A3B8", bg: "rgba(148,163,184,0.1)"},
 };
 
@@ -324,7 +324,7 @@ function ServiceCard({ svc }: { svc: ExtService }) {
       style={{ backgroundColor: "rgba(245,215,160,0.04)", border: "1px solid rgba(245,215,160,0.12)" }}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs font-bold" style={{ color: "#292524" }}>{svc.name}</span>
+          <span className="text-xs font-bold" style={{ color: "var(--color-text)" }}>{svc.name}</span>
           {svc.free && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold"
               style={{ backgroundColor: "rgba(29,185,84,0.12)", color: GREEN }}>FREE</span>
@@ -356,7 +356,7 @@ function ChannelRow({ ch, isTop }: ChannelRowProps) {
         className="w-full flex items-center justify-between px-3 py-2.5 text-left">
         <div className="flex items-center gap-2">
           <span className="text-base">{ch.emoji}</span>
-          <span className="text-sm font-bold" style={{ color: "#292524" }}>{ch.label}</span>
+          <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{ch.label}</span>
           <span className="text-[10px] px-2 py-0.5 rounded-full font-bold"
             style={{ backgroundColor: pm.bg, color: pm.color }}>
             {pm.label}
@@ -402,7 +402,7 @@ export default function AdjacentServicesPanel({ offerType }: Props) {
 
   return (
     <div className="rounded-2xl overflow-hidden"
-      style={{ border: "1px solid rgba(245,215,160,0.2)", backgroundColor: "#FFFCF7" }}>
+      style={{ border: "1px solid rgba(245,215,160,0.2)", backgroundColor: "var(--color-bg-secondary)" }}>
 
       {/* Header */}
       <button type="button" onClick={() => setOpen(v => !v)}
@@ -410,7 +410,7 @@ export default function AdjacentServicesPanel({ offerType }: Props) {
         <div className="flex items-center gap-2">
           <Zap className="w-4 h-4" style={{ color: AMBER }} />
           <div className="text-left">
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Recommended adjacent services
             </p>
             <p className="text-xs" style={{ color: "#A8967E" }}>
@@ -480,7 +480,7 @@ export default function AdjacentServicesPanel({ offerType }: Props) {
                     style={{ backgroundColor: "rgba(245,215,160,0.05)", border: "1px solid rgba(245,215,160,0.15)" }}>
                     <span className="text-lg">{src.emoji}</span>
                     <div>
-                      <p className="text-sm font-bold" style={{ color: "#292524" }}>{src.label}</p>
+                      <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{src.label}</p>
                       <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>{src.why}</p>
                     </div>
                     <Star className="w-3.5 h-3.5 mt-0.5 ml-auto flex-shrink-0" style={{ color: AMBER }} />

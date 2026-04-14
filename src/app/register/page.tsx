@@ -33,7 +33,7 @@ interface Plan {
 
 const BADGES: Record<string, { label: string; color: string }> = {
   free_test:  { label: "Try Free",   color: "#78614E" },
-  lite:       { label: "Start Here", color: "#F59E0B" },
+  lite:       { label: "Start Here", color: "var(--color-primary)" },
   pro:        { label: "Best Value", color: "#8B5CF6" },
   business:   { label: "Studio",     color: "#E1306C" },
   enterprise: { label: "Agency",     color: "#16A34A" },
@@ -61,7 +61,7 @@ function Row({ icon, label, value, ok }: { icon: React.ReactNode; label: string;
           ? <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#16A34A" }} />
           : <X className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#D1C4B0" }} />
       ) : (
-        <span className="text-xs font-bold" style={{ color: "#292524" }}>{value}</span>
+        <span className="text-xs font-bold" style={{ color: "var(--color-text)" }}>{value}</span>
       )}
     </div>
   );
@@ -138,7 +138,7 @@ export default function RegisterPage() {
   const currentPlan = plans.find(p => p.id === selectedPlan);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFF8F0" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg)" }}>
       <div className="max-w-7xl mx-auto px-4 py-10">
 
         {/* Header */}
@@ -147,25 +147,25 @@ export default function RegisterPage() {
             style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)" }}>
             <Zap className="w-7 h-7 text-white" />
           </div>
-          <h1 className="text-3xl font-bold mb-1" style={{ color: "#292524" }}>MarketHub Pro</h1>
+          <h1 className="text-3xl font-bold mb-1" style={{ color: "var(--color-text)" }}>MarketHub Pro</h1>
           <p className="text-sm" style={{ color: "#A8967E" }}>Choose your plan and start today</p>
         </div>
 
         {step === "plan" ? (
           <>
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-1" style={{ color: "#292524" }}>Select Your Plan</h2>
+              <h2 className="text-2xl font-bold mb-1" style={{ color: "var(--color-text)" }}>Select Your Plan</h2>
               <p className="text-sm" style={{ color: "#A8967E" }}>Start free for 7 days, no credit card required</p>
             </div>
 
             {loadingPlans ? (
               <div className="flex justify-center py-20">
-                <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
+                <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--color-primary)" }} />
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
                 {plans.map(plan => {
-                  const badge = BADGES[plan.id] ?? { label: "Plan", color: "#F59E0B" };
+                  const badge = BADGES[plan.id] ?? { label: "Plan", color: "var(--color-primary)" };
                   const isFree = plan.id === "free_test";
                   const isSelected = selectedPlan === plan.id;
 
@@ -174,7 +174,7 @@ export default function RegisterPage() {
                       onClick={() => handleSelectPlan(plan.id)}
                       className="rounded-2xl p-6 cursor-pointer transition-all hover:scale-[1.02] flex flex-col"
                       style={{
-                        backgroundColor: "#FFFCF7",
+                        backgroundColor: "var(--color-bg-secondary)",
                         border: isSelected ? `2px solid ${badge.color}` : "1px solid rgba(245,215,160,0.25)",
                         boxShadow: isSelected ? `0 8px 24px ${badge.color}25` : "0 1px 3px rgba(120,97,78,0.08)",
                       }}>
@@ -186,7 +186,7 @@ export default function RegisterPage() {
                       </span>
 
                       {/* Name + Price */}
-                      <h3 className="text-xl font-bold mb-0.5" style={{ color: "#292524" }}>{plan.name}</h3>
+                      <h3 className="text-xl font-bold mb-0.5" style={{ color: "var(--color-text)" }}>{plan.name}</h3>
                       <div className="flex items-end gap-1 mb-1">
                         {isFree ? (
                           <span className="text-3xl font-bold" style={{ color: badge.color }}>Free</span>
@@ -251,7 +251,7 @@ export default function RegisterPage() {
 
             <p className="text-center text-sm" style={{ color: "#A8967E" }}>
               Already have an account?{" "}
-              <Link href="/login" className="font-semibold" style={{ color: "#F59E0B" }}>Sign in</Link>
+              <Link href="/login" className="font-semibold" style={{ color: "var(--color-primary)" }}>Sign in</Link>
             </p>
           </>
         ) : (
@@ -259,24 +259,24 @@ export default function RegisterPage() {
           <div className="max-w-md mx-auto">
             <button onClick={() => setStep("plan")}
               className="text-sm font-semibold mb-6 flex items-center gap-1.5"
-              style={{ color: "#F59E0B" }}>
+              style={{ color: "var(--color-primary)" }}>
               ← Back to plans
             </button>
 
             {/* Selected plan summary */}
             {currentPlan && (
               <div className="rounded-xl p-4 mb-6"
-                style={{ backgroundColor: `${(BADGES[currentPlan.id]?.color ?? "#F59E0B")}10`, border: `1px solid ${(BADGES[currentPlan.id]?.color ?? "#F59E0B")}30` }}>
+                style={{ backgroundColor: `${(BADGES[currentPlan.id]?.color ?? "var(--color-primary)")}10`, border: `1px solid ${(BADGES[currentPlan.id]?.color ?? "var(--color-primary)")}30` }}>
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs font-semibold" style={{ color: "#A8967E" }}>Selected plan</p>
-                    <p className="text-lg font-bold" style={{ color: "#292524" }}>{currentPlan.name}</p>
+                    <p className="text-lg font-bold" style={{ color: "var(--color-text)" }}>{currentPlan.name}</p>
                     <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
                       {fmtVal(currentPlan.premium_actions_per_month)} Premium Actions · {fmtVal(currentPlan.instagram_accounts)} Instagram · {fmtDays(currentPlan.history_days)} history
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold" style={{ color: BADGES[currentPlan.id]?.color ?? "#F59E0B" }}>
+                    <p className="text-2xl font-bold" style={{ color: BADGES[currentPlan.id]?.color ?? "var(--color-primary)" }}>
                       {currentPlan.price === 0 ? "Free" : `$${currentPlan.price}/mo`}
                     </p>
                     <p className="text-xs" style={{ color: "#A8967E" }}>{currentPlan.period}</p>
@@ -287,8 +287,8 @@ export default function RegisterPage() {
 
             {/* Form */}
             <div className="rounded-2xl p-8"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 4px 24px rgba(120,97,78,0.12)" }}>
-              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Create Account</h2>
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 4px 24px rgba(120,97,78,0.12)" }}>
+              <h2 className="text-xl font-bold mb-1" style={{ color: "var(--color-text)" }}>Create Account</h2>
               <p className="text-sm mb-6" style={{ color: "#A8967E" }}>Start free, no card required</p>
 
               <form onSubmit={handleRegister} className="space-y-4">
@@ -299,7 +299,7 @@ export default function RegisterPage() {
                     <input type="text" value={name} onChange={e => setName(e.target.value)}
                       placeholder="Your name" required
                       className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                   </div>
                 </div>
 
@@ -310,7 +310,7 @@ export default function RegisterPage() {
                     <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                       placeholder="email@example.com" required
                       className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                   </div>
                 </div>
 
@@ -322,7 +322,7 @@ export default function RegisterPage() {
                       onChange={e => setPassword(e.target.value)}
                       placeholder="At least 8 characters" required minLength={8}
                       className="w-full pl-10 pr-10 py-3 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                     <button type="button" onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: "#C4AA8A" }}>
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -346,7 +346,7 @@ export default function RegisterPage() {
 
                 <button type="submit" disabled={loading}
                   className="w-full py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-2"
-                  style={{ backgroundColor: "#F59E0B", color: "#1C1814", opacity: loading ? 0.7 : 1 }}>
+                  style={{ backgroundColor: "var(--color-primary)", color: "#1C1814", opacity: loading ? 0.7 : 1 }}>
                   {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                   {loading ? "Creating account..." : "Create free account"}
                 </button>
@@ -354,7 +354,7 @@ export default function RegisterPage() {
 
               <p className="text-center text-xs mt-5" style={{ color: "#A8967E" }}>
                 Already have an account?{" "}
-                <Link href="/login" className="font-semibold" style={{ color: "#F59E0B" }}>Sign in</Link>
+                <Link href="/login" className="font-semibold" style={{ color: "var(--color-primary)" }}>Sign in</Link>
               </p>
             </div>
           </div>
@@ -362,8 +362,8 @@ export default function RegisterPage() {
 
         <p className="text-center text-xs mt-8" style={{ color: "#C4AA8A" }}>
           © 2026 MarketHub Pro ·{" "}
-          <a href="/privacy" style={{ color: "#F59E0B" }}>Privacy</a>{" "}·{" "}
-          <a href="/terms" style={{ color: "#F59E0B" }}>Terms</a>
+          <a href="/privacy" style={{ color: "var(--color-primary)" }}>Privacy</a>{" "}·{" "}
+          <a href="/terms" style={{ color: "var(--color-primary)" }}>Terms</a>
         </p>
       </div>
     </div>

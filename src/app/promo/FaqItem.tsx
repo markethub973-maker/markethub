@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
 const BORDER = "rgba(245,215,160,0.4)";
-const TEXT = "#292524";
+const TEXT = "var(--color-text)";
 const MUTED = "#78614E";
 const LIGHTER = "#C4AA8A";
 

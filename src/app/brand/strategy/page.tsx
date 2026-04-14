@@ -117,7 +117,7 @@ export default function StrategyPage() {
   const filled = icp.trim().length > 10 || values.length >= 2 || clusters.length >= 2 || northStar.trim().length > 10;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Content Strategy" subtitle="Who you write for + what you stand for — compounds with Brand Voice on every AI feature" />
 
       <main className="max-w-4xl mx-auto px-6 py-6 space-y-5">
@@ -146,8 +146,8 @@ export default function StrategyPage() {
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
               <div className="flex items-center gap-2">
-                <Target className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+                <Target className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+                <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                   Ideal Customer Profile (ICP)
                 </h2>
               </div>
@@ -161,7 +161,7 @@ export default function StrategyPage() {
                 maxLength={600}
                 placeholder="Small marketing agencies in Europe, 5-15 employees, owners who are ex-creatives now overwhelmed by ops work. They lose 6-10h/week to repetitive content tasks and can't afford a senior content lead..."
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
               <p className="text-[10px]" style={{ color: "#A8967E" }}>{icp.length}/600</p>
             </section>
@@ -173,7 +173,7 @@ export default function StrategyPage() {
             >
               <div className="flex items-center gap-2">
                 <Heart className="w-4 h-4" style={{ color: "#EC4899" }} />
-                <h2 className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                <h2 className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                   Brand values ({values.length}/5)
                 </h2>
               </div>
@@ -188,7 +188,7 @@ export default function StrategyPage() {
                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addValue())}
                   placeholder="Short phrase, e.g. 'Clarity over hype'"
                   className="flex-1 rounded-md px-3 py-1.5 text-sm"
-                  style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                  style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
                 />
                 <button
                   type="button"
@@ -243,7 +243,7 @@ export default function StrategyPage() {
             >
               <div className="flex items-center gap-2">
                 <Hash className="w-4 h-4" style={{ color: "#8B5CF6" }} />
-                <h2 className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                <h2 className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                   Topic clusters ({clusters.length}/8)
                 </h2>
               </div>
@@ -258,7 +258,7 @@ export default function StrategyPage() {
                   onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addCluster())}
                   placeholder="Short phrase, e.g. 'AI workflow automation'"
                   className="flex-1 rounded-md px-3 py-1.5 text-sm"
-                  style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                  style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
                 />
                 <button
                   type="button"
@@ -313,7 +313,7 @@ export default function StrategyPage() {
             >
               <div className="flex items-center gap-2">
                 <Compass className="w-4 h-4" style={{ color: "#10B981" }} />
-                <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+                <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                   North-star goal
                 </h2>
               </div>
@@ -327,7 +327,7 @@ export default function StrategyPage() {
                 maxLength={300}
                 placeholder="Become the go-to AI marketing assistant for 500+ small agencies in Europe within 12 months."
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
               <p className="text-[10px]" style={{ color: "#A8967E" }}>{northStar.length}/300</p>
             </section>
@@ -339,7 +339,7 @@ export default function StrategyPage() {
                 onClick={save}
                 disabled={!filled || saving}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
                 {saving ? "Saving..." : saved ? "Saved" : "Save strategy"}

@@ -44,7 +44,7 @@ const FEATURES: Feature[] = [
   },
   {
     icon: Zap,
-    color: "#F59E0B",
+    color: "var(--color-primary)",
     title: "Automations — 31 ready-to-run workflows",
     description:
       "Cross-post to all platforms in one click, auto-recycle your best content, send weekly reports — and 28 more. Browse the catalog grouped by category, hit Run, done.",
@@ -110,7 +110,7 @@ export default function WhatsNewModal() {
     >
       <div
         className="w-full max-w-2xl rounded-2xl overflow-hidden flex flex-col"
-        style={{ backgroundColor: "#FFFCF7", maxHeight: "90dvh" }}
+        style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "90dvh" }}
       >
         <div
           className="flex items-center gap-3 px-6 py-4 border-b"
@@ -125,7 +125,7 @@ export default function WhatsNewModal() {
             <p className="text-xs font-bold uppercase tracking-widest" style={{ color: "#8B5CF6" }}>
               What's new
             </p>
-            <p className="text-lg font-bold" style={{ color: "#292524" }}>
+            <p className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
               Sprint 1 just shipped — 4 new features for you
             </p>
           </div>
@@ -158,7 +158,7 @@ export default function WhatsNewModal() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start gap-2">
-                  <h3 className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                  <h3 className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                     {f.title}
                   </h3>
                   {f.badge && (
@@ -189,7 +189,7 @@ export default function WhatsNewModal() {
 
         <div
           className="px-6 py-3 border-t flex items-center justify-between"
-          style={{ borderColor: "rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}
+          style={{ borderColor: "rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}
         >
           <p className="text-[11px]" style={{ color: "#A8967E" }}>
             You can revisit these anytime from the sidebar.
@@ -198,7 +198,7 @@ export default function WhatsNewModal() {
             type="button"
             onClick={dismiss}
             className="px-4 py-2 rounded-lg text-xs font-bold"
-            style={{ backgroundColor: "#292524", color: "white" }}
+            style={{ backgroundColor: "var(--color-text)", color: "white" }}
           >
             Got it
           </button>

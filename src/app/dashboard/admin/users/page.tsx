@@ -79,7 +79,7 @@ interface Finance {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const PLAN_COLORS: Record<string, string> = {
   free_test:  "#78614E",
-  lite:       "#F59E0B",
+  lite:       "var(--color-primary)",
   pro:        "#8B5CF6",
   business:   "#E1306C",
   enterprise: "#16A34A",
@@ -234,14 +234,14 @@ export default function AdminUsersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FFF8F0" }}>
-        <RefreshCw className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--color-bg)" }}>
+        <RefreshCw className="w-8 h-8 animate-spin" style={{ color: "var(--color-primary)" }} />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: "#FFF8F0" }}>
+    <div className="min-h-screen p-6" style={{ backgroundColor: "var(--color-bg)" }}>
       {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-4 mb-6">
         <Link href="/dashboard/admin"
@@ -250,7 +250,7 @@ export default function AdminUsersPage() {
           <ArrowLeft size={16} /> Admin Panel
         </Link>
         <div className="h-4 w-px" style={{ backgroundColor: "#D1C4B0" }} />
-        <h1 className="text-2xl font-bold" style={{ color: "#292524" }}>Users & Revenue</h1>
+        <h1 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>Users & Revenue</h1>
         <button onClick={loadData} className="ml-auto p-2 rounded-lg hover:bg-amber-50">
           <RefreshCw size={16} style={{ color: "#A8967E" }} />
         </button>
@@ -261,7 +261,7 @@ export default function AdminUsersPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <KpiCard icon={<Users size={20} />} label="Total Users" value={String(summary.total_users)} color="#3B82F6" />
           <KpiCard icon={<DollarSign size={20} />} label="Monthly Revenue" value={`$${summary.total_monthly_revenue.toFixed(2)}`} color="#16A34A" />
-          <KpiCard icon={<TrendingDown size={20} />} label="AI Cost / Month" value={`$${summary.total_ai_cost_month.toFixed(2)}`} color="#F59E0B" />
+          <KpiCard icon={<TrendingDown size={20} />} label="AI Cost / Month" value={`$${summary.total_ai_cost_month.toFixed(2)}`} color="var(--color-primary)" />
           <KpiCard icon={<TrendingUp size={20} />} label="Net Profit" value={`$${summary.net_profit_month.toFixed(2)}`}
             color={summary.net_profit_month >= 0 ? "#16A34A" : "#EF4444"} />
         </div>
@@ -273,7 +273,7 @@ export default function AdminUsersPage() {
           <button key={t} onClick={() => setActiveTab(t)}
             className="px-4 py-2 rounded-xl text-sm font-semibold transition-all capitalize"
             style={{
-              backgroundColor: activeTab === t ? "#F59E0B" : "rgba(245,158,11,0.08)",
+              backgroundColor: activeTab === t ? "var(--color-primary)" : "rgba(245,158,11,0.08)",
               color: activeTab === t ? "#fff" : "#A8967E",
             }}>
             {t === "users" ? "👥 Users Table" : "💰 Revenue & Costs"}
@@ -293,11 +293,11 @@ export default function AdminUsersPage() {
               <input value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Search email, name, IP…"
                 className="w-full pl-8 pr-3 py-2 text-sm rounded-xl border outline-none"
-                style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7" }} />
+                style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg-secondary)" }} />
             </div>
             <select value={filterPlan} onChange={e => setFilterPlan(e.target.value)}
               className="px-3 py-2 text-sm rounded-xl border outline-none"
-              style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7" }}>
+              style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg-secondary)" }}>
               <option value="all">All Plans</option>
               {Object.keys(PLAN_PRICES).map(p => (
                 <option key={p} value={p}>{p.replace("_", " ")}</option>
@@ -305,7 +305,7 @@ export default function AdminUsersPage() {
             </select>
             <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
               className="px-3 py-2 text-sm rounded-xl border outline-none"
-              style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7" }}>
+              style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg-secondary)" }}>
               <option value="all">All Statuses</option>
               <option value="active">Active</option>
               <option value="blocked">Blocked</option>
@@ -313,7 +313,7 @@ export default function AdminUsersPage() {
             </select>
             <select value={sortBy} onChange={e => setSortBy(e.target.value as any)}
               className="px-3 py-2 text-sm rounded-xl border outline-none"
-              style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7" }}>
+              style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg-secondary)" }}>
               <option value="created_at">Newest</option>
               <option value="monthly_revenue">Revenue ↓</option>
               <option value="ai_cost_month">AI Cost ↓</option>
@@ -335,7 +335,7 @@ export default function AdminUsersPage() {
           {/* Table */}
           <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(245,215,160,0.25)" }}>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm" style={{ backgroundColor: "#FFFCF7" }}>
+              <table className="w-full text-sm" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
                 <thead>
                   <tr style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "rgba(245,215,160,0.1)" }}>
                     {["User", "Plan", "Status", "Revenue/mo", "AI Cost", "Net", "IP / Device", "Signed Up", "Actions"].map(h => (
@@ -352,7 +352,7 @@ export default function AdminUsersPage() {
                     }}>
                       {/* User */}
                       <td className="px-4 py-3">
-                        <div className="font-semibold text-xs" style={{ color: "#292524" }}>
+                        <div className="font-semibold text-xs" style={{ color: "var(--color-text)" }}>
                           {u.name || "(no name)"}
                           {u.is_admin && <span className="ml-1 text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-700">admin</span>}
                         </div>
@@ -362,8 +362,8 @@ export default function AdminUsersPage() {
                         )}
                         {u.abuse_flags.length > 0 && (
                           <div className="flex items-center gap-1 mt-0.5">
-                            <AlertTriangle size={10} style={{ color: "#F59E0B" }} />
-                            <span className="text-xs" style={{ color: "#F59E0B" }}>{u.abuse_flags.length} flag(s)</span>
+                            <AlertTriangle size={10} style={{ color: "var(--color-primary)" }} />
+                            <span className="text-xs" style={{ color: "var(--color-primary)" }}>{u.abuse_flags.length} flag(s)</span>
                           </div>
                         )}
                       </td>
@@ -395,7 +395,7 @@ export default function AdminUsersPage() {
                       </td>
 
                       {/* AI cost */}
-                      <td className="px-4 py-3 text-xs" style={{ color: "#F59E0B" }}>
+                      <td className="px-4 py-3 text-xs" style={{ color: "var(--color-primary)" }}>
                         {u.ai_cost_month > 0 ? `$${u.ai_cost_month.toFixed(3)}` : "—"}
                       </td>
 
@@ -485,8 +485,8 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Revenue by plan */}
-          <div className="rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
-            <h3 className="font-bold mb-4" style={{ color: "#292524" }}>Revenue by Plan</h3>
+          <div className="rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
+            <h3 className="font-bold mb-4" style={{ color: "var(--color-text)" }}>Revenue by Plan</h3>
             <div className="space-y-3">
               {Object.entries(finance.revenue.by_plan).map(([plan, d]) => (
                 <div key={plan} className="flex items-center gap-4">
@@ -500,7 +500,7 @@ export default function AdminUsersPage() {
                         backgroundColor: PLAN_COLORS[plan] ?? "#78614E",
                       }} />
                   </div>
-                  <div className="text-xs font-bold w-16 text-right" style={{ color: "#292524" }}>${d.revenue}/mo</div>
+                  <div className="text-xs font-bold w-16 text-right" style={{ color: "var(--color-text)" }}>${d.revenue}/mo</div>
                   <div className="text-xs w-16 text-right" style={{ color: "#A8967E" }}>{d.count} users</div>
                 </div>
               ))}
@@ -508,8 +508,8 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Costs breakdown */}
-          <div className="rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
-            <h3 className="font-bold mb-4" style={{ color: "#292524" }}>Service Costs — {finance.month}</h3>
+          <div className="rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
+            <h3 className="font-bold mb-4" style={{ color: "var(--color-text)" }}>Service Costs — {finance.month}</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
@@ -525,7 +525,7 @@ export default function AdminUsersPage() {
                     <tr key={item.service} style={{ borderBottom: "1px solid rgba(245,215,160,0.1)" }}>
                       <td className="px-3 py-3 text-lg">{item.icon}</td>
                       <td className="px-3 py-3">
-                        <div className="font-semibold text-xs" style={{ color: "#292524" }}>{item.service}</div>
+                        <div className="font-semibold text-xs" style={{ color: "var(--color-text)" }}>{item.service}</div>
                         <div className="text-xs" style={{ color: "#A8967E" }}>{item.category}</div>
                       </td>
                       <td className="px-3 py-3 text-xs" style={{ color: "#78716C" }}>{item.plan_name}</td>
@@ -540,7 +540,7 @@ export default function AdminUsersPage() {
                           {!item.dynamic && (
                             <button onClick={() => { setEditCost(item); setEditCostValue(String(item.monthly_usd)); }}
                               className="p-1.5 rounded-lg text-xs"
-                              style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B" }}>
+                              style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)" }}>
                               <Edit3 size={12} />
                             </button>
                           )}
@@ -558,7 +558,7 @@ export default function AdminUsersPage() {
 
                   {/* Total row */}
                   <tr style={{ borderTop: "2px solid rgba(245,215,160,0.4)", backgroundColor: "rgba(245,215,160,0.05)" }}>
-                    <td colSpan={3} className="px-3 py-3 font-bold text-sm" style={{ color: "#292524" }}>Total Costs</td>
+                    <td colSpan={3} className="px-3 py-3 font-bold text-sm" style={{ color: "var(--color-text)" }}>Total Costs</td>
                     <td className="px-3 py-3 font-bold text-sm" style={{ color: "#EF4444" }}>
                       ${finance.costs.total.toFixed(2)}/mo
                     </td>
@@ -596,8 +596,8 @@ export default function AdminUsersPage() {
       {actionUser && actionType && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-          <div className="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style={{ backgroundColor: "#FFFCF7" }}>
-            <h3 className="font-bold text-lg mb-1" style={{ color: "#292524" }}>
+          <div className="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
+            <h3 className="font-bold text-lg mb-1" style={{ color: "var(--color-text)" }}>
               {actionType === "block" ? "Block User" : actionType === "unblock" ? "Unblock User" : "Change Plan"}
             </h3>
             <p className="text-sm mb-4" style={{ color: "#A8967E" }}>{actionUser.email}</p>
@@ -607,13 +607,13 @@ export default function AdminUsersPage() {
                 placeholder="Reason for blocking (optional)…"
                 rows={3}
                 className="w-full px-3 py-2 text-sm rounded-xl border outline-none mb-4 resize-none"
-                style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0" }} />
+                style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)" }} />
             )}
 
             {actionType === "change_plan" && (
               <select value={actionPlan} onChange={e => setActionPlan(e.target.value)}
                 className="w-full px-3 py-2 text-sm rounded-xl border outline-none mb-4"
-                style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0" }}>
+                style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)" }}>
                 {Object.keys(PLAN_PRICES).map(p => (
                   <option key={p} value={p}>{p.replace("_", " ")} — ${PLAN_PRICES[p]}/mo</option>
                 ))}
@@ -645,15 +645,15 @@ export default function AdminUsersPage() {
       {editCost && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
-          <div className="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style={{ backgroundColor: "#FFFCF7" }}>
-            <h3 className="font-bold text-lg mb-1" style={{ color: "#292524" }}>Edit Cost</h3>
+          <div className="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
+            <h3 className="font-bold text-lg mb-1" style={{ color: "var(--color-text)" }}>Edit Cost</h3>
             <p className="text-sm mb-4" style={{ color: "#A8967E" }}>{editCost.service}</p>
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-sm font-bold" style={{ color: "#292524" }}>$</span>
+              <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>$</span>
               <input type="number" step="0.01" min="0" value={editCostValue}
                 onChange={e => setEditCostValue(e.target.value)}
                 className="flex-1 px-3 py-2 text-sm rounded-xl border outline-none"
-                style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0" }} />
+                style={{ borderColor: "rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)" }} />
               <span className="text-sm" style={{ color: "#A8967E" }}>/month</span>
             </div>
             <div className="flex gap-3">
@@ -664,7 +664,7 @@ export default function AdminUsersPage() {
               </button>
               <button onClick={handleSaveCost} disabled={editCostLoading}
                 className="flex-1 py-2 rounded-xl text-sm font-semibold text-white"
-                style={{ backgroundColor: "#F59E0B" }}>
+                style={{ backgroundColor: "var(--color-primary)" }}>
                 {editCostLoading ? "…" : "Save"}
               </button>
             </div>
@@ -678,7 +678,7 @@ export default function AdminUsersPage() {
 // ── Sub-components ────────────────────────────────────────────────────────────
 function KpiCard({ icon, label, value, color }: { icon: React.ReactNode; label: string; value: string; color: string }) {
   return (
-    <div className="rounded-2xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+    <div className="rounded-2xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
       <div className="flex items-center gap-2 mb-2">
         <div className="w-8 h-8 rounded-lg flex items-center justify-center"
           style={{ backgroundColor: `${color}15`, color }}>
@@ -693,7 +693,7 @@ function KpiCard({ icon, label, value, color }: { icon: React.ReactNode; label: 
 
 function FinCard({ icon, label, value, sub, color }: { icon: string; label: string; value: string; sub: string; color: string }) {
   return (
-    <div className="rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+    <div className="rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
       <div className="text-2xl mb-2">{icon}</div>
       <div className="text-xs font-semibold mb-1" style={{ color: "#A8967E" }}>{label}</div>
       <div className="text-3xl font-black mb-1" style={{ color }}>{value}</div>

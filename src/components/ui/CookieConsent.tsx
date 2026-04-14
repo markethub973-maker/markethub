@@ -70,7 +70,7 @@ export default function CookieConsent() {
     <div
       className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:bottom-4 sm:max-w-md z-[90] rounded-2xl shadow-2xl"
       style={{
-        backgroundColor: "#FFFCF7",
+        backgroundColor: "var(--color-bg-secondary)",
         border: "1px solid rgba(245,215,160,0.5)",
         boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
       }}
@@ -81,19 +81,19 @@ export default function CookieConsent() {
         <div className="flex items-start gap-3 mb-3">
           <div
             className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B" }}
+            style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary)" }}
           >
             <Cookie className="w-5 h-5" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               We value your privacy
             </p>
             <p className="text-xs mt-1" style={{ color: "#78614E" }}>
               We use essential cookies to make the site work, plus optional
               analytics (Microsoft Clarity) to improve UX. You can change your
               mind anytime in{" "}
-              <Link href="/settings" className="underline" style={{ color: "#D97706" }}>
+              <Link href="/settings" className="underline" style={{ color: "var(--color-primary-hover)" }}>
                 settings
               </Link>
               .
@@ -117,7 +117,7 @@ export default function CookieConsent() {
             className="flex-1 py-2.5 rounded-lg text-xs font-bold transition-all"
             style={{
               backgroundColor: "white",
-              color: "#292524",
+              color: "var(--color-text)",
               border: "1px solid rgba(245,215,160,0.5)",
             }}
           >
@@ -128,7 +128,7 @@ export default function CookieConsent() {
             onClick={() => decide("all")}
             className="flex-1 py-2.5 rounded-lg text-xs font-bold transition-all"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >

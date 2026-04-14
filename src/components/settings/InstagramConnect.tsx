@@ -70,12 +70,12 @@ export default function InstagramConnect() {
   };
 
   return (
-    <div className="p-6 rounded-lg border" style={{ backgroundColor: "#FFFCF7", borderColor: "rgba(245,215,160,0.2)" }}>
+    <div className="p-6 rounded-lg border" style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: "rgba(245,215,160,0.2)" }}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Instagram className="w-6 h-6" style={{ color: "#E4405F" }} />
           <div>
-            <h3 className="font-semibold" style={{ color: "#292524" }}>Instagram Account</h3>
+            <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Instagram Account</h3>
             {connection ? (
               <p className="text-sm" style={{ color: "#78614E" }}>
                 @{connection.instagram_username}

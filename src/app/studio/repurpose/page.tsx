@@ -75,7 +75,7 @@ export default function RepurposePage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Content Repurposer" subtitle="One caption → platform-optimized variants for every channel" />
 
       <main className="max-w-5xl mx-auto px-6 py-6 space-y-5">
@@ -85,8 +85,8 @@ export default function RepurposePage() {
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
           <div className="flex items-center gap-2">
-            <Shuffle className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+            <Shuffle className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Source caption
             </h2>
           </div>
@@ -100,9 +100,9 @@ export default function RepurposePage() {
               onChange={(e) => setSourcePlatform(e.target.value as Target)}
               className="rounded-md px-2 py-1 text-xs"
               style={{
-                backgroundColor: "#FFF8F0",
+                backgroundColor: "var(--color-bg)",
                 border: "1px solid rgba(245,215,160,0.4)",
-                color: "#292524",
+                color: "var(--color-text)",
                 outline: "none",
               }}
             >
@@ -120,9 +120,9 @@ export default function RepurposePage() {
             placeholder="Paste your original caption — any language, any platform."
             className="w-full rounded-lg px-3 py-2 text-sm resize-none"
             style={{
-              backgroundColor: "#FFF8F0",
+              backgroundColor: "var(--color-bg)",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -160,7 +160,7 @@ export default function RepurposePage() {
             onClick={run}
             disabled={!canSubmit}
             className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> Repurposing...</>) : (<><Sparkles className="w-4 h-4" /> Repurpose</>)}
           </button>
@@ -191,7 +191,7 @@ export default function RepurposePage() {
                     >
                       <Icon className="w-4 h-4" style={{ color: t.color }} />
                     </div>
-                    <p className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                    <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                       {t.label}
                     </p>
                     <span className="text-[10px]" style={{ color: "#A8967E" }}>
@@ -209,7 +209,7 @@ export default function RepurposePage() {
                   </div>
                   <p
                     className="text-sm whitespace-pre-wrap"
-                    style={{ color: "#292524", lineHeight: 1.5 }}
+                    style={{ color: "var(--color-text)", lineHeight: 1.5 }}
                   >
                     {v}
                   </p>

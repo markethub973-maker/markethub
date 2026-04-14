@@ -39,7 +39,7 @@ export default function PlanGate({ requiredPlan, children, message }: PlanGatePr
 
   if (loading) {
     return (
-      <div className="rounded-xl p-6 animate-pulse" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.2)" }}>
+      <div className="rounded-xl p-6 animate-pulse" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.2)" }}>
         <div className="h-4 rounded w-1/3 mb-2" style={{ backgroundColor: "rgba(245,215,160,0.4)" }} />
         <div className="h-3 rounded w-1/2" style={{ backgroundColor: "rgba(245,215,160,0.3)" }} />
       </div>
@@ -58,15 +58,15 @@ export default function PlanGate({ requiredPlan, children, message }: PlanGatePr
     <div
       className="rounded-2xl p-6 flex flex-col items-center justify-center gap-3 text-center min-h-[140px]"
       style={{
-        backgroundColor: "#FFFCF7",
+        backgroundColor: "var(--color-bg-secondary)",
         border: "1px dashed rgba(245,215,160,0.5)",
       }}
     >
       <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: "rgba(245,158,11,0.12)" }}>
-        <Lock className="w-5 h-5" style={{ color: "#F59E0B" }} />
+        <Lock className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
       </div>
       <div>
-        <p className="font-semibold text-sm mb-1" style={{ color: "#292524" }}>
+        <p className="font-semibold text-sm mb-1" style={{ color: "var(--color-text)" }}>
           {message ?? `Requires ${planLabel} plan`}
         </p>
         <p className="text-xs" style={{ color: "#A8967E" }}>
@@ -76,7 +76,7 @@ export default function PlanGate({ requiredPlan, children, message }: PlanGatePr
       <Link
         href="/upgrade"
         className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold transition-all hover:opacity-90"
-        style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+        style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
       >
         <Zap className="w-3.5 h-3.5" />
         {isExpired ? "Upgrade Now" : `Upgrade to ${planLabel}`}

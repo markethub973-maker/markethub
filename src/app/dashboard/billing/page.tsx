@@ -62,7 +62,7 @@ function StatusBadge({ status }: { status: string | null }) {
     </span>
   );
   if (status === "open") return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
       <Clock className="w-3 h-3" /> Open
     </span>
   );
@@ -153,7 +153,7 @@ export default function BillingPage() {
       <div className="p-6 max-w-2xl space-y-5">
 
         {loading && (
-          <div className="rounded-2xl p-6 animate-pulse" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+          <div className="rounded-2xl p-6 animate-pulse" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
             <div className="h-5 w-1/3 rounded mb-3" style={{ backgroundColor: "rgba(245,215,160,0.4)" }} />
             <div className="h-3 w-1/2 rounded" style={{ backgroundColor: "rgba(245,215,160,0.3)" }} />
           </div>
@@ -176,7 +176,7 @@ export default function BillingPage() {
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wide mb-1" style={{ color: "#A8967E" }}>Current Plan</p>
-                  <h2 className="text-2xl font-black" style={{ color: "#292524" }}>{planLabel}</h2>
+                  <h2 className="text-2xl font-black" style={{ color: "var(--color-text)" }}>{planLabel}</h2>
                 </div>
                 <span
                   className="px-3 py-1 rounded-full text-xs font-bold"
@@ -192,7 +192,7 @@ export default function BillingPage() {
 
               {data.subscription && !isTrial && (
                 <div className="space-y-1.5 mb-4 text-sm" style={{ color: "#78614E" }}>
-                  <p>Next renewal: <strong style={{ color: "#292524" }}>{data.subscription.current_period_end}</strong></p>
+                  <p>Next renewal: <strong style={{ color: "var(--color-text)" }}>{data.subscription.current_period_end}</strong></p>
                   {data.subscription.cancel_at_period_end && (
                     <div className="flex items-center gap-1.5 text-sm" style={{ color: "#dc2626" }}>
                       <AlertTriangle className="w-3.5 h-3.5" />
@@ -203,7 +203,7 @@ export default function BillingPage() {
               )}
 
               {isTrial && data.trial_expires_at && (
-                <p className="text-sm mb-4" style={{ color: "#D97706" }}>
+                <p className="text-sm mb-4" style={{ color: "var(--color-primary-hover)" }}>
                   Trial expires: <strong>{new Date(data.trial_expires_at).toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" })}</strong>
                 </p>
               )}
@@ -212,7 +212,7 @@ export default function BillingPage() {
                 <Link
                   href="/upgrade"
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-                  style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+                  style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
                 >
                   <Zap className="w-4 h-4" />
                   {isExpired ? "Reactivate" : isTrial ? "Upgrade Now" : "Change Plan"}
@@ -268,23 +268,23 @@ export default function BillingPage() {
             {/* Payment method */}
             <div
               className="rounded-2xl p-6"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}
             >
               <div className="flex items-center gap-2 mb-4">
-                <CreditCard className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                <span className="font-semibold text-sm" style={{ color: "#292524" }}>Payment Method</span>
+                <CreditCard className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+                <span className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>Payment Method</span>
               </div>
 
               {data.payment_method ? (
                 <div className="flex items-center gap-3">
                   <div
                     className="px-2.5 py-1 rounded text-xs font-black"
-                    style={{ backgroundColor: "#1C1814", color: "#F59E0B", letterSpacing: 1 }}
+                    style={{ backgroundColor: "#1C1814", color: "var(--color-primary)", letterSpacing: 1 }}
                   >
                     {CARD_BRAND_ICONS[data.payment_method.brand] ?? data.payment_method.brand.toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                    <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>
                       •••• •••• •••• {data.payment_method.last4}
                     </p>
                     <p className="text-xs" style={{ color: "#A8967E" }}>
@@ -300,10 +300,10 @@ export default function BillingPage() {
             {/* Invoice history */}
             <div
               className="rounded-2xl overflow-hidden"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}
             >
               <div className="px-6 py-4 border-b" style={{ borderColor: "rgba(245,215,160,0.2)" }}>
-                <span className="font-semibold text-sm" style={{ color: "#292524" }}>Payment History</span>
+                <span className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>Payment History</span>
               </div>
 
               {data.invoices.length === 0 ? (
@@ -315,13 +315,13 @@ export default function BillingPage() {
                   {data.invoices.map((inv) => (
                     <div key={inv.id} className="flex items-center gap-4 px-6 py-3.5">
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold truncate" style={{ color: "#292524" }}>
+                        <p className="text-sm font-semibold truncate" style={{ color: "var(--color-text)" }}>
                           {inv.period_start} — {inv.period_end}
                         </p>
                         <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{inv.date}</p>
                       </div>
                       <StatusBadge status={inv.status} />
-                      <span className="text-sm font-bold w-16 text-right" style={{ color: "#292524" }}>
+                      <span className="text-sm font-bold w-16 text-right" style={{ color: "var(--color-text)" }}>
                         ${inv.amount.toFixed(2)}
                       </span>
                       {inv.pdf ? (
@@ -330,7 +330,7 @@ export default function BillingPage() {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 text-xs font-semibold hover:opacity-70 transition-opacity"
-                          style={{ color: "#F59E0B" }}
+                          style={{ color: "var(--color-primary)" }}
                         >
                           <Download className="w-3.5 h-3.5" />
                           PDF
@@ -347,7 +347,7 @@ export default function BillingPage() {
             {/* Support note */}
             <p className="text-xs text-center" style={{ color: "#C4AA8A" }}>
               Questions about billing?{" "}
-              <a href="mailto:support@markethubpromo.com" className="underline" style={{ color: "#F59E0B" }}>
+              <a href="mailto:support@markethubpromo.com" className="underline" style={{ color: "var(--color-primary)" }}>
                 support@markethubpromo.com
               </a>
             </p>

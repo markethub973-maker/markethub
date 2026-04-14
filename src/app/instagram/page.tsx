@@ -56,7 +56,7 @@ function timeAgo(ts: string): string {
   return `${Math.floor(days / 30)}mo ago`;
 }
 
-const COLORS = ["#E1306C", "#8B5CF6", "#F59E0B", "#10B981"];
+const COLORS = ["#E1306C", "#8B5CF6", "var(--color-primary)", "#10B981"];
 
 export default function InstagramPage() {
   const [accounts, setAccounts] = useState<IGAccount[]>([]);

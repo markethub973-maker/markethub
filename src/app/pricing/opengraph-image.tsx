@@ -10,7 +10,7 @@ export const contentType = "image/png";
 
 const TIERS = [
   { name: "Creator", price: "$24", accent: "#8B5CF6" },
-  { name: "Pro", price: "$49", accent: "#F59E0B", popular: true },
+  { name: "Pro", price: "$49", accent: "var(--color-primary)", popular: true },
   { name: "Studio", price: "$99", accent: "#10B981" },
   { name: "Agency", price: "$249", accent: "#EF4444" },
 ];
@@ -36,7 +36,7 @@ export default async function OGPricing() {
               width: 44,
               height: 44,
               borderRadius: 12,
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -45,7 +45,7 @@ export default async function OGPricing() {
           >
             ●
           </div>
-          <span style={{ fontSize: 24, fontWeight: 700, color: "#292524" }}>
+          <span style={{ fontSize: 24, fontWeight: 700, color: "var(--color-text)" }}>
             MarketHub Pro
           </span>
         </div>
@@ -56,7 +56,7 @@ export default async function OGPricing() {
             fontSize: 56,
             fontWeight: 800,
             lineHeight: 1.1,
-            color: "#292524",
+            color: "var(--color-text)",
             margin: 0,
             letterSpacing: "-0.02em",
             marginBottom: 16,
@@ -131,7 +131,7 @@ export default async function OGPricing() {
                 style={{
                   fontSize: 18,
                   fontWeight: 700,
-                  color: "#292524",
+                  color: "var(--color-text)",
                   margin: 0,
                 }}
               >

@@ -148,10 +148,10 @@ export default function UpgradePage() {
         {/* Manage subscription banner */}
         {isPaid && (
           <div className="flex items-center gap-3 px-5 py-3.5 rounded-xl text-sm" style={{ backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)" }}>
-            <Settings className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B" }} />
+            <Settings className="w-4 h-4 flex-shrink-0" style={{ color: "var(--color-primary)" }} />
             <span style={{ color: "#78614E" }}>
-              You&apos;re on the <strong style={{ color: "#292524" }}>{currentPlan!.charAt(0).toUpperCase() + currentPlan!.slice(1)}</strong> plan.{" "}
-              <Link href="/dashboard/billing" className="font-semibold underline" style={{ color: "#F59E0B" }}>
+              You&apos;re on the <strong style={{ color: "var(--color-text)" }}>{currentPlan!.charAt(0).toUpperCase() + currentPlan!.slice(1)}</strong> plan.{" "}
+              <Link href="/dashboard/billing" className="font-semibold underline" style={{ color: "var(--color-primary)" }}>
                 Manage subscription
               </Link>
             </span>
@@ -207,7 +207,7 @@ export default function UpgradePage() {
                     : "border border-amber-200"
                 }`}
                 style={{
-                  backgroundColor: "#FFFCF7",
+                  backgroundColor: "var(--color-bg-secondary)",
                   boxShadow: plan.popular ? "0 10px 30px rgba(245,158,11,0.2)" : "0 1px 3px rgba(120,97,78,0.08)",
                 }}
               >
@@ -219,7 +219,7 @@ export default function UpgradePage() {
                   </div>
                 ) : plan.popular ? (
                   <div className="mb-4">
-                    <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#F59E0B" }}>
+                    <span className="text-xs font-bold px-3 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary)" }}>
                       Most Popular
                     </span>
                   </div>
@@ -227,11 +227,11 @@ export default function UpgradePage() {
                   <div className="mb-4 h-6" />
                 )}
 
-                <h3 className="text-2xl font-bold mb-1" style={{ color: "#292524" }}>{plan.name}</h3>
+                <h3 className="text-2xl font-bold mb-1" style={{ color: "var(--color-text)" }}>{plan.name}</h3>
                 <p className="text-sm mb-4" style={{ color: "#A8967E" }}>{plan.duration}</p>
 
                 <div className="mb-6">
-                  <p className="text-4xl font-bold mb-1" style={{ color: "#F59E0B" }}>{plan.price}</p>
+                  <p className="text-4xl font-bold mb-1" style={{ color: "var(--color-primary)" }}>{plan.price}</p>
                   <div className="flex items-center gap-1.5">
                     <Zap className="w-4 h-4 text-blue-600" />
                     <p className="text-sm font-semibold" style={{ color: "#1E40AF" }}>{plan.premiumActions} Premium AI Actions/month</p>
@@ -250,8 +250,8 @@ export default function UpgradePage() {
                     color: "#16a34a",
                     cursor: "default",
                   } : {
-                    backgroundColor: plan.popular ? "#F59E0B" : "rgba(245,158,11,0.1)",
-                    color: plan.popular ? "#1C1814" : "#F59E0B",
+                    backgroundColor: plan.popular ? "var(--color-primary)" : "rgba(245,158,11,0.1)",
+                    color: plan.popular ? "#1C1814" : "var(--color-primary)",
                     opacity: loading ? 0.7 : 1,
                   }}
                 >
@@ -266,7 +266,7 @@ export default function UpgradePage() {
                       ) : (
                         <X className="w-5 h-5 flex-shrink-0 mt-0.5 text-gray-300" />
                       )}
-                      <p className="text-sm" style={{ color: feature.included ? "#292524" : "#C4AA8A" }}>
+                      <p className="text-sm" style={{ color: feature.included ? "var(--color-text)" : "#C4AA8A" }}>
                         {feature.name}
                         {typeof (feature as any).value === "string" && (
                           <span className="font-semibold ml-2">{(feature as any).value}</span>

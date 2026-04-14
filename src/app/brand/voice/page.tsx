@@ -138,7 +138,7 @@ export default function BrandVoicePage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Brand Voice" subtitle="Teach AI how your brand sounds, used everywhere" />
 
       <main className="max-w-4xl mx-auto px-6 py-6 space-y-6">
@@ -151,8 +151,8 @@ export default function BrandVoicePage() {
           }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <Mic className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>
+            <Mic className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
               Sample posts
             </h2>
           </div>
@@ -176,9 +176,9 @@ export default function BrandVoicePage() {
                   maxLength={4000}
                   className="w-full rounded-lg px-3 py-2 text-sm resize-none"
                   style={{
-                    backgroundColor: "#FFF8F0",
+                    backgroundColor: "var(--color-bg)",
                     border: "1px solid rgba(245,215,160,0.4)",
-                    color: "#292524",
+                    color: "var(--color-text)",
                     outline: "none",
                   }}
                 />
@@ -246,7 +246,7 @@ export default function BrandVoicePage() {
             }}
           >
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold" style={{ color: "#292524" }}>
+              <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
                 Your voice profile
               </h2>
               {savedOnce && (
@@ -309,7 +309,7 @@ export default function BrandVoicePage() {
                 disabled={saving}
                 className="px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2"
                 style={{
-                  background: "linear-gradient(135deg, #F59E0B, #D97706)",
+                  background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
                   color: "#1C1814",
                 }}
               >
@@ -353,9 +353,9 @@ function TextField(props: { label: string; value: string; onChange: (v: string) 
         placeholder={props.placeholder}
         className="w-full rounded-lg px-3 py-2 text-sm"
         style={{
-          backgroundColor: "#FFF8F0",
+          backgroundColor: "var(--color-bg)",
           border: "1px solid rgba(245,215,160,0.4)",
-          color: "#292524",
+          color: "var(--color-text)",
           outline: "none",
         }}
       />
@@ -376,9 +376,9 @@ function TextArea(props: { label: string; value: string; onChange: (v: string) =
         rows={props.rows ?? 3}
         className="w-full rounded-lg px-3 py-2 text-sm resize-none"
         style={{
-          backgroundColor: "#FFF8F0",
+          backgroundColor: "var(--color-bg)",
           border: "1px solid rgba(245,215,160,0.4)",
-          color: "#292524",
+          color: "var(--color-text)",
           outline: "none",
         }}
       />
@@ -409,9 +409,9 @@ function ListField(props: {
               onChange={(e) => props.onUpdate(i, e.target.value)}
               className="flex-1 rounded-md px-2 py-1.5 text-sm"
               style={{
-                backgroundColor: "#FFF8F0",
+                backgroundColor: "var(--color-bg)",
                 border: "1px solid rgba(245,215,160,0.4)",
-                color: "#292524",
+                color: "var(--color-text)",
                 outline: "none",
               }}
             />

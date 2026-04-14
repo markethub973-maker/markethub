@@ -67,10 +67,10 @@ export default function ChangeUserPlanModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         className="rounded-2xl p-8 max-w-md w-full mx-4"
-        style={{ backgroundColor: "#FFFCF7" }}
+        style={{ backgroundColor: "var(--color-bg-secondary)" }}
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold" style={{ color: "#292524" }}>
+          <h2 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
             Change Plan
           </h2>
           <button
@@ -91,7 +91,7 @@ export default function ChangeUserPlanModal({
               key={plan.id}
               className="flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all"
               style={{
-                borderColor: selectedPlan === plan.id ? "#F59E0B" : "#D4B896",
+                borderColor: selectedPlan === plan.id ? "var(--color-primary)" : "#D4B896",
                 backgroundColor:
                   selectedPlan === plan.id ? "rgba(245,158,11,0.1)" : "transparent",
               }}
@@ -105,7 +105,7 @@ export default function ChangeUserPlanModal({
                 className="mr-3"
               />
               <div className="flex-1">
-                <p className="font-semibold" style={{ color: "#292524" }}>
+                <p className="font-semibold" style={{ color: "var(--color-text)" }}>
                   {plan.name}
                 </p>
                 <p className="text-sm" style={{ color: "#78614E" }}>
@@ -131,7 +131,7 @@ export default function ChangeUserPlanModal({
             onClick={handleSubmit}
             disabled={loading}
             style={{
-              backgroundColor: "#F59E0B",
+              backgroundColor: "var(--color-primary)",
               opacity: loading ? 0.7 : 1,
             }}
             className="flex-1 py-2 px-4 rounded-lg text-white font-medium hover:opacity-90 transition-opacity disabled:cursor-not-allowed"

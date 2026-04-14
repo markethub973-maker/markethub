@@ -59,7 +59,7 @@ export default function StudioPage() {
   const [tab, setTab] = useState<Tab>("visuals");
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "#292524" }}>
+    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "var(--color-text)" }}>
       {/* Top bar */}
       <div
         style={{
@@ -68,7 +68,7 @@ export default function StudioPage() {
           gap: 16,
           padding: "16px 24px",
           borderBottom: "1px solid rgba(245,215,160,0.25)",
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
         }}
       >
         <Link
@@ -80,7 +80,7 @@ export default function StudioPage() {
             padding: "6px 12px",
             background: "rgba(245,158,11,0.08)",
             borderRadius: 6,
-            color: "#F59E0B",
+            color: "var(--color-primary)",
             textDecoration: "none",
             fontSize: 12,
           }}
@@ -104,7 +104,7 @@ export default function StudioPage() {
           gap: 4,
           padding: "12px 24px",
           borderBottom: "1px solid rgba(245,215,160,0.2)",
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
         }}
       >
         <TabButton active={tab === "visuals"} onClick={() => setTab("visuals")}>
@@ -141,7 +141,7 @@ function TabButton({
         alignItems: "center",
         gap: 6,
         padding: "10px 18px",
-        background: active ? "#F59E0B" : "transparent",
+        background: active ? "var(--color-primary)" : "transparent",
         color: active ? "#1C1814" : "#78614E",
         border: "none",
         borderRadius: 8,
@@ -232,7 +232,7 @@ function VisualsTab() {
       <div
         style={{
           padding: 16,
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
           border: "1px solid rgba(245,215,160,0.3)",
           borderRadius: 12,
           marginBottom: 16,
@@ -263,7 +263,7 @@ function VisualsTab() {
             fontSize: 13,
             outline: "none",
             background: "white",
-            color: "#292524",
+            color: "var(--color-text)",
             marginBottom: 12,
           }}
         />
@@ -288,7 +288,7 @@ function VisualsTab() {
                 style={{
                   padding: 10,
                   background: isSel ? "rgba(245,158,11,0.12)" : "white",
-                  border: `1px solid ${isSel ? "#F59E0B" : "rgba(245,215,160,0.3)"}`,
+                  border: `1px solid ${isSel ? "var(--color-primary)" : "rgba(245,215,160,0.3)"}`,
                   borderRadius: 8,
                   textAlign: "left",
                   cursor: "pointer",
@@ -298,7 +298,7 @@ function VisualsTab() {
                   style={{
                     fontSize: 12,
                     fontWeight: 700,
-                    color: isSel ? "#F59E0B" : "#292524",
+                    color: isSel ? "var(--color-primary)" : "var(--color-text)",
                     marginBottom: 2,
                   }}
                 >
@@ -320,7 +320,7 @@ function VisualsTab() {
             alignItems: "center",
             gap: 6,
             padding: "10px 18px",
-            background: processing || !sourceUrl.trim() || selected.size === 0 ? "#C4AA8A" : "#F59E0B",
+            background: processing || !sourceUrl.trim() || selected.size === 0 ? "#C4AA8A" : "var(--color-primary)",
             color: "#1C1814",
             border: "none",
             borderRadius: 8,
@@ -364,7 +364,7 @@ function VisualsTab() {
               <div
                 key={r.format}
                 style={{
-                  background: "#FFFCF7",
+                  background: "var(--color-bg-secondary)",
                   border: "1px solid rgba(245,215,160,0.3)",
                   borderRadius: 10,
                   overflow: "hidden",
@@ -380,7 +380,7 @@ function VisualsTab() {
                     justifyContent: "center",
                   }}
                 >
-                  {r.status === "pending" && <Loader2 size={20} className="animate-spin" style={{ color: "#F59E0B" }} />}
+                  {r.status === "pending" && <Loader2 size={20} className="animate-spin" style={{ color: "var(--color-primary)" }} />}
                   {r.status === "failed" && (
                     <div style={{ textAlign: "center", padding: 10 }}>
                       <X size={20} style={{ color: "#EF4444", margin: "0 auto 4px" }} />
@@ -400,7 +400,7 @@ function VisualsTab() {
                   )}
                 </div>
                 <div style={{ padding: 12 }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: "#292524", marginBottom: 2 }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: "var(--color-text)", marginBottom: 2 }}>
                     {preset.icon} {r.label}
                   </div>
                   <div style={{ fontSize: 10, color: "#A8967E" }}>
@@ -417,7 +417,7 @@ function VisualsTab() {
                         style={{
                           flex: 1,
                           padding: "6px 10px",
-                          background: "#F59E0B",
+                          background: "var(--color-primary)",
                           color: "#1C1814",
                           borderRadius: 6,
                           fontSize: 10,
@@ -579,7 +579,7 @@ function YouTubeTab() {
         <div
           style={{
             padding: 16,
-            background: "#FFFCF7",
+            background: "var(--color-bg-secondary)",
             border: "1px solid rgba(245,215,160,0.3)",
             borderRadius: 12,
             marginBottom: 14,
@@ -685,7 +685,7 @@ function YouTubeTab() {
             </div>
             <div style={{ fontSize: 11, marginBottom: 8 }}>
               <strong>5 variante titlu:</strong>
-              <ul style={{ margin: "4px 0 0 18px", padding: 0, fontSize: 11, color: "#292524" }}>
+              <ul style={{ margin: "4px 0 0 18px", padding: 0, fontSize: 11, color: "var(--color-text)" }}>
                 {suggestions.alt_titles.map((t, i) => (
                   <li
                     key={i}
@@ -714,7 +714,7 @@ function YouTubeTab() {
         <div
           style={{
             padding: 16,
-            background: "#FFFCF7",
+            background: "var(--color-bg-secondary)",
             border: "1px solid rgba(245,215,160,0.3)",
             borderRadius: 12,
           }}
@@ -853,7 +853,7 @@ function YouTubeTab() {
             style={{
               marginTop: 14,
               padding: 14,
-              background: "#FFFCF7",
+              background: "var(--color-bg-secondary)",
               border: "1px solid rgba(245,215,160,0.3)",
               borderRadius: 12,
             }}
@@ -882,7 +882,7 @@ function YouTubeTab() {
                   fontSize: 11,
                 }}
               >
-                <div style={{ flex: 1, color: "#292524", fontWeight: 600 }}>{u.title}</div>
+                <div style={{ flex: 1, color: "var(--color-text)", fontWeight: 600 }}>{u.title}</div>
                 <span
                   style={{
                     padding: "2px 6px",
@@ -898,7 +898,7 @@ function YouTubeTab() {
                         ? "#10B981"
                         : u.upload_status === "failed"
                           ? "#EF4444"
-                          : "#F59E0B",
+                          : "var(--color-primary)",
                     fontWeight: 700,
                     fontSize: 9,
                     textTransform: "uppercase",
@@ -911,7 +911,7 @@ function YouTubeTab() {
                     href={`https://www.youtube.com/watch?v=${u.youtube_video_id}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{ color: "#F59E0B" }}
+                    style={{ color: "var(--color-primary)" }}
                   >
                     <ExternalLink size={11} />
                   </a>
@@ -934,7 +934,7 @@ const inputStyle: React.CSSProperties = {
   outline: "none",
   fontFamily: "inherit",
   background: "white",
-  color: "#292524",
+  color: "var(--color-text)",
   marginBottom: 6,
 };
 

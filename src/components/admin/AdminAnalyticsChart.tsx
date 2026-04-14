@@ -43,7 +43,7 @@ export default function AdminAnalyticsChart({ data }: AdminAnalyticsChartProps) 
     <div className="space-y-6">
       {/* Revenue Chart */}
       <div>
-        <h3 className="font-semibold mb-4" style={{ color: "#292524" }}>
+        <h3 className="font-semibold mb-4" style={{ color: "var(--color-text)" }}>
           Revenue Trend
         </h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -56,7 +56,7 @@ export default function AdminAnalyticsChart({ data }: AdminAnalyticsChartProps) 
             <Line
               type="monotone"
               dataKey="revenue"
-              stroke="#F59E0B"
+              stroke="var(--color-primary)"
               strokeWidth={2}
               name="Revenue ($)"
             />
@@ -66,7 +66,7 @@ export default function AdminAnalyticsChart({ data }: AdminAnalyticsChartProps) 
 
       {/* Signups Chart */}
       <div>
-        <h3 className="font-semibold mb-4" style={{ color: "#292524" }}>
+        <h3 className="font-semibold mb-4" style={{ color: "var(--color-text)" }}>
           New Signups
         </h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -92,7 +92,7 @@ export default function AdminAnalyticsChart({ data }: AdminAnalyticsChartProps) 
           <p className="text-sm" style={{ color: "#78614E" }}>
             Total Revenue ({data.period})
           </p>
-          <p className="text-2xl font-bold" style={{ color: "#F59E0B" }}>
+          <p className="text-2xl font-bold" style={{ color: "var(--color-primary)" }}>
             ${data.summary.total_revenue.toFixed(2)}
           </p>
         </div>

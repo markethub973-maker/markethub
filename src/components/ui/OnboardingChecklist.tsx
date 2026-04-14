@@ -42,7 +42,7 @@ const STEPS: Step[] = [
     description: "Studio → Image. ~5 seconds, ~$0.003",
     href: "/studio/image",
     icon: <ImageIcon className="w-4 h-4" />,
-    accentColor: "#F59E0B",
+    accentColor: "var(--color-primary)",
   },
   {
     id: "caption",
@@ -74,7 +74,7 @@ const STEPS: Step[] = [
     description: "Lead Finder wizard with your offer",
     href: "/lead-finder",
     icon: <Search className="w-4 h-4" />,
-    accentColor: "#D97706",
+    accentColor: "var(--color-primary-hover)",
   },
 ];
 
@@ -145,12 +145,12 @@ export default function OnboardingChecklist() {
         <div className="flex items-center gap-3">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}
           >
             <Zap className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>
+            <h3 className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>
               Welcome to MarketHub Pro! 🎉
             </h3>
             <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
@@ -213,7 +213,7 @@ export default function OnboardingChecklist() {
               <div className="flex-1 min-w-0">
                 <p
                   className="text-xs font-medium leading-tight"
-                  style={{ color: isDone ? "#A8967E" : "#292524", textDecoration: isDone ? "line-through" : "none" }}
+                  style={{ color: isDone ? "#A8967E" : "var(--color-text)", textDecoration: isDone ? "line-through" : "none" }}
                 >
                   {step.label}
                 </p>

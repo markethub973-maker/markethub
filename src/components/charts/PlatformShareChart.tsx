@@ -48,9 +48,9 @@ export default function PlatformShareChart() {
   }, []);
 
   return (
-    <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+    <div className="rounded-xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
       <div className="mb-4">
-        <h3 className="font-semibold" style={{ color: "#292524" }}>Platform Share</h3>
+        <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Platform Share</h3>
         <p className="text-xs" style={{ color: "#A8967E" }}>% din reach/views reale</p>
       </div>
       {loading ? (
@@ -72,7 +72,7 @@ export default function PlatformShareChart() {
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7", color: "#292524" }}
+              contentStyle={{ fontSize: 12, borderRadius: 8, border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }}
               formatter={(value) => [Number(value ?? 0).toFixed(1) + "%", "Share"]}
             />
             <Legend wrapperStyle={{ fontSize: 12 }} />

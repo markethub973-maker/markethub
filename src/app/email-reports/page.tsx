@@ -4,8 +4,8 @@ import { useState } from "react";
 import Header from "@/components/layout/Header";
 import { Mail, Send, CheckCircle2, AlertCircle, FileText, Clock } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
-const ACCENT = "#F59E0B";
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const ACCENT = "var(--color-primary)";
 
 export default function EmailReportsPage() {
   const [email, setEmail] = useState("");
@@ -41,7 +41,7 @@ export default function EmailReportsPage() {
               <Mail className="w-5 h-5" style={{ color: ACCENT }} />
             </div>
             <div>
-              <h2 className="font-bold" style={{ color: "#292524" }}>Send Report Now</h2>
+              <h2 className="font-bold" style={{ color: "var(--color-text)" }}>Send Report Now</h2>
               <p className="text-xs" style={{ color: "#A8967E" }}>Complete report with Instagram data from the last 30 days</p>
             </div>
           </div>
@@ -53,7 +53,7 @@ export default function EmailReportsPage() {
                 value={email} onChange={e => setEmail(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && sendReport()}
                 className="w-full pl-9 pr-4 py-3 text-sm rounded-xl focus:outline-none"
-                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFFCF7", color: "#292524" }} />
+                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }} />
             </div>
             <button type="button" onClick={sendReport} disabled={sending || !email.trim()}
               className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold"
@@ -81,7 +81,7 @@ export default function EmailReportsPage() {
         <div className="rounded-xl p-6" style={cardStyle}>
           <div className="flex items-center gap-2 mb-4">
             <FileText className="w-4 h-4" style={{ color: ACCENT }} />
-            <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>What's in the email report</h3>
+            <h3 className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>What's in the email report</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
@@ -95,7 +95,7 @@ export default function EmailReportsPage() {
               <div key={item.label} className="flex items-start gap-2.5 p-3 rounded-lg" style={{ backgroundColor: "rgba(245,215,160,0.08)" }}>
                 <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: ACCENT }} />
                 <div>
-                  <p className="text-xs font-semibold" style={{ color: "#292524" }}>{item.label}</p>
+                  <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{item.label}</p>
                   <p className="text-xs" style={{ color: "#A8967E" }}>{item.desc}</p>
                 </div>
               </div>
@@ -107,7 +107,7 @@ export default function EmailReportsPage() {
         <div className="rounded-xl p-6" style={{ ...cardStyle, opacity: 0.7 }}>
           <div className="flex items-center gap-3 mb-3">
             <Clock className="w-4 h-4" style={{ color: "#A8967E" }} />
-            <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>Automated Reports (Coming Soon)</h3>
+            <h3 className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>Automated Reports (Coming Soon)</h3>
             <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: ACCENT }}>
               Coming soon
             </span>

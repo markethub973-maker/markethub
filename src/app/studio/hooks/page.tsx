@@ -40,7 +40,7 @@ const TYPE_META: Record<HookType, { label: string; color: string }> = {
   question:      { label: "Question",      color: "#0EA5E9" },
   contradiction: { label: "Contradiction", color: "#EF4444" },
   stat:          { label: "Stat",          color: "#10B981" },
-  story:         { label: "Story",         color: "#F59E0B" },
+  story:         { label: "Story",         color: "var(--color-primary)" },
   contrarian:    { label: "Contrarian",    color: "#8B5CF6" },
   manual:        { label: "Manual",        color: "#78614E" },
 };
@@ -170,7 +170,7 @@ export default function HookLibraryPage() {
   }, [hooks, q, typeFilter, minRating]);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Hook Library" subtitle="Your reusable opening lines — never start from scratch again" />
 
       <main className="max-w-6xl mx-auto px-6 py-6 space-y-5">
@@ -181,8 +181,8 @@ export default function HookLibraryPage() {
             style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
           >
             <div className="flex items-center gap-2">
-              <Plus className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="text-sm font-bold" style={{ color: "#292524" }}>Save a hook manually</p>
+              <Plus className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Save a hook manually</p>
             </div>
             <textarea
               value={draftText}
@@ -191,7 +191,7 @@ export default function HookLibraryPage() {
               maxLength={140}
               placeholder="The one-liner you want to reuse..."
               className="w-full rounded-lg px-3 py-2 text-sm resize-none"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             />
             <input
               type="text"
@@ -199,14 +199,14 @@ export default function HookLibraryPage() {
               onChange={(e) => setDraftTags(e.target.value)}
               placeholder="tags, comma-separated — e.g. agency, pain-point, curiosity"
               className="w-full rounded-lg px-3 py-2 text-xs"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             />
             <button
               type="button"
               onClick={addManual}
               disabled={draftText.trim().length < 5}
               className="inline-flex items-center gap-1 px-3 py-2 rounded-md text-xs font-bold disabled:opacity-40"
-              style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+              style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
             >
               <Plus className="w-3 h-3" />
               Save to library
@@ -219,7 +219,7 @@ export default function HookLibraryPage() {
           >
             <div className="flex items-center gap-2">
               <Wand2 className="w-4 h-4" style={{ color: "#8B5CF6" }} />
-              <p className="text-sm font-bold" style={{ color: "#292524" }}>Extract hooks from a caption</p>
+              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Extract hooks from a caption</p>
             </div>
             <textarea
               value={sourceCaption}
@@ -228,7 +228,7 @@ export default function HookLibraryPage() {
               maxLength={5000}
               placeholder="Paste a past post or an article — AI pulls the 5 strongest hook-worthy lines."
               className="w-full rounded-lg px-3 py-2 text-sm resize-none"
-              style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.25)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.25)", color: "var(--color-text)", outline: "none" }}
             />
             <button
               type="button"
@@ -254,7 +254,7 @@ export default function HookLibraryPage() {
                     style={{ backgroundColor: "white", border: "1px solid rgba(139,92,246,0.15)" }}
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold" style={{ color: "#292524" }}>{x.hook}</p>
+                      <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{x.hook}</p>
                       <p className="text-[10px] mt-0.5" style={{ color: "#78614E" }}>
                         <span className="uppercase font-bold" style={{ color: "#8B5CF6" }}>{x.type}</span> · {x.rationale}
                       </p>
@@ -280,7 +280,7 @@ export default function HookLibraryPage() {
           className="rounded-xl p-3 flex items-center gap-3 flex-wrap"
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
-          <BookOpen className="w-4 h-4" style={{ color: "#F59E0B" }} />
+          <BookOpen className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
           <div className="flex-1 min-w-[200px] relative">
             <Search className="w-3 h-3 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#A8967E" }} />
             <input
@@ -289,7 +289,7 @@ export default function HookLibraryPage() {
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search hooks or tags..."
               className="w-full rounded-md pl-8 pr-3 py-1.5 text-xs"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             />
           </div>
           <div className="flex items-center gap-1">
@@ -298,7 +298,7 @@ export default function HookLibraryPage() {
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as HookType | "all")}
               className="rounded-md px-2 py-1 text-xs"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             >
               <option value="all">All types</option>
               {(Object.keys(TYPE_META) as HookType[]).map((t) => (
@@ -312,7 +312,7 @@ export default function HookLibraryPage() {
               value={minRating}
               onChange={(e) => setMinRating(parseInt(e.target.value))}
               className="rounded-md px-2 py-1 text-xs"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             >
               <option value={0}>Any rating</option>
               <option value={3}>≥3 stars</option>
@@ -332,7 +332,7 @@ export default function HookLibraryPage() {
             style={{ backgroundColor: "white", border: "1px dashed rgba(0,0,0,0.1)" }}
           >
             <BookOpen className="w-6 h-6 mx-auto mb-2" style={{ color: "#A8967E" }} />
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               {hooks.length === 0 ? "No hooks yet" : "No hooks match your filters"}
             </p>
             <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -371,8 +371,8 @@ export default function HookLibraryPage() {
                         <Star
                           className="w-3 h-3"
                           style={{
-                            color: n <= h.rating ? "#F59E0B" : "#E5E1D9",
-                            fill: n <= h.rating ? "#F59E0B" : "transparent",
+                            color: n <= h.rating ? "var(--color-primary)" : "#E5E1D9",
+                            fill: n <= h.rating ? "var(--color-primary)" : "transparent",
                           }}
                         />
                       </button>
@@ -382,7 +382,7 @@ export default function HookLibraryPage() {
                     {new Date(h.created_at).toLocaleDateString()}
                   </span>
                 </div>
-                <p className="text-sm" style={{ color: "#292524", lineHeight: 1.4 }}>
+                <p className="text-sm" style={{ color: "var(--color-text)", lineHeight: 1.4 }}>
                   {h.text}
                 </p>
                 {h.rationale && (

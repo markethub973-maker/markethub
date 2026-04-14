@@ -179,7 +179,7 @@ export default function CampaignAutoPilotPage() {
   const visible = posts.filter((p) => !p.dismissed);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Campaign Auto-Pilot" subtitle="Describe a goal, get a 5-post plan ready to schedule" />
 
       <main className="max-w-5xl mx-auto px-6 py-6 space-y-6">
@@ -192,8 +192,8 @@ export default function CampaignAutoPilotPage() {
           }}
         >
           <div className="flex items-center gap-2 mb-4">
-            <Rocket className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>
+            <Rocket className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
               What&apos;s the campaign?
             </h2>
           </div>
@@ -207,7 +207,7 @@ export default function CampaignAutoPilotPage() {
             style={{
               backgroundColor: "white",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -221,7 +221,7 @@ export default function CampaignAutoPilotPage() {
               disabled={planning || brief.trim().length < 10}
               className="px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 disabled:opacity-40"
               style={{
-                background: "linear-gradient(135deg, #F59E0B, #D97706)",
+                background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
                 color: "#1C1814",
               }}
             >
@@ -264,7 +264,7 @@ export default function CampaignAutoPilotPage() {
             >
               Strategy
             </p>
-            <p className="text-sm" style={{ color: "#292524" }}>
+            <p className="text-sm" style={{ color: "var(--color-text)" }}>
               {strategy}
             </p>
           </div>
@@ -284,7 +284,7 @@ export default function CampaignAutoPilotPage() {
                 border: "1px solid rgba(245,158,11,0.25)",
               }}
             >
-              <p className="text-xs font-bold flex-1" style={{ color: "#292524" }}>
+              <p className="text-xs font-bold flex-1" style={{ color: "var(--color-text)" }}>
                 Bulk actions
               </p>
               {needImage > 0 && (
@@ -308,7 +308,7 @@ export default function CampaignAutoPilotPage() {
                   onClick={scheduleAll}
                   className="px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5"
                   style={{
-                    backgroundColor: "#292524",
+                    backgroundColor: "var(--color-text)",
                     color: "white",
                   }}
                 >
@@ -379,7 +379,7 @@ export default function CampaignAutoPilotPage() {
                         className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
                         style={{
                           backgroundColor: "rgba(245,158,11,0.15)",
-                          color: "#D97706",
+                          color: "var(--color-primary-hover)",
                         }}
                       >
                         Day {post.day} · {post.suggested_time}
@@ -394,7 +394,7 @@ export default function CampaignAutoPilotPage() {
                               style={{ backgroundColor: "rgba(0,0,0,0.06)" }}
                               title={pl}
                             >
-                              <Icon className="w-3 h-3" style={{ color: "#292524" }} />
+                              <Icon className="w-3 h-3" style={{ color: "var(--color-text)" }} />
                             </div>
                           );
                         })}
@@ -403,13 +403,13 @@ export default function CampaignAutoPilotPage() {
 
                     <p
                       className="text-sm font-bold mb-1"
-                      style={{ color: "#292524" }}
+                      style={{ color: "var(--color-text)" }}
                     >
                       {post.hook}
                     </p>
                     <p
                       className="text-xs whitespace-pre-wrap mb-3"
-                      style={{ color: "#292524", lineHeight: 1.5 }}
+                      style={{ color: "var(--color-text)", lineHeight: 1.5 }}
                     >
                       {post.caption}
                     </p>
@@ -423,7 +423,7 @@ export default function CampaignAutoPilotPage() {
                         style={{
                           backgroundColor: post.scheduled
                             ? "rgba(16,185,129,0.1)"
-                            : "#292524",
+                            : "var(--color-text)",
                           color: post.scheduled ? "#10B981" : "white",
                         }}
                       >

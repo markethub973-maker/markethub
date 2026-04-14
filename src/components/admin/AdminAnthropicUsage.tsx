@@ -70,7 +70,7 @@ export default function AdminAnthropicUsage() {
     : null;
 
   return (
-    <div className="rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+    <div className="rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
@@ -79,7 +79,7 @@ export default function AdminAnthropicUsage() {
             🤖
           </div>
           <div>
-            <h2 className="font-bold text-lg" style={{ color: "#292524" }}>Anthropic API Usage</h2>
+            <h2 className="font-bold text-lg" style={{ color: "var(--color-text)" }}>Anthropic API Usage</h2>
             <p className="text-xs" style={{ color: "#C4AA8A" }}>
               {data?.api_key_prefix && `Key: ${data.api_key_prefix}`}
               {lastRefresh && ` · Updated ${lastRefresh.toLocaleTimeString()}`}
@@ -88,7 +88,7 @@ export default function AdminAnthropicUsage() {
         </div>
         <button type="button" onClick={load} disabled={loading}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors"
-          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
           {loading ? (
             <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -122,7 +122,7 @@ export default function AdminAnthropicUsage() {
 
       {loading && !data ? (
         <div className="flex items-center justify-center py-8">
-          <svg className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} fill="none" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
@@ -146,7 +146,7 @@ export default function AdminAnthropicUsage() {
             {/* Estimated cost this month */}
             <div className="rounded-xl p-4" style={{ backgroundColor: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.2)" }}>
               <p className="text-xs mb-1" style={{ color: "#78614E" }}>Est. Cost This Month</p>
-              <p className="text-2xl font-bold" style={{ color: "#D97706" }}>
+              <p className="text-2xl font-bold" style={{ color: "var(--color-primary-hover)" }}>
                 ${estimatedCost.toFixed(4)}
               </p>
               <p className="text-xs mt-1" style={{ color: "#C4AA8A" }}>Based on token usage</p>
@@ -184,7 +184,7 @@ export default function AdminAnthropicUsage() {
                 <div className="h-full rounded-full transition-all"
                   style={{
                     width: `${creditPct}%`,
-                    backgroundColor: creditPct > 50 ? "#16A34A" : creditPct > 20 ? "#F59E0B" : "#DC2626",
+                    backgroundColor: creditPct > 50 ? "#16A34A" : creditPct > 20 ? "var(--color-primary)" : "#DC2626",
                   }} />
               </div>
             </div>
@@ -194,10 +194,10 @@ export default function AdminAnthropicUsage() {
           <div className="rounded-xl p-3 mt-3" style={{ backgroundColor: "rgba(245,215,160,0.1)", border: "1px solid rgba(245,215,160,0.3)" }}>
             <p className="text-xs font-semibold mb-2" style={{ color: "#78614E" }}>Pricing reference (claude-sonnet-4-6)</p>
             <div className="flex gap-4 text-xs" style={{ color: "#C4AA8A" }}>
-              <span>Input: <b style={{ color: "#292524" }}>${INPUT_COST_PER_1M}/1M tokens</b></span>
-              <span>Output: <b style={{ color: "#292524" }}>${OUTPUT_COST_PER_1M}/1M tokens</b></span>
+              <span>Input: <b style={{ color: "var(--color-text)" }}>${INPUT_COST_PER_1M}/1M tokens</b></span>
+              <span>Output: <b style={{ color: "var(--color-text)" }}>${OUTPUT_COST_PER_1M}/1M tokens</b></span>
               <a href="https://console.anthropic.com/settings/billing" target="_blank" rel="noopener noreferrer"
-                className="ml-auto font-semibold hover:underline" style={{ color: "#F59E0B" }}>
+                className="ml-auto font-semibold hover:underline" style={{ color: "var(--color-primary)" }}>
                 Manage billing →
               </a>
             </div>

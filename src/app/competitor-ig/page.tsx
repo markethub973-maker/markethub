@@ -5,13 +5,13 @@ import Header from "@/components/layout/Header";
 import { formatNumber } from "@/lib/utils";
 import { Search, Users, Heart, MessageCircle, ExternalLink, AlertCircle, Instagram, Image, Video, Layers, TrendingUp } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const IG = "#E1306C";
 
 const EXAMPLES = ["nike", "redbull", "zara", "loreal", "cocacola", "nationalgeographic"];
 
 function EngBadge({ rate }: { rate: number }) {
-  const color = rate >= 5 ? "#1DB954" : rate >= 2 ? "#F59E0B" : rate >= 0.5 ? "#F59E0B" : "#EF4444";
+  const color = rate >= 5 ? "#1DB954" : rate >= 2 ? "var(--color-primary)" : rate >= 0.5 ? "var(--color-primary)" : "#EF4444";
   const label = rate >= 5 ? "Excellent" : rate >= 2 ? "Good" : rate >= 0.5 ? "Fair" : "Poor";
   return (
     <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: color + "18", color }}>
@@ -66,7 +66,7 @@ export default function CompetitorIGPage() {
                 value={query} onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && search()}
                 className="w-full pl-9 pr-4 py-3 text-sm rounded-xl focus:outline-none"
-                style={{ border: "1px solid rgba(225,48,108,0.3)", backgroundColor: "#FFFCF7", color: "#292524" }} />
+                style={{ border: "1px solid rgba(225,48,108,0.3)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }} />
             </div>
             <button type="button" onClick={() => search()} disabled={loading || !query.trim()}
               className="px-6 py-3 rounded-xl text-sm font-bold"
@@ -115,7 +115,7 @@ export default function CompetitorIGPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 flex-wrap">
                     <a href={`https://instagram.com/${data.username}`} target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 font-bold text-lg hover:underline" style={{ color: "#292524" }}>
+                      className="flex items-center gap-1.5 font-bold text-lg hover:underline" style={{ color: "var(--color-text)" }}>
                       <Instagram className="w-4 h-4" style={{ color: IG }} />
                       @{data.username}
                       <ExternalLink className="w-3.5 h-3.5 opacity-50" />
@@ -134,8 +134,8 @@ export default function CompetitorIGPage() {
               <div className="grid grid-cols-3 gap-3 mt-4">
                 {[
                   { label: "Followers", value: formatNumber(data.followers), color: IG },
-                  { label: "Posts", value: data.mediaCount, color: "#F59E0B" },
-                  { label: "Eng. Rate", value: data.avgEngRate.toFixed(2) + "%", color: data.avgEngRate >= 3 ? "#1DB954" : "#F59E0B" },
+                  { label: "Posts", value: data.mediaCount, color: "var(--color-primary)" },
+                  { label: "Eng. Rate", value: data.avgEngRate.toFixed(2) + "%", color: data.avgEngRate >= 3 ? "#1DB954" : "var(--color-primary)" },
                 ].map(s => (
                   <div key={s.label} className="rounded-lg p-3 text-center" style={{ backgroundColor: s.color + "08", border: `1px solid ${s.color}18` }}>
                     <p className="text-xs mb-1" style={{ color: "#A8967E" }}>{s.label}</p>
@@ -161,7 +161,7 @@ export default function CompetitorIGPage() {
 
             {/* Top Posts */}
             <div>
-              <h3 className="text-sm font-semibold mb-3" style={{ color: "#292524" }}>Top posts by engagement</h3>
+              <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--color-text)" }}>Top posts by engagement</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 {data.topPosts?.map((p: any, i: number) => (
                   <a key={p.id} href={p.permalink} target="_blank" rel="noopener noreferrer"
@@ -203,7 +203,7 @@ export default function CompetitorIGPage() {
             <div className="rounded-xl p-5" style={cardStyle}>
               <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="w-4 h-4" style={{ color: IG }} />
-                <h3 className="font-semibold" style={{ color: "#292524" }}>Competitive Insight</h3>
+                <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Competitive Insight</h3>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div className="rounded-lg p-3" style={{ backgroundColor: "rgba(225,48,108,0.05)", border: "1px solid rgba(225,48,108,0.15)" }}>
@@ -215,7 +215,7 @@ export default function CompetitorIGPage() {
                   </p>
                 </div>
                 <div className="rounded-lg p-3" style={{ backgroundColor: "rgba(245,215,160,0.1)", border: "1px solid rgba(245,215,160,0.25)" }}>
-                  <p className="text-xs font-bold mb-2" style={{ color: "#F59E0B" }}>Content Volume</p>
+                  <p className="text-xs font-bold mb-2" style={{ color: "var(--color-primary)" }}>Content Volume</p>
                   <p className="text-xs leading-relaxed" style={{ color: "#78614E" }}>
                     {data.mediaCount > 500
                       ? `With ${data.mediaCount} posts, @${data.username} has an established presence. Posting frequency matters — analyze their active days.`
@@ -231,7 +231,7 @@ export default function CompetitorIGPage() {
         {!data && !loading && !error && (
           <div className="rounded-xl p-12 text-center" style={cardStyle}>
             <Users className="w-12 h-12 mx-auto mb-4" style={{ color: "rgba(225,48,108,0.3)" }} />
-            <p className="font-semibold text-lg mb-2" style={{ color: "#292524" }}>Analyze a competitor</p>
+            <p className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>Analyze a competitor</p>
             <p className="text-sm" style={{ color: "#A8967E" }}>
               Enter the username of any Instagram Business account and see followers, engagement rate, top posts, and competitive insights.
             </p>

@@ -20,13 +20,13 @@ const ACTION_CONFIG: Record<string, { label: string; icon: React.ReactNode; colo
   admin_logout:          { label: "Admin Logout",       icon: <LogIn size={13} />,    color: "#78716C", bg: "rgba(120,113,108,0.1)" },
   user_blocked:          { label: "User Blocked",       icon: <Lock size={13} />,     color: "#EF4444", bg: "rgba(239,68,68,0.1)" },
   user_unblocked:        { label: "User Unblocked",     icon: <Unlock size={13} />,   color: "#16A34A", bg: "rgba(22,163,74,0.1)" },
-  plan_changed:          { label: "Plan Changed",       icon: <CreditCard size={13} />,color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
+  plan_changed:          { label: "Plan Changed",       icon: <CreditCard size={13} />,color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)" },
   migration_run:         { label: "Migration Run",      icon: <Activity size={13} />, color: "#7C3AED", bg: "rgba(124,58,237,0.1)" },
   credential_updated:    { label: "Credential Updated", icon: <Key size={13} />,      color: "#0891B2", bg: "rgba(8,145,178,0.1)" },
   token_refreshed:       { label: "Token Refreshed",    icon: <Key size={13} />,      color: "#059669", bg: "rgba(5,150,105,0.1)" },
   abuse_flag_created:    { label: "Abuse Flag",         icon: <Shield size={13} />,   color: "#DC2626", bg: "rgba(220,38,38,0.1)" },
   user_registered:       { label: "User Registered",    icon: <User size={13} />,     color: "#16A34A", bg: "rgba(22,163,74,0.1)" },
-  pricing_updated:       { label: "Pricing Updated",    icon: <CreditCard size={13} />,color: "#D97706", bg: "rgba(217,119,6,0.1)" },
+  pricing_updated:       { label: "Pricing Updated",    icon: <CreditCard size={13} />,color: "var(--color-primary-hover)", bg: "rgba(217,119,6,0.1)" },
   feature_flag_updated:  { label: "Feature Flag",       icon: <Activity size={13} />, color: "#7C3AED", bg: "rgba(124,58,237,0.1)" },
 };
 
@@ -72,12 +72,12 @@ export default function AdminAuditLog() {
   const actions = ["all", ...Object.keys(ACTION_CONFIG)];
 
   return (
-    <div className="rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+    <div className="rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
         <div className="flex items-center gap-2">
-          <Shield size={18} style={{ color: "#F59E0B" }} />
-          <h2 className="text-lg font-bold" style={{ color: "#292524" }}>Audit Log</h2>
-          <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+          <Shield size={18} style={{ color: "var(--color-primary)" }} />
+          <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>Audit Log</h2>
+          <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
             {total} events
           </span>
         </div>
@@ -86,7 +86,7 @@ export default function AdminAuditLog() {
             value={filter}
             onChange={e => setFilter(e.target.value)}
             className="text-xs px-3 py-1.5 rounded-lg border focus:outline-none"
-            style={{ backgroundColor: "#F5EFE6", borderColor: "rgba(245,215,160,0.4)", color: "#292524" }}
+            style={{ backgroundColor: "#F5EFE6", borderColor: "rgba(245,215,160,0.4)", color: "var(--color-text)" }}
           >
             {actions.map(a => (
               <option key={a} value={a}>{a === "all" ? "All events" : (ACTION_CONFIG[a]?.label ?? a)}</option>
@@ -97,7 +97,7 @@ export default function AdminAuditLog() {
             onClick={load}
             disabled={loading}
             className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg font-medium transition-colors"
-            style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}
+            style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}
           >
             <RefreshCw size={12} className={loading ? "animate-spin" : ""} />
             Refresh
@@ -112,7 +112,7 @@ export default function AdminAuditLog() {
           <p className="font-semibold">Sesiune admin expirată</p>
           <p style={{ color: "#A8967E" }}>
             Cookie-ul admin a expirat (8h max). Re-loghează-te la{" "}
-            <a href="/markethub973" className="underline" style={{ color: "#D97706" }}>
+            <a href="/markethub973" className="underline" style={{ color: "var(--color-primary-hover)" }}>
               /markethub973
             </a>{" "}
             și revino aici.
@@ -142,17 +142,17 @@ export default function AdminAuditLog() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <span className="font-semibold" style={{ color: cfg.color }}>{cfg.label}</span>
                     {log.target_id && (
-                      <span className="text-xs font-mono opacity-60" style={{ color: "#292524" }}>
+                      <span className="text-xs font-mono opacity-60" style={{ color: "var(--color-text)" }}>
                         → {log.target_id.slice(0, 8)}…
                       </span>
                     )}
                     {log.details && Object.keys(log.details).length > 0 && (
-                      <span className="opacity-60" style={{ color: "#292524" }}>
+                      <span className="opacity-60" style={{ color: "var(--color-text)" }}>
                         {Object.entries(log.details).map(([k, v]) => `${k}: ${v}`).join(" · ")}
                       </span>
                     )}
                   </div>
-                  <div className="flex items-center gap-3 mt-0.5 opacity-50" style={{ color: "#292524" }}>
+                  <div className="flex items-center gap-3 mt-0.5 opacity-50" style={{ color: "var(--color-text)" }}>
                     <span>{timeAgo(log.created_at)}</span>
                     {log.ip && <span>IP: {log.ip}</span>}
                     {log.actor_id && <span>by {log.actor_id === "admin" ? "admin" : log.actor_id.slice(0, 8) + "…"}</span>}
@@ -160,7 +160,7 @@ export default function AdminAuditLog() {
                 </div>
 
                 {/* Timestamp */}
-                <span className="flex-shrink-0 opacity-40 text-xs" style={{ color: "#292524" }}>
+                <span className="flex-shrink-0 opacity-40 text-xs" style={{ color: "var(--color-text)" }}>
                   {new Date(log.created_at).toLocaleTimeString()}
                 </span>
               </div>

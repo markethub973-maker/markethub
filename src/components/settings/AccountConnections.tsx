@@ -163,12 +163,12 @@ export default function AccountConnections() {
       >
         <div
           className="w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 text-2xl font-bold"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+          style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
         >
           {connectedCount}/{connections.length}
         </div>
         <div>
-          <p className="font-bold text-base" style={{ color: "#292524" }}>
+          <p className="font-bold text-base" style={{ color: "var(--color-text)" }}>
             {connectedCount === 0 && "Connect your accounts for real data"}
             {connectedCount === 1 && "One account connected — connect the other one too!"}
             {connectedCount === connections.length && "All accounts connected ✅"}
@@ -200,7 +200,7 @@ export default function AccountConnections() {
 
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <p className="font-bold" style={{ color: "#292524" }}>{conn.name}</p>
+                <p className="font-bold" style={{ color: "var(--color-text)" }}>{conn.name}</p>
                 {!conn.loading && (
                   conn.connected
                     ? <span className="flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: "rgba(34,197,94,0.1)", color: "#16A34A" }}>
@@ -270,7 +270,7 @@ export default function AccountConnections() {
                 <p className="text-xs font-bold uppercase tracking-wider mb-2.5" style={{ color: "#A8967E" }}>Steps to connect</p>
                 <ol className="space-y-1.5">
                   {conn.how_to.map((step, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm" style={{ color: step.startsWith("⚠️") ? "#D97706" : "#4B3E35" }}>
+                    <li key={i} className="flex items-start gap-2 text-sm" style={{ color: step.startsWith("⚠️") ? "var(--color-primary-hover)" : "#4B3E35" }}>
                       {!step.startsWith("⚠️") && (
                         <span className="flex-shrink-0 w-4 h-4 rounded-full text-xs flex items-center justify-center font-bold mt-0.5"
                           style={{ background: conn.colorBg, color: conn.color, border: `1px solid ${conn.colorBorder}` }}>

@@ -21,7 +21,7 @@ function timeAgo(ts: string): string {
 }
 
 // ── StatCard ─────────────────────────────────────────────────────────────────
-function StatCard({ label, value, sub, color = "#F59E0B" }: { label: string; value: string; sub?: string; color?: string }) {
+function StatCard({ label, value, sub, color = "var(--color-primary)" }: { label: string; value: string; sub?: string; color?: string }) {
   return (
     <div className="bg-white border border-[#E8D9C5] rounded-xl p-4">
       <p className="text-xs text-[#78614E] mb-1">{label}</p>
@@ -105,7 +105,7 @@ function StoriesTab() {
                   <span className="text-[#78614E]">Exit Rate</span>
                   <span className={s.exit_rate > 50 ? "text-red-500 font-bold" : "text-[#292524] font-bold"}>{s.exit_rate}%</span>
                 </div>
-                <Bar pct={s.exit_rate} color={s.exit_rate > 50 ? "#DC2626" : "#F59E0B"} />
+                <Bar pct={s.exit_rate} color={s.exit_rate > 50 ? "#DC2626" : "var(--color-primary)"} />
               </div>
               <div>
                 <div className="flex justify-between text-xs mb-1">
@@ -195,9 +195,9 @@ function ReelsTab() {
                     { label: "Plays", val: fmt(r.plays), color: "#8B5CF6" },
                     { label: "Reach", val: fmt(r.reach), color: "#3B82F6" },
                     { label: "Shares", val: fmt(r.shares), color: "#16A34A" },
-                    { label: "Saves", val: fmt(r.saves), color: "#F59E0B" },
+                    { label: "Saves", val: fmt(r.saves), color: "var(--color-primary)" },
                     { label: "Likes", val: fmt(r.likes), color: "#EC4899" },
-                    { label: "Eng %", val: `${r.engagement_rate}%`, color: "#292524" },
+                    { label: "Eng %", val: `${r.engagement_rate}%`, color: "var(--color-text)" },
                   ].map(m => (
                     <div key={m.label} className="text-center">
                       <p className="text-sm font-bold" style={{ color: m.color }}>{m.val}</p>
@@ -288,7 +288,7 @@ function AdsTab() {
         <StatCard label="Impressions" value={fmt(totals.total_impressions)} color="#8B5CF6" />
         <StatCard label="Clicks" value={fmt(totals.total_clicks)} color="#3B82F6" />
         <StatCard label="Conversions" value={fmt(totals.total_conversions)} color="#16A34A" />
-        <StatCard label="Avg ROAS" value={`${totals.avg_roas}x`} color={totals.avg_roas >= 2 ? "#16A34A" : totals.avg_roas >= 1 ? "#F59E0B" : "#DC2626"} sub="Return on ad spend" />
+        <StatCard label="Avg ROAS" value={`${totals.avg_roas}x`} color={totals.avg_roas >= 2 ? "#16A34A" : totals.avg_roas >= 1 ? "var(--color-primary)" : "#DC2626"} sub="Return on ad spend" />
       </div>
 
       <div className="space-y-3">
@@ -308,11 +308,11 @@ function AdsTab() {
                 { label: "Spend", val: currency(a.spend, a.currency), color: "#DC2626" },
                 { label: "Impressions", val: fmt(a.impressions), color: "#8B5CF6" },
                 { label: "Clicks", val: fmt(a.clicks), color: "#3B82F6" },
-                { label: "Reach", val: fmt(a.reach), color: "#F59E0B" },
-                { label: "CPM", val: currency(a.cpm, a.currency), color: "#292524" },
-                { label: "CPC", val: currency(a.cpc, a.currency), color: "#292524" },
+                { label: "Reach", val: fmt(a.reach), color: "var(--color-primary)" },
+                { label: "CPM", val: currency(a.cpm, a.currency), color: "var(--color-text)" },
+                { label: "CPC", val: currency(a.cpc, a.currency), color: "var(--color-text)" },
                 { label: "CTR", val: `${a.ctr}%`, color: a.ctr >= 1 ? "#16A34A" : "#DC2626" },
-                { label: "ROAS", val: `${a.roas}x`, color: a.roas >= 2 ? "#16A34A" : a.roas >= 1 ? "#F59E0B" : "#DC2626" },
+                { label: "ROAS", val: `${a.roas}x`, color: a.roas >= 2 ? "#16A34A" : a.roas >= 1 ? "var(--color-primary)" : "#DC2626" },
               ].map(m => (
                 <div key={m.label}>
                   <p className="text-xs font-bold" style={{ color: m.color }}>{m.val}</p>
@@ -479,7 +479,7 @@ function AudienceOverlapTab() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <StatCard label="FB Page Fans" value={fmt(fb_fan_count)} color="#1877F2" />
         <StatCard label="Audience Overlap" value={`${overall_overlap_pct}%`}
-          color={overall_overlap_pct > 60 ? "#16A34A" : overall_overlap_pct > 30 ? "#F59E0B" : "#DC2626"}
+          color={overall_overlap_pct > 60 ? "#16A34A" : overall_overlap_pct > 30 ? "var(--color-primary)" : "#DC2626"}
           sub="Gender similarity score" />
         <div className="bg-white border border-[#E8D9C5] rounded-xl p-4 flex items-center gap-3">
           <div className="text-2xl">{overall_overlap_pct > 60 ? "✅" : overall_overlap_pct > 30 ? "⚠️" : "❌"}</div>
@@ -668,19 +668,19 @@ export default function MetaInsightsPage() {
       const React = (await import("react")).default;
 
       const S = StyleSheet.create({
-        page: { padding: 36, fontFamily: "Helvetica", backgroundColor: "#FFFCF7", fontSize: 10 },
-        header: { backgroundColor: "#292524", borderRadius: 8, padding: 18, marginBottom: 14 },
+        page: { padding: 36, fontFamily: "Helvetica", backgroundColor: "var(--color-bg-secondary)", fontSize: 10 },
+        header: { backgroundColor: "var(--color-text)", borderRadius: 8, padding: 18, marginBottom: 14 },
         headerTitle: { color: "#FFFFFF", fontSize: 16, fontWeight: "bold", marginBottom: 3 },
         headerSub: { color: "#C4AA8A", fontSize: 9 },
         section: { marginBottom: 12 },
-        sectionTitle: { fontSize: 11, fontWeight: "bold", color: "#292524", marginBottom: 6, paddingBottom: 4, borderBottom: "1 solid #E8D9C5" },
+        sectionTitle: { fontSize: 11, fontWeight: "bold", color: "var(--color-text)", marginBottom: 6, paddingBottom: 4, borderBottom: "1 solid #E8D9C5" },
         card: { backgroundColor: "#FFFFFF", borderRadius: 6, padding: 10, marginBottom: 6, border: "1 solid #E8D9C5" },
         row: { flexDirection: "row", gap: 8, marginBottom: 6 },
-        statBox: { flex: 1, backgroundColor: "#FFFCF7", borderRadius: 4, padding: 8, border: "1 solid #E8D9C5", alignItems: "center" },
-        statValue: { fontSize: 14, fontWeight: "bold", color: "#F59E0B", marginBottom: 2 },
+        statBox: { flex: 1, backgroundColor: "var(--color-bg-secondary)", borderRadius: 4, padding: 8, border: "1 solid #E8D9C5", alignItems: "center" },
+        statValue: { fontSize: 14, fontWeight: "bold", color: "var(--color-primary)", marginBottom: 2 },
         statLabel: { fontSize: 7, color: "#78614E", textAlign: "center" },
         label: { fontSize: 8, color: "#78614E", marginBottom: 1 },
-        body: { fontSize: 9, color: "#292524", lineHeight: 1.5 },
+        body: { fontSize: 9, color: "var(--color-text)", lineHeight: 1.5 },
         small: { fontSize: 8, color: "#78614E", lineHeight: 1.4 },
         tag: { backgroundColor: "#F5E8D4", borderRadius: 3, paddingHorizontal: 5, paddingVertical: 1 },
         footer: { marginTop: 16, borderTop: "1 solid #E8D9C5", paddingTop: 8 },
@@ -761,13 +761,13 @@ export default function MetaInsightsPage() {
                 React.createElement(View, { key: i, style: { ...S.card, flexDirection: "row", gap: 8, alignItems: "flex-start" } },
                   React.createElement(Text, { style: { fontSize: 9, fontWeight: "bold", color: "#C4AA8A", width: 14 } }, `#${i + 1}`),
                   React.createElement(View, { style: { flex: 1 } },
-                    React.createElement(Text, { style: { fontSize: 9, color: "#292524", marginBottom: 3 } },
+                    React.createElement(Text, { style: { fontSize: 9, color: "var(--color-text)", marginBottom: 3 } },
                       r.caption ? r.caption.substring(0, 80) + (r.caption.length > 80 ? "..." : "") : "No caption"
                     ),
                     React.createElement(View, { style: { flexDirection: "row", gap: 12 } },
                       React.createElement(Text, { style: { fontSize: 8, color: "#8B5CF6", fontWeight: "bold" } }, `${fmtN(r.plays)} plays`),
                       React.createElement(Text, { style: { fontSize: 8, color: "#3B82F6" } }, `${fmtN(r.reach)} reach`),
-                      React.createElement(Text, { style: { fontSize: 8, color: "#F59E0B" } }, `${r.engagement_rate}% eng`)
+                      React.createElement(Text, { style: { fontSize: 8, color: "var(--color-primary)" } }, `${r.engagement_rate}% eng`)
                     )
                   )
                 )
@@ -779,7 +779,7 @@ export default function MetaInsightsPage() {
           React.createElement(View, { style: S.section },
             React.createElement(Text, { style: S.sectionTitle }, "Cross-Platform Comparison"),
             cross?.winner ? React.createElement(View, null,
-              React.createElement(View, { style: { backgroundColor: "#292524", borderRadius: 6, padding: 10, marginBottom: 8 } },
+              React.createElement(View, { style: { backgroundColor: "var(--color-text)", borderRadius: 6, padding: 10, marginBottom: 8 } },
                 React.createElement(Text, { style: { color: "#F5D7A0", fontSize: 10, fontWeight: "bold", marginBottom: 2 } },
                   `Winner: ${cross.winner === "instagram" ? "Instagram" : "Facebook"}`
                 ),

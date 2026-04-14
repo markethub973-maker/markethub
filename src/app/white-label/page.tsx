@@ -5,9 +5,9 @@ import { Save, Loader2, Check, Eye, Palette, Globe, Mail, FileText } from "lucid
 
 interface Settings { agency_name: string; agency_logo: string; primary_color: string; accent_color: string; custom_domain: string; support_email: string; footer_text: string; }
 
-const empty: Settings = { agency_name: "", agency_logo: "", primary_color: "#F59E0B", accent_color: "#D97706", custom_domain: "", support_email: "", footer_text: "" };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const empty: Settings = { agency_name: "", agency_logo: "", primary_color: "var(--color-primary)", accent_color: "var(--color-primary-hover)", custom_domain: "", support_email: "", footer_text: "" };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
 
 export default function WhiteLabelPage() {
   const [settings, setSettings] = useState<Settings>(empty);
@@ -30,7 +30,7 @@ export default function WhiteLabelPage() {
     setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2000);
   };
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>;
+  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} /></div>;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
@@ -48,7 +48,7 @@ export default function WhiteLabelPage() {
           /* White-label preview */
           <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 4px 20px rgba(120,97,78,0.1)" }}>
             <div className="px-6 py-4 flex items-center gap-3"
-              style={{ backgroundColor: settings.primary_color || "#F59E0B" }}>
+              style={{ backgroundColor: settings.primary_color || "var(--color-primary)" }}>
               {settings.agency_logo ? (
                 <img src={settings.agency_logo} alt="" className="w-8 h-8 rounded-lg object-cover" />
               ) : (
@@ -59,10 +59,10 @@ export default function WhiteLabelPage() {
               )}
               <span className="font-bold text-white">{settings.agency_name || "Agency Name"}</span>
             </div>
-            <div className="p-6" style={{ backgroundColor: "#FFFCF7" }}>
+            <div className="p-6" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
               <p className="text-sm" style={{ color: "#78614E" }}>Customized marketing platform for your clients.<br />Access to analytics, reports and more.</p>
               <div className="mt-4 inline-block px-4 py-2 rounded-lg text-sm font-bold text-white"
-                style={{ backgroundColor: settings.accent_color || "#D97706" }}>
+                style={{ backgroundColor: settings.accent_color || "var(--color-primary-hover)" }}>
                 Open Dashboard
               </div>
             </div>
@@ -76,8 +76,8 @@ export default function WhiteLabelPage() {
             {/* Branding */}
             <div className="rounded-2xl p-4 space-y-3" style={card}>
               <div className="flex items-center gap-2 mb-1">
-                <Palette className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                <p className="font-bold text-sm" style={{ color: "#292524" }}>Visual identity</p>
+                <Palette className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+                <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Visual identity</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Agency name</label><input value={settings.agency_name} onChange={f("agency_name")} placeholder="e.g. Digital Studio LLC" style={inp} /></div>
@@ -103,7 +103,7 @@ export default function WhiteLabelPage() {
             <div className="rounded-2xl p-4 space-y-3" style={card}>
               <div className="flex items-center gap-2 mb-1">
                 <Globe className="w-4 h-4" style={{ color: "#6366F1" }} />
-                <p className="font-bold text-sm" style={{ color: "#292524" }}>Domain & Contact</p>
+                <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Domain & Contact</p>
               </div>
               <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Custom domain (optional)</label><input value={settings.custom_domain} onChange={f("custom_domain")} placeholder="e.g. portal.youragency.com" style={inp} /></div>
               <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Support email</label><input value={settings.support_email} onChange={f("support_email")} placeholder="support@youragency.com" style={inp} /></div>
@@ -113,12 +113,12 @@ export default function WhiteLabelPage() {
             <div className="rounded-2xl p-4 space-y-3" style={card}>
               <div className="flex items-center gap-2 mb-1">
                 <FileText className="w-4 h-4" style={{ color: "#10B981" }} />
-                <p className="font-bold text-sm" style={{ color: "#292524" }}>Custom footer</p>
+                <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Custom footer</p>
               </div>
               <textarea value={settings.footer_text} onChange={f("footer_text")} rows={2}
                 placeholder={`© ${new Date().getFullYear()} Your Agency · contact@youragency.com`}
                 className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
-                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
             </div>
 
             <button type="button" onClick={save} disabled={saving}

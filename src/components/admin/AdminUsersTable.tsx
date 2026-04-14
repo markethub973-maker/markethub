@@ -52,7 +52,7 @@ export default function AdminUsersTable({
   if (loadingUsers) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} />
+        <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} />
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function AdminUsersTable({
   const getPlanBadgeColor = (plan: string) => {
     switch (plan) {
       case "free_test":
-        return { bg: "#FEF3C7", color: "#F59E0B" };
+        return { bg: "#FEF3C7", color: "var(--color-primary)" };
       case "lite":
         return { bg: "#D1FAE5", color: "#10B981" };
       case "pro":
@@ -86,12 +86,12 @@ export default function AdminUsersTable({
     <div
       className="rounded-2xl p-8"
       style={{
-        backgroundColor: "#FFFCF7",
+        backgroundColor: "var(--color-bg-secondary)",
         border: "1px solid rgba(245,215,160,0.25)",
       }}
     >
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-4" style={{ color: "#292524" }}>
+        <h2 className="text-2xl font-bold mb-4" style={{ color: "var(--color-text)" }}>
           Users Management
         </h2>
         <div className="flex flex-col md:flex-row gap-4">
@@ -120,22 +120,22 @@ export default function AdminUsersTable({
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-4 font-semibold" style={{ color: "#292524" }}>
+              <th className="text-left py-3 px-4 font-semibold" style={{ color: "var(--color-text)" }}>
                 Email
               </th>
-              <th className="text-left py-3 px-4 font-semibold" style={{ color: "#292524" }}>
+              <th className="text-left py-3 px-4 font-semibold" style={{ color: "var(--color-text)" }}>
                 Name
               </th>
-              <th className="text-left py-3 px-4 font-semibold" style={{ color: "#292524" }}>
+              <th className="text-left py-3 px-4 font-semibold" style={{ color: "var(--color-text)" }}>
                 Plan
               </th>
-              <th className="text-left py-3 px-4 font-semibold" style={{ color: "#292524" }}>
+              <th className="text-left py-3 px-4 font-semibold" style={{ color: "var(--color-text)" }}>
                 Status
               </th>
-              <th className="text-left py-3 px-4 font-semibold" style={{ color: "#292524" }}>
+              <th className="text-left py-3 px-4 font-semibold" style={{ color: "var(--color-text)" }}>
                 API Cost
               </th>
-              <th className="text-left py-3 px-4 font-semibold" style={{ color: "#292524" }}>
+              <th className="text-left py-3 px-4 font-semibold" style={{ color: "var(--color-text)" }}>
                 Actions
               </th>
             </tr>
@@ -153,7 +153,7 @@ export default function AdminUsersTable({
 
               return (
                 <tr key={user.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-4 px-4" style={{ color: "#292524" }}>
+                  <td className="py-4 px-4" style={{ color: "var(--color-text)" }}>
                     <a
                       href={`mailto:${user.email}`}
                       className="text-blue-600 hover:underline"
@@ -161,7 +161,7 @@ export default function AdminUsersTable({
                       {user.email}
                     </a>
                   </td>
-                  <td className="py-4 px-4" style={{ color: "#292524" }}>
+                  <td className="py-4 px-4" style={{ color: "var(--color-text)" }}>
                     {user.name}
                   </td>
                   <td className="py-4 px-4">
@@ -183,7 +183,7 @@ export default function AdminUsersTable({
                       )}
                     </div>
                   </td>
-                  <td className="py-4 px-4" style={{ color: "#292524" }}>
+                  <td className="py-4 px-4" style={{ color: "var(--color-text)" }}>
                     ${user.total_api_cost_month.toFixed(2)}
                   </td>
                   <td className="py-4 px-4">

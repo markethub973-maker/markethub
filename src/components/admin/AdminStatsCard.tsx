@@ -17,7 +17,7 @@ export default function AdminStatsCard({
     <div
       className="rounded-xl p-6 transition-all hover:shadow-lg"
       style={{
-        backgroundColor: "#FFFCF7",
+        backgroundColor: "var(--color-bg-secondary)",
         border: "1px solid rgba(245,215,160,0.25)",
         boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
       }}
@@ -33,7 +33,7 @@ export default function AdminStatsCard({
         </p>
       </div>
       <h3 className="text-sm text-gray-600 mb-1">{title}</h3>
-      <p className="text-3xl font-bold" style={{ color: "#292524" }}>
+      <p className="text-3xl font-bold" style={{ color: "var(--color-text)" }}>
         {value}
       </p>
     </div>

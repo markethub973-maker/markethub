@@ -10,7 +10,7 @@ import {
   Star, Trash2, Link2, CheckCircle2
 } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const TT = "#00F2EA";
 const TT2 = "#FF0050";
 
@@ -149,7 +149,7 @@ export default function TikTokPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Link2 className="w-4 h-4" style={{ color: TT2 }} />
-              <span className="font-semibold text-sm" style={{ color: "#292524" }}>Connected TikTok Accounts</span>
+              <span className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>Connected TikTok Accounts</span>
             </div>
             <a
               href="/api/auth/tiktok"
@@ -183,7 +183,7 @@ export default function TikTokPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <p className="text-sm font-semibold truncate" style={{ color: "#292524" }}>{acc.display_name}</p>
+                      <p className="text-sm font-semibold truncate" style={{ color: "var(--color-text)" }}>{acc.display_name}</p>
                       {acc.is_primary && (
                         <span className="text-xs px-1.5 py-0.5 rounded-full font-semibold" style={{ backgroundColor: `${TT2}15`, color: TT2 }}>Primary</span>
                       )}
@@ -196,7 +196,7 @@ export default function TikTokPage() {
                       <button type="button" title="Set as primary" disabled={acctLoading}
                         onClick={() => acctAction(acc.tiktok_open_id, "set_primary")}
                         className="p-1.5 rounded-lg transition-colors hover:bg-amber-50">
-                        <Star className="w-4 h-4" style={{ color: "#F59E0B" }} />
+                        <Star className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
                       </button>
                     )}
                     <button type="button" title="Disconnect" disabled={acctLoading}
@@ -220,7 +220,7 @@ export default function TikTokPage() {
                 value={query} onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && search()}
                 className="w-full pl-9 pr-4 py-3 text-sm rounded-xl focus:outline-none"
-                style={{ border: `1px solid ${TT2}30`, backgroundColor: "#FFF8F0", color: "#292524" }}
+                style={{ border: `1px solid ${TT2}30`, backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
                 onFocus={e => (e.currentTarget.style.borderColor = TT2)}
                 onBlur={e => (e.currentTarget.style.borderColor = `${TT2}30`)}
               />
@@ -264,7 +264,7 @@ export default function TikTokPage() {
                   style={activeTab === tab.key ? {
                     background: `linear-gradient(135deg, ${TT}20, ${TT2}20)`, color: TT2, border: `1px solid ${TT2}40`,
                   } : {
-                    backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)",
+                    backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)",
                   }}>
                   {tab.icon}{tab.label}
                 </button>
@@ -298,7 +298,7 @@ export default function TikTokPage() {
                       </div>
                     </div>
                     <div className="p-3">
-                      <p className="text-xs font-semibold truncate" style={{ color: "#292524" }}>@{video.author}</p>
+                      <p className="text-xs font-semibold truncate" style={{ color: "var(--color-text)" }}>@{video.author}</p>
                       {video.desc && (
                         <p className="text-xs mt-0.5 line-clamp-2" style={{ color: "#A8967E" }}>{video.desc}</p>
                       )}
@@ -324,7 +324,7 @@ export default function TikTokPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-bold truncate" style={{ color: "#292524" }}>
+                        <p className="text-sm font-bold truncate" style={{ color: "var(--color-text)" }}>
                           {user.nickname || user.uniqueId}
                         </p>
                         {user.verified && (
@@ -339,19 +339,19 @@ export default function TikTokPage() {
                       <div className="flex items-center gap-3 mt-2">
                         {user.followers > 0 && (
                           <span className="text-xs" style={{ color: "#78614E" }}>
-                            <strong style={{ color: "#292524" }}>{formatNum(user.followers)}</strong> followers
+                            <strong style={{ color: "var(--color-text)" }}>{formatNum(user.followers)}</strong> followers
                           </span>
                         )}
                         {user.likes > 0 && (
                           <span className="text-xs" style={{ color: "#78614E" }}>
-                            <strong style={{ color: "#292524" }}>{formatNum(user.likes)}</strong> likes
+                            <strong style={{ color: "var(--color-text)" }}>{formatNum(user.likes)}</strong> likes
                           </span>
                         )}
                       </div>
                     </div>
                     <div className="flex flex-col gap-1">
                       <button type="button" onClick={() => toggleSaveUser(user.uniqueId)}
-                        className="p-1.5 rounded-lg" style={{ color: savedUsers.includes(user.uniqueId) ? "#F59E0B" : "#C4AA8A" }}>
+                        className="p-1.5 rounded-lg" style={{ color: savedUsers.includes(user.uniqueId) ? "var(--color-primary)" : "#C4AA8A" }}>
                         {savedUsers.includes(user.uniqueId) ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
                       </button>
                       <a href={`https://tiktok.com/@${user.uniqueId}`} target="_blank" rel="noopener noreferrer"
@@ -372,16 +372,16 @@ export default function TikTokPage() {
                     className="rounded-xl p-4 transition-all hover:scale-[1.02]" style={cardStyle}>
                     <div className="flex items-center gap-2 mb-2">
                       <Hash className="w-4 h-4" style={{ color: TT2 }} />
-                      <p className="text-sm font-bold" style={{ color: "#292524" }}>#{tag.name}</p>
+                      <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>#{tag.name}</p>
                     </div>
                     {tag.views > 0 && (
                       <p className="text-xs" style={{ color: "#A8967E" }}>
-                        <strong style={{ color: "#292524" }}>{formatNum(tag.views)}</strong> views
+                        <strong style={{ color: "var(--color-text)" }}>{formatNum(tag.views)}</strong> views
                       </p>
                     )}
                     {tag.videos > 0 && (
                       <p className="text-xs" style={{ color: "#A8967E" }}>
-                        <strong style={{ color: "#292524" }}>{formatNum(tag.videos)}</strong> videos
+                        <strong style={{ color: "var(--color-text)" }}>{formatNum(tag.videos)}</strong> videos
                       </p>
                     )}
                   </a>
@@ -393,7 +393,7 @@ export default function TikTokPage() {
             {videos.length === 0 && users.length === 0 && hashtags.length === 0 && (
               <div className="rounded-xl p-8 text-center" style={cardStyle}>
                 <Search className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>No results found</p>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>No results found</p>
                 <p className="text-xs mt-1" style={{ color: "#A8967E" }}>Try a different search term</p>
               </div>
             )}
@@ -405,13 +405,13 @@ export default function TikTokPage() {
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="w-4 h-4" style={{ color: TT2 }} />
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Popular Searches</h3>
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Popular Searches</h3>
             </div>
             <div className="flex flex-wrap gap-2">
               {TRENDING_SEARCHES.map(term => (
                 <button key={term} type="button" onClick={() => { setQuery(term); search(term); }}
                   className="px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105"
-                  style={{ background: `linear-gradient(135deg, ${TT}10, ${TT2}10)`, color: "#292524", border: `1px solid ${TT2}20` }}
+                  style={{ background: `linear-gradient(135deg, ${TT}10, ${TT2}10)`, color: "var(--color-text)", border: `1px solid ${TT2}20` }}
                   onMouseEnter={e => { e.currentTarget.style.background = `linear-gradient(135deg, ${TT}25, ${TT2}25)`; e.currentTarget.style.borderColor = TT2; }}
                   onMouseLeave={e => { e.currentTarget.style.background = `linear-gradient(135deg, ${TT}10, ${TT2}10)`; e.currentTarget.style.borderColor = `${TT2}20`; }}>
                   {term}
@@ -426,8 +426,8 @@ export default function TikTokPage() {
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                <h3 className="font-semibold" style={{ color: "#292524" }}>Recent Searches</h3>
+                <Clock className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+                <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Recent Searches</h3>
               </div>
               <button type="button" onClick={clearHistory}
                 className="text-xs font-semibold px-2 py-1 rounded-lg"
@@ -439,7 +439,7 @@ export default function TikTokPage() {
               {history.slice(0, 15).map(h => (
                 <button key={h.query + h.timestamp} type="button" onClick={() => { setQuery(h.query); search(h.query); }}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors"
-                  style={{ backgroundColor: `${TT2}08`, color: "#292524", border: `1px solid ${TT2}15` }}
+                  style={{ backgroundColor: `${TT2}08`, color: "var(--color-text)", border: `1px solid ${TT2}15` }}
                   onMouseEnter={e => { e.currentTarget.style.backgroundColor = `${TT2}18`; e.currentTarget.style.borderColor = TT2; }}
                   onMouseLeave={e => { e.currentTarget.style.backgroundColor = `${TT2}08`; e.currentTarget.style.borderColor = `${TT2}15`; }}>
                   <span className="font-medium">{h.query}</span>
@@ -453,8 +453,8 @@ export default function TikTokPage() {
         {savedUsers.length > 0 && (
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center gap-2 mb-3">
-              <Bookmark className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Saved Creators ({savedUsers.length})</h3>
+              <Bookmark className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Saved Creators ({savedUsers.length})</h3>
             </div>
             <div className="flex flex-wrap gap-2">
               {savedUsers.map(uid => (

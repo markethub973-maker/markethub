@@ -138,13 +138,13 @@ function WorkflowCard({ workflow, onLaunch }: { workflow: Workflow; onLaunch: (a
   return (
     <div
       className="rounded-xl p-5 flex flex-col gap-4"
-      style={{ backgroundColor: "#FFFCF7", border: `1px solid ${workflow.color}30`, boxShadow: "0 1px 3px rgba(120,97,78,0.06)" }}
+      style={{ backgroundColor: "var(--color-bg-secondary)", border: `1px solid ${workflow.color}30`, boxShadow: "0 1px 3px rgba(120,97,78,0.06)" }}
     >
       {/* Header */}
       <div className="flex items-start gap-3">
         <span className="text-2xl flex-shrink-0">{workflow.icon}</span>
         <div className="flex-1 min-w-0">
-          <h4 className="font-bold text-sm" style={{ color: "#292524" }}>{workflow.title}</h4>
+          <h4 className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{workflow.title}</h4>
           <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{workflow.goal}</p>
         </div>
         <span className="text-xs font-medium px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: `${workflow.color}15`, color: workflow.color }}>
@@ -168,7 +168,7 @@ function WorkflowCard({ workflow, onLaunch }: { workflow: Workflow; onLaunch: (a
               {i + 1}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium" style={{ color: "#292524" }}>{step.label}</p>
+              <p className="text-xs font-medium" style={{ color: "var(--color-text)" }}>{step.label}</p>
               <p className="text-xs truncate mt-0.5" style={{ color: "#A8967E" }}>
                 {AGENTS[step.agent].name}
               </p>
@@ -221,7 +221,7 @@ function AgentCard({ id, onClick }: { id: AgentType; onClick: () => void }) {
       onClick={onClick}
       className="group text-left rounded-xl p-5 transition-all hover:scale-[1.02]"
       style={{
-        backgroundColor: "#FFFCF7",
+        backgroundColor: "var(--color-bg-secondary)",
         border: "1px solid rgba(245,215,160,0.25)",
         boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
       }}
@@ -241,7 +241,7 @@ function AgentCard({ id, onClick }: { id: AgentType; onClick: () => void }) {
         >
           <Icon className="w-5 h-5" style={{ color: agent.color }} />
         </div>
-        <h3 className="font-semibold text-sm" style={{ color: "#292524" }}>
+        <h3 className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>
           {agent.name}
         </h3>
       </div>
@@ -270,8 +270,8 @@ function ChatBubble({ msg, color }: { msg: Message; color: string }) {
         }`}
         style={
           isUser
-            ? { backgroundColor: "#F59E0B", color: "#1C1814" }
-            : { backgroundColor: "#FFFCF7", color: "#292524", border: "1px solid rgba(245,215,160,0.3)" }
+            ? { backgroundColor: "var(--color-primary)", color: "#1C1814" }
+            : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.3)" }
         }
       >
         {msg.content}
@@ -423,7 +423,7 @@ export default function AIHubPage() {
         },
         brandBadge: {
           fontSize: 8,
-          color: "#F59E0B",
+          color: "var(--color-primary)",
           fontWeight: "bold",
           letterSpacing: 2,
           marginBottom: 8,
@@ -454,7 +454,7 @@ export default function AIHubPage() {
           padding: 12,
           borderRadius: 8,
           borderLeftWidth: 3,
-          borderLeftColor: "#F59E0B",
+          borderLeftColor: "var(--color-primary)",
           borderLeftStyle: "solid",
         },
         assistantBubble: {
@@ -467,7 +467,7 @@ export default function AIHubPage() {
         },
         messageText: {
           fontSize: 10,
-          color: "#292524",
+          color: "var(--color-text)",
           lineHeight: 1.65,
         },
         footer: {
@@ -579,17 +579,17 @@ export default function AIHubPage() {
             }}
           >
             <div className="flex items-center gap-3 mb-2">
-              <Sparkles className="w-5 h-5" style={{ color: "#F59E0B" }} />
-              <h2 className="font-bold text-lg" style={{ color: "#292524" }}>
+              <Sparkles className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+              <h2 className="font-bold text-lg" style={{ color: "var(--color-text)" }}>
                 Your AI Agents
               </h2>
             </div>
             <p className="text-sm" style={{ color: "#A8967E" }}>
               Choose a specialized agent to get started. Each agent has unique expertise and
               access to MarketHub Pro platform data. Export strategies as{" "}
-              <span style={{ color: "#D97706", fontWeight: 600 }}>PDF</span>,{" "}
-              <span style={{ color: "#D97706", fontWeight: 600 }}>Excel</span>, or visualize as{" "}
-              <span style={{ color: "#D97706", fontWeight: 600 }}>workflow diagrams</span>.
+              <span style={{ color: "var(--color-primary-hover)", fontWeight: 600 }}>PDF</span>,{" "}
+              <span style={{ color: "var(--color-primary-hover)", fontWeight: 600 }}>Excel</span>, or visualize as{" "}
+              <span style={{ color: "var(--color-primary-hover)", fontWeight: 600 }}>workflow diagrams</span>.
             </p>
           </div>
 
@@ -603,9 +603,9 @@ export default function AIHubPage() {
           {/* Power Workflows Section */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <GitBranch className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <h3 className="font-bold text-base" style={{ color: "#292524" }}>Power Workflows</h3>
-              <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+              <GitBranch className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <h3 className="font-bold text-base" style={{ color: "var(--color-text)" }}>Power Workflows</h3>
+              <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
                 Multi-agent sequences
               </span>
             </div>
@@ -649,7 +649,7 @@ export default function AIHubPage() {
           <AgentIcon className="w-5 h-5" style={{ color: agentConfig!.color }} />
         </div>
         <div className="flex-1">
-          <h2 className="font-semibold text-sm" style={{ color: "#292524" }}>
+          <h2 className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>
             {agentConfig!.name}
           </h2>
           <p className="text-xs" style={{ color: "#A8967E" }}>
@@ -667,7 +667,7 @@ export default function AIHubPage() {
               disabled={pdfLoading}
               title="Download as PDF"
               className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-lg transition-all hover:opacity-90 active:scale-95"
-              style={{ backgroundColor: "#FFF0D6", color: "#D97706", border: "1px solid #F5D7A0" }}
+              style={{ backgroundColor: "#FFF0D6", color: "var(--color-primary-hover)", border: "1px solid #F5D7A0" }}
             >
               {pdfLoading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -726,7 +726,7 @@ export default function AIHubPage() {
             </div>
             <div
               className="px-4 py-3 rounded-xl rounded-tl-sm flex gap-1.5 items-center"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}
             >
               {[0, 1, 2].map((i) => (
                 <div
@@ -754,8 +754,8 @@ export default function AIHubPage() {
             disabled={streaming}
             className="flex-1 px-4 py-3 text-sm rounded-xl focus:outline-none transition-colors"
             style={{
-              backgroundColor: "#FFFCF7",
-              color: "#292524",
+              backgroundColor: "var(--color-bg-secondary)",
+              color: "var(--color-text)",
               border: "1px solid rgba(245,215,160,0.25)",
             }}
           />
@@ -788,7 +788,7 @@ export default function AIHubPage() {
           <div
             className="w-full max-w-2xl rounded-2xl flex flex-col"
             style={{
-              backgroundColor: "#FFFCF7",
+              backgroundColor: "var(--color-bg-secondary)",
               border: "1px solid rgba(245,215,160,0.4)",
               boxShadow: "0 24px 64px rgba(120,97,78,0.2)",
               maxHeight: "90vh",

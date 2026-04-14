@@ -29,7 +29,7 @@ const PLAN_LABELS: Record<PlanId, string> = {
 
 const PLAN_COLORS: Record<PlanId, string> = {
   free_test: "#78614E",
-  lite: "#F59E0B",
+  lite: "var(--color-primary)",
   pro: "#8B5CF6",
   business: "#E1306C",
   enterprise: "#16A34A",

@@ -10,7 +10,7 @@ import {
 
 const A = "#F5A623";
 const COLORS = ["#F5A623", "#1DB954", "#3B82F6", "#EF4444", "#8B5CF6"];
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
 const ALL_COUNTRIES = [
   { code: "AF", label: "🇦🇫 Afghanistan" },
@@ -322,7 +322,7 @@ export default function TrendsPage() {
           {/* Global Button */}
           <button type="button" onClick={handleGlobal}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-            style={isGlobal ? { backgroundColor: A, color: "white" } : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+            style={isGlobal ? { backgroundColor: A, color: "white" } : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
           >
             <Globe className="w-3 h-3" /> Global
           </button>
@@ -331,14 +331,14 @@ export default function TrendsPage() {
           <div className="relative" ref={dropdownRef}>
             <button type="button" onClick={() => setDropdownOpen(prev => !prev)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-              style={!isGlobal ? { backgroundColor: A, color: "white" } : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+              style={!isGlobal ? { backgroundColor: A, color: "white" } : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
             >
               {!isGlobal ? selectedCountry?.label : "🗺️ International"}
               <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
             </button>
             {dropdownOpen && (
               <div className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
-                style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
+                style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.4)", boxShadow: "0 8px 24px rgba(120,97,78,0.15)", maxHeight: "300px", minWidth: "200px" }}
               >
                 {ALL_COUNTRIES.map(c => (
                   <button key={c.code} type="button" onClick={() => handleSelectCountry(c)}
@@ -390,7 +390,7 @@ export default function TrendsPage() {
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-bold w-5 text-center flex-shrink-0"
                           style={{ color: i < 3 ? A : "#C4AA8A" }}>{i + 1}</span>
-                        <span className="text-sm font-bold" style={{ color: "#292524" }}>{trend.title}</span>
+                        <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{trend.title}</span>
                       </div>
                       <span className="text-xs font-semibold flex-shrink-0 px-2 py-0.5 rounded-full"
                         style={{ backgroundColor: "rgba(245,166,35,0.1)", color: A }}>
@@ -413,7 +413,7 @@ export default function TrendsPage() {
                         )}
                         <div className="min-w-0">
                           <p className="text-xs font-medium leading-tight line-clamp-2 group-hover:underline"
-                            style={{ color: "#292524" }}>{a.title}</p>
+                            style={{ color: "var(--color-text)" }}>{a.title}</p>
                           <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>{a.source}</p>
                         </div>
                         <ExternalLink className="w-3 h-3 flex-shrink-0 opacity-0 group-hover:opacity-100" style={{ color: A }} />
@@ -451,7 +451,7 @@ export default function TrendsPage() {
                   onKeyDown={e => e.key === "Enter" && addKeyword()}
                   disabled={keywords.length >= 5}
                   className="flex-1 px-3 py-2 text-sm rounded-lg focus:outline-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFFCF7", color: "#292524" }}
+                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }}
                 />
                 <button type="button" onClick={addKeyword} disabled={keywords.length >= 5}
                   className="px-3 py-2 rounded-lg"
@@ -474,7 +474,7 @@ export default function TrendsPage() {
 
             {compareData && chartData.length > 0 && (
               <div className="rounded-xl p-5" style={cardStyle}>
-                <p className="text-sm font-semibold mb-4" style={{ color: "#292524" }}>
+                <p className="text-sm font-semibold mb-4" style={{ color: "var(--color-text)" }}>
                   Interest over time — last 90 days ({ALL_COUNTRIES.find(c => c.code === geo)?.label ?? geo})
                 </p>
                 <ResponsiveContainer width="100%" height={320}>
@@ -483,7 +483,7 @@ export default function TrendsPage() {
                     <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#C4AA8A" }} interval="preserveStartEnd" />
                     <YAxis tick={{ fontSize: 10, fill: "#C4AA8A" }} domain={[0, 100]} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)", borderRadius: 8, fontSize: 12 }}
+                      contentStyle={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)", borderRadius: 8, fontSize: 12 }}
                     />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
                     {compareData.keywords.map((kw: string, i: number) => (
@@ -497,7 +497,7 @@ export default function TrendsPage() {
             {!compareData && !compareLoading && (
               <div className="rounded-xl p-12 text-center" style={cardStyle}>
                 <BarChart2 className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(245,166,35,0.3)" }} />
-                <p className="font-semibold" style={{ color: "#292524" }}>Compare up to 5 keywords</p>
+                <p className="font-semibold" style={{ color: "var(--color-text)" }}>Compare up to 5 keywords</p>
                 <p className="text-sm mt-1" style={{ color: "#A8967E" }}>Add keywords and press "Compare" to see interest over time</p>
               </div>
             )}
@@ -517,7 +517,7 @@ export default function TrendsPage() {
                   onChange={e => setRelQuery(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && loadRelated()}
                   className="w-full pl-9 pr-4 py-3 text-sm rounded-xl focus:outline-none"
-                  style={{ border: "1px solid rgba(245,166,35,0.3)", backgroundColor: "#FFFCF7", color: "#292524" }}
+                  style={{ border: "1px solid rgba(245,166,35,0.3)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }}
                 />
               </div>
               <button type="button" onClick={loadRelated} disabled={relLoading || !relQuery.trim()}
@@ -538,7 +538,7 @@ export default function TrendsPage() {
                 {/* Top Queries */}
                 <div className="rounded-xl overflow-hidden" style={cardStyle}>
                   <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                    <h3 className="font-semibold" style={{ color: "#292524" }}>Top Queries</h3>
+                    <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Top Queries</h3>
                     <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Most frequent related searches</p>
                   </div>
                   <div className="divide-y" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
@@ -548,7 +548,7 @@ export default function TrendsPage() {
                     {relData.top?.map((item: any, i: number) => (
                       <div key={i} className="flex items-center gap-3 px-5 py-3">
                         <span className="text-xs font-bold w-5 text-center" style={{ color: i < 3 ? A : "#C4AA8A" }}>{i + 1}</span>
-                        <span className="flex-1 text-sm" style={{ color: "#292524" }}>{item.query}</span>
+                        <span className="flex-1 text-sm" style={{ color: "var(--color-text)" }}>{item.query}</span>
                         <div className="flex items-center gap-2">
                           <div className="w-20 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,166,35,0.15)" }}>
                             <div className="h-full rounded-full" style={{ width: `${item.value}%`, backgroundColor: A }} />
@@ -563,7 +563,7 @@ export default function TrendsPage() {
                 {/* Rising Queries */}
                 <div className="rounded-xl overflow-hidden" style={cardStyle}>
                   <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-                    <h3 className="font-semibold" style={{ color: "#292524" }}>Rising Queries</h3>
+                    <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Rising Queries</h3>
                     <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Rapidly growing searches — future opportunities</p>
                   </div>
                   <div className="divide-y" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
@@ -573,7 +573,7 @@ export default function TrendsPage() {
                     {relData.rising?.map((item: any, i: number) => (
                       <div key={i} className="flex items-center gap-3 px-5 py-3">
                         <span className="text-xs font-bold w-5 text-center" style={{ color: "#1DB954" }}>{i + 1}</span>
-                        <span className="flex-1 text-sm" style={{ color: "#292524" }}>{item.query}</span>
+                        <span className="flex-1 text-sm" style={{ color: "var(--color-text)" }}>{item.query}</span>
                         <span className="text-xs font-bold px-2 py-0.5 rounded-full"
                           style={{ backgroundColor: "rgba(29,185,84,0.1)", color: "#1DB954" }}>
                           {item.formattedValue}
@@ -589,7 +589,7 @@ export default function TrendsPage() {
               <div className="rounded-xl p-8" style={cardStyle}>
                 <div className="text-center mb-6">
                   <TrendingUp className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(245,166,35,0.3)" }} />
-                  <p className="font-semibold" style={{ color: "#292524" }}>Discover related queries</p>
+                  <p className="font-semibold" style={{ color: "var(--color-text)" }}>Discover related queries</p>
                   <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
                     Enter a brand, product or niche and find out what people search for related to it
                   </p>

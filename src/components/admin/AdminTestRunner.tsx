@@ -217,7 +217,7 @@ export default function AdminTestRunner() {
           onClick={run}
           disabled={running}
           className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
-          style={{ background: "rgba(245,158,11,0.15)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.3)" }}
+          style={{ background: "rgba(245,158,11,0.15)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.3)" }}
         >
           <RefreshCw size={14} className={running ? "animate-spin" : ""} />
           {running ? "Running…" : "Run Tests"}
@@ -227,7 +227,7 @@ export default function AdminTestRunner() {
       {/* Running state */}
       {running && (
         <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-2" style={{ color: "#F59E0B" }}>
+          <div className="flex items-center gap-2" style={{ color: "var(--color-primary)" }}>
             <Clock size={14} />
             <span className="text-sm">Running 12 integration tests — this may take up to 2 minutes…</span>
           </div>
@@ -246,7 +246,7 @@ export default function AdminTestRunner() {
           <p className="font-semibold">Sesiune admin expirată</p>
           <p style={{ color: "#A0A0A0" }}>
             Cookie-ul admin a expirat (8h max). Re-loghează-te la{" "}
-            <a href="/markethub973" className="underline" style={{ color: "#F59E0B" }}>/markethub973</a>{" "}
+            <a href="/markethub973" className="underline" style={{ color: "var(--color-primary)" }}>/markethub973</a>{" "}
             apoi apasă din nou Run Tests.
           </p>
         </div>

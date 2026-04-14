@@ -8,7 +8,7 @@ import {
   ShieldCheck, Image, Video, ChevronDown, ChevronUp, ArrowUpDown, Sparkles, AlertCircle
 } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const IG = "#E1306C";
 const TT = "#00F2EA";
 const TT2 = "#FF0050";
@@ -171,13 +171,13 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
     setAnalyzing(false);
   };
 
-  const THREAT_COLORS: Record<string, string> = { low: "#10B981", medium: "#F59E0B", high: "#EF4444" };
+  const THREAT_COLORS: Record<string, string> = { low: "#10B981", medium: "var(--color-primary)", high: "#EF4444" };
 
   return (
-    <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(124,58,237,0.2)" }}>
+    <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(124,58,237,0.2)" }}>
       <div className="flex items-center gap-2">
         <Sparkles className="w-5 h-5" style={{ color: "#7C3AED" }} />
-        <h3 className="font-bold" style={{ color: "#292524" }}>Competitor Monetization Spy</h3>
+        <h3 className="font-bold" style={{ color: "var(--color-text)" }}>Competitor Monetization Spy</h3>
         <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(124,58,237,0.1)", color: "#7C3AED" }}>AI</span>
       </div>
 
@@ -185,7 +185,7 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
         {competitors.length > 0 ? (
           <select value={selected} onChange={e => setSelected(e.target.value)}
             className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }}>
+            style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }}>
             <option value="">Alege competitor...</option>
             {competitors.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
           </select>
@@ -193,7 +193,7 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
           <input value={selected} onChange={e => setSelected(e.target.value)}
             placeholder="Type the brand name..."
             className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+            style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
         )}
         <button type="button" onClick={analyze} disabled={analyzing || !selected.trim()}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
@@ -216,7 +216,7 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
             {[
               { label: "Primary monetization", value: result.primary_monetization, color: "#7C3AED" },
               { label: "Funnel type", value: result.funnel_type, color: "#6366F1" },
-              { label: "Estimated price", value: result.price_range, color: "#F59E0B" },
+              { label: "Estimated price", value: result.price_range, color: "var(--color-primary)" },
             ].map(s => (
               <div key={s.label} className="rounded-xl p-3" style={{ backgroundColor: `${s.color}08`, border: `1px solid ${s.color}20` }}>
                 <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#A8967E" }}>{s.label}</p>
@@ -231,7 +231,7 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
               <p className="text-xs font-semibold mb-2" style={{ color: "#10B981" }}>💰 Surse de venit</p>
               <ul className="space-y-1">
                 {result.revenue_streams?.map((s: string, i: number) => (
-                  <li key={i} className="text-xs flex items-center gap-1.5" style={{ color: "#292524" }}>
+                  <li key={i} className="text-xs flex items-center gap-1.5" style={{ color: "var(--color-text)" }}>
                     <span style={{ color: "#10B981" }}>•</span> {s}
                   </li>
                 ))}
@@ -240,11 +240,11 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
 
             {/* Opportunities */}
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
-              <p className="text-xs font-semibold mb-2" style={{ color: "#F59E0B" }}>🚀 Opportunities for you</p>
+              <p className="text-xs font-semibold mb-2" style={{ color: "var(--color-primary)" }}>🚀 Opportunities for you</p>
               <ul className="space-y-1">
                 {result.opportunities?.map((o: string, i: number) => (
-                  <li key={i} className="text-xs flex items-center gap-1.5" style={{ color: "#292524" }}>
-                    <span style={{ color: "#F59E0B" }}>•</span> {o}
+                  <li key={i} className="text-xs flex items-center gap-1.5" style={{ color: "var(--color-text)" }}>
+                    <span style={{ color: "var(--color-primary)" }}>•</span> {o}
                   </li>
                 ))}
               </ul>
@@ -418,14 +418,14 @@ export default function CompetitorsPage() {
         {competitors.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Competitors", value: competitors.length.toString(), icon: <Users className="w-4 h-4" />, color: "#F59E0B" },
+              { label: "Competitors", value: competitors.length.toString(), icon: <Users className="w-4 h-4" />, color: "var(--color-primary)" },
               { label: "Total IG Followers", value: formatNum(totalIGFollowers), icon: <Instagram className="w-4 h-4" />, color: IG },
               { label: "Total TT Followers", value: formatNum(totalTTFollowers), icon: <Zap className="w-4 h-4" />, color: TT2 },
               { label: "Avg. IG Engagement", value: `${avgEngagement}%`, icon: <TrendingUp className="w-4 h-4" />, color: "#10B981" },
             ].map(s => (
               <div key={s.label} className="rounded-xl p-4" style={cardStyle}>
                 <div className="flex items-center gap-2 mb-1" style={{ color: s.color }}>{s.icon}<span className="text-xs">{s.label}</span></div>
-                <p className="text-xl font-bold" style={{ color: "#292524" }}>{s.value}</p>
+                <p className="text-xl font-bold" style={{ color: "var(--color-text)" }}>{s.value}</p>
               </div>
             ))}
           </div>
@@ -437,7 +437,7 @@ export default function CompetitorsPage() {
             type="button"
             onClick={() => { setShowForm(true); setError(""); }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             <Plus className="w-4 h-4" />
             Add Competitor
@@ -459,7 +459,7 @@ export default function CompetitorsPage() {
                 onClick={() => setCompareMode(v => !v)}
                 className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
                 style={compareMode
-                  ? { backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.3)" }
+                  ? { backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.3)" }
                   : { ...cardStyle, color: "#78614E" }
                 }
               >
@@ -474,7 +474,7 @@ export default function CompetitorsPage() {
         {showForm && (
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Add New Competitor</h3>
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Add New Competitor</h3>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#A8967E" }}><X className="w-4 h-4" /></button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -486,7 +486,7 @@ export default function CompetitorsPage() {
                   value={formName}
                   onChange={e => setFormName(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }}
+                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
                 />
               </div>
               <div>
@@ -499,7 +499,7 @@ export default function CompetitorsPage() {
                   value={formIG}
                   onChange={e => setFormIG(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
-                  style={{ border: `1px solid ${IG}30`, backgroundColor: "#FFF8F0", color: "#292524" }}
+                  style={{ border: `1px solid ${IG}30`, backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
                 />
               </div>
               <div>
@@ -512,7 +512,7 @@ export default function CompetitorsPage() {
                   value={formTT}
                   onChange={e => setFormTT(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
-                  style={{ border: `1px solid ${TT2}30`, backgroundColor: "#FFF8F0", color: "#292524" }}
+                  style={{ border: `1px solid ${TT2}30`, backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
                 />
               </div>
             </div>
@@ -523,7 +523,7 @@ export default function CompetitorsPage() {
                 onClick={addCompetitor}
                 disabled={adding || !formName.trim() || (!formIG.trim() && !formTT.trim())}
                 className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
               >
                 {adding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                 {adding ? "Searching..." : "Search & Add"}
@@ -544,7 +544,7 @@ export default function CompetitorsPage() {
         {compareMode && competitors.length >= 2 && (
           <div className="rounded-xl overflow-hidden" style={cardStyle}>
             <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Competitor Comparison</h3>
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Competitor Comparison</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -570,8 +570,8 @@ export default function CompetitorsPage() {
                               <img src={proxyImg(comp.igData.profile.avatar)} alt="" className="w-7 h-7 rounded-full object-cover" />
                             )}
                             <div>
-                              <p className="font-semibold" style={{ color: "#292524" }}>
-                                {comp.name} {isBest && <span style={{ color: "#F59E0B" }}>★</span>}
+                              <p className="font-semibold" style={{ color: "var(--color-text)" }}>
+                                {comp.name} {isBest && <span style={{ color: "var(--color-primary)" }}>★</span>}
                               </p>
                               <div className="flex gap-2">
                                 {comp.igUsername && <span className="text-xs" style={{ color: IG }}>@{comp.igUsername}</span>}
@@ -580,7 +580,7 @@ export default function CompetitorsPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>
+                        <td className="px-3 py-3 text-center font-bold" style={{ color: "var(--color-text)" }}>
                           {formatNum(comp.igData?.profile.followers || 0)}
                           {(() => {
                             const base = getBaselineSnap(comp.id);
@@ -599,13 +599,13 @@ export default function CompetitorsPage() {
                           <span className="px-2 py-0.5 rounded-full text-xs font-bold"
                             style={{
                               backgroundColor: (comp.igData?.engagementRate || 0) > 3 ? "rgba(16,185,129,0.1)" : (comp.igData?.engagementRate || 0) > 1 ? "rgba(245,158,11,0.1)" : "rgba(239,68,68,0.1)",
-                              color: (comp.igData?.engagementRate || 0) > 3 ? "#10B981" : (comp.igData?.engagementRate || 0) > 1 ? "#F59E0B" : "#EF4444",
+                              color: (comp.igData?.engagementRate || 0) > 3 ? "#10B981" : (comp.igData?.engagementRate || 0) > 1 ? "var(--color-primary)" : "#EF4444",
                             }}>
                             {comp.igData?.engagementRate || 0}%
                           </span>
                         </td>
                         <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(comp.igData?.profile.postsCount || 0)}</td>
-                        <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>
+                        <td className="px-3 py-3 text-center font-bold" style={{ color: "var(--color-text)" }}>
                           {formatNum(comp.tiktokData?.followers || 0)}
                           {(() => {
                             const base = getBaselineSnap(comp.id);
@@ -638,7 +638,7 @@ export default function CompetitorsPage() {
                   const maxRate = Math.max(...competitors.map(c => c.igData?.engagementRate || 0), 1);
                   return (
                     <div key={comp.id} className="flex items-center gap-3">
-                      <span className="text-xs font-medium w-28 truncate" style={{ color: "#292524" }}>{comp.name}</span>
+                      <span className="text-xs font-medium w-28 truncate" style={{ color: "var(--color-text)" }}>{comp.name}</span>
                       <div className="flex-1 h-5 rounded-full overflow-hidden" style={{ backgroundColor: "rgba(245,215,160,0.15)" }}>
                         <div className="h-full rounded-full flex items-center px-2 transition-all"
                           style={{ width: `${Math.max((rate / maxRate) * 100, 2)}%`, background: `linear-gradient(90deg, ${IG}, #833AB4)` }}>
@@ -657,13 +657,13 @@ export default function CompetitorsPage() {
         {competitors.length === 0 && !showForm && (
           <div className="rounded-xl p-12 text-center" style={cardStyle}>
             <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm font-semibold mb-1" style={{ color: "#292524" }}>No competitors added</p>
+            <p className="text-sm font-semibold mb-1" style={{ color: "var(--color-text)" }}>No competitors added</p>
             <p className="text-xs mb-4" style={{ color: "#A8967E" }}>Add your competitors to monitor their Instagram and TikTok accounts in real time</p>
             <button
               type="button"
               onClick={() => setShowForm(true)}
               className="px-5 py-2.5 rounded-xl text-sm font-bold"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+              style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
             >
               <Plus className="w-4 h-4 inline mr-1" />Add first competitor
             </button>
@@ -695,7 +695,7 @@ export default function CompetitorsPage() {
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-bold" style={{ color: "#292524" }}>{comp.name}</h3>
+                      <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{comp.name}</h3>
                       {comp.igData?.profile.isVerified && <ShieldCheck className="w-4 h-4" style={{ color: "#3B82F6" }} />}
                     </div>
                     <div className="flex items-center gap-3">
@@ -722,11 +722,11 @@ export default function CompetitorsPage() {
                       <>
                         <div className="text-center">
                           <p className="text-xs" style={{ color: "#A8967E" }}>IG Followers</p>
-                          <p className="text-sm font-bold" style={{ color: "#292524" }}>{formatNum(comp.igData.profile.followers)}</p>
+                          <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{formatNum(comp.igData.profile.followers)}</p>
                         </div>
                         <div className="text-center">
                           <p className="text-xs" style={{ color: "#A8967E" }}>Engagement</p>
-                          <p className="text-sm font-bold" style={{ color: comp.igData.engagementRate > 3 ? "#10B981" : comp.igData.engagementRate > 1 ? "#F59E0B" : "#EF4444" }}>
+                          <p className="text-sm font-bold" style={{ color: comp.igData.engagementRate > 3 ? "#10B981" : comp.igData.engagementRate > 1 ? "var(--color-primary)" : "#EF4444" }}>
                             {comp.igData.engagementRate}%
                           </p>
                         </div>
@@ -735,7 +735,7 @@ export default function CompetitorsPage() {
                     {comp.tiktokData && (
                       <div className="text-center">
                         <p className="text-xs" style={{ color: "#A8967E" }}>TT Followers</p>
-                        <p className="text-sm font-bold" style={{ color: "#292524" }}>{formatNum(comp.tiktokData.followers)}</p>
+                        <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{formatNum(comp.tiktokData.followers)}</p>
                       </div>
                     )}
                   </div>
@@ -781,7 +781,7 @@ export default function CompetitorsPage() {
                       ].map(m => (
                         <div key={m.label} className="rounded-lg p-3" style={{ backgroundColor: `${m.color}08`, border: `1px solid ${m.color}15` }}>
                           <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
-                          <p className="text-lg font-bold mt-1" style={{ color: "#292524" }}>{m.value}</p>
+                          <p className="text-lg font-bold mt-1" style={{ color: "var(--color-text)" }}>{m.value}</p>
                         </div>
                       ))}
                       {comp.tiktokData && [
@@ -790,7 +790,7 @@ export default function CompetitorsPage() {
                       ].map(m => (
                         <div key={m.label} className="rounded-lg p-3" style={{ backgroundColor: `${m.color}08`, border: `1px solid ${m.color}15` }}>
                           <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
-                          <p className="text-lg font-bold mt-1" style={{ color: "#292524" }}>{m.value}</p>
+                          <p className="text-lg font-bold mt-1" style={{ color: "var(--color-text)" }}>{m.value}</p>
                         </div>
                       ))}
                     </div>

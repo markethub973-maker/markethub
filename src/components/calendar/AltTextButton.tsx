@@ -69,7 +69,7 @@ export default function AltTextButton({ imageUrl, caption }: Props) {
           className="mt-1.5 rounded-md p-2 flex items-start gap-2"
           style={{ backgroundColor: "rgba(139,92,246,0.06)", border: "1px solid rgba(139,92,246,0.25)" }}
         >
-          <p className="text-[11px] flex-1" style={{ color: "#292524", lineHeight: 1.35 }}>
+          <p className="text-[11px] flex-1" style={{ color: "var(--color-text)", lineHeight: 1.35 }}>
             {alt}
           </p>
           <button

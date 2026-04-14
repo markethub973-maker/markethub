@@ -30,10 +30,10 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
   const feature = getFeature(g.related_feature_slug);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <header className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-        <Link href="/" className="text-sm font-bold" style={{ color: "#292524" }}>
-          <span style={{ color: "#F59E0B" }}>MarketHub Pro</span>
+        <Link href="/" className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
+          <span style={{ color: "var(--color-primary)" }}>MarketHub Pro</span>
         </Link>
         <Link href="/guides" className="text-xs ml-2" style={{ color: "#78614E" }}>← All guides</Link>
         <div className="flex-1" />
@@ -41,7 +41,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
         <Link
           href="/register"
           className="text-xs font-bold px-3 py-1.5 rounded-md"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+          style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
         >
           Start free
         </Link>
@@ -52,7 +52,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
         <article className="space-y-3">
           <div className="flex items-center gap-2 text-xs" style={{ color: "#78614E" }}>
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full"
-              style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+              style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
               <BookOpen className="w-3 h-3" />
               Guide
             </span>
@@ -63,7 +63,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
             <span>·</span>
             <span>For {g.audience}</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold leading-tight" style={{ color: "#292524" }}>
+          <h1 className="text-3xl md:text-4xl font-bold leading-tight" style={{ color: "var(--color-text)" }}>
             {g.title}
           </h1>
           <p className="text-base" style={{ color: "#78614E", lineHeight: 1.6 }}>
@@ -82,13 +82,13 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
               <div className="flex items-start gap-3">
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-                  style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "white" }}
+                  style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "white" }}
                 >
                   {i + 1}
                 </div>
                 <div className="flex-1 min-w-0 space-y-1">
-                  <h3 className="text-base font-bold" style={{ color: "#292524" }}>{s.heading}</h3>
-                  <p className="text-sm" style={{ color: "#292524", lineHeight: 1.6 }}>{s.body}</p>
+                  <h3 className="text-base font-bold" style={{ color: "var(--color-text)" }}>{s.heading}</h3>
+                  <p className="text-sm" style={{ color: "var(--color-text)", lineHeight: 1.6 }}>{s.body}</p>
                 </div>
               </div>
             </div>
@@ -101,11 +101,11 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
             className="rounded-2xl p-5"
             style={{ backgroundColor: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.25)" }}
           >
-            <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: "#D97706" }}>
+            <p className="text-xs font-bold uppercase tracking-wide mb-2" style={{ color: "var(--color-primary-hover)" }}>
               <Sparkles className="w-3 h-3 inline mr-1" />
               Pro tip
             </p>
-            <p className="text-sm" style={{ color: "#292524", lineHeight: 1.5 }}>
+            <p className="text-sm" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
               {g.pro_tip}
             </p>
           </section>
@@ -117,7 +117,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
           style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(139,92,246,0.08))", border: "1px solid rgba(245,158,11,0.2)" }}
         >
           <div className="flex-1 min-w-[200px]">
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>Ready to do this in your account?</p>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Ready to do this in your account?</p>
             {feature && (
               <p className="text-xs mt-1" style={{ color: "#78614E" }}>
                 Open {feature.title} now — or read the full feature page to learn what it can do.
@@ -127,7 +127,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
           <Link
             href={g.related_app_path}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             {g.cta_label}
             <ExternalLink className="w-3.5 h-3.5" />
@@ -136,7 +136,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
             <Link
               href={`/features/${feature.slug}`}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold"
-              style={{ backgroundColor: "white", color: "#292524", border: "1px solid rgba(0,0,0,0.08)" }}
+              style={{ backgroundColor: "white", color: "var(--color-text)", border: "1px solid rgba(0,0,0,0.08)" }}
             >
               Feature page
               <ArrowRight className="w-3.5 h-3.5" />
@@ -146,7 +146,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
 
         {/* Other guides */}
         <section className="pt-6 border-t" style={{ borderColor: "rgba(0,0,0,0.06)" }}>
-          <p className="text-sm font-bold mb-3" style={{ color: "#292524" }}>More guides</p>
+          <p className="text-sm font-bold mb-3" style={{ color: "var(--color-text)" }}>More guides</p>
           <div className="space-y-2">
             {GUIDES.filter((other) => other.slug !== g.slug).slice(0, 3).map((other) => (
               <Link
@@ -155,7 +155,7 @@ export default async function GuidePage({ params }: { params: Promise<Params> })
                 className="block rounded-lg p-3 transition-all hover:scale-[1.005]"
                 style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
               >
-                <p className="text-sm font-bold" style={{ color: "#292524" }}>{other.title}</p>
+                <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{other.title}</p>
                 <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>{other.tagline}</p>
               </Link>
             ))}

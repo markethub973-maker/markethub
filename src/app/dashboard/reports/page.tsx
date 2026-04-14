@@ -128,7 +128,7 @@ export default function ReportsPage() {
   const deliveries = data?.deliveries ?? [];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "#292524" }}>
+    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "var(--color-text)" }}>
       {/* Top bar */}
       <div
         style={{
@@ -137,7 +137,7 @@ export default function ReportsPage() {
           gap: 16,
           padding: "16px 24px",
           borderBottom: "1px solid rgba(245,215,160,0.25)",
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
         }}
       >
         <Link
@@ -149,7 +149,7 @@ export default function ReportsPage() {
             padding: "6px 12px",
             background: "rgba(245,158,11,0.08)",
             borderRadius: 6,
-            color: "#F59E0B",
+            color: "var(--color-primary)",
             textDecoration: "none",
             fontSize: 12,
           }}
@@ -179,7 +179,7 @@ export default function ReportsPage() {
               key={s}
               style={{
                 padding: 16,
-                background: "#FFFCF7",
+                background: "var(--color-bg-secondary)",
                 border: `1px solid ${STATUS_COLORS[s]}33`,
                 borderLeft: `3px solid ${STATUS_COLORS[s]}`,
                 borderRadius: 10,
@@ -197,7 +197,7 @@ export default function ReportsPage() {
               >
                 {s}
               </div>
-              <div style={{ fontSize: 28, fontWeight: 900, color: "#292524" }}>
+              <div style={{ fontSize: 28, fontWeight: 900, color: "var(--color-text)" }}>
                 {counts.by_status[s] ?? 0}
               </div>
             </div>
@@ -217,7 +217,7 @@ export default function ReportsPage() {
         {/* Send form */}
         <div
           style={{
-            background: "#FFFCF7",
+            background: "var(--color-bg-secondary)",
             border: "1px solid rgba(245,215,160,0.3)",
             borderRadius: 12,
             padding: 16,
@@ -333,7 +333,7 @@ export default function ReportsPage() {
               background:
                 sending || !recipient.trim() || (!subject.trim() && !bodyMsg.trim() && !reportUrl.trim())
                   ? "#C4AA8A"
-                  : "#F59E0B",
+                  : "var(--color-primary)",
               color: "#1C1814",
               border: "none",
               borderRadius: 8,
@@ -386,7 +386,7 @@ export default function ReportsPage() {
         {/* Delivery history */}
         <div
           style={{
-            background: "#FFFCF7",
+            background: "var(--color-bg-secondary)",
             border: "1px solid rgba(245,215,160,0.3)",
             borderRadius: 12,
             padding: 16,
@@ -444,7 +444,7 @@ export default function ReportsPage() {
                   }}
                 >
                   <span style={{ fontSize: 14 }}>{CHANNEL_ICONS[d.channel]}</span>
-                  <span style={{ fontSize: 12, fontWeight: 700, color: "#292524" }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: "var(--color-text)" }}>
                     {d.recipient}
                   </span>
                   <span
@@ -522,7 +522,7 @@ const inputStyle: React.CSSProperties = {
   outline: "none",
   fontFamily: "inherit",
   background: "white",
-  color: "#292524",
+  color: "var(--color-text)",
   marginBottom: 4,
 };
 

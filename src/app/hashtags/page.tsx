@@ -9,7 +9,7 @@ import {
   BookOpen, X, Loader2,
 } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const IG = "#E1306C";
 
 const EXAMPLES = ["photography", "fashion", "travel", "food", "fitness", "marketing", "business", "startup"];
@@ -76,7 +76,7 @@ function SetCard({ set, onCopy, onDelete }: { set: HashtagSet; onCopy: (s: Hasht
     <div className="rounded-xl p-4 space-y-2" style={cardStyle}>
       <div className="flex items-start justify-between gap-2">
         <div>
-          <p className="text-sm font-bold" style={{ color: "#292524" }}>{set.name}</p>
+          <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{set.name}</p>
           <div className="flex items-center gap-2 mt-0.5">
             <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
               style={{ backgroundColor: "rgba(225,48,108,0.08)", color: IG }}>{set.platform}</span>
@@ -89,7 +89,7 @@ function SetCard({ set, onCopy, onDelete }: { set: HashtagSet; onCopy: (s: Hasht
         <div className="flex gap-1 shrink-0">
           <button onClick={copy} title="Copy hashtags"
             className="p-1.5 rounded-lg"
-            style={{ backgroundColor: copied ? "rgba(22,163,74,0.1)" : "rgba(245,158,11,0.1)", color: copied ? "#16a34a" : "#D97706" }}>
+            style={{ backgroundColor: copied ? "rgba(22,163,74,0.1)" : "rgba(245,158,11,0.1)", color: copied ? "#16a34a" : "var(--color-primary-hover)" }}>
             {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           </button>
           <button onClick={() => onDelete(set.id)} title="Delete set"
@@ -200,8 +200,8 @@ export default function HashtagsPage() {
             <button key={t.key} type="button" onClick={() => setMainTab(t.key as "search" | "sets")}
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
               style={mainTab === t.key
-                ? { backgroundColor: "#F59E0B", color: "white" }
-                : { backgroundColor: "#FFFCF7", color: "#A8967E", border: "1px solid rgba(245,215,160,0.3)" }}>
+                ? { backgroundColor: "var(--color-primary)", color: "white" }
+                : { backgroundColor: "var(--color-bg-secondary)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.3)" }}>
               {t.icon}{t.label}
             </button>
           ))}
@@ -218,7 +218,7 @@ export default function HashtagsPage() {
                     value={query} onChange={e => setQuery(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && search()}
                     className="w-full pl-9 pr-4 py-3 text-sm rounded-xl focus:outline-none"
-                    style={{ border: "1px solid rgba(225,48,108,0.3)", backgroundColor: "#FFFCF7", color: "#292524" }} />
+                    style={{ border: "1px solid rgba(225,48,108,0.3)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }} />
                 </div>
                 <button type="button" onClick={() => search()} disabled={loading || !query.trim()}
                   className="px-6 py-3 rounded-xl text-sm font-bold"
@@ -258,20 +258,20 @@ export default function HashtagsPage() {
                         <Hash className="w-5 h-5" style={{ color: IG }} />
                       </div>
                       <div>
-                        <p className="font-bold text-lg" style={{ color: "#292524" }}>#{data.hashtag}</p>
+                        <p className="font-bold text-lg" style={{ color: "var(--color-text)" }}>#{data.hashtag}</p>
                         <p className="text-xs" style={{ color: "#A8967E" }}>Instagram Hashtag</p>
                       </div>
                     </div>
                     <button onClick={saveCurrentAsSet}
                       className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
-                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706", border: "1px solid rgba(245,158,11,0.2)" }}>
+                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.2)" }}>
                       <Plus className="w-3 h-3" />Save to sets
                     </button>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {[
                       { label: "Top Posts", value: data.topPosts?.length || 0, color: IG },
-                      { label: "Recent Posts", value: data.recentPosts?.length || 0, color: "#F59E0B" },
+                      { label: "Recent Posts", value: data.recentPosts?.length || 0, color: "var(--color-primary)" },
                       { label: "Avg Likes (top)", value: formatNumber(data.avgLikes), color: "#1DB954" },
                       { label: "Avg Comments (top)", value: formatNumber(data.avgComments), color: "#6366F1" },
                     ].map(s => (
@@ -313,7 +313,7 @@ export default function HashtagsPage() {
             {!data && !loading && !error && (
               <div className="rounded-xl p-12 text-center" style={cardStyle}>
                 <Hash className="w-12 h-12 mx-auto mb-4" style={{ color: "rgba(225,48,108,0.3)" }} />
-                <p className="font-semibold text-lg mb-2" style={{ color: "#292524" }}>Explore a hashtag</p>
+                <p className="font-semibold text-lg mb-2" style={{ color: "var(--color-text)" }}>Explore a hashtag</p>
                 <p className="text-sm" style={{ color: "#A8967E" }}>
                   Search any hashtag and see top posts, recent posts, and average engagement.
                 </p>
@@ -331,7 +331,7 @@ export default function HashtagsPage() {
               </p>
               <button onClick={() => setShowNewSet(!showNewSet)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold"
-                style={{ backgroundColor: "#F59E0B", color: "white" }}>
+                style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
                 {showNewSet ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                 {showNewSet ? "Cancel" : "New set"}
               </button>
@@ -340,19 +340,19 @@ export default function HashtagsPage() {
             {/* New set form */}
             {showNewSet && (
               <div className="rounded-xl p-5 space-y-3" style={{ ...cardStyle, border: "1px solid rgba(245,158,11,0.3)" }}>
-                <h3 className="text-sm font-bold" style={{ color: "#292524" }}>New hashtag set</h3>
+                <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>New hashtag set</h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="text-xs font-semibold block mb-1" style={{ color: "#78614E" }}>Name *</label>
                     <input value={newSet.name} onChange={e => setNewSet(n => ({ ...n, name: e.target.value }))}
                       placeholder="Ex: Travel vibes" className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                   </div>
                   <div>
                     <label className="text-xs font-semibold block mb-1" style={{ color: "#78614E" }}>Category</label>
                     <input value={newSet.category} onChange={e => setNewSet(n => ({ ...n, category: e.target.value }))}
                       placeholder="Ex: Niche, Brand, Event" className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                      style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                   </div>
                 </div>
                 <div>
@@ -360,7 +360,7 @@ export default function HashtagsPage() {
                   <select value={newSet.platform} onChange={e => setNewSet(n => ({ ...n, platform: e.target.value }))}
                     aria-label="Platform"
                     className="px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}>
+                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
                     {PLATFORMS.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
                   </select>
                 </div>
@@ -369,7 +369,7 @@ export default function HashtagsPage() {
                   <textarea value={newSet.hashtags} onChange={e => setNewSet(n => ({ ...n, hashtags: e.target.value }))}
                     placeholder="#hashtag1 #hashtag2 #hashtag3 ..." rows={4}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none font-mono"
-                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                   <p className="text-xs mt-1" style={{ color: "#C4AA8A" }}>
                     {newSet.hashtags.trim().split(/\s+/).filter(h => h.startsWith("#")).length} hashtags
                   </p>
@@ -380,7 +380,7 @@ export default function HashtagsPage() {
                 )}
                 <button onClick={handleSaveSet} disabled={savingSet}
                   className="px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2"
-                  style={{ backgroundColor: "#F59E0B", color: "white", opacity: savingSet ? 0.7 : 1 }}>
+                  style={{ backgroundColor: "var(--color-primary)", color: "white", opacity: savingSet ? 0.7 : 1 }}>
                   {savingSet ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   Save set
                 </button>
@@ -390,12 +390,12 @@ export default function HashtagsPage() {
             {/* Sets grid */}
             {setsLoading ? (
               <div className="flex justify-center py-10">
-                <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} />
+                <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} />
               </div>
             ) : sets.length === 0 ? (
               <div className="rounded-xl p-12 text-center" style={cardStyle}>
                 <BookOpen className="w-12 h-12 mx-auto mb-4" style={{ color: "#C4AA8A" }} />
-                <p className="font-semibold mb-1" style={{ color: "#292524" }}>No sets yet</p>
+                <p className="font-semibold mb-1" style={{ color: "var(--color-text)" }}>No sets yet</p>
                 <p className="text-sm" style={{ color: "#A8967E" }}>
                   Create your first hashtag set to quickly copy-paste into posts.
                 </p>

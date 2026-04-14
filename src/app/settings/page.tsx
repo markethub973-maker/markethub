@@ -320,8 +320,8 @@ export default function SettingsPage() {
         {/* ══ Profile Tab ════════════════════════════════════════════════════ */}
         {activeTab === "profile" && (
           <div className="space-y-4">
-            <div className="rounded-xl border p-6" style={{ backgroundColor: "#FFFCF7", borderColor: "rgba(245,215,160,0.25)" }}>
-              <h2 className="text-lg font-bold mb-5" style={{ color: "#292524" }}>Profile Information</h2>
+            <div className="rounded-xl border p-6" style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: "rgba(245,215,160,0.25)" }}>
+              <h2 className="text-lg font-bold mb-5" style={{ color: "var(--color-text)" }}>Profile Information</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {[
                   { label: "Name",  value: profile?.name || "Not set" },
@@ -330,13 +330,13 @@ export default function SettingsPage() {
                 ].map(({ label, value }) => (
                   <div key={label} className="rounded-lg p-4" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
                     <p className="text-xs font-medium mb-1" style={{ color: "#78614E" }}>{label}</p>
-                    <p className="font-semibold" style={{ color: "#292524" }}>{value}</p>
+                    <p className="font-semibold" style={{ color: "var(--color-text)" }}>{value}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="rounded-xl border p-6" style={{ backgroundColor: "#FFFCF7", borderColor: "rgba(245,215,160,0.25)" }}>
-              <h2 className="text-lg font-bold mb-5" style={{ color: "#292524" }}>Local Market Preferences</h2>
+            <div className="rounded-xl border p-6" style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: "rgba(245,215,160,0.25)" }}>
+              <h2 className="text-lg font-bold mb-5" style={{ color: "var(--color-text)" }}>Local Market Preferences</h2>
               <RegionSettings />
             </div>
           </div>
@@ -345,7 +345,7 @@ export default function SettingsPage() {
         {/* ══ Integrations Tab ═══════════════════════════════════════════════ */}
         {activeTab === "integrations" && (
           <div>
-            <h2 className="text-lg font-bold mb-4" style={{ color: "#292524" }}>Connect Your Accounts</h2>
+            <h2 className="text-lg font-bold mb-4" style={{ color: "var(--color-text)" }}>Connect Your Accounts</h2>
             <p className="text-sm mb-6" style={{ color: "#A8967E" }}>
               Connect your accounts to see your real data. Without connecting, the platforms show public/trending data.
             </p>
@@ -375,14 +375,14 @@ export default function SettingsPage() {
             )}
 
             {/* Budget card */}
-            <div className="rounded-xl border p-6" style={{ backgroundColor: "#FFFCF7", borderColor: "rgba(245,215,160,0.3)" }}>
+            <div className="rounded-xl border p-6" style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: "rgba(245,215,160,0.3)" }}>
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: "rgba(194,133,76,0.12)" }}>
                     <Zap size={16} style={{ color: "#C2854C" }} />
                   </div>
                   <div>
-                    <h3 className="font-bold" style={{ color: "#292524" }}>AI Budget</h3>
+                    <h3 className="font-bold" style={{ color: "var(--color-text)" }}>AI Budget</h3>
                     <p className="text-xs" style={{ color: "#A8967E" }}>
                       {new Date().toLocaleString("default", { month: "long", year: "numeric" })}
                     </p>
@@ -416,7 +416,7 @@ export default function SettingsPage() {
                           border: red ? "1px solid rgba(239,68,68,0.25)" : green ? "1px solid rgba(34,197,94,0.2)" : "none",
                         }}>
                         <p className="text-xs mb-1" style={{ color: red ? "#dc2626" : green ? "#16a34a" : "#78614E" }}>{label}</p>
-                        <p className="text-2xl font-bold" style={{ color: red ? "#ef4444" : green ? "#15803d" : "#292524" }}>{value}</p>
+                        <p className="text-2xl font-bold" style={{ color: red ? "#ef4444" : green ? "#15803d" : "var(--color-text)" }}>{value}</p>
                         <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{sub}</p>
                       </div>
                     ))}
@@ -458,7 +458,7 @@ export default function SettingsPage() {
             <div>
               <div className="flex items-center gap-2.5 mb-2">
                 <Sparkles size={18} style={{ color: "#C2854C" }} />
-                <h3 className="font-bold text-lg" style={{ color: "#292524" }}>Buy Extra AI Credits</h3>
+                <h3 className="font-bold text-lg" style={{ color: "var(--color-text)" }}>Buy Extra AI Credits</h3>
                 <span className="text-xs px-2.5 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(194,133,76,0.1)", color: "#C2854C" }}>
                   One-time · No subscription
                 </span>
@@ -474,19 +474,19 @@ export default function SettingsPage() {
                   const isBest      = pack.bonus_pct === 20;
                   return (
                     <div key={pack.id} className="relative rounded-xl border p-5 flex flex-col gap-4 transition-all hover:shadow-lg"
-                      style={{ backgroundColor: "#FFFCF7", borderColor: isBest ? "rgba(194,133,76,0.6)" : isPopular ? "rgba(194,133,76,0.35)" : "rgba(245,215,160,0.3)" }}>
+                      style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: isBest ? "rgba(194,133,76,0.6)" : isPopular ? "rgba(194,133,76,0.35)" : "rgba(245,215,160,0.3)" }}>
                       {(isPopular || isBest) && (
                         <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold whitespace-nowrap"
-                          style={{ backgroundColor: isBest ? "#292524" : "#C2854C", color: "white" }}>
+                          style={{ backgroundColor: isBest ? "var(--color-text)" : "#C2854C", color: "white" }}>
                           {isBest ? "✦ BEST VALUE" : "★ POPULAR"}
                         </div>
                       )}
                       <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-3xl font-extrabold" style={{ color: "#292524" }}>${pack.usd}</span>
+                        <span className="text-3xl font-extrabold" style={{ color: "var(--color-text)" }}>${pack.usd}</span>
                         <span className="text-sm" style={{ color: "#A8967E" }}>USD</span>
                       </div>
                       <div>
-                        <p className="font-semibold text-base" style={{ color: "#292524" }}>{pack.credits.toLocaleString()} credits</p>
+                        <p className="font-semibold text-base" style={{ color: "var(--color-text)" }}>{pack.credits.toLocaleString()} credits</p>
                         {pack.bonus_pct > 0 ? (
                           <div className="flex items-center gap-1 mt-1">
                             <TrendingUp size={12} style={{ color: "#22c55e" }} />
@@ -495,8 +495,8 @@ export default function SettingsPage() {
                         ) : <p className="text-xs mt-1" style={{ color: "#A8967E" }}>No bonus</p>}
                       </div>
                       <div className="rounded-lg p-3 space-y-1" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
-                        <p className="text-xs" style={{ color: "#78614E" }}>≈ <strong style={{ color: "#292524" }}>{captionSets.toLocaleString()}</strong> caption sets</p>
-                        <p className="text-xs" style={{ color: "#78614E" }}>≈ <strong style={{ color: "#292524" }}>{agentMsgs.toLocaleString()}</strong> agent messages</p>
+                        <p className="text-xs" style={{ color: "#78614E" }}>≈ <strong style={{ color: "var(--color-text)" }}>{captionSets.toLocaleString()}</strong> caption sets</p>
+                        <p className="text-xs" style={{ color: "#78614E" }}>≈ <strong style={{ color: "var(--color-text)" }}>{agentMsgs.toLocaleString()}</strong> agent messages</p>
                       </div>
                       <button onClick={() => handlePurchase(pack.id)} disabled={purchasingPack !== null}
                         className="mt-auto w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2"
@@ -514,7 +514,7 @@ export default function SettingsPage() {
             </div>
             <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: "rgba(245,215,160,0.1)", border: "1px solid rgba(245,215,160,0.25)" }}>
               <p style={{ color: "#78614E" }}>
-                <strong style={{ color: "#292524" }}>💡 How credits work:</strong>{" "}
+                <strong style={{ color: "var(--color-text)" }}>💡 How credits work:</strong>{" "}
                 Your plan includes a monthly AI budget. Extra credits are consumed automatically once that budget runs out. Credits expire at end of billing month.
               </p>
             </div>
@@ -526,7 +526,7 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="flex items-start justify-between">
               <div>
-                <h2 className="text-lg font-bold" style={{ color: "#292524" }}>API Keys — Monitoring & Opportunities</h2>
+                <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>API Keys — Monitoring & Opportunities</h2>
                 <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
                   All active platform APIs, with direct links to consoles and analysis of untapped data.
                 </p>
@@ -540,7 +540,7 @@ export default function SettingsPage() {
               const isExpanded = expandedApi === api.id;
               return (
                 <div key={api.id} className="rounded-xl border overflow-hidden transition-all"
-                  style={{ backgroundColor: "#FFFCF7", borderColor: isExpanded ? api.colorBorder : "rgba(245,215,160,0.25)" }}>
+                  style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: isExpanded ? api.colorBorder : "rgba(245,215,160,0.25)" }}>
 
                   {/* Header row */}
                   <div className="p-5 flex items-center gap-4">
@@ -553,7 +553,7 @@ export default function SettingsPage() {
                     {/* Name + status */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold" style={{ color: "#292524" }}>{api.name}</h3>
+                        <h3 className="font-bold" style={{ color: "var(--color-text)" }}>{api.name}</h3>
                         <span className="text-xs px-2 py-0.5 rounded-full font-medium"
                           style={{ backgroundColor: "rgba(34,197,94,0.1)", color: "#16a34a", border: "1px solid rgba(34,197,94,0.2)" }}>
                           ✓ {api.statusLabel}
@@ -597,7 +597,7 @@ export default function SettingsPage() {
 
                       {/* Currently using */}
                       <div>
-                        <h4 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+                        <h4 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
                           <CheckCircle size={15} style={{ color: "#22c55e" }} />
                           Currently used in the platform
                         </h4>
@@ -613,7 +613,7 @@ export default function SettingsPage() {
 
                       {/* Untapped potential */}
                       <div>
-                        <h4 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+                        <h4 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
                           <Sparkles size={15} style={{ color: "#C2854C" }} />
                           Valuable untapped data
                         </h4>
@@ -635,7 +635,7 @@ export default function SettingsPage() {
             {/* Footer note */}
             <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.2)" }}>
               <p style={{ color: "#78614E" }}>
-                <strong style={{ color: "#292524" }}>📌 Note:</strong>{" "}
+                <strong style={{ color: "var(--color-text)" }}>📌 Note:</strong>{" "}
                 Your AI Engine usage and credits are managed internally by the platform.
                 {" "}Contact support for any billing questions related to AI usage.
               </p>
@@ -644,23 +644,23 @@ export default function SettingsPage() {
         )}
 
         {/* AI Usage section — show even for free tier (read-only insight) */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,158,11,0.25)" }}>
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,158,11,0.25)" }}>
           <AiUsageWidget />
         </div>
 
         {/* API Tokens section — always visible for Pro+ */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,158,11,0.25)" }}>
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,158,11,0.25)" }}>
           <ApiTokensPanel />
         </div>
 
         {/* Webhooks section — Pro+ */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,158,11,0.25)" }}>
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,158,11,0.25)" }}>
           <WebhooksPanel />
         </div>
 
         {/* Privacy & Data section — always visible */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(139,92,246,0.2)" }}>
-          <h2 className="text-lg font-bold mb-2" style={{ color: "#292524" }}>
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(139,92,246,0.2)" }}>
+          <h2 className="text-lg font-bold mb-2" style={{ color: "var(--color-text)" }}>
             Privacy & Data
           </h2>
           <p className="text-xs mb-5" style={{ color: "#78614E" }}>
@@ -681,7 +681,7 @@ export default function SettingsPage() {
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>
                   Change cookie preferences
                 </p>
                 <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
@@ -697,7 +697,7 @@ export default function SettingsPage() {
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>
                   Export your data (GDPR)
                 </p>
                 <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
@@ -713,7 +713,7 @@ export default function SettingsPage() {
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>
                   Privacy policy
                 </p>
                 <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>

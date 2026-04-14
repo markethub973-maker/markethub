@@ -154,7 +154,7 @@ export default function WorkflowDiagram({
         <button
           onClick={exportPNG}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all hover:opacity-90 active:scale-95"
-          style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+          style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
         >
           <Download className="w-3.5 h-3.5" />
           Export PNG
@@ -176,14 +176,14 @@ export default function WorkflowDiagram({
         >
           <defs>
             <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
-              <path d="M0,0 L0,6 L9,3 z" fill="#F59E0B" />
+              <path d="M0,0 L0,6 L9,3 z" fill="var(--color-primary)" />
             </marker>
             <filter id="shadow" x="-10%" y="-10%" width="140%" height="140%">
               <feDropShadow dx="0" dy="2" stdDeviation="5" floodColor="#78614E" floodOpacity="0.1" />
             </filter>
             <linearGradient id="startGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#F59E0B" />
-              <stop offset="100%" stopColor="#D97706" />
+              <stop offset="0%" stopColor="var(--color-primary)" />
+              <stop offset="100%" stopColor="var(--color-primary-hover)" />
             </linearGradient>
             <linearGradient id="endGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#6B5240" />
@@ -221,7 +221,7 @@ export default function WorkflowDiagram({
                   y1={y1 + 5}
                   x2={cx}
                   y2={y2 - 6}
-                  stroke="#F59E0B"
+                  stroke="var(--color-primary)"
                   strokeWidth={2}
                   markerEnd="url(#arrowhead)"
                 />
@@ -250,7 +250,7 @@ export default function WorkflowDiagram({
               isStart || isEnd
                 ? "none"
                 : isPhase
-                ? "#F59E0B"
+                ? "var(--color-primary)"
                 : "#F0E0C0";
 
             const strokeW = isPhase ? 2 : 1;
@@ -260,7 +260,7 @@ export default function WorkflowDiagram({
                 ? "#FFFFFF"
                 : isPhase
                 ? "#C07A00"
-                : "#292524";
+                : "var(--color-text)";
             const fontSize = isStart || isEnd ? 13 : 12;
             const fontWeight = isStart || isEnd || isPhase ? "bold" : "500";
 
@@ -298,7 +298,7 @@ export default function WorkflowDiagram({
                     width={4}
                     height={NODE_H - 24}
                     rx={2}
-                    fill="#F59E0B"
+                    fill="var(--color-primary)"
                   />
                 )}
 
@@ -312,7 +312,7 @@ export default function WorkflowDiagram({
                       textAnchor="middle"
                       fontSize={11}
                       fontWeight="bold"
-                      fill="#D97706"
+                      fill="var(--color-primary-hover)"
                       fontFamily="system-ui, sans-serif"
                     >
                       {i}
@@ -327,7 +327,7 @@ export default function WorkflowDiagram({
                     y={y + NODE_H / 2 + 5}
                     textAnchor="middle"
                     fontSize={13}
-                    fill="#F59E0B"
+                    fill="var(--color-primary)"
                     fontFamily="system-ui, sans-serif"
                   >
                     ◆

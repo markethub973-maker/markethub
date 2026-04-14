@@ -6,8 +6,8 @@ import {
   Database, Brain, Zap, Mail, Youtube, Instagram, CreditCard, Clock,
 } from "lucide-react";
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
-const AMBER = "#F59E0B";
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 const RED = "#EF4444";
 
@@ -81,7 +81,7 @@ export default function AdminHealthCheck() {
               : <XCircle className="w-5 h-5" style={{ color: RED }} />}
           </div>
           <div>
-            <p className="font-bold text-base" style={{ color: "#292524" }}>Health Check Agent</p>
+            <p className="font-bold text-base" style={{ color: "var(--color-text)" }}>Health Check Agent</p>
             <p className="text-xs" style={{ color: sessionExpired ? RED : "#A8967E" }}>
               {loading
                 ? "Testez toate serviciile…"
@@ -115,7 +115,7 @@ export default function AdminHealthCheck() {
           <p className="font-semibold">Cookie-ul admin a expirat (8h max).</p>
           <p style={{ color: "#A8967E" }}>
             Re-loghează-te la{" "}
-            <a href="/markethub973" className="underline" style={{ color: "#D97706" }}>/markethub973</a>{" "}
+            <a href="/markethub973" className="underline" style={{ color: "var(--color-primary-hover)" }}>/markethub973</a>{" "}
             apoi apasă Run Check.
           </p>
         </div>
@@ -150,7 +150,7 @@ export default function AdminHealthCheck() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm font-bold" style={{ color: "#292524" }}>{meta.label}</p>
+                    <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{meta.label}</p>
                     <div className="flex items-center gap-1.5 flex-shrink-0">
                       {svc.latency > 0 && (
                         <span className="text-xs" style={{ color: "#A8967E" }}>{svc.latency}ms</span>

@@ -5,8 +5,8 @@ import { Plus, Trash2, Copy, Check, Key, Eye, EyeOff, Loader2, Shield, Code } fr
 
 interface ApiKey { id: string; name: string; key_prefix: string; last_used: string | null; expires_at: string | null; active: boolean; created_at: string; }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
 const fmtDate = (s: string) => new Date(s).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
 
 export default function ApiKeysPage() {
@@ -56,7 +56,7 @@ export default function ApiKeysPage() {
 
         {/* Create key */}
         <div className="rounded-2xl p-4 space-y-3" style={card}>
-          <p className="font-bold text-sm" style={{ color: "#292524" }}>Generate new API Key</p>
+          <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Generate new API Key</p>
           <div className="flex gap-2 flex-wrap">
             <input value={name} onChange={e => setName(e.target.value)} placeholder="Key name (e.g. Zapier Integration)" style={{ ...inp, flex: 1, minWidth: 200 }} />
             <select value={expiresDays} onChange={e => setExpiresDays(e.target.value)} style={{ ...inp, minWidth: 130 }}>
@@ -89,7 +89,7 @@ export default function ApiKeysPage() {
         )}
 
         {/* Keys list */}
-        {loading ? <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        {loading ? <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
         : keys.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Key className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
@@ -99,9 +99,9 @@ export default function ApiKeysPage() {
           <div className="space-y-2">
             {keys.map(k => (
               <div key={k.id} className="rounded-xl px-4 py-3 flex items-center gap-3" style={card}>
-                <Key className="w-4 h-4 shrink-0" style={{ color: "#F59E0B" }} />
+                <Key className="w-4 h-4 shrink-0" style={{ color: "var(--color-primary)" }} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold" style={{ color: "#292524" }}>{k.name}</p>
+                  <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{k.name}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
                     <code>{k.key_prefix}...</code> · Created {fmtDate(k.created_at)}
                     {k.last_used && ` · Last used: ${fmtDate(k.last_used)}`}
@@ -124,7 +124,7 @@ export default function ApiKeysPage() {
         <div className="rounded-2xl p-4 space-y-3" style={{ ...card, border: "1px solid rgba(99,102,241,0.2)" }}>
           <div className="flex items-center gap-2">
             <Code className="w-4 h-4" style={{ color: "#6366F1" }} />
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>API Usage</p>
+            <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>API Usage</p>
           </div>
           <div className="rounded-lg p-3 text-xs font-mono" style={{ backgroundColor: "#1C1814", color: "#F5D7A0" }}>
             <p style={{ color: "#A8967E" }}># Authentication</p>

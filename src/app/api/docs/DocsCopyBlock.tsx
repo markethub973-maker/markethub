@@ -25,7 +25,7 @@ export default function DocsCopyBlock({ label, code }: Props) {
     <div className="rounded-lg overflow-hidden" style={{ border: "1px solid rgba(0,0,0,0.06)" }}>
       <div
         className="flex items-center justify-between px-3 py-2"
-        style={{ backgroundColor: "#1C1814", color: "#FFF8F0" }}
+        style={{ backgroundColor: "#1C1814", color: "var(--color-bg)" }}
       >
         <span
           className="text-[10px] font-bold uppercase tracking-widest"
@@ -37,7 +37,7 @@ export default function DocsCopyBlock({ label, code }: Props) {
           type="button"
           onClick={copy}
           className="flex items-center gap-1 text-[10px] font-semibold transition-all hover:opacity-80"
-          style={{ color: copied ? "#10B981" : "#F59E0B" }}
+          style={{ color: copied ? "#10B981" : "var(--color-primary)" }}
           aria-label="Copy"
         >
           {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

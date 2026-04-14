@@ -41,7 +41,7 @@ const ASPECTS: { value: Aspect; label: string; dim: string }[] = [
 
 const STATUS_COLOR: Record<string, string> = {
   queued: "#78614E",
-  running: "#F59E0B",
+  running: "var(--color-primary)",
   succeeded: "#10B981",
   failed: "#EF4444",
   moderation_blocked: "#6366F1",
@@ -143,7 +143,7 @@ export default function AiImageStudioPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="AI Image Studio" subtitle="Generate branded visuals from text prompts" />
 
       <main className="max-w-6xl mx-auto px-6 py-6 space-y-6">
@@ -153,8 +153,8 @@ export default function AiImageStudioPage() {
           style={{ backgroundColor: "white", border: "1px solid rgba(245,158,11,0.2)" }}
         >
           <div className="flex items-center gap-2 mb-4">
-            <Wand2 className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>
+            <Wand2 className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
               Generate
             </h2>
           </div>
@@ -172,9 +172,9 @@ export default function AiImageStudioPage() {
             rows={3}
             className="w-full rounded-lg px-3 py-2 text-sm resize-none mb-4"
             style={{
-              backgroundColor: "#FFF8F0",
+              backgroundColor: "var(--color-bg)",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -193,8 +193,8 @@ export default function AiImageStudioPage() {
                 onClick={() => setAspect(a.value)}
                 className="px-3 py-2 rounded-lg text-xs font-bold transition-all"
                 style={{
-                  backgroundColor: aspect === a.value ? "#292524" : "rgba(0,0,0,0.04)",
-                  color: aspect === a.value ? "white" : "#292524",
+                  backgroundColor: aspect === a.value ? "var(--color-text)" : "rgba(0,0,0,0.04)",
+                  color: aspect === a.value ? "white" : "var(--color-text)",
                 }}
               >
                 {a.label} <span className="opacity-60">({a.value})</span>
@@ -208,7 +208,7 @@ export default function AiImageStudioPage() {
             disabled={busy || !prompt.trim()}
             className="w-full sm:w-auto px-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-40"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >
@@ -273,7 +273,7 @@ export default function AiImageStudioPage() {
                   href={latest.image_url}
                   download
                   className="inline-flex items-center gap-1 font-bold"
-                  style={{ color: "#D97706" }}
+                  style={{ color: "var(--color-primary-hover)" }}
                 >
                   <Download className="w-3 h-3" />
                   Download
@@ -313,7 +313,7 @@ export default function AiImageStudioPage() {
                     href={animateResult.video_url}
                     download
                     className="inline-flex items-center gap-1 font-bold"
-                    style={{ color: "#D97706" }}
+                    style={{ color: "var(--color-primary-hover)" }}
                   >
                     <Download className="w-3 h-3" />
                     Download
@@ -379,7 +379,7 @@ export default function AiImageStudioPage() {
                   <div className="p-2">
                     <p
                       className="text-[11px] line-clamp-2"
-                      style={{ color: "#292524", lineHeight: 1.3 }}
+                      style={{ color: "var(--color-text)", lineHeight: 1.3 }}
                     >
                       {g.prompt}
                     </p>

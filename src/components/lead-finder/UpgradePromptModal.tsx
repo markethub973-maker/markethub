@@ -50,7 +50,7 @@ export default function UpgradePromptModal({ payload, onClose }: Props) {
       <div
         className="relative w-full max-w-md rounded-2xl p-6 sm:p-8"
         style={{
-          backgroundColor: "#FFFCF7",
+          backgroundColor: "var(--color-bg-secondary)",
           border: "1px solid rgba(245,215,160,0.4)",
           boxShadow: "0 20px 60px rgba(28,24,20,0.4)",
         }}
@@ -68,7 +68,7 @@ export default function UpgradePromptModal({ payload, onClose }: Props) {
 
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+          style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}
         >
           <Zap className="w-6 h-6 text-white" />
         </div>
@@ -86,7 +86,7 @@ export default function UpgradePromptModal({ payload, onClose }: Props) {
           className="rounded-xl p-3 mb-5 flex items-center gap-2 text-xs"
           style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "#78614E" }}
         >
-          <Clock className="w-4 h-4 flex-shrink-0" style={{ color: "#F59E0B" }} />
+          <Clock className="w-4 h-4 flex-shrink-0" style={{ color: "var(--color-primary)" }} />
           <span>
             Resets on <strong>{formatResetDate(payload.resetDate)}</strong>
           </span>
@@ -96,7 +96,7 @@ export default function UpgradePromptModal({ payload, onClose }: Props) {
           <Link
             href="/pricing"
             className="w-full py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2"
-            style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+            style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
           >
             Upgrade to a higher plan <ArrowRight className="w-4 h-4" />
           </Link>

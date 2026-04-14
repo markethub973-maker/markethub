@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Loader2, RefreshCw, Check } from "lucide-react";
 
 const cardStyle = {
-  backgroundColor: "#FFFCF7",
+  backgroundColor: "var(--color-bg-secondary)",
   border: "1px solid rgba(245,215,160,0.25)",
   boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
 };
@@ -29,7 +29,7 @@ function Toggle({ on, onChange }: { on: boolean; onChange: (v: boolean) => void 
   return (
     <button type="button" role="switch" aria-checked={on} onClick={() => onChange(!on)}
       className="w-9 h-5 rounded-full relative transition-colors flex-shrink-0"
-      style={{ backgroundColor: on ? "#F59E0B" : "rgba(196,170,138,0.3)" }}>
+      style={{ backgroundColor: on ? "var(--color-primary)" : "rgba(196,170,138,0.3)" }}>
       <span className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform"
         style={{ transform: on ? "translateX(18px)" : "translateX(2px)" }} />
     </button>
@@ -76,7 +76,7 @@ export default function AdminFeatureFlagsPanel() {
     <div className="rounded-2xl p-6" style={cardStyle}>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-xl font-bold" style={{ color: "#292524" }}>Feature Flags per Plan</h2>
+          <h2 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>Feature Flags per Plan</h2>
           <p className="text-sm mt-0.5" style={{ color: "#A8967E" }}>Toggle which features are available on each plan</p>
         </div>
         <button type="button" onClick={fetch_} disabled={loading}
@@ -86,7 +86,7 @@ export default function AdminFeatureFlagsPanel() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        <div className="flex justify-center py-10"><Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
@@ -94,7 +94,7 @@ export default function AdminFeatureFlagsPanel() {
               <tr>
                 <th className="text-left py-2 pr-4 text-xs font-semibold" style={{ color: "#A8967E" }}>Feature</th>
                 {plans.map(plan => (
-                  <th key={plan.id} className="text-center py-2 px-3 text-xs font-semibold min-w-[90px]" style={{ color: "#292524" }}>
+                  <th key={plan.id} className="text-center py-2 px-3 text-xs font-semibold min-w-[90px]" style={{ color: "var(--color-text)" }}>
                     {plan.name}
                   </th>
                 ))}
@@ -129,7 +129,7 @@ export default function AdminFeatureFlagsPanel() {
                 {dirty.has(plan.id) ? (
                   <button type="button" onClick={() => savePlan(plan)} disabled={saving === plan.id}
                     className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold"
-                    style={{ backgroundColor: "#F59E0B", color: "white" }}>
+                    style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
                     {saving === plan.id ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
                     Save
                   </button>

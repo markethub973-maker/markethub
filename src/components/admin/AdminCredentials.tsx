@@ -15,7 +15,7 @@ type Credentials = {
 };
 
 const cardStyle = {
-  backgroundColor: "#FFFCF7",
+  backgroundColor: "var(--color-bg-secondary)",
   border: "1px solid rgba(245,215,160,0.25)",
   boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
 };
@@ -38,8 +38,8 @@ const sections = [
   {
     key: "anthropic",
     label: "Anthropic AI",
-    icon: <Bot className="w-4 h-4" style={{ color: "#D97706" }} />,
-    color: "#D97706",
+    icon: <Bot className="w-4 h-4" style={{ color: "var(--color-primary-hover)" }} />,
+    color: "var(--color-primary-hover)",
     bg: "rgba(245,158,11,0.08)",
   },
   {
@@ -96,11 +96,11 @@ export default function AdminCredentials() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
             <Key className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>API Credentials</h2>
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>API Credentials</h2>
             <p className="text-xs" style={{ color: "#A8967E" }}>
               {loading ? "Loading..." : `${totalOk} / ${total} configured`}
             </p>
@@ -119,7 +119,7 @@ export default function AdminCredentials() {
         <div className="mb-6">
           <div className="flex items-center justify-between text-xs mb-1.5" style={{ color: "#A8967E" }}>
             <span>Configuration health</span>
-            <span className="font-semibold" style={{ color: totalOk === total ? "#16a34a" : "#D97706" }}>
+            <span className="font-semibold" style={{ color: totalOk === total ? "#16a34a" : "var(--color-primary-hover)" }}>
               {Math.round((totalOk / total) * 100)}%
             </span>
           </div>
@@ -127,7 +127,7 @@ export default function AdminCredentials() {
             <div className="h-2 rounded-full transition-all"
               style={{
                 width: `${(totalOk / total) * 100}%`,
-                backgroundColor: totalOk === total ? "#16a34a" : "#F59E0B",
+                backgroundColor: totalOk === total ? "#16a34a" : "var(--color-primary)",
               }} />
           </div>
         </div>
@@ -147,7 +147,7 @@ export default function AdminCredentials() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   {sec.icon}
-                  <span className="text-sm font-bold" style={{ color: "#292524" }}>{sec.label}</span>
+                  <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{sec.label}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   {allOk
@@ -180,7 +180,7 @@ export default function AdminCredentials() {
                             : <XCircle className="w-3 h-3 flex-shrink-0" style={{ color: "#EF4444" }} />
                           }
                           <code className="text-xs truncate"
-                            style={{ color: field.configured ? "#292524" : "#EF4444", fontFamily: "monospace" }}>
+                            style={{ color: field.configured ? "var(--color-text)" : "#EF4444", fontFamily: "monospace" }}>
                             {field.masked}
                           </code>
                         </div>

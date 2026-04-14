@@ -71,8 +71,8 @@ export default function AiUsageWidget() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Cpu className="w-5 h-5" style={{ color: "#F59E0B" }} />
-          <h3 className="text-base font-bold" style={{ color: "#292524" }}>
+          <Cpu className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+          <h3 className="text-base font-bold" style={{ color: "var(--color-text)" }}>
             Your AI usage
           </h3>
         </div>
@@ -95,7 +95,7 @@ export default function AiUsageWidget() {
             border: "1px solid rgba(245,158,11,0.2)",
           }}
         >
-          <p className="text-xl font-bold" style={{ color: "#D97706" }}>
+          <p className="text-xl font-bold" style={{ color: "var(--color-primary-hover)" }}>
             ${summary?.total_cost_usd_24h.toFixed(3) ?? "0.00"}
           </p>
           <p className="text-[10px] uppercase tracking-wider mt-1" style={{ color: "#78614E" }}>
@@ -106,7 +106,7 @@ export default function AiUsageWidget() {
           className="rounded-lg p-3 text-center"
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
-          <p className="text-xl font-bold" style={{ color: "#292524" }}>
+          <p className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
             ${summary?.total_cost_usd_7d.toFixed(2) ?? "0.00"}
           </p>
           <p className="text-[10px] uppercase tracking-wider mt-1" style={{ color: "#78614E" }}>
@@ -117,7 +117,7 @@ export default function AiUsageWidget() {
           className="rounded-lg p-3 text-center"
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
-          <p className="text-xl font-bold" style={{ color: "#292524" }}>
+          <p className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
             ${summary?.total_cost_usd_30d.toFixed(2) ?? "0.00"}
           </p>
           <p className="text-[10px] uppercase tracking-wider mt-1" style={{ color: "#78614E" }}>
@@ -144,7 +144,7 @@ export default function AiUsageWidget() {
                 <cfg.icon className="w-4 h-4" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold" style={{ color: "#292524" }}>
+                <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                   {cfg.label}
                 </p>
                 <p className="text-[11px]" style={{ color: "#78614E" }}>

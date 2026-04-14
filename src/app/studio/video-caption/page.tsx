@@ -79,7 +79,7 @@ export default function VideoCaptionPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Video → Caption" subtitle="Upload audio URL, get transcript + platform-ready captions" />
 
       <main className="max-w-5xl mx-auto px-6 py-6 space-y-5">
@@ -88,8 +88,8 @@ export default function VideoCaptionPage() {
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
           <div className="flex items-center gap-2">
-            <Mic2 className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+            <Mic2 className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Paste a public video or audio URL
             </h2>
           </div>
@@ -100,7 +100,7 @@ export default function VideoCaptionPage() {
             onChange={(e) => setVideoUrl(e.target.value)}
             placeholder="https://cdn.example.com/my-reel.mp4"
             className="w-full rounded-lg px-3 py-2 text-sm"
-            style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+            style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
           />
           <p className="text-[11px]" style={{ color: "#A8967E" }}>
             Tip: drop it in Asset Library or Dropbox / Drive first, then paste the public URL here.
@@ -140,7 +140,7 @@ export default function VideoCaptionPage() {
             onClick={run}
             disabled={!canSubmit}
             className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> Transcribing + writing captions...</>) : (<><Sparkles className="w-4 h-4" /> Transcribe & caption</>)}
           </button>
@@ -157,7 +157,7 @@ export default function VideoCaptionPage() {
             >
               <div className="flex items-center gap-2 mb-2">
                 <FileText className="w-4 h-4" style={{ color: "#78614E" }} />
-                <p className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                   Transcript
                 </p>
                 <span className="text-[10px]" style={{ color: "#A8967E" }}>
@@ -173,7 +173,7 @@ export default function VideoCaptionPage() {
                   {copied === "transcript" ? "Copied" : "Copy"}
                 </button>
               </div>
-              <p className="text-xs whitespace-pre-wrap max-h-40 overflow-y-auto" style={{ color: "#292524", lineHeight: 1.5 }}>
+              <p className="text-xs whitespace-pre-wrap max-h-40 overflow-y-auto" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
                 {result.transcript}
               </p>
             </section>
@@ -185,15 +185,15 @@ export default function VideoCaptionPage() {
                 style={{ backgroundColor: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.25)" }}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4" style={{ color: "#D97706" }} />
-                  <p className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                  <Sparkles className="w-4 h-4" style={{ color: "var(--color-primary-hover)" }} />
+                  <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                     Suggested hashtags
                   </p>
                   <button
                     type="button"
                     onClick={() => copy("hashtags", result.hashtags.join(" "))}
                     className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
-                    style={{ backgroundColor: copied === "hashtags" ? "#10B981" : "#D97706", color: "white" }}
+                    style={{ backgroundColor: copied === "hashtags" ? "#10B981" : "var(--color-primary-hover)", color: "white" }}
                   >
                     {copied === "hashtags" ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                     {copied === "hashtags" ? "Copied" : "Copy all"}
@@ -204,7 +204,7 @@ export default function VideoCaptionPage() {
                     <span
                       key={h}
                       className="text-xs px-2 py-1 rounded-md"
-                      style={{ backgroundColor: "white", color: "#292524", border: "1px solid rgba(245,158,11,0.3)" }}
+                      style={{ backgroundColor: "white", color: "var(--color-text)", border: "1px solid rgba(245,158,11,0.3)" }}
                     >
                       {h.startsWith("#") ? h : `#${h}`}
                     </span>
@@ -231,7 +231,7 @@ export default function VideoCaptionPage() {
                       >
                         <Icon className="w-4 h-4" style={{ color: t.color }} />
                       </div>
-                      <p className="text-sm font-bold flex-1" style={{ color: "#292524" }}>
+                      <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                         {t.label}
                       </p>
                       <span className="text-[10px]" style={{ color: "#A8967E" }}>
@@ -247,7 +247,7 @@ export default function VideoCaptionPage() {
                         {copied === t.id ? "Copied" : "Copy"}
                       </button>
                     </div>
-                    <p className="text-sm whitespace-pre-wrap" style={{ color: "#292524", lineHeight: 1.5 }}>
+                    <p className="text-sm whitespace-pre-wrap" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
                       {c}
                     </p>
                   </div>

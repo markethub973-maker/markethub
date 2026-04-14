@@ -24,7 +24,7 @@ const BUCKET_META = [
     desc: "Good discovery upside — you're not using these yet" },
   { key: "safe-bet",          label: "Safe Bet",        icon: ShieldCheck,    color: "#0EA5E9",
     desc: "Steady relevance to your niche" },
-  { key: "overused-by-you",   label: "Overused by You", icon: Repeat,         color: "#F59E0B",
+  { key: "overused-by-you",   label: "Overused by You", icon: Repeat,         color: "var(--color-primary)",
     desc: "Rotate these out — you rely on them too much" },
   { key: "saturated",         label: "Saturated",       icon: AlertTriangle,  color: "#EF4444",
     desc: "Oversaturated / spammy — avoid" },
@@ -89,7 +89,7 @@ export default function HashtagScanPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Hashtag Scanner" subtitle="Rank candidates into rising · safe-bet · saturated · overused" />
 
       <main className="max-w-5xl mx-auto px-6 py-6 space-y-5">
@@ -98,8 +98,8 @@ export default function HashtagScanPage() {
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
           <div className="flex items-center gap-2">
-            <Hash className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+            <Hash className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Provide inputs
             </h2>
           </div>
@@ -114,7 +114,7 @@ export default function HashtagScanPage() {
               rows={4}
               placeholder={"#marketingagency\n#aitools\n#contentcreation"}
               className="w-full rounded-lg px-3 py-2 text-sm resize-none font-mono"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none", fontSize: 11 }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none", fontSize: 11 }}
             />
             <p className="text-[10px] mt-1" style={{ color: "#A8967E" }}>
               {candList.length} candidate{candList.length === 1 ? "" : "s"} — OR leave empty and paste competitor captions below (hashtags auto-extracted)
@@ -132,7 +132,7 @@ export default function HashtagScanPage() {
                 rows={5}
                 placeholder="[one caption per line]"
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none font-mono"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none", fontSize: 11 }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none", fontSize: 11 }}
               />
             </div>
             <div>
@@ -145,7 +145,7 @@ export default function HashtagScanPage() {
                 rows={5}
                 placeholder="[one caption per line]"
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none font-mono"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none", fontSize: 11 }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none", fontSize: 11 }}
               />
             </div>
           </div>
@@ -161,7 +161,7 @@ export default function HashtagScanPage() {
                 onChange={(e) => setNiche(e.target.value)}
                 placeholder="e.g. small fitness studios in Romania"
                 className="w-full rounded-md px-2 py-1.5 text-xs"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
             </div>
             <div>
@@ -170,7 +170,7 @@ export default function HashtagScanPage() {
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
                 className="rounded-md px-2 py-1.5 text-xs"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               >
                 {["instagram", "tiktok", "twitter", "linkedin", "facebook", "youtube"].map((p) => (
                   <option key={p} value={p}>{p}</option>
@@ -184,7 +184,7 @@ export default function HashtagScanPage() {
             onClick={run}
             disabled={!canSubmit}
             className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
           >
             {loading ? (<><Loader2 className="w-4 h-4 animate-spin" /> Scanning...</>) : (<><Hash className="w-4 h-4" /> Scan hashtags</>)}
           </button>
@@ -214,7 +214,7 @@ export default function HashtagScanPage() {
                     >
                       <Icon className="w-4 h-4" style={{ color }} />
                     </div>
-                    <p className="text-sm font-bold" style={{ color: "#292524" }}>
+                    <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                       {label}
                     </p>
                     <p className="text-[10px] flex-1" style={{ color: "#A8967E" }}>

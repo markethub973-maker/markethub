@@ -5,9 +5,9 @@ import { Copy, Check, Mail, Gift, Users, TrendingUp, Loader2, Plus } from "lucid
 
 interface Referral { id: string; referee_email: string; status: string; reward_value: number; created_at: string; converted_at: string | null; }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
 const STATUS: Record<string, { label: string; color: string; bg: string }> = {
-  pending:   { label: "Invited",   color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
+  pending:   { label: "Invited",   color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)" },
   signed_up: { label: "Signed up", color: "#6366F1", bg: "rgba(99,102,241,0.1)" },
   converted: { label: "Converted", color: "#10B981", bg: "rgba(16,185,129,0.1)" },
 };
@@ -48,7 +48,7 @@ export default function ReferralPage() {
   const converted = data?.referrals.filter(r => r.status === "converted").length ?? 0;
   const totalReward = converted * 20;
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>;
+  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} /></div>;
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
@@ -57,12 +57,12 @@ export default function ReferralPage() {
 
         {/* Your code */}
         <div className="rounded-2xl p-5 text-center space-y-3" style={{ ...card, border: "1px solid rgba(245,158,11,0.25)" }}>
-          <Gift className="w-8 h-8 mx-auto" style={{ color: "#F59E0B" }} />
-          <p className="font-bold" style={{ color: "#292524" }}>Your referral code</p>
+          <Gift className="w-8 h-8 mx-auto" style={{ color: "var(--color-primary)" }} />
+          <p className="font-bold" style={{ color: "var(--color-text)" }}>Your referral code</p>
           <div className="flex items-center gap-2 justify-center">
             <code className="text-2xl font-bold tracking-widest px-4 py-2 rounded-xl"
-              style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>{data?.code}</code>
-            <button type="button" onClick={copyCode} className="p-2 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+              style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>{data?.code}</code>
+            <button type="button" onClick={copyCode} className="p-2 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
               {copied ? <Check className="w-4 h-4" style={{ color: "#10B981" }} /> : <Copy className="w-4 h-4" />}
             </button>
           </div>
@@ -76,7 +76,7 @@ export default function ReferralPage() {
           {[
             { label: "Invited", value: data?.referrals.length ?? 0, icon: Users, color: "#6366F1" },
             { label: "Converted", value: converted, icon: TrendingUp, color: "#10B981" },
-            { label: "Reward total", value: `$${totalReward}`, icon: Gift, color: "#F59E0B" },
+            { label: "Reward total", value: `$${totalReward}`, icon: Gift, color: "var(--color-primary)" },
           ].map(s => { const Icon = s.icon; return (
             <div key={s.label} className="rounded-xl p-3 text-center" style={card}>
               <Icon className="w-4 h-4 mx-auto mb-1" style={{ color: s.color }} />
@@ -98,12 +98,12 @@ export default function ReferralPage() {
 
         {/* Invite form */}
         <div className="rounded-2xl p-4 space-y-3" style={card}>
-          <p className="text-sm font-bold" style={{ color: "#292524" }}>Invite via email</p>
+          <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Invite via email</p>
           <div className="flex gap-2">
             <input value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && invite()}
               placeholder="email@example.com"
               className="flex-1 rounded-xl px-3 py-2.5 text-sm outline-none"
-              style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+              style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
             <button type="button" onClick={invite} disabled={sending || !email.trim()}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold disabled:opacity-40"
               style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
@@ -122,7 +122,7 @@ export default function ReferralPage() {
               return (
                 <div key={r.id} className="rounded-xl px-4 py-3 flex items-center gap-3" style={card}>
                   <Mail className="w-4 h-4 shrink-0" style={{ color: "#C4AA8A" }} />
-                  <p className="text-sm flex-1 truncate" style={{ color: "#292524" }}>{r.referee_email}</p>
+                  <p className="text-sm flex-1 truncate" style={{ color: "var(--color-text)" }}>{r.referee_email}</p>
                   <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0"
                     style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>
                   {r.status === "converted" && <span className="text-xs font-bold shrink-0" style={{ color: "#10B981" }}>+$20</span>}

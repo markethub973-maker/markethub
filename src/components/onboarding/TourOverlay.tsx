@@ -119,14 +119,14 @@ export default function TourOverlay({ steps, onComplete, onClose }: TourOverlayP
               className="h-1 rounded-full transition-all duration-300"
               style={{
                 flex: i === index ? 2 : 1,
-                background: i === index ? "#F59E0B" : i < index ? "rgba(245,158,11,0.4)" : "rgba(255,255,255,0.1)",
+                background: i === index ? "var(--color-primary)" : i < index ? "rgba(245,158,11,0.4)" : "rgba(255,255,255,0.1)",
               }}
             />
           ))}
         </div>
 
         {/* Content */}
-        <h3 className="font-bold text-base mb-1" style={{ color: "#FFF8F0" }}>{step.title}</h3>
+        <h3 className="font-bold text-base mb-1" style={{ color: "var(--color-bg)" }}>{step.title}</h3>
         <p className="text-sm leading-relaxed" style={{ color: "#A8967E" }}>{step.description}</p>
 
         {/* Actions */}
@@ -156,7 +156,7 @@ export default function TourOverlay({ steps, onComplete, onClose }: TourOverlayP
               type="button"
               onClick={next}
               className="flex items-center gap-1 px-4 py-1.5 rounded-lg text-xs font-bold transition-all"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+              style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
             >
               {index < steps.length - 1 ? <><span>Next</span><ChevronRight size={13} /></> : <span>Finish 🎉</span>}
             </button>

@@ -275,7 +275,7 @@ export default function EngagementPage() {
   const messages = data?.messages ?? [];
 
   return (
-    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "#292524" }}>
+    <div style={{ minHeight: "100vh", background: "#FAFAF8", color: "var(--color-text)" }}>
       {/* Top bar */}
       <div
         style={{
@@ -284,7 +284,7 @@ export default function EngagementPage() {
           gap: 16,
           padding: "16px 24px",
           borderBottom: "1px solid rgba(245,215,160,0.25)",
-          background: "#FFFCF7",
+          background: "var(--color-bg-secondary)",
         }}
       >
         <Link
@@ -296,7 +296,7 @@ export default function EngagementPage() {
             padding: "6px 12px",
             background: "rgba(245,158,11,0.08)",
             borderRadius: 6,
-            color: "#F59E0B",
+            color: "var(--color-primary)",
             textDecoration: "none",
             fontSize: 12,
           }}
@@ -317,7 +317,7 @@ export default function EngagementPage() {
             alignItems: "center",
             gap: 6,
             padding: "8px 16px",
-            background: "#F59E0B",
+            background: "var(--color-primary)",
             color: "#1C1814",
             border: "none",
             borderRadius: 8,
@@ -370,7 +370,7 @@ export default function EngagementPage() {
         {/* Left — filter rail */}
         <aside
           style={{
-            background: "#FFFCF7",
+            background: "var(--color-bg-secondary)",
             borderRight: "1px solid rgba(245,215,160,0.2)",
             padding: "20px 16px",
           }}
@@ -398,7 +398,7 @@ export default function EngagementPage() {
                 padding: "8px 10px",
                 marginBottom: 3,
                 background: statusFilter === s ? "rgba(245,158,11,0.12)" : "transparent",
-                color: statusFilter === s ? "#F59E0B" : "#292524",
+                color: statusFilter === s ? "var(--color-primary)" : "var(--color-text)",
                 border: "none",
                 borderRadius: 6,
                 fontSize: 13,
@@ -414,7 +414,7 @@ export default function EngagementPage() {
                     fontSize: 11,
                     padding: "1px 8px",
                     borderRadius: 10,
-                    background: statusFilter === s ? "#F59E0B" : "rgba(168,150,126,0.15)",
+                    background: statusFilter === s ? "var(--color-primary)" : "rgba(168,150,126,0.15)",
                     color: statusFilter === s ? "#1C1814" : "#78614E",
                     fontWeight: 700,
                   }}
@@ -450,7 +450,7 @@ export default function EngagementPage() {
                   padding: "8px 10px",
                   marginBottom: 3,
                   background: platformFilter === p ? "rgba(245,158,11,0.12)" : "transparent",
-                  color: platformFilter === p ? "#F59E0B" : "#292524",
+                  color: platformFilter === p ? "var(--color-primary)" : "var(--color-text)",
                   border: "none",
                   borderRadius: 6,
                   fontSize: 13,
@@ -470,7 +470,7 @@ export default function EngagementPage() {
                       padding: "1px 8px",
                       borderRadius: 10,
                       background:
-                        platformFilter === p ? "#F59E0B" : "rgba(168,150,126,0.15)",
+                        platformFilter === p ? "var(--color-primary)" : "rgba(168,150,126,0.15)",
                       color: platformFilter === p ? "#1C1814" : "#78614E",
                       fontWeight: 700,
                     }}
@@ -487,7 +487,7 @@ export default function EngagementPage() {
         <div
           style={{
             borderRight: "1px solid rgba(245,215,160,0.2)",
-            background: "#FFFCF7",
+            background: "var(--color-bg-secondary)",
             overflowY: "auto",
             maxHeight: "calc(100vh - 73px)",
           }}
@@ -568,7 +568,7 @@ export default function EngagementPage() {
                         width: 8,
                         height: 8,
                         borderRadius: "50%",
-                        background: "#F59E0B",
+                        background: "var(--color-primary)",
                       }}
                     />
                   )}
@@ -583,7 +583,7 @@ export default function EngagementPage() {
                   style={{
                     fontSize: 12,
                     fontWeight: m.status === "unread" ? 700 : 500,
-                    color: "#292524",
+                    color: "var(--color-text)",
                     marginBottom: 4,
                   }}
                 >
@@ -789,7 +789,7 @@ export default function EngagementPage() {
               <div
                 style={{
                   padding: 16,
-                  background: "#FFFCF7",
+                  background: "var(--color-bg-secondary)",
                   border: "1px solid rgba(245,215,160,0.3)",
                   borderRadius: 10,
                   marginBottom: 16,
@@ -799,7 +799,7 @@ export default function EngagementPage() {
                   style={{
                     fontSize: 14,
                     lineHeight: 1.6,
-                    color: "#292524",
+                    color: "var(--color-text)",
                     whiteSpace: "pre-wrap",
                     margin: 0,
                   }}
@@ -815,7 +815,7 @@ export default function EngagementPage() {
                       display: "inline-block",
                       marginTop: 12,
                       fontSize: 11,
-                      color: "#F59E0B",
+                      color: "var(--color-primary)",
                       textDecoration: "none",
                     }}
                   >
@@ -877,7 +877,7 @@ export default function EngagementPage() {
                       padding: "3px 10px",
                       borderRadius: 10,
                       background: "rgba(245,158,11,0.1)",
-                      color: "#F59E0B",
+                      color: "var(--color-primary)",
                       fontWeight: 700,
                     }}
                   >
@@ -917,7 +917,7 @@ export default function EngagementPage() {
                   <p
                     style={{
                       fontSize: 13,
-                      color: "#292524",
+                      color: "var(--color-text)",
                       margin: 0,
                       whiteSpace: "pre-wrap",
                     }}
@@ -932,7 +932,7 @@ export default function EngagementPage() {
                 <div
                   style={{
                     padding: 16,
-                    background: "#FFFCF7",
+                    background: "var(--color-bg-secondary)",
                     border: "1px solid rgba(245,215,160,0.3)",
                     borderRadius: 10,
                   }}
@@ -963,7 +963,7 @@ export default function EngagementPage() {
                       outline: "none",
                       resize: "vertical",
                       fontFamily: "inherit",
-                      color: "#292524",
+                      color: "var(--color-text)",
                       background: "white",
                     }}
                   />
@@ -987,7 +987,7 @@ export default function EngagementPage() {
                     style={{
                       marginTop: 10,
                       padding: "10px 20px",
-                      background: replying || !replyText.trim() ? "#C4AA8A" : "#F59E0B",
+                      background: replying || !replyText.trim() ? "#C4AA8A" : "var(--color-primary)",
                       color: "#1C1814",
                       border: "none",
                       borderRadius: 8,

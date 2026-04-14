@@ -35,7 +35,7 @@ export default function AttitudeIndicator3D({ score, status }: Props) {
     };
   }, [score]);
 
-  const ringColor = status === "healthy" ? "#10B981" : status === "degraded" ? "#F59E0B" : "#EF4444";
+  const ringColor = status === "healthy" ? "#10B981" : status === "degraded" ? "var(--color-primary)" : "#EF4444";
   const skyColor = status === "healthy" ? "#1E40AF" : status === "degraded" ? "#78350F" : "#450A0A";
   const groundColor = status === "healthy" ? "#065F46" : status === "degraded" ? "#78350F" : "#450A0A";
 

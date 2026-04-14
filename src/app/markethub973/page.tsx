@@ -91,17 +91,17 @@ export default function AdminSecretLogin() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: "#1C1814" }}>
-      <div className="w-full max-w-sm rounded-2xl p-8 shadow-2xl" style={{ backgroundColor: "#FFFCF7" }}>
+      <div className="w-full max-w-sm rounded-2xl p-8 shadow-2xl" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
 
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <div className="w-14 h-14 rounded-xl flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
             <span className="text-white text-2xl font-bold">M</span>
           </div>
         </div>
 
-        <h1 className="text-xl font-bold text-center mb-1" style={{ color: "#292524" }}>Admin Access</h1>
+        <h1 className="text-xl font-bold text-center mb-1" style={{ color: "var(--color-text)" }}>Admin Access</h1>
         <p className="text-center text-sm mb-6" style={{ color: "#A8967E" }}>MarketHub Pro</p>
 
         {status === "success" ? (
@@ -121,8 +121,8 @@ export default function AdminSecretLogin() {
                 className="w-full px-4 py-3 rounded-xl text-sm font-medium focus:outline-none"
                 style={{
                   border: (error && !needs2FA) ? "1px solid #dc2626" : "1px solid #E8D9C5",
-                  backgroundColor: needs2FA ? "rgba(232,217,197,0.3)" : "#FFF8F0",
-                  color: "#292524",
+                  backgroundColor: needs2FA ? "rgba(232,217,197,0.3)" : "var(--color-bg)",
+                  color: "var(--color-text)",
                 }}
                 onKeyDown={e => e.key === "Enter" && handleSubmit(e as unknown as React.FormEvent)}
               />
@@ -146,8 +146,8 @@ export default function AdminSecretLogin() {
                   className="w-full px-4 py-3 rounded-xl text-center text-xl font-mono tracking-widest focus:outline-none"
                   style={{
                     border: error ? "1px solid #dc2626" : "1px solid #F59E0B",
-                    backgroundColor: "#FFF8F0",
-                    color: "#292524",
+                    backgroundColor: "var(--color-bg)",
+                    color: "var(--color-text)",
                   }}
                   onKeyDown={e => e.key === "Enter" && handleSubmit(e as unknown as React.FormEvent)}
                 />
@@ -162,7 +162,7 @@ export default function AdminSecretLogin() {
               type="submit"
               disabled={status === "loading" || !password.trim() || (needs2FA && totpCode.length < 6)}
               className="w-full py-3 rounded-xl text-sm font-bold transition-opacity disabled:opacity-50"
-              style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+              style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
             >
               {status === "loading" ? "Verifying..." : needs2FA ? "Verify 2FA" : "Enter"}
             </button>

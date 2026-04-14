@@ -137,7 +137,7 @@ export default function AskConsultant() {
         >
           <div
             className="w-full sm:max-w-md sm:ml-4 rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col"
-            style={{ backgroundColor: "#FFFCF7", maxHeight: "90dvh", height: "600px" }}
+            style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "90dvh", height: "600px" }}
           >
             <div
               className="flex items-center gap-3 px-4 py-3 border-b"
@@ -148,7 +148,7 @@ export default function AskConsultant() {
             >
               <Sparkles className="w-5 h-5" style={{ color: "#8B5CF6" }} />
               <div className="flex-1">
-                <p className="font-bold text-sm" style={{ color: "#292524" }}>
+                <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>
                   Consultant
                 </p>
                 <p className="text-[10px]" style={{ color: "#78614E" }}>
@@ -196,8 +196,8 @@ export default function AskConsultant() {
                     className="max-w-[85%] rounded-2xl px-3 py-2"
                     style={{
                       backgroundColor:
-                        t.role === "user" ? "#292524" : "rgba(139,92,246,0.08)",
-                      color: t.role === "user" ? "white" : "#292524",
+                        t.role === "user" ? "var(--color-text)" : "rgba(139,92,246,0.08)",
+                      color: t.role === "user" ? "white" : "var(--color-text)",
                       border:
                         t.role === "assistant"
                           ? "1px solid rgba(139,92,246,0.2)"
@@ -253,7 +253,7 @@ export default function AskConsultant() {
               className="p-3 border-t"
               style={{
                 borderColor: "rgba(139,92,246,0.15)",
-                backgroundColor: "#FFF8F0",
+                backgroundColor: "var(--color-bg)",
               }}
             >
               <div className="flex gap-2 items-end">
@@ -267,7 +267,7 @@ export default function AskConsultant() {
                   style={{
                     backgroundColor: "white",
                     border: "1px solid rgba(139,92,246,0.25)",
-                    color: "#292524",
+                    color: "var(--color-text)",
                     outline: "none",
                     maxHeight: "120px",
                   }}

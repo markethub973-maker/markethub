@@ -56,7 +56,7 @@ export default function TrialWarningBanner() {
   const isUrgent = daysLeft === 1;
   const bg = isUrgent ? "rgba(239,68,68,0.1)" : "rgba(245,158,11,0.1)";
   const border = isUrgent ? "rgba(239,68,68,0.3)" : "rgba(245,158,11,0.3)";
-  const color = isUrgent ? "#DC2626" : "#D97706";
+  const color = isUrgent ? "#DC2626" : "var(--color-primary-hover)";
 
   return (
     <div

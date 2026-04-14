@@ -33,10 +33,10 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
   const features = resolveFeaturesForUseCase(uc);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <header className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-        <Link href="/" className="text-sm font-bold flex items-center gap-2" style={{ color: "#292524" }}>
-          <span style={{ color: "#F59E0B" }}>MarketHub Pro</span>
+        <Link href="/" className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--color-text)" }}>
+          <span style={{ color: "var(--color-primary)" }}>MarketHub Pro</span>
         </Link>
         <Link href="/features" className="text-xs ml-2" style={{ color: "#78614E" }}>Features</Link>
         <div className="flex-1" />
@@ -44,7 +44,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
         <Link
           href="/register"
           className="text-xs font-bold px-3 py-1.5 rounded-md"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+          style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
         >
           Start free
         </Link>
@@ -55,12 +55,12 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
         <section className="text-center space-y-5 max-w-3xl mx-auto">
           <span
             className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide px-2 py-1 rounded-full"
-            style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}
+            style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}
           >
             <span>{uc.hero_emoji}</span>
             For {uc.audience_label}
           </span>
-          <h1 className="text-4xl md:text-5xl font-bold leading-tight" style={{ color: "#292524" }}>
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight" style={{ color: "var(--color-text)" }}>
             {uc.hero_h1}
           </h1>
           <p className="text-lg max-w-2xl mx-auto" style={{ color: "#78614E", lineHeight: 1.5 }}>
@@ -70,7 +70,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
             <Link
               href="/register"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+              style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
             >
               Start free trial
               <ArrowRight className="w-4 h-4" />
@@ -78,7 +78,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
             <Link
               href="/features"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
-              style={{ backgroundColor: "white", color: "#292524", border: "1px solid rgba(0,0,0,0.08)" }}
+              style={{ backgroundColor: "white", color: "var(--color-text)", border: "1px solid rgba(0,0,0,0.08)" }}
             >
               Browse all features
             </Link>
@@ -93,7 +93,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
               className="rounded-xl p-4 text-center"
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
-              <p className="text-2xl font-bold" style={{ color: "#D97706" }}>{m.num}</p>
+              <p className="text-2xl font-bold" style={{ color: "var(--color-primary-hover)" }}>{m.num}</p>
               <p className="text-xs mt-1" style={{ color: "#78614E", lineHeight: 1.4 }}>{m.label}</p>
             </div>
           ))}
@@ -109,7 +109,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
           </p>
           <ul className="space-y-2">
             {uc.pain_bullets.map((p, i) => (
-              <li key={i} className="text-sm flex items-start gap-2" style={{ color: "#292524" }}>
+              <li key={i} className="text-sm flex items-start gap-2" style={{ color: "var(--color-text)" }}>
                 <span className="flex-shrink-0 mt-0.5" style={{ color: "#EF4444" }}>•</span>
                 {p}
               </li>
@@ -119,7 +119,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
 
         {/* FEATURES CURATED */}
         <section>
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
             Built for the way {uc.audience_label.toLowerCase()} actually work
           </h2>
           <p className="text-sm mb-5" style={{ color: "#78614E" }}>
@@ -135,9 +135,9 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
               >
                 <div className="text-2xl flex-shrink-0">{f.emoji}</div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold" style={{ color: "#292524" }}>{f.title}</p>
+                  <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{f.title}</p>
                   <p className="text-xs mt-1" style={{ color: "#78614E", lineHeight: 1.5 }}>{f.tagline}</p>
-                  <p className="text-[11px] font-bold mt-2 inline-flex items-center gap-1" style={{ color: "#D97706" }}>
+                  <p className="text-[11px] font-bold mt-2 inline-flex items-center gap-1" style={{ color: "var(--color-primary-hover)" }}>
                     Learn more <ArrowRight className="w-3 h-3" />
                   </p>
                 </div>
@@ -151,9 +151,9 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
           className="rounded-2xl p-6 flex items-start gap-4"
           style={{ backgroundColor: "rgba(245,158,11,0.04)", border: "1px solid rgba(245,158,11,0.2)" }}
         >
-          <Quote className="w-6 h-6 flex-shrink-0" style={{ color: "#D97706" }} />
+          <Quote className="w-6 h-6 flex-shrink-0" style={{ color: "var(--color-primary-hover)" }} />
           <div className="flex-1">
-            <p className="text-base italic" style={{ color: "#292524", lineHeight: 1.5 }}>
+            <p className="text-base italic" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
               {uc.testimonial_block.quote}
             </p>
             <p className="text-xs mt-2" style={{ color: "#78614E" }}>
@@ -167,7 +167,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
           className="rounded-2xl p-6"
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
-          <p className="text-sm font-bold mb-3" style={{ color: "#292524" }}>
+          <p className="text-sm font-bold mb-3" style={{ color: "var(--color-text)" }}>
             What's included on every Pro plan
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
@@ -183,7 +183,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
             ].map((line, i) => (
               <div key={i} className="flex items-start gap-2">
                 <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#10B981" }} />
-                <p className="text-sm" style={{ color: "#292524" }}>{line}</p>
+                <p className="text-sm" style={{ color: "var(--color-text)" }}>{line}</p>
               </div>
             ))}
           </div>
@@ -194,7 +194,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
           className="rounded-2xl p-8 text-center"
           style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(139,92,246,0.08))", border: "1px solid rgba(245,158,11,0.2)" }}
         >
-          <h2 className="text-2xl font-bold mb-2" style={{ color: "#292524" }}>
+          <h2 className="text-2xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
             {uc.cta_h2}
           </h2>
           <p className="text-sm mb-5" style={{ color: "#78614E" }}>
@@ -204,7 +204,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
             <Link
               href="/register"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+              style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
             >
               Start free trial
               <ArrowRight className="w-4 h-4" />
@@ -212,7 +212,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
             <Link
               href="/features"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
-              style={{ backgroundColor: "white", color: "#292524", border: "1px solid rgba(0,0,0,0.08)" }}
+              style={{ backgroundColor: "white", color: "var(--color-text)", border: "1px solid rgba(0,0,0,0.08)" }}
             >
               Compare every feature
             </Link>
@@ -227,7 +227,7 @@ export default async function UseCasePage({ params }: { params: Promise<Params> 
             {USE_CASES.filter((u) => u.slug !== uc.slug).map((u, i) => (
               <span key={u.slug}>
                 {i > 0 && " · "}
-                <Link href={`/for/${u.slug}`} className="underline" style={{ color: "#D97706" }}>
+                <Link href={`/for/${u.slug}`} className="underline" style={{ color: "var(--color-primary-hover)" }}>
                   See for {u.audience_label.toLowerCase()}
                 </Link>
               </span>

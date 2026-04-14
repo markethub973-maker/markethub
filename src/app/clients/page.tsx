@@ -11,7 +11,7 @@ import {
   ShieldCheck, Image, Bookmark, BookmarkCheck, Zap, Lock, Link2
 } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const IG = "#E1306C";
 const TT = "#FF0050";
 
@@ -267,14 +267,14 @@ export default function ClientsPage() {
         {clients.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Total Clients", value: clients.length.toString(), icon: <Users className="w-4 h-4" />, color: "#F59E0B" },
+              { label: "Total Clients", value: clients.length.toString(), icon: <Users className="w-4 h-4" />, color: "var(--color-primary)" },
               { label: "IG Followers total", value: formatNum(totalFollowers), icon: <Instagram className="w-4 h-4" />, color: IG },
               { label: "Avg. Engagement", value: `${avgEngagement}%`, icon: <TrendingUp className="w-4 h-4" />, color: "#10B981" },
               { label: "TT Followers total", value: formatNum(clients.reduce((s, c) => s + (c.tiktokData?.followers || 0), 0)), icon: <Zap className="w-4 h-4" />, color: TT },
             ].map(s => (
               <div key={s.label} className="rounded-xl p-4" style={cardStyle}>
                 <div className="flex items-center gap-2 mb-1" style={{ color: s.color }}>{s.icon}<span className="text-xs">{s.label}</span></div>
-                <p className="text-xl font-bold" style={{ color: "#292524" }}>{s.value}</p>
+                <p className="text-xl font-bold" style={{ color: "var(--color-text)" }}>{s.value}</p>
               </div>
             ))}
           </div>
@@ -324,7 +324,7 @@ export default function ClientsPage() {
         {showForm && (
           <div className="rounded-xl p-5" style={cardStyle}>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Add New Client</h3>
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Add New Client</h3>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#A8967E" }}><X className="w-4 h-4" /></button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -332,7 +332,7 @@ export default function ClientsPage() {
                 <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Client Name *</label>
                 <input type="text" placeholder="Ex: Brand XYZ SRL" value={formName} onChange={e => setFormName(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
               </div>
               <div>
                 <label className="flex items-center gap-1 text-xs font-semibold mb-1" style={{ color: IG }}>
@@ -340,7 +340,7 @@ export default function ClientsPage() {
                 </label>
                 <input type="text" placeholder="Ex: brandxyz" value={formIG} onChange={e => setFormIG(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
-                  style={{ border: `1px solid ${IG}30`, backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  style={{ border: `1px solid ${IG}30`, backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
               </div>
               <div>
                 <label className="flex items-center gap-1 text-xs font-semibold mb-1" style={{ color: TT }}>
@@ -348,13 +348,13 @@ export default function ClientsPage() {
                 </label>
                 <input type="text" placeholder="Ex: brandxyz" value={formTT} onChange={e => setFormTT(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
-                  style={{ border: `1px solid ${TT}30`, backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  style={{ border: `1px solid ${TT}30`, backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
               </div>
               <div>
                 <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Note</label>
                 <input type="text" placeholder="Ex: contract 2026, social media management" value={formNotes} onChange={e => setFormNotes(e.target.value)}
                   className="w-full px-3 py-2.5 text-sm rounded-xl focus:outline-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
               </div>
             </div>
             {error && <p className="text-xs mt-2 font-semibold" style={{ color: "#EF4444" }}>{error}</p>}
@@ -378,7 +378,7 @@ export default function ClientsPage() {
         {activeTab === "compare" && clients.length >= 2 && (
           <div className="rounded-xl overflow-hidden" style={cardStyle}>
             <div className="px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Client Comparison</h3>
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Client Comparison</h3>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -401,7 +401,7 @@ export default function ClientsPage() {
                             <img src={proxyImg(client.igData.profile.avatar)} alt="" className="w-7 h-7 rounded-full object-cover" />
                           )}
                           <div>
-                            <p className="font-semibold" style={{ color: "#292524" }}>{client.name}</p>
+                            <p className="font-semibold" style={{ color: "var(--color-text)" }}>{client.name}</p>
                             <div className="flex gap-2">
                               {client.igUsername && <span className="text-xs" style={{ color: IG }}>@{client.igUsername}</span>}
                               {client.tiktokUsername && <span className="text-xs" style={{ color: TT }}>@{client.tiktokUsername}</span>}
@@ -409,16 +409,16 @@ export default function ClientsPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>{formatNum(client.igData?.profile.followers || 0)}</td>
+                      <td className="px-3 py-3 text-center font-bold" style={{ color: "var(--color-text)" }}>{formatNum(client.igData?.profile.followers || 0)}</td>
                       <td className="px-3 py-3 text-center">
                         <span className="px-2 py-0.5 rounded-full text-xs font-bold"
                           style={{
                             backgroundColor: (client.igData?.engagementRate || 0) > 3 ? "rgba(16,185,129,0.1)" : "rgba(245,158,11,0.1)",
-                            color: (client.igData?.engagementRate || 0) > 3 ? "#10B981" : "#F59E0B",
+                            color: (client.igData?.engagementRate || 0) > 3 ? "#10B981" : "var(--color-primary)",
                           }}>{client.igData?.engagementRate || 0}%</span>
                       </td>
                       <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(client.igData?.profile.postsCount || 0)}</td>
-                      <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>{formatNum(client.tiktokData?.followers || 0)}</td>
+                      <td className="px-3 py-3 text-center font-bold" style={{ color: "var(--color-text)" }}>{formatNum(client.tiktokData?.followers || 0)}</td>
                       <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(client.tiktokData?.likes || 0)}</td>
                     </tr>
                   ))}
@@ -439,7 +439,7 @@ export default function ClientsPage() {
             {clients.length === 0 && !showForm && (
               <div className="rounded-xl p-12 text-center" style={cardStyle}>
                 <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-                <p className="text-sm font-semibold mb-1" style={{ color: "#292524" }}>No clients added</p>
+                <p className="text-sm font-semibold mb-1" style={{ color: "var(--color-text)" }}>No clients added</p>
                 <p className="text-xs mb-4" style={{ color: "#A8967E" }}>Add agency clients — username only, no OAuth token required</p>
                 <button type="button" onClick={() => setShowForm(true)}
                   className="px-5 py-2.5 rounded-xl text-sm font-bold" style={{ backgroundColor: IG, color: "white" }}>
@@ -467,7 +467,7 @@ export default function ClientsPage() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <h3 className="text-sm font-bold" style={{ color: "#292524" }}>{client.name}</h3>
+                          <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{client.name}</h3>
                           {client.igData?.profile.isVerified && <ShieldCheck className="w-4 h-4" style={{ color: "#3B82F6" }} />}
                         </div>
                         <div className="flex items-center gap-3">
@@ -482,11 +482,11 @@ export default function ClientsPage() {
                           <>
                             <div className="text-center">
                               <p className="text-xs" style={{ color: "#A8967E" }}>IG Followers</p>
-                              <p className="text-sm font-bold" style={{ color: "#292524" }}>{formatNum(client.igData.profile.followers)}</p>
+                              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{formatNum(client.igData.profile.followers)}</p>
                             </div>
                             <div className="text-center">
                               <p className="text-xs" style={{ color: "#A8967E" }}>Engagement</p>
-                              <p className="text-sm font-bold" style={{ color: client.igData.engagementRate > 3 ? "#10B981" : "#F59E0B" }}>
+                              <p className="text-sm font-bold" style={{ color: client.igData.engagementRate > 3 ? "#10B981" : "var(--color-primary)" }}>
                                 {client.igData.engagementRate}%
                               </p>
                             </div>
@@ -495,7 +495,7 @@ export default function ClientsPage() {
                         {client.tiktokData && (
                           <div className="text-center">
                             <p className="text-xs" style={{ color: "#A8967E" }}>TT Followers</p>
-                            <p className="text-sm font-bold" style={{ color: "#292524" }}>{formatNum(client.tiktokData.followers)}</p>
+                            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{formatNum(client.tiktokData.followers)}</p>
                           </div>
                         )}
                       </div>
@@ -551,7 +551,7 @@ export default function ClientsPage() {
                           ].map(m => (
                             <div key={m.label} className="rounded-lg p-3" style={{ backgroundColor: `${m.color}08`, border: `1px solid ${m.color}15` }}>
                               <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
-                              <p className="text-lg font-bold mt-1" style={{ color: "#292524" }}>{m.value}</p>
+                              <p className="text-lg font-bold mt-1" style={{ color: "var(--color-text)" }}>{m.value}</p>
                             </div>
                           ))}
                           {client.tiktokData && [
@@ -560,7 +560,7 @@ export default function ClientsPage() {
                           ].map(m => (
                             <div key={m.label} className="rounded-lg p-3" style={{ backgroundColor: `${m.color}08`, border: `1px solid ${m.color}15` }}>
                               <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
-                              <p className="text-lg font-bold mt-1" style={{ color: "#292524" }}>{m.value}</p>
+                              <p className="text-lg font-bold mt-1" style={{ color: "var(--color-text)" }}>{m.value}</p>
                             </div>
                           ))}
                         </div>

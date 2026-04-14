@@ -48,7 +48,7 @@ export default async function OGStatus() {
           style={{
             fontSize: 64,
             fontWeight: 800,
-            color: "#292524",
+            color: "var(--color-text)",
             margin: 0,
             letterSpacing: "-0.02em",
             marginBottom: 16,
@@ -77,10 +77,10 @@ export default async function OGStatus() {
             borderRadius: 999,
             border: "1px solid rgba(245,215,160,0.5)",
             fontSize: 20,
-            color: "#292524",
+            color: "var(--color-text)",
           }}
         >
-          <span style={{ color: "#F59E0B", fontWeight: 700 }}>●</span>
+          <span style={{ color: "var(--color-primary)", fontWeight: 700 }}>●</span>
           markethubpromo.com/status
         </div>
       </div>

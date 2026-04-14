@@ -53,10 +53,10 @@ export default function ResetTrialModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div
         className="rounded-2xl p-8 max-w-md w-full mx-4"
-        style={{ backgroundColor: "#FFFCF7" }}
+        style={{ backgroundColor: "var(--color-bg-secondary)" }}
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold" style={{ color: "#292524" }}>
+          <h2 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
             Reset Trial
           </h2>
           <button
@@ -75,7 +75,7 @@ export default function ResetTrialModal({
           className="p-4 rounded-lg mb-6"
           style={{ backgroundColor: "rgba(245,158,11,0.1)" }}
         >
-          <p style={{ color: "#292524" }} className="text-sm">
+          <p style={{ color: "var(--color-text)" }} className="text-sm">
             This will give the user a new 14-day trial period. Their trial expiration date will be reset to 14 days from now.
           </p>
         </div>

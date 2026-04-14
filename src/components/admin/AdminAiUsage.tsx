@@ -39,7 +39,7 @@ interface TrendPoint { hour: string; cost_usd: number; }
 const FEATURE_CONFIG: Record<string, { icon: React.ElementType; color: string; label: string }> = {
   image:      { icon: ImageIcon,    color: "#8B5CF6", label: "AI Image" },
   video:      { icon: Film,         color: "#EC4899", label: "AI Video" },
-  automation: { icon: Zap,          color: "#F59E0B", label: "Automations" },
+  automation: { icon: Zap,          color: "var(--color-primary)", label: "Automations" },
   consultant: { icon: MessageCircle, color: "#10B981", label: "Consultant" },
 };
 
@@ -99,7 +99,7 @@ export default function AdminAiUsage() {
       >
         <div
           className="w-12 h-12 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#F59E0B" }}
+          style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary)" }}
         >
           <Cpu className="w-6 h-6" />
         </div>
@@ -107,7 +107,7 @@ export default function AdminAiUsage() {
           <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#78614E" }}>
             Last 30 days
           </p>
-          <p className="text-2xl font-bold" style={{ color: "#292524" }}>
+          <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
             ${summary?.total_cost_usd_30d.toFixed(2)} AI spend
           </p>
           <p className="text-xs mt-1" style={{ color: "#78614E" }}>
@@ -119,7 +119,7 @@ export default function AdminAiUsage() {
           onClick={load}
           disabled={refreshing}
           className="p-2 rounded-lg disabled:opacity-40"
-          style={{ backgroundColor: "white", color: "#F59E0B" }}
+          style={{ backgroundColor: "white", color: "var(--color-primary)" }}
           aria-label="Refresh"
         >
           <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
@@ -151,7 +151,7 @@ export default function AdminAiUsage() {
                   >
                     <cfg.icon className="w-4 h-4" />
                   </div>
-                  <p className="text-sm font-bold" style={{ color: "#292524" }}>
+                  <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                     {cfg.label}
                   </p>
                 </div>
@@ -163,7 +163,7 @@ export default function AdminAiUsage() {
                     <p className="text-[9px]" style={{ color: "#78614E" }}>30d cost</p>
                   </div>
                   <div>
-                    <p className="text-lg font-bold" style={{ color: "#292524" }}>
+                    <p className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
                       {f.runs_30d}
                     </p>
                     <p className="text-[9px]" style={{ color: "#78614E" }}>
@@ -210,7 +210,7 @@ export default function AdminAiUsage() {
                   style={{
                     height: maxTrendCost > 0 ? `${(p.cost_usd / maxTrendCost) * 100}%` : "0%",
                     minHeight: p.cost_usd > 0 ? "2px" : "0",
-                    backgroundColor: "#F59E0B",
+                    backgroundColor: "var(--color-primary)",
                     opacity: 0.7,
                   }}
                   title={`${p.hour}: $${p.cost_usd.toFixed(4)}`}
@@ -251,10 +251,10 @@ export default function AdminAiUsage() {
                     className="border-t"
                     style={{ borderColor: "rgba(0,0,0,0.04)", backgroundColor: "white" }}
                   >
-                    <td className="px-3 py-2 text-xs" style={{ color: "#292524" }}>
+                    <td className="px-3 py-2 text-xs" style={{ color: "var(--color-text)" }}>
                       {u.email ?? <code className="text-[10px]">{u.user_id.slice(0, 8)}...</code>}
                     </td>
-                    <td className="px-3 py-2 text-right text-xs tabular-nums" style={{ color: "#292524" }}>
+                    <td className="px-3 py-2 text-right text-xs tabular-nums" style={{ color: "var(--color-text)" }}>
                       {u.runs}
                     </td>
                     <td className="px-3 py-2 text-right text-xs tabular-nums" style={{ color: "#8B5CF6" }}>
@@ -263,7 +263,7 @@ export default function AdminAiUsage() {
                     <td className="px-3 py-2 text-right text-xs tabular-nums" style={{ color: "#EC4899" }}>
                       ${u.video_cost_usd.toFixed(3)}
                     </td>
-                    <td className="px-3 py-2 text-right text-xs font-bold tabular-nums" style={{ color: "#292524" }}>
+                    <td className="px-3 py-2 text-right text-xs font-bold tabular-nums" style={{ color: "var(--color-text)" }}>
                       ${u.total_cost_usd.toFixed(3)}
                     </td>
                   </tr>

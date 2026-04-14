@@ -5,8 +5,8 @@ import { Plus, Trash2, Edit3, Send, Loader2, Mail, Check, X, Users } from "lucid
 
 interface Campaign { id: string; name: string; subject: string; body_html: string; recipients: string[]; status: string; sent_count: number; notes: string; created_at: string; sent_at: string | null; }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
 const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   draft:   { bg: "rgba(100,116,139,0.1)", color: "#64748B", label: "Draft" },
   sending: { bg: "rgba(99,102,241,0.1)",  color: "#6366F1", label: "Sending..." },
@@ -84,7 +84,7 @@ export default function EmailCampaignsPage() {
           <Plus className="w-4 h-4" /> New campaign
         </button>
 
-        {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
         : campaigns.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Mail className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
@@ -98,7 +98,7 @@ export default function EmailCampaignsPage() {
                 <div key={c.id} className="rounded-xl p-4 flex items-center gap-3" style={card}>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-bold text-sm" style={{ color: "#292524" }}>{c.name}</p>
+                      <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{c.name}</p>
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>
                     </div>
                     <p className="text-xs mt-0.5 truncate" style={{ color: "#78614E" }}>{c.subject}</p>
@@ -115,7 +115,7 @@ export default function EmailCampaignsPage() {
                         {sendingId === c.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                       </button>
                     )}
-                    <button type="button" onClick={() => openEdit(c)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "#D97706" }}><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button type="button" onClick={() => openEdit(c)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "var(--color-primary-hover)" }}><Edit3 className="w-3.5 h-3.5" /></button>
                     <button type="button" onClick={() => del(c.id)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#EF4444" }}><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
@@ -129,10 +129,10 @@ export default function EmailCampaignsPage() {
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
           onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
-          <div className="w-full md:max-w-2xl rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", maxHeight: "92dvh" }}>
-            <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
-              <Mail className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Edit campaign" : "New campaign"}</p>
+          <div className="w-full md:max-w-2xl rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "92dvh" }}>
+            <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}>
+              <Mail className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <p className="font-bold text-sm flex-1" style={{ color: "var(--color-text)" }}>{editId ? "Edit campaign" : "New campaign"}</p>
               <button type="button" onClick={() => setPreviewHtml(v => !v)} className="text-xs px-2 py-1 rounded-lg" style={{ color: "#6366F1", backgroundColor: "rgba(99,102,241,0.08)" }}>
                 {previewHtml ? "Editor" : "Preview"}
               </button>
@@ -147,7 +147,7 @@ export default function EmailCampaignsPage() {
                     {TEMPLATES.map(t => (
                       <button key={t.label} type="button" onClick={() => applyTemplate(t)}
                         className="text-xs px-3 py-1.5 rounded-lg transition-all"
-                        style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706", border: "1px solid rgba(245,158,11,0.2)" }}>
+                        style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.2)" }}>
                         {t.label}
                       </button>
                     ))}
@@ -171,7 +171,7 @@ export default function EmailCampaignsPage() {
                   <textarea value={form.body_html} onChange={f("body_html")} rows={8}
                     placeholder="<h2>Hi,</h2><p>Email content...</p>"
                     className="w-full rounded-lg px-3 py-2.5 text-xs outline-none resize-none font-mono"
-                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
                 </div>
               )}
 
@@ -180,7 +180,7 @@ export default function EmailCampaignsPage() {
                 <textarea value={form.recipients_text} onChange={f("recipients_text")} rows={3}
                   placeholder="email1@example.com&#10;email2@example.com"
                   className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
                 <p className="text-[10px] mt-1" style={{ color: "#A8967E" }}>{parseRecipients(form.recipients_text).length} recipients detected</p>
               </div>
 

@@ -50,20 +50,20 @@ export default function BioPublicPage() {
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FFF8F0" }}>
-      <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--color-bg)" }}>
+      <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--color-primary)" }} />
     </div>
   );
 
   if (notFound || !bio) return (
-    <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: "#FFF8F0" }}>
-      <p className="text-lg font-bold mb-2" style={{ color: "#292524" }}>Page not found</p>
+    <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: "var(--color-bg)" }}>
+      <p className="text-lg font-bold mb-2" style={{ color: "var(--color-text)" }}>Page not found</p>
       <p className="text-sm" style={{ color: "#A8967E" }}>This bio link doesn&apos;t exist or was removed.</p>
     </div>
   );
 
-  const accent = bio.accent_color || "#F59E0B";
-  const bg = bio.bg_color || "#FFF8F0";
+  const accent = bio.accent_color || "var(--color-primary)";
+  const bg = bio.bg_color || "var(--color-bg)";
   const enabledLinks = (bio.links || []).filter(l => l.enabled);
 
   return (
@@ -83,7 +83,7 @@ export default function BioPublicPage() {
         )}
 
         {/* Title + description */}
-        <h1 className="text-xl font-bold text-center mb-1" style={{ color: "#292524" }}>{bio.title}</h1>
+        <h1 className="text-xl font-bold text-center mb-1" style={{ color: "var(--color-text)" }}>{bio.title}</h1>
         {bio.description && (
           <p className="text-sm text-center mb-6" style={{ color: "#78614E" }}>{bio.description}</p>
         )}
@@ -99,7 +99,7 @@ export default function BioPublicPage() {
               className="w-full flex items-center gap-3 px-5 py-3.5 rounded-2xl text-left transition-all hover:scale-[1.02] hover:shadow-md"
               style={{ backgroundColor: "white", border: `1px solid ${accent}30`, boxShadow: `0 2px 8px ${accent}10` }}>
               {item.emoji && <span className="text-xl">{item.emoji}</span>}
-              <span className="flex-1 text-sm font-semibold" style={{ color: "#292524" }}>{item.title}</span>
+              <span className="flex-1 text-sm font-semibold" style={{ color: "var(--color-text)" }}>{item.title}</span>
               <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" style={{ color: accent }} />
             </button>
           ))}

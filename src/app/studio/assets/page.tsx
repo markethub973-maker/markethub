@@ -135,7 +135,7 @@ export default function AssetLibraryPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Asset Library" subtitle="Every AI asset you've generated, in one place" />
 
       <main className="max-w-6xl mx-auto px-6 py-6 space-y-5">
@@ -144,7 +144,7 @@ export default function AssetLibraryPage() {
           className="rounded-xl p-4 flex items-center gap-3 flex-wrap"
           style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
         >
-          <Layers className="w-5 h-5" style={{ color: "#F59E0B" }} />
+          <Layers className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
           <div className="flex gap-1">
             {(["all", "image", "video", "audio"] as Filter[]).map((f) => {
               const cfg = f === "all" ? null : TYPE_CONFIG[f as Type];
@@ -155,8 +155,8 @@ export default function AssetLibraryPage() {
                   onClick={() => setFilter(f)}
                   className="px-3 py-1.5 rounded-md text-xs font-bold capitalize"
                   style={{
-                    backgroundColor: filter === f ? "#292524" : "rgba(0,0,0,0.04)",
-                    color: filter === f ? "white" : cfg?.color ?? "#292524",
+                    backgroundColor: filter === f ? "var(--color-text)" : "rgba(0,0,0,0.04)",
+                    color: filter === f ? "white" : cfg?.color ?? "var(--color-text)",
                   }}
                 >
                   {f}
@@ -173,9 +173,9 @@ export default function AssetLibraryPage() {
               placeholder="Search prompts..."
               className="w-full rounded-md pl-9 pr-3 py-1.5 text-sm"
               style={{
-                backgroundColor: "#FFF8F0",
+                backgroundColor: "var(--color-bg)",
                 border: "1px solid rgba(245,215,160,0.4)",
-                color: "#292524",
+                color: "var(--color-text)",
                 outline: "none",
               }}
             />
@@ -346,7 +346,7 @@ export default function AssetLibraryPage() {
                   <div className="p-2 flex-1 flex flex-col gap-1">
                     <p
                       className="text-[11px] line-clamp-2"
-                      style={{ color: "#292524", lineHeight: 1.3 }}
+                      style={{ color: "var(--color-text)", lineHeight: 1.3 }}
                       title={a.prompt}
                     >
                       {a.prompt}
@@ -363,7 +363,7 @@ export default function AssetLibraryPage() {
                     <p
                       className="text-[10px] px-2 py-1 border-t"
                       style={{
-                        color: "#292524",
+                        color: "var(--color-text)",
                         backgroundColor: "rgba(139,92,246,0.08)",
                         borderColor: "rgba(0,0,0,0.06)",
                         lineHeight: 1.3,

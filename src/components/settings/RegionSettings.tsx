@@ -5,8 +5,8 @@ import { createClient } from "@/lib/supabase/client";
 import { SUPPORTED_REGIONS, LOCAL_MARKETS } from "@/lib/localMarketConfig";
 import { Globe, Check, Loader2, AlertCircle, Copy, ToggleLeft, ToggleRight } from "lucide-react";
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
-const AMBER = "#F59E0B";
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 
 export default function RegionSettings() {
@@ -93,7 +93,7 @@ export default function RegionSettings() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4" style={{ color: "#6366F1" }} />
-              <p className="text-sm font-bold" style={{ color: "#292524" }}>Run this SQL in Supabase → SQL Editor</p>
+              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Run this SQL in Supabase → SQL Editor</p>
             </div>
             <button type="button" onClick={() => { navigator.clipboard.writeText(SQL_MIGRATION); setCopiedSQL(true); setTimeout(() => setCopiedSQL(false), 2000); }}
               className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg font-semibold"
@@ -103,7 +103,7 @@ export default function RegionSettings() {
             </button>
           </div>
           <code className="block text-xs font-mono p-2 rounded-lg whitespace-pre"
-            style={{ backgroundColor: "#1C1814", color: "#FFF8F0" }}>
+            style={{ backgroundColor: "#1C1814", color: "var(--color-bg)" }}>
             {SQL_MIGRATION}
           </code>
         </div>
@@ -115,7 +115,7 @@ export default function RegionSettings() {
         <div className="flex items-center gap-3">
           <Globe className="w-5 h-5" style={{ color: enabled ? AMBER : "#C4AA8A" }} />
           <div>
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>Local Market Tools</p>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Local Market Tools</p>
             <p className="text-xs" style={{ color: "#A8967E" }}>
               {enabled && region
                 ? `Active — ${SUPPORTED_REGIONS.find(r => r.code === region)?.label || region}-specific tools visible`
@@ -143,7 +143,7 @@ export default function RegionSettings() {
                 onClick={() => handleRegionChange(code)}
                 className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all text-left"
                 style={isSelected
-                  ? { backgroundColor: code ? LOCAL_MARKETS[code]?.color + "15" || `${AMBER}15` : "rgba(245,215,160,0.15)", color: "#292524", border: `2px solid ${code ? LOCAL_MARKETS[code]?.color || AMBER : AMBER}` }
+                  ? { backgroundColor: code ? LOCAL_MARKETS[code]?.color + "15" || `${AMBER}15` : "rgba(245,215,160,0.15)", color: "var(--color-text)", border: `2px solid ${code ? LOCAL_MARKETS[code]?.color || AMBER : AMBER}` }
                   : { backgroundColor: "rgba(245,215,160,0.08)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
                 <span className="text-lg">{flag}</span>
                 <span className="flex-1 truncate text-xs">{label}</span>
@@ -174,7 +174,7 @@ export default function RegionSettings() {
                 style={{ backgroundColor: "rgba(255,255,255,0.6)" }}>
                 <span className="text-base">{a.icon}</span>
                 <div>
-                  <p className="text-xs font-bold" style={{ color: "#292524" }}>{a.label}</p>
+                  <p className="text-xs font-bold" style={{ color: "var(--color-text)" }}>{a.label}</p>
                   <p className="text-xs" style={{ color: "#A8967E" }}>{a.description}</p>
                 </div>
               </div>

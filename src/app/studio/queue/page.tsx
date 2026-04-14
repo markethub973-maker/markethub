@@ -39,7 +39,7 @@ const PLATFORM_COLOR: Record<string, string> = {
 };
 
 const STATUS_CFG: Record<string, { color: string; label: string; Icon: React.ElementType }> = {
-  scheduled: { color: "#F59E0B", label: "Scheduled", Icon: Clock },
+  scheduled: { color: "var(--color-primary)", label: "Scheduled", Icon: Clock },
   published: { color: "#10B981", label: "Published", Icon: CheckCircle2 },
   failed:    { color: "#EF4444", label: "Failed",    Icon: AlertCircle },
   draft:     { color: "#78614E", label: "Draft",     Icon: Clock },
@@ -78,14 +78,14 @@ export default function QueuePage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Publish Queue" subtitle="What's about to go live across all platforms" />
 
       <main className="max-w-6xl mx-auto px-6 py-6 space-y-5">
         {/* Stats */}
         {stats && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <StatCard label="Upcoming"  value={stats.upcoming}  color="#F59E0B" Icon={Clock} />
+            <StatCard label="Upcoming"  value={stats.upcoming}  color="var(--color-primary)" Icon={Clock} />
             <StatCard label="Published" value={stats.published} color="#10B981" Icon={CheckCircle2} />
             <StatCard label="Failed"    value={stats.failed}    color="#EF4444" Icon={AlertCircle} />
             <StatCard label="Platforms" value={Object.keys(stats.by_platform).length} color="#8B5CF6" Icon={CalendarDays} />
@@ -104,8 +104,8 @@ export default function QueuePage() {
               onClick={() => setDays(d)}
               className="text-xs font-bold px-3 py-1 rounded-md"
               style={{
-                backgroundColor: days === d ? "#292524" : "rgba(0,0,0,0.04)",
-                color: days === d ? "white" : "#292524",
+                backgroundColor: days === d ? "var(--color-text)" : "rgba(0,0,0,0.04)",
+                color: days === d ? "white" : "var(--color-text)",
               }}
             >
               {d} days
@@ -115,7 +115,7 @@ export default function QueuePage() {
             href="/calendar"
             className="ml-auto inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-md"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >
@@ -142,7 +142,7 @@ export default function QueuePage() {
                   key={day}
                   className="rounded-xl overflow-hidden"
                   style={{
-                    border: `1px solid ${isToday ? "#F59E0B" : "rgba(0,0,0,0.06)"}`,
+                    border: `1px solid ${isToday ? "var(--color-primary)" : "rgba(0,0,0,0.06)"}`,
                     backgroundColor: isPast && !dayPosts.length ? "rgba(0,0,0,0.02)" : "white",
                   }}
                 >
@@ -155,7 +155,7 @@ export default function QueuePage() {
                   >
                     <p
                       className="text-sm font-bold"
-                      style={{ color: isToday ? "#D97706" : "#292524" }}
+                      style={{ color: isToday ? "var(--color-primary-hover)" : "var(--color-text)" }}
                     >
                       {isToday ? "Today" : dayLabel}
                       {!isToday && <span className="ml-2 text-[10px] font-normal" style={{ color: "#A8967E" }}>{dayLabel}</span>}
@@ -198,7 +198,7 @@ export default function QueuePage() {
                               />
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm line-clamp-1" style={{ color: "#292524" }}>
+                              <p className="text-sm line-clamp-1" style={{ color: "var(--color-text)" }}>
                                 {p.title || p.caption.slice(0, 80)}
                               </p>
                               <div className="flex items-center gap-1.5 mt-0.5">

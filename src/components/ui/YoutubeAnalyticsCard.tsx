@@ -35,14 +35,14 @@ const TRAFFIC_LABELS: Record<string, string> = {
   NO_LINK_OTHER: "Direct / Other",
 };
 
-const CHART_COLORS = ["#F59E0B", "#D97706", "#92400E", "#78614E", "#A8967E", "#C4AA8A"];
-const PIE_COLORS = ["#F59E0B", "#FBBF24", "#FCD34D", "#FDE68A", "#FEF3C7", "#D97706"];
+const CHART_COLORS = ["var(--color-primary)", "var(--color-primary-hover)", "#92400E", "#78614E", "#A8967E", "#C4AA8A"];
+const PIE_COLORS = ["var(--color-primary)", "#FBBF24", "#FCD34D", "#FDE68A", "#FEF3C7", "var(--color-primary-hover)"];
 
 function StatCard({ icon, label, value, sub }: { icon: React.ReactNode; label: string; value: string; sub?: string }) {
   return (
     <div
       className="rounded-xl p-4"
-      style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}
+      style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}
     >
       <div className="flex items-center gap-2 mb-2">
         <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: "rgba(245,158,11,0.1)" }}>
@@ -94,10 +94,10 @@ export default function YoutubeAnalyticsCard() {
     return (
       <div
         className="rounded-xl p-6 text-center"
-        style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}
+        style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}
       >
         <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: "rgba(245,158,11,0.1)" }}>
-          <TrendingUp className="w-6 h-6" style={{ color: "#F59E0B" }} />
+          <TrendingUp className="w-6 h-6" style={{ color: "var(--color-primary)" }} />
         </div>
         <h3 className="font-bold text-[#292524] mb-1">YouTube Analytics</h3>
         <p className="text-xs text-[#A8967E] mb-4 max-w-xs mx-auto">
@@ -106,7 +106,7 @@ export default function YoutubeAnalyticsCard() {
         <a
           href="/api/auth/youtube/connect"
           className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all hover:opacity-90"
-          style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+          style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -204,25 +204,25 @@ export default function YoutubeAnalyticsCard() {
       {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatCard
-          icon={<TrendingUp className="w-4 h-4" style={{ color: "#F59E0B" }} />}
+          icon={<TrendingUp className="w-4 h-4" style={{ color: "var(--color-primary)" }} />}
           label="Views"
           value={formatNumber(totals.views)}
           sub="last 28 days"
         />
         <StatCard
-          icon={<Clock className="w-4 h-4" style={{ color: "#F59E0B" }} />}
+          icon={<Clock className="w-4 h-4" style={{ color: "var(--color-primary)" }} />}
           label="Watch Time"
           value={`${formatNumber(Math.round(totals.watchMinutes / 60))}h`}
           sub={`Avg ${formatSeconds(totals.avgViewDuration)} / view`}
         />
         <StatCard
-          icon={<ThumbsUp className="w-4 h-4" style={{ color: "#F59E0B" }} />}
+          icon={<ThumbsUp className="w-4 h-4" style={{ color: "var(--color-primary)" }} />}
           label="Likes"
           value={formatNumber(totals.likes)}
           sub={`${formatNumber(totals.shares)} shares`}
         />
         <StatCard
-          icon={<Users className="w-4 h-4" style={{ color: "#F59E0B" }} />}
+          icon={<Users className="w-4 h-4" style={{ color: "var(--color-primary)" }} />}
           label="Net Subscribers"
           value={(netSubs >= 0 ? "+" : "") + formatNumber(netSubs)}
           sub={`+${formatNumber(totals.subscribersGained)} / -${formatNumber(totals.subscribersLost)}`}
@@ -231,19 +231,19 @@ export default function YoutubeAnalyticsCard() {
 
       {/* Daily Views Chart */}
       {dailyChart.length > 0 && (
-        <div className="rounded-xl p-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
           <h4 className="text-xs font-semibold text-[#78614E] mb-3 uppercase tracking-wide">Daily Views — 28 days</h4>
           <ResponsiveContainer width="100%" height={160}>
             <BarChart data={dailyChart} barSize={6}>
               <XAxis dataKey="date" tick={{ fontSize: 9, fill: "#C4AA8A" }} tickLine={false} axisLine={false} interval={3} />
               <YAxis hide />
               <Tooltip
-                contentStyle={{ backgroundColor: "#FFFCF7", border: "1px solid #F5D7A0", borderRadius: 8, fontSize: 11 }}
+                contentStyle={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid #F5D7A0", borderRadius: 8, fontSize: 11 }}
                 formatter={(v: unknown) => [formatNumber(Number(v ?? 0)), "Views"]}
               />
               <Bar dataKey="views" radius={[3, 3, 0, 0]}>
                 {dailyChart.map((_, i) => (
-                  <Cell key={i} fill={i === dailyChart.length - 1 ? "#D97706" : "#F59E0B"} />
+                  <Cell key={i} fill={i === dailyChart.length - 1 ? "var(--color-primary-hover)" : "var(--color-primary)"} />
                 ))}
               </Bar>
             </BarChart>
@@ -255,7 +255,7 @@ export default function YoutubeAnalyticsCard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Traffic Sources */}
         {trafficChart.length > 0 && (
-          <div className="rounded-xl p-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+          <div className="rounded-xl p-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
             <h4 className="text-xs font-semibold text-[#78614E] mb-3 uppercase tracking-wide">Traffic Sources</h4>
             <div className="space-y-2">
               {trafficChart.map((t, i) => {
@@ -282,7 +282,7 @@ export default function YoutubeAnalyticsCard() {
 
         {/* Demographics */}
         {demoChart.length > 0 && (
-          <div className="rounded-xl p-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+          <div className="rounded-xl p-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
             <h4 className="text-xs font-semibold text-[#78614E] mb-3 uppercase tracking-wide">Age Demographics</h4>
             <ResponsiveContainer width="100%" height={160}>
               <PieChart>
@@ -300,7 +300,7 @@ export default function YoutubeAnalyticsCard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: "#FFFCF7", border: "1px solid #F5D7A0", borderRadius: 8, fontSize: 11 }}
+                  contentStyle={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid #F5D7A0", borderRadius: 8, fontSize: 11 }}
                   formatter={(v: unknown) => [`${Number(v ?? 0)}%`, "Viewers"]}
                 />
                 <Legend iconSize={8} iconType="circle" wrapperStyle={{ fontSize: 10, color: "#A8967E" }} />
@@ -312,7 +312,7 @@ export default function YoutubeAnalyticsCard() {
 
       {/* Top Videos */}
       {topVideos.length > 0 && (
-        <div className="rounded-xl p-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+        <div className="rounded-xl p-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
           <h4 className="text-xs font-semibold text-[#78614E] mb-3 uppercase tracking-wide">Top Videos — Last 28 Days</h4>
           <div className="space-y-2">
             {topVideos.slice(0, 8).map((v, i) => (

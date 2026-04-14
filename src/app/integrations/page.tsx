@@ -115,7 +115,7 @@ const CATEGORIES = [
   },
   {
     label: "Email & Notifications",
-    color: "#F59E0B",
+    color: "var(--color-primary)",
     bg: "rgba(245,158,11,0.07)",
     border: "rgba(245,158,11,0.2)",
     services: [
@@ -206,7 +206,7 @@ export default function IntegrationsPage() {
               className="no-print"
               type="button"
               onClick={() => window.print()}
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderRadius: 10, backgroundColor: "#F59E0B", color: "white", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 14 }}>
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 20px", borderRadius: 10, backgroundColor: "var(--color-primary)", color: "white", border: "none", cursor: "pointer", fontWeight: 700, fontSize: 14 }}>
               <Printer size={16} />
               Download PDF
             </button>
@@ -276,16 +276,16 @@ export default function IntegrationsPage() {
           {/* Env vars summary table */}
           <div className="print-break" style={{ marginTop: 36, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(245,215,160,0.4)" }}>
             <div style={{ background: "linear-gradient(135deg,#1C1814,#2D2420)", padding: "18px 24px" }}>
-              <h2 style={{ margin: 0, color: "#FFF8F0", fontSize: 16, fontWeight: 800 }}>Complete Environment Variables Reference</h2>
+              <h2 style={{ margin: 0, color: "var(--color-bg)", fontSize: 16, fontWeight: 800 }}>Complete Environment Variables Reference</h2>
               <p style={{ margin: "4px 0 0", color: "#A8967E", fontSize: 12 }}>{ENV_SUMMARY.reduce((s, g) => s + g.vars.length, 0)} total variables · configure in Vercel → Settings → Environment Variables</p>
             </div>
-            <div style={{ backgroundColor: "#FFFCF7", padding: 24, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
+            <div style={{ backgroundColor: "var(--color-bg-secondary)", padding: 24, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
               {ENV_SUMMARY.map(group => (
                 <div key={group.group}>
                   <p style={{ margin: "0 0 8px", fontSize: 11, fontWeight: 800, color: "#A8967E", textTransform: "uppercase", letterSpacing: 0.8 }}>{group.group}</p>
                   <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                     {group.vars.map(v => (
-                      <code key={v} style={{ fontSize: 11, fontFamily: "monospace", color: "#292524", backgroundColor: "rgba(245,215,160,0.2)", padding: "3px 7px", borderRadius: 4, display: "block" }}>{v}</code>
+                      <code key={v} style={{ fontSize: 11, fontFamily: "monospace", color: "var(--color-text)", backgroundColor: "rgba(245,215,160,0.2)", padding: "3px 7px", borderRadius: 4, display: "block" }}>{v}</code>
                     ))}
                   </div>
                 </div>
@@ -294,8 +294,8 @@ export default function IntegrationsPage() {
           </div>
 
           {/* Architecture diagram (text-based) */}
-          <div style={{ marginTop: 24, borderRadius: 16, padding: "20px 24px", backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
-            <h2 style={{ margin: "0 0 16px", fontSize: 15, fontWeight: 800, color: "#292524" }}>Data Flow Architecture</h2>
+          <div style={{ marginTop: 24, borderRadius: 16, padding: "20px 24px", backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
+            <h2 style={{ margin: "0 0 16px", fontSize: 15, fontWeight: 800, color: "var(--color-text)" }}>Data Flow Architecture</h2>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr auto 1fr", gap: 0, alignItems: "center" }}>
               {[
                 {
@@ -306,7 +306,7 @@ export default function IntegrationsPage() {
                 { arrow: true },
                 {
                   title: "MarketHub Pro",
-                  color: "#F59E0B",
+                  color: "var(--color-primary)",
                   items: ["Next.js 15 (Vercel)", "Supabase DB + Auth", "AI MarketHub Engine", "Stripe Payments"],
                   highlight: true,
                 },

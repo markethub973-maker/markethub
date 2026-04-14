@@ -5,11 +5,11 @@ import { Plus, Trash2, Edit3, Search, ExternalLink, Loader2, Users, Instagram, Z
 
 interface Influencer { id: string; name: string; ig_username: string; tt_username: string; niche: string; followers_ig: number; followers_tt: number; engagement_ig: number; email: string; location: string; price_post: number; status: string; tags: string[]; notes: string; }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
 const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   prospect: { bg: "rgba(99,102,241,0.1)", color: "#6366F1", label: "Prospect" },
-  contacted: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Contacted" },
+  contacted: { bg: "rgba(245,158,11,0.1)", color: "var(--color-primary)", label: "Contacted" },
   partner: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Partner" },
   inactive: { bg: "rgba(100,116,139,0.1)", color: "#64748B", label: "Inactive" },
 };
@@ -71,7 +71,7 @@ export default function InfluencersPage() {
           {[
             { label: "Total influencers", value: influencers.length, color: "#6366F1" },
             { label: "Active partners", value: influencers.filter(i => i.status === "partner").length, color: "#10B981" },
-            { label: "Prospects", value: influencers.filter(i => i.status === "prospect").length, color: "#F59E0B" },
+            { label: "Prospects", value: influencers.filter(i => i.status === "prospect").length, color: "var(--color-primary)" },
           ].map(s => (
             <div key={s.label} className="rounded-xl p-3 text-center" style={card}>
               <p className="text-xl font-bold" style={{ color: s.color }}>{s.value}</p>
@@ -85,7 +85,7 @@ export default function InfluencersPage() {
           <div className="flex-1 flex items-center gap-2 rounded-xl px-3" style={card}>
             <Search className="w-4 h-4 shrink-0" style={{ color: "#C4AA8A" }} />
             <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, niche, username..."
-              className="flex-1 py-2.5 text-sm bg-transparent outline-none" style={{ color: "#292524" }} />
+              className="flex-1 py-2.5 text-sm bg-transparent outline-none" style={{ color: "var(--color-text)" }} />
           </div>
           <button type="button" onClick={() => { setShowForm(true); setEditId(null); setForm(empty); }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
@@ -95,7 +95,7 @@ export default function InfluencersPage() {
         </div>
 
         {/* Grid */}
-        {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
         : filtered.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Users className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
@@ -109,8 +109,8 @@ export default function InfluencersPage() {
                 <div key={inf.id} className="rounded-xl p-4 space-y-3" style={card}>
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="font-bold text-sm" style={{ color: "#292524" }}>{inf.name}</p>
-                      {inf.niche && <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>{inf.niche}</span>}
+                      <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{inf.name}</p>
+                      {inf.niche && <span className="text-[10px] px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>{inf.niche}</span>}
                     </div>
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0" style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>
                   </div>
@@ -120,14 +120,14 @@ export default function InfluencersPage() {
                     {inf.ig_username && (
                       <div className="flex items-center gap-1">
                         <Instagram className="w-3 h-3" style={{ color: "#E1306C" }} />
-                        <span className="text-xs font-semibold" style={{ color: "#292524" }}>{fmt(inf.followers_ig)}</span>
+                        <span className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{fmt(inf.followers_ig)}</span>
                         {inf.engagement_ig > 0 && <span className="text-[10px]" style={{ color: "#A8967E" }}>{inf.engagement_ig.toFixed(1)}%</span>}
                       </div>
                     )}
                     {inf.tt_username && (
                       <div className="flex items-center gap-1">
                         <Zap className="w-3 h-3" style={{ color: "#00F2EA" }} />
-                        <span className="text-xs font-semibold" style={{ color: "#292524" }}>{fmt(inf.followers_tt)}</span>
+                        <span className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{fmt(inf.followers_tt)}</span>
                       </div>
                     )}
                     {inf.price_post > 0 && (
@@ -150,7 +150,7 @@ export default function InfluencersPage() {
                         <Mail className="w-3.5 h-3.5" />
                       </a>
                     )}
-                    <button type="button" onClick={() => openEdit(inf)} className="p-1.5 rounded-lg ml-auto" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "#D97706" }}><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button type="button" onClick={() => openEdit(inf)} className="p-1.5 rounded-lg ml-auto" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "var(--color-primary-hover)" }}><Edit3 className="w-3.5 h-3.5" /></button>
                     <button type="button" onClick={() => del(inf.id)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#EF4444" }}><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
@@ -164,10 +164,10 @@ export default function InfluencersPage() {
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
           onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
-          <div className="w-full md:max-w-lg rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", maxHeight: "92dvh" }}>
-            <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
-              <Users className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Edit influencer" : "New influencer"}</p>
+          <div className="w-full md:max-w-lg rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "92dvh" }}>
+            <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}>
+              <Users className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <p className="font-bold text-sm flex-1" style={{ color: "var(--color-text)" }}>{editId ? "Edit influencer" : "New influencer"}</p>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
             </div>
             <div className="overflow-y-auto p-4 space-y-3">

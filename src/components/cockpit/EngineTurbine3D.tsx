@@ -18,7 +18,7 @@ interface Props {
 }
 
 export default function EngineTurbine3D({ load, status }: Props) {
-  const color = status === "healthy" ? "#10B981" : status === "degraded" ? "#F59E0B" : "#EF4444";
+  const color = status === "healthy" ? "#10B981" : status === "degraded" ? "var(--color-primary)" : "#EF4444";
   // Spin duration: idle 8s, max 0.6s — inverse of load
   const spinDuration = useMemo(() => Math.max(0.6, 8 - load * 7.4), [load]);
 

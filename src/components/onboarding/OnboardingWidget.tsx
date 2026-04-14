@@ -154,7 +154,7 @@ export default function OnboardingWidget() {
           onClick={() => setOpen(true)}
           className="fixed bottom-4 right-4 z-[60] flex items-center gap-2 px-4 py-3 rounded-full font-bold text-sm shadow-lg transition-all hover:scale-105"
           style={{
-            background: "linear-gradient(135deg, #F59E0B, #D97706)",
+            background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
             color: "#1C1814",
             boxShadow: "0 4px 20px rgba(245,158,11,0.4)",
           }}
@@ -183,11 +183,11 @@ export default function OnboardingWidget() {
             style={{ background: "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.1))", borderBottom: "1px solid rgba(245,158,11,0.15)" }}
           >
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
                 <LifeBuoy size={14} className="text-white" />
               </div>
               <div>
-                <p className="text-sm font-bold" style={{ color: "#FFF8F0" }}>Help Center</p>
+                <p className="text-sm font-bold" style={{ color: "var(--color-bg)" }}>Help Center</p>
                 <p className="text-xs" style={{ color: "#A8967E" }}>Chat · Tour · Report</p>
               </div>
             </div>
@@ -209,7 +209,7 @@ export default function OnboardingWidget() {
                 onClick={() => setTab(id)}
                 className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold transition-all"
                 style={{
-                  color: tab === id ? "#F59E0B" : "#A8967E",
+                  color: tab === id ? "var(--color-primary)" : "#A8967E",
                   background: tab === id ? "rgba(245,158,11,0.08)" : "transparent",
                   borderBottom: tab === id ? "2px solid #F59E0B" : "2px solid transparent",
                 }}
@@ -229,7 +229,7 @@ export default function OnboardingWidget() {
                     <div
                       className="max-w-[85%] rounded-2xl px-3 py-2 text-sm leading-relaxed"
                       style={m.role === "user"
-                        ? { background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }
+                        ? { background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }
                         : { background: "rgba(255,255,255,0.06)", color: "#F5F0E8" }
                       }
                     >
@@ -240,7 +240,7 @@ export default function OnboardingWidget() {
                 {loading && (
                   <div className="flex justify-start">
                     <div className="rounded-2xl px-3 py-2" style={{ background: "rgba(255,255,255,0.06)" }}>
-                      <Loader2 size={14} className="animate-spin" style={{ color: "#F59E0B" }} />
+                      <Loader2 size={14} className="animate-spin" style={{ color: "var(--color-primary)" }} />
                     </div>
                   </div>
                 )}
@@ -265,7 +265,7 @@ export default function OnboardingWidget() {
                     onClick={sendMessage}
                     disabled={!input.trim() || loading}
                     className="flex items-center justify-center w-7 h-7 rounded-lg transition-all disabled:opacity-30"
-                    style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}
+                    style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}
                     aria-label="Send"
                   >
                     <Send size={12} className="text-white" />
@@ -284,7 +284,7 @@ export default function OnboardingWidget() {
                 type="button"
                 onClick={() => { setTour("full"); setOpen(false); }}
                 className="w-full flex items-center gap-2 py-3 px-3 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-                style={{ background: "rgba(245,158,11,0.12)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.25)" }}
+                style={{ background: "rgba(245,158,11,0.12)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.25)" }}
               >
                 <Map size={15} />
                 Full Application Tour
@@ -338,7 +338,7 @@ export default function OnboardingWidget() {
                     onClick={submitTicket}
                     disabled={ticketMessage.trim().length < 10 || ticketSubmitting}
                     className="w-full py-3 rounded-xl text-sm font-bold disabled:opacity-40 flex items-center justify-center gap-2"
-                    style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+                    style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
                   >
                     {ticketSubmitting ? (<><Loader2 size={14} className="animate-spin" /> Sending...</>) : (<><Send size={14} /> Send</>)}
                   </button>
@@ -356,7 +356,7 @@ export default function OnboardingWidget() {
                   </div>
                   {ticketResult.ai_response && (
                     <div className="rounded-lg p-3" style={{ background: "rgba(245,158,11,0.06)", border: "1px solid rgba(245,158,11,0.2)" }}>
-                      <p className="text-xs font-bold mb-1" style={{ color: "#F59E0B" }}>AI Assistant</p>
+                      <p className="text-xs font-bold mb-1" style={{ color: "var(--color-primary)" }}>AI Assistant</p>
                       <p className="text-sm whitespace-pre-wrap" style={{ color: "#F5F0E8", lineHeight: 1.5 }}>{ticketResult.ai_response}</p>
                     </div>
                   )}
@@ -367,7 +367,7 @@ export default function OnboardingWidget() {
                     type="button"
                     onClick={resetTicket}
                     className="w-full py-2.5 rounded-xl text-sm font-semibold"
-                    style={{ background: "rgba(245,158,11,0.12)", color: "#F59E0B" }}
+                    style={{ background: "rgba(245,158,11,0.12)", color: "var(--color-primary)" }}
                   >
                     Send another
                   </button>
@@ -385,7 +385,7 @@ export default function OnboardingWidget() {
                     type="button"
                     onClick={resetTicket}
                     className="w-full py-2.5 rounded-xl text-sm font-semibold"
-                    style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+                    style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
                   >
                     Try again
                   </button>

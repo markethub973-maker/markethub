@@ -30,7 +30,7 @@ const RELEASES: Release[] = [
       },
       {
         icon: Zap,
-        color: "#F59E0B",
+        color: "var(--color-primary)",
         title: "Automations Engine — 31 ready workflows",
         desc: "Cross-post, recycle best content, schedule from CSV, lead → CRM, weekly reports, Stripe → Slack, and 25 more. Browse + run from /dashboard/automations.",
       },
@@ -60,7 +60,7 @@ const RELEASES: Release[] = [
       },
       {
         icon: Cookie,
-        color: "#D97706",
+        color: "var(--color-primary-hover)",
         title: "GDPR cookie consent + UI translations",
         desc: "Two-button consent banner (no dark patterns), gates Microsoft Clarity loading. All 25 user-facing pages translated to international English.",
       },
@@ -76,7 +76,7 @@ const RELEASES: Release[] = [
 
 export default function ChangelogPage() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <header
         className="border-b"
         style={{ borderColor: "rgba(245,215,160,0.3)", backgroundColor: "white" }}
@@ -85,9 +85,9 @@ export default function ChangelogPage() {
           <Link
             href="/"
             className="text-sm font-bold"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <span style={{ color: "#F59E0B" }}>●</span> MarketHub Pro
+            <span style={{ color: "var(--color-primary)" }}>●</span> MarketHub Pro
           </Link>
           <Link
             href="/promo"
@@ -100,7 +100,7 @@ export default function ChangelogPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-12">
-        <h1 className="text-4xl font-bold mb-3" style={{ color: "#292524" }}>
+        <h1 className="text-4xl font-bold mb-3" style={{ color: "var(--color-text)" }}>
           What&apos;s new
         </h1>
         <p className="text-base mb-12" style={{ color: "#78614E" }}>
@@ -115,7 +115,7 @@ export default function ChangelogPage() {
             >
               <h2
                 className="text-xl font-bold"
-                style={{ color: "#292524" }}
+                style={{ color: "var(--color-text)" }}
               >
                 {r.version}
               </h2>
@@ -124,7 +124,7 @@ export default function ChangelogPage() {
                   className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
                   style={{
                     backgroundColor: "rgba(245,158,11,0.15)",
-                    color: "#D97706",
+                    color: "var(--color-primary-hover)",
                   }}
                 >
                   Major release
@@ -157,7 +157,7 @@ export default function ChangelogPage() {
                   <div className="flex-1 min-w-0">
                     <p
                       className="text-sm font-bold mb-1"
-                      style={{ color: "#292524" }}
+                      style={{ color: "var(--color-text)" }}
                     >
                       {it.title}
                     </p>
@@ -181,7 +181,7 @@ export default function ChangelogPage() {
             border: "1px solid rgba(245,158,11,0.2)",
           }}
         >
-          <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+          <p className="text-sm font-bold mb-2" style={{ color: "var(--color-text)" }}>
             Want to follow new releases?
           </p>
           <p className="text-xs mb-4" style={{ color: "#78614E" }}>
@@ -192,7 +192,7 @@ export default function ChangelogPage() {
             href="/register"
             className="inline-block px-5 py-2.5 rounded-xl text-sm font-bold"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >

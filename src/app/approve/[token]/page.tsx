@@ -138,7 +138,7 @@ export default function ApprovalPage() {
         className="min-h-screen flex items-center justify-center"
         style={{ backgroundColor: "#FAFAF8" }}
       >
-        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
+        <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--color-primary)" }} />
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function ApprovalPage() {
       >
         <div className="text-center p-8">
           <XCircle className="w-12 h-12 mx-auto mb-4" style={{ color: "#EF4444" }} />
-          <p className="font-bold text-lg" style={{ color: "#292524" }}>
+          <p className="font-bold text-lg" style={{ color: "var(--color-text)" }}>
             {error}
           </p>
         </div>
@@ -177,7 +177,7 @@ export default function ApprovalPage() {
           >
             <span className="text-white font-bold text-xl">M</span>
           </div>
-          <h1 className="font-bold text-xl" style={{ color: "#292524" }}>
+          <h1 className="font-bold text-xl" style={{ color: "var(--color-text)" }}>
             MarketHub Pro
           </h1>
           <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
@@ -190,7 +190,7 @@ export default function ApprovalPage() {
           <div
             className="rounded-2xl overflow-hidden mb-4"
             style={{
-              backgroundColor: "#FFFCF7",
+              backgroundColor: "var(--color-bg-secondary)",
               border: "1px solid rgba(245,215,160,0.3)",
             }}
           >
@@ -199,10 +199,10 @@ export default function ApprovalPage() {
               style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}
             >
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" style={{ color: "#F59E0B" }} />
+                <Clock className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
                 <span
                   className="text-sm font-medium"
-                  style={{ color: "#292524" }}
+                  style={{ color: "var(--color-text)" }}
                 >
                   {post.platform ?? "—"} ·{" "}
                   {post.date
@@ -229,7 +229,7 @@ export default function ApprovalPage() {
             <div className="p-5">
               <p
                 className="text-sm leading-relaxed whitespace-pre-wrap"
-                style={{ color: "#292524" }}
+                style={{ color: "var(--color-text)" }}
               >
                 {post.caption ?? <em style={{ color: "#A8967E" }}>(no caption)</em>}
               </p>
@@ -242,7 +242,7 @@ export default function ApprovalPage() {
           <div
             className="rounded-2xl p-6 text-center mb-4"
             style={{
-              backgroundColor: "#FFFCF7",
+              backgroundColor: "var(--color-bg-secondary)",
               border: "1px solid rgba(245,215,160,0.3)",
             }}
           >
@@ -287,14 +287,14 @@ export default function ApprovalPage() {
           <div
             className="rounded-2xl mb-4 p-4"
             style={{
-              backgroundColor: "#FFFCF7",
+              backgroundColor: "var(--color-bg-secondary)",
               border: "1px solid rgba(245,215,160,0.3)",
             }}
           >
             <div className="flex items-center gap-2 mb-3">
               <MessageSquare
                 className="w-4 h-4"
-                style={{ color: "#F59E0B" }}
+                style={{ color: "var(--color-primary)" }}
               />
               <span
                 className="text-xs font-bold uppercase tracking-wider"
@@ -317,12 +317,12 @@ export default function ApprovalPage() {
                     className="w-7 h-7 rounded-full flex items-center justify-center shrink-0"
                     style={{ background: "rgba(245,158,11,0.12)" }}
                   >
-                    <User className="w-3.5 h-3.5" style={{ color: "#F59E0B" }} />
+                    <User className="w-3.5 h-3.5" style={{ color: "var(--color-primary)" }} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div
                       className="text-xs font-semibold mb-0.5"
-                      style={{ color: "#292524" }}
+                      style={{ color: "var(--color-text)" }}
                     >
                       {c.client_name || c.client_email || "Client"}
                       <span
@@ -339,7 +339,7 @@ export default function ApprovalPage() {
                     </div>
                     <p
                       className="text-sm whitespace-pre-wrap"
-                      style={{ color: "#292524" }}
+                      style={{ color: "var(--color-text)" }}
                     >
                       {c.comment}
                     </p>
@@ -355,7 +355,7 @@ export default function ApprovalPage() {
           <div
             className="rounded-2xl p-4 mb-4"
             style={{
-              backgroundColor: "#FFFCF7",
+              backgroundColor: "var(--color-bg-secondary)",
               border: "1px solid rgba(245,215,160,0.3)",
             }}
           >
@@ -373,7 +373,7 @@ export default function ApprovalPage() {
               style={{
                 border: "1px solid rgba(245,215,160,0.3)",
                 backgroundColor: "white",
-                color: "#292524",
+                color: "var(--color-text)",
               }}
             />
             <label
@@ -391,7 +391,7 @@ export default function ApprovalPage() {
               style={{
                 border: "1px solid rgba(245,215,160,0.3)",
                 backgroundColor: "white",
-                color: "#292524",
+                color: "var(--color-text)",
               }}
             />
             <button
@@ -401,7 +401,7 @@ export default function ApprovalPage() {
               className="w-full mt-3 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm disabled:opacity-40"
               style={{
                 backgroundColor: "rgba(245,158,11,0.1)",
-                color: "#F59E0B",
+                color: "var(--color-primary)",
                 border: "1px solid rgba(245,158,11,0.3)",
               }}
             >
@@ -420,7 +420,7 @@ export default function ApprovalPage() {
           <div
             className="rounded-2xl p-4"
             style={{
-              backgroundColor: "#FFFCF7",
+              backgroundColor: "var(--color-bg-secondary)",
               border: "1px solid rgba(245,215,160,0.3)",
             }}
           >
@@ -439,7 +439,7 @@ export default function ApprovalPage() {
               style={{
                 border: "1px solid rgba(245,215,160,0.3)",
                 backgroundColor: "white",
-                color: "#292524",
+                color: "var(--color-text)",
               }}
             />
             <div className="flex gap-3">

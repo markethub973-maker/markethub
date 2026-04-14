@@ -143,7 +143,7 @@ export default function ReelsStudioPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Reels / TikTok Studio" subtitle="From topic to shoot-ready package in one click" />
 
       <main className="max-w-5xl mx-auto px-6 py-6 space-y-6">
@@ -156,8 +156,8 @@ export default function ReelsStudioPage() {
           }}
         >
           <div className="flex items-center gap-2 mb-4">
-            <Film className="w-5 h-5" style={{ color: "#F59E0B" }} />
-            <h2 className="text-lg font-bold" style={{ color: "#292524" }}>
+            <Film className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
+            <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>
               What's the Reel about?
             </h2>
           </div>
@@ -170,7 +170,7 @@ export default function ReelsStudioPage() {
             style={{
               backgroundColor: "white",
               border: "1px solid rgba(245,215,160,0.4)",
-              color: "#292524",
+              color: "var(--color-text)",
               outline: "none",
             }}
           />
@@ -199,7 +199,7 @@ export default function ReelsStudioPage() {
                 style={{
                   backgroundColor: "white",
                   border: "1px solid rgba(245,215,160,0.4)",
-                  color: "#292524",
+                  color: "var(--color-text)",
                   outline: "none",
                 }}
               />
@@ -211,7 +211,7 @@ export default function ReelsStudioPage() {
             disabled={planning || topic.trim().length < 5}
             className="px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 disabled:opacity-40"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
             }}
           >
@@ -235,12 +235,12 @@ export default function ReelsStudioPage() {
               style={{ backgroundColor: "white", border: "2px solid #F59E0B" }}
             >
               <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4" style={{ color: "#F59E0B" }} />
-                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#D97706" }}>
+                <Sparkles className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+                <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--color-primary-hover)" }}>
                   Hook (first 2 seconds)
                 </p>
               </div>
-              <p className="text-xl font-bold" style={{ color: "#292524", lineHeight: 1.3 }}>
+              <p className="text-xl font-bold" style={{ color: "var(--color-text)", lineHeight: 1.3 }}>
                 {plan.hook}
               </p>
             </div>
@@ -281,7 +281,7 @@ export default function ReelsStudioPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#D97706" }}>
+                        style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary-hover)" }}>
                         {scene.time_sec}s
                       </span>
                       <span className="text-[10px] font-bold uppercase" style={{ color: "#A8967E" }}>
@@ -293,7 +293,7 @@ export default function ReelsStudioPage() {
                       Voiceover
                     </p>
                     <div className="flex items-start gap-2">
-                      <p className="text-sm flex-1" style={{ color: "#292524" }}>
+                      <p className="text-sm flex-1" style={{ color: "var(--color-text)" }}>
                         {scene.voiceover}
                       </p>
                       <button
@@ -314,7 +314,7 @@ export default function ReelsStudioPage() {
                     <p className="text-[10px] font-bold uppercase tracking-wider mt-2" style={{ color: "#78614E" }}>
                       On-screen text
                     </p>
-                    <p className="text-sm font-bold" style={{ color: "#292524" }}>
+                    <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                       {scene.on_screen_text}
                     </p>
 
@@ -350,7 +350,7 @@ export default function ReelsStudioPage() {
                     {copied === "caption" ? "Copied" : "Copy"}
                   </button>
                 </div>
-                <p className="text-xs whitespace-pre-wrap" style={{ color: "#292524" }}>
+                <p className="text-xs whitespace-pre-wrap" style={{ color: "var(--color-text)" }}>
                   {plan.caption}
                 </p>
               </div>
@@ -389,7 +389,7 @@ export default function ReelsStudioPage() {
                 <p className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#10B981" }}>
                   Suggested music
                 </p>
-                <p className="text-xs italic" style={{ color: "#292524" }}>
+                <p className="text-xs italic" style={{ color: "var(--color-text)" }}>
                   {plan.music_style}
                 </p>
               </div>

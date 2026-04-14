@@ -7,7 +7,7 @@ import {
   Bookmark, BookmarkCheck, Video
 } from "lucide-react";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const IG = "#E1306C";
 const IG2 = "#833AB4";
 const IG3 = "#F77737";
@@ -90,7 +90,7 @@ export default function InstagramTab() {
               value={username} onChange={e => setUsername(e.target.value)}
               onKeyDown={e => e.key === "Enter" && searchUser()}
               className="w-full pl-9 pr-4 py-3 text-sm rounded-xl focus:outline-none"
-              style={{ border: `1px solid ${IG}30`, backgroundColor: "#FFF8F0", color: "#292524" }}
+              style={{ border: `1px solid ${IG}30`, backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
               onFocus={e => (e.currentTarget.style.borderColor = IG)}
               onBlur={e => (e.currentTarget.style.borderColor = `${IG}30`)} />
           </div>
@@ -117,7 +117,7 @@ export default function InstagramTab() {
           <div className="rounded-xl overflow-hidden" style={cardStyle}>
             <div className="h-24 relative" style={{ background: `linear-gradient(135deg, ${IG3}, ${IG}, ${IG2})` }}>
               <div className="absolute -bottom-10 left-6">
-                <div className="w-20 h-20 rounded-full border-4 overflow-hidden" style={{ borderColor: "#FFFCF7" }}>
+                <div className="w-20 h-20 rounded-full border-4 overflow-hidden" style={{ borderColor: "var(--color-bg-secondary)" }}>
                   {result.profile.avatar ? <img src={proxyImg(result.profile.avatar)} alt={result.profile.username} className="w-full h-full object-cover" />
                     : <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: `${IG}20` }}><Users className="w-8 h-8" style={{ color: IG }} /></div>}
                 </div>
@@ -127,7 +127,7 @@ export default function InstagramTab() {
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-bold" style={{ color: "#292524" }}>{result.profile.fullName || result.profile.username}</h2>
+                    <h2 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>{result.profile.fullName || result.profile.username}</h2>
                     {result.profile.isVerified && <ShieldCheck className="w-5 h-5" style={{ color: "#3B82F6" }} />}
                     {result.profile.isPrivate && <Lock className="w-4 h-4" style={{ color: "#A8967E" }} />}
                   </div>
@@ -135,7 +135,7 @@ export default function InstagramTab() {
                   {result.profile.category && <p className="text-xs mt-1" style={{ color: "#A8967E" }}>{result.profile.category}</p>}
                 </div>
                 <div className="flex gap-2">
-                  <button type="button" onClick={() => toggleSave(result.profile.username)} className="p-2 rounded-lg" style={{ color: savedAccounts.includes(result.profile.username) ? "#F59E0B" : "#C4AA8A" }}>
+                  <button type="button" onClick={() => toggleSave(result.profile.username)} className="p-2 rounded-lg" style={{ color: savedAccounts.includes(result.profile.username) ? "var(--color-primary)" : "#C4AA8A" }}>
                     {savedAccounts.includes(result.profile.username) ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
                   </button>
                   <a href={`https://instagram.com/${result.profile.username}`} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg" style={{ color: IG }}><ExternalLink className="w-5 h-5" /></a>
@@ -152,7 +152,7 @@ export default function InstagramTab() {
                 ].map(stat => (
                   <div key={stat.label} className="text-center p-3 rounded-lg" style={{ background: `linear-gradient(135deg, ${IG}08, ${IG2}08)`, border: `1px solid ${IG}15` }}>
                     <div className="flex justify-center mb-1" style={{ color: IG }}>{stat.icon}</div>
-                    <p className="text-lg font-bold" style={{ color: "#292524" }}>{stat.value}</p>
+                    <p className="text-lg font-bold" style={{ color: "var(--color-text)" }}>{stat.value}</p>
                     <p className="text-xs" style={{ color: "#A8967E" }}>{stat.label}</p>
                   </div>
                 ))}
@@ -162,7 +162,7 @@ export default function InstagramTab() {
 
           {result.posts.length > 0 && (
             <div className="rounded-xl p-5" style={cardStyle}>
-              <div className="flex items-center gap-2 mb-4"><Image className="w-4 h-4" style={{ color: IG }} /><h3 className="font-semibold" style={{ color: "#292524" }}>Recent Posts ({result.posts.length})</h3></div>
+              <div className="flex items-center gap-2 mb-4"><Image className="w-4 h-4" style={{ color: IG }} /><h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Recent Posts ({result.posts.length})</h3></div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                 {result.posts.map(post => (
                   <a key={post.id} href={`https://instagram.com/p/${post.shortcode}`} target="_blank" rel="noopener noreferrer"
@@ -188,7 +188,7 @@ export default function InstagramTab() {
           {result.profile.isPrivate && result.posts.length === 0 && (
             <div className="rounded-xl p-8 text-center" style={cardStyle}>
               <Lock className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-              <p className="text-sm font-semibold" style={{ color: "#292524" }}>Private account</p>
+              <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>Private account</p>
               <p className="text-xs mt-1" style={{ color: "#A8967E" }}>Posts are not available for private accounts</p>
             </div>
           )}
@@ -197,12 +197,12 @@ export default function InstagramTab() {
 
       {!searched && (
         <div className="rounded-xl p-5" style={cardStyle}>
-          <div className="flex items-center gap-2 mb-4"><TrendingUp className="w-4 h-4" style={{ color: IG }} /><h3 className="font-semibold" style={{ color: "#292524" }}>Popular Accounts</h3></div>
+          <div className="flex items-center gap-2 mb-4"><TrendingUp className="w-4 h-4" style={{ color: IG }} /><h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Popular Accounts</h3></div>
           <div className="flex flex-wrap gap-2">
             {POPULAR_ACCOUNTS.map(acc => (
               <button key={acc} type="button" onClick={() => { setUsername(acc); searchUser(acc); }}
                 className="px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105"
-                style={{ background: `linear-gradient(135deg, ${IG}10, ${IG2}10)`, color: "#292524", border: `1px solid ${IG}20` }}
+                style={{ background: `linear-gradient(135deg, ${IG}10, ${IG2}10)`, color: "var(--color-text)", border: `1px solid ${IG}20` }}
                 onMouseEnter={e => { e.currentTarget.style.background = `linear-gradient(135deg, ${IG}25, ${IG2}25)`; e.currentTarget.style.borderColor = IG; }}
                 onMouseLeave={e => { e.currentTarget.style.background = `linear-gradient(135deg, ${IG}10, ${IG2}10)`; e.currentTarget.style.borderColor = `${IG}20`; }}>
                 @{acc}
@@ -215,14 +215,14 @@ export default function InstagramTab() {
       {history.length > 0 && (
         <div className="rounded-xl p-5" style={cardStyle}>
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2"><Clock className="w-4 h-4" style={{ color: "#F59E0B" }} /><h3 className="font-semibold" style={{ color: "#292524" }}>Recent Searches</h3></div>
+            <div className="flex items-center gap-2"><Clock className="w-4 h-4" style={{ color: "var(--color-primary)" }} /><h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Recent Searches</h3></div>
             <button type="button" onClick={clearHistory} className="text-xs font-semibold px-2 py-1 rounded-lg" style={{ color: "#A8967E", backgroundColor: "rgba(245,215,160,0.1)" }}>Clear all</button>
           </div>
           <div className="flex flex-wrap gap-2">
             {history.slice(0, 15).map(h => (
               <button key={h.query + h.timestamp} type="button" onClick={() => { setUsername(h.query); searchUser(h.query); }}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm transition-colors"
-                style={{ backgroundColor: `${IG}08`, color: "#292524", border: `1px solid ${IG}15` }}
+                style={{ backgroundColor: `${IG}08`, color: "var(--color-text)", border: `1px solid ${IG}15` }}
                 onMouseEnter={e => { e.currentTarget.style.backgroundColor = `${IG}18`; e.currentTarget.style.borderColor = IG; }}
                 onMouseLeave={e => { e.currentTarget.style.backgroundColor = `${IG}08`; e.currentTarget.style.borderColor = `${IG}15`; }}>
                 <span className="font-medium">@{h.query}</span>
@@ -234,7 +234,7 @@ export default function InstagramTab() {
 
       {savedAccounts.length > 0 && (
         <div className="rounded-xl p-5" style={cardStyle}>
-          <div className="flex items-center gap-2 mb-3"><Bookmark className="w-4 h-4" style={{ color: "#F59E0B" }} /><h3 className="font-semibold" style={{ color: "#292524" }}>Saved Accounts ({savedAccounts.length})</h3></div>
+          <div className="flex items-center gap-2 mb-3"><Bookmark className="w-4 h-4" style={{ color: "var(--color-primary)" }} /><h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Saved Accounts ({savedAccounts.length})</h3></div>
           <div className="flex flex-wrap gap-2">
             {savedAccounts.map(acc => (
               <div key={acc} className="flex items-center gap-1 group">

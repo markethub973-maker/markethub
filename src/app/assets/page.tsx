@@ -32,12 +32,12 @@ interface Asset {
 const CATEGORIES: { id: Category; label: string; icon: React.ElementType; color: string; bg: string; desc: string }[] = [
   { id: "brand_kit",    label: "Brand Kit",     icon: Image,    color: "#E4405F", bg: "rgba(228,64,95,0.1)",   desc: "Logos, fonts, guidelines, templates" },
   { id: "raw_footage",  label: "Raw Footage",   icon: Film,     color: "#6366F1", bg: "rgba(99,102,241,0.1)",  desc: "Raw video material, B-Roll" },
-  { id: "production",   label: "Production",    icon: FileText, color: "#F59E0B", bg: "rgba(245,158,11,0.1)",  desc: "Scripts, voiceover, music, AI prompts" },
+  { id: "production",   label: "Production",    icon: FileText, color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)",  desc: "Scripts, voiceover, music, AI prompts" },
   { id: "deliverables", label: "Deliverables",  icon: Archive,  color: "#10B981", bg: "rgba(16,185,129,0.1)",  desc: "Final content delivered to client" },
   { id: "reports",      label: "Reports",       icon: BarChart3,color: "#8B5CF6", bg: "rgba(139,92,246,0.1)",  desc: "Analytics screenshots, report PDFs" },
 ];
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.06)" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.06)" };
 
 function fmtSize(bytes: number) {
   if (!bytes) return "";
@@ -119,13 +119,13 @@ function AddAssetModal({
       style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="w-full md:max-w-lg rounded-t-2xl md:rounded-2xl overflow-hidden"
-        style={{ backgroundColor: "#FFFCF7", maxHeight: "92dvh" }}>
+        style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "92dvh" }}>
 
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 shrink-0"
-          style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
-          <Plus className="w-4 h-4" style={{ color: "#F59E0B" }} />
-          <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>Add Asset</p>
+          style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}>
+          <Plus className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+          <p className="font-bold text-sm flex-1" style={{ color: "var(--color-text)" }}>Add Asset</p>
           <button type="button" onClick={onClose} className="p-1" style={{ color: "#78614E" }}>
             <X className="w-5 h-5" />
           </button>
@@ -138,7 +138,7 @@ function AddAssetModal({
               <button key={m} type="button" onClick={() => setMode(m)}
                 className="flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-semibold transition-all"
                 style={mode === m
-                  ? { backgroundColor: "#F59E0B", color: "#1C1814" }
+                  ? { backgroundColor: "var(--color-primary)", color: "#1C1814" }
                   : { backgroundColor: "transparent", color: "#78614E" }}>
                 {m === "upload" ? <Upload className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
                 {m === "upload" ? "Upload file" : "External link"}
@@ -174,11 +174,11 @@ function AddAssetModal({
                 onChange={e => setFile(e.target.files?.[0] ?? null)} />
               <button type="button" onClick={() => fileRef.current?.click()}
                 className="w-full rounded-xl p-6 flex flex-col items-center gap-2 transition-all"
-                style={{ border: `2px dashed ${file ? "#F59E0B" : "rgba(245,215,160,0.4)"}`, backgroundColor: file ? "rgba(245,158,11,0.05)" : "transparent" }}>
+                style={{ border: `2px dashed ${file ? "var(--color-primary)" : "rgba(245,215,160,0.4)"}`, backgroundColor: file ? "rgba(245,158,11,0.05)" : "transparent" }}>
                 {file ? (
                   <>
-                    <Upload className="w-6 h-6" style={{ color: "#F59E0B" }} />
-                    <p className="text-sm font-semibold" style={{ color: "#292524" }}>{file.name}</p>
+                    <Upload className="w-6 h-6" style={{ color: "var(--color-primary)" }} />
+                    <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{file.name}</p>
                     <p className="text-xs" style={{ color: "#A8967E" }}>{fmtSize(file.size)}</p>
                   </>
                 ) : (
@@ -200,14 +200,14 @@ function AddAssetModal({
                 <input value={externalUrl} onChange={e => setExternalUrl(e.target.value)}
                   placeholder="https://drive.google.com/..."
                   className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
               </div>
               <div>
                 <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Name (optional)</label>
                 <input value={externalName} onChange={e => setExternalName(e.target.value)}
                   placeholder="e.g. Logo Nike final v3"
                   className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+                  style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
               </div>
             </div>
           )}
@@ -219,14 +219,14 @@ function AddAssetModal({
               <input value={client} onChange={e => setClient(e.target.value)}
                 placeholder="e.g. Nike"
                 className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
             </div>
             <div>
               <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Notes</label>
               <input value={notes} onChange={e => setNotes(e.target.value)}
                 placeholder="e.g. Final version"
                 className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
             </div>
           </div>
 
@@ -236,7 +236,7 @@ function AddAssetModal({
             onClick={mode === "upload" ? handleUpload : handleLink}
             disabled={loading || (mode === "upload" ? !file : !externalUrl.trim())}
             className="w-full py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-40 flex items-center justify-center gap-2"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}>
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}>
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (mode === "upload" ? <Upload className="w-4 h-4" /> : <Link2 className="w-4 h-4" />)}
             {loading ? "Saving..." : "Save"}
           </button>
@@ -285,7 +285,7 @@ function AssetCard({ asset, onDelete }: { asset: Asset; onDelete: (id: string) =
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-semibold truncate" style={{ color: "#292524" }}>{asset.name}</p>
+        <p className="text-xs font-semibold truncate" style={{ color: "var(--color-text)" }}>{asset.name}</p>
         {asset.client && (
           <p className="text-[10px] mt-0.5 truncate" style={{ color: "#A8967E" }}>{asset.client}</p>
         )}
@@ -303,7 +303,7 @@ function AssetCard({ asset, onDelete }: { asset: Asset; onDelete: (id: string) =
           <>
             <button type="button" onClick={copy} title="Copy link"
               className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-[10px] font-medium transition-all"
-              style={{ backgroundColor: copied ? "rgba(16,185,129,0.1)" : "rgba(245,158,11,0.1)", color: copied ? "#10B981" : "#D97706" }}>
+              style={{ backgroundColor: copied ? "rgba(16,185,129,0.1)" : "rgba(245,158,11,0.1)", color: copied ? "#10B981" : "var(--color-primary-hover)" }}>
               {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
               {copied ? "Copied" : "Link"}
             </button>
@@ -364,14 +364,14 @@ function DriveSync() {
         <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: "rgba(99,102,241,0.1)" }}>
           <RefreshCw className="w-4 h-4" style={{ color: "#6366F1" }} />
         </div>
-        <p className="font-bold text-sm" style={{ color: "#292524" }}>Google Drive Sync</p>
+        <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Google Drive Sync</p>
       </div>
       <p className="text-xs" style={{ color: "#A8967E" }}>Paste the Drive folder ID (from the URL: drive.google.com/drive/folders/<strong>FOLDER_ID</strong>)</p>
       <div className="flex gap-2">
         <input value={folderId} onChange={e => setFolderId(e.target.value)}
           placeholder="1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms"
           className="flex-1 rounded-lg px-3 py-2 text-xs outline-none"
-          style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524" }} />
+          style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
         <button type="button" onClick={listFiles} disabled={loading || !folderId.trim()}
           className="px-3 py-2 rounded-lg text-xs font-bold disabled:opacity-40"
           style={{ backgroundColor: "#6366F1", color: "white" }}>
@@ -386,7 +386,7 @@ function DriveSync() {
             <div className="flex items-center gap-2">
               <select value={category} onChange={e => setCategory(e.target.value as Category)}
                 className="text-xs rounded-lg px-2 py-1 outline-none"
-                style={{ border: "1px solid rgba(245,215,160,0.3)", color: "#292524" }}>
+                style={{ border: "1px solid rgba(245,215,160,0.3)", color: "var(--color-text)" }}>
                 {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
               </select>
               <button type="button" onClick={importSelected} disabled={importing || selected.size === 0}
@@ -401,7 +401,7 @@ function DriveSync() {
               <label key={f.id} className="flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer hover:bg-amber-50/50">
                 <input type="checkbox" checked={selected.has(f.id)}
                   onChange={e => setSelected(prev => { const n = new Set(prev); e.target.checked ? n.add(f.id) : n.delete(f.id); return n; })} />
-                <span className="text-xs flex-1 truncate" style={{ color: "#292524" }}>{f.name}</span>
+                <span className="text-xs flex-1 truncate" style={{ color: "var(--color-text)" }}>{f.name}</span>
                 <span className="text-[10px] shrink-0" style={{ color: "#A8967E" }}>{f.size ? `${(f.size/1024).toFixed(0)} KB` : ""}</span>
               </label>
             ))}
@@ -460,7 +460,7 @@ export default function AssetsPage() {
           <button type="button" onClick={() => setActiveCategory("all")}
             className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold shrink-0 transition-all"
             style={activeCategory === "all"
-              ? { backgroundColor: "#292524", color: "#FFF8F0" }
+              ? { backgroundColor: "var(--color-text)", color: "var(--color-bg)" }
               : { ...card, color: "#78614E" }}>
             <FolderOpen className="w-3.5 h-3.5" />
             All
@@ -509,7 +509,7 @@ export default function AssetsPage() {
             <input value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search by name or client..."
               className="flex-1 py-2.5 text-sm bg-transparent outline-none"
-              style={{ color: "#292524" }} />
+              style={{ color: "var(--color-text)" }} />
             {search && (
               <button type="button" onClick={() => setSearch("")} style={{ color: "#C4AA8A" }}>
                 <X className="w-4 h-4" />
@@ -524,7 +524,7 @@ export default function AssetsPage() {
           </button>
           <button type="button" onClick={() => setShowAdd(true)}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold shrink-0"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}>
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}>
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Add Asset</span>
           </button>
@@ -540,7 +540,7 @@ export default function AssetsPage() {
         {/* Grid */}
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} />
+            <Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} />
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-2xl p-12 flex flex-col items-center gap-3 text-center" style={card}>
@@ -551,7 +551,7 @@ export default function AssetsPage() {
             {assets.length === 0 && (
               <button type="button" onClick={() => setShowAdd(true)}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold mt-1"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}>
+                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}>
                 <Plus className="w-4 h-4" />
                 Add your first asset
               </button>

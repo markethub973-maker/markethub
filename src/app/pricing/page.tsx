@@ -176,10 +176,10 @@ export default function PricingPage() {
       <nav className="sticky top-0 z-50 border-b" style={{ backgroundColor: "#1C1814", borderColor: "rgba(245,215,160,0.1)" }}>
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-lg" style={{ color: "#FFF8F0" }}>MarketHub Pro</span>
+            <span className="font-bold text-lg" style={{ color: "var(--color-bg)" }}>MarketHub Pro</span>
           </Link>
 
           {/* Desktop nav */}
@@ -192,7 +192,7 @@ export default function PricingPage() {
             ) : (
               <>
                 <Link href="/login" className="text-sm font-medium" style={{ color: "#A8967E" }}>Sign in</Link>
-                <Link href="/register" className="px-4 py-2 rounded-lg text-sm font-bold" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                <Link href="/register" className="px-4 py-2 rounded-lg text-sm font-bold" style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}>
                   Start free
                 </Link>
               </>
@@ -216,7 +216,7 @@ export default function PricingPage() {
             ) : (
               <>
                 <Link href="/login" className="block text-sm py-2" style={{ color: "#A8967E" }}>Sign in</Link>
-                <Link href="/register" className="block w-full text-center py-3 rounded-xl text-sm font-bold" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                <Link href="/register" className="block w-full text-center py-3 rounded-xl text-sm font-bold" style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}>
                   Start free
                 </Link>
               </>
@@ -227,7 +227,7 @@ export default function PricingPage() {
 
       {/* Hero */}
       <div className="max-w-6xl mx-auto px-4 pt-14 pb-10 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.3)" }}>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.3)" }}>
           <Zap className="w-3 h-3" /> Premium AI Actions · Basic AI unlimited
         </div>
         <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 leading-tight" style={{ color: "#1C1814" }}>
@@ -256,7 +256,7 @@ export default function PricingPage() {
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                    <span className="px-3 py-1 rounded-full text-xs font-bold" style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}>
                       Most Popular
                     </span>
                   </div>
@@ -273,7 +273,7 @@ export default function PricingPage() {
                   <h3 className="text-xl font-bold mb-1" style={{ color: "#1C1814" }}>{plan.name}</h3>
                   <p className="text-sm mb-4" style={{ color: "#A8967E" }}>{plan.description}</p>
                   <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-extrabold" style={{ color: "#F59E0B" }}>{plan.price}</span>
+                    <span className="text-4xl font-extrabold" style={{ color: "var(--color-primary)" }}>{plan.price}</span>
                     <span className="text-sm" style={{ color: "#A8967E" }}>{plan.duration}</span>
                   </div>
                   <div className="flex items-center gap-1 mt-1">
@@ -294,11 +294,11 @@ export default function PricingPage() {
                     color: "#10B981",
                     cursor: "default",
                   } : plan.popular ? {
-                    backgroundColor: "#F59E0B",
+                    backgroundColor: "var(--color-primary)",
                     color: "#1C1814",
                   } : {
                     backgroundColor: "rgba(245,158,11,0.1)",
-                    color: "#F59E0B",
+                    color: "var(--color-primary)",
                   }}
                 >
                   {isCurrent ? "Current Plan" : plan.cta}
@@ -309,7 +309,7 @@ export default function PricingPage() {
                   {plan.features.map((f) => (
                     <div key={f} className="flex items-start gap-2.5">
                       <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#10B981" }} />
-                      <span className="text-sm" style={{ color: "#292524" }}>{f}</span>
+                      <span className="text-sm" style={{ color: "var(--color-text)" }}>{f}</span>
                     </div>
                   ))}
                   {plan.missing.map((f) => (
@@ -336,7 +336,7 @@ export default function PricingPage() {
                 <th className="text-left px-5 py-4 font-semibold" style={{ color: "#A8967E", minWidth: 180 }}>Feature</th>
                 {[
                   { label: "Starter", sub: "14 days", color: "#78614E" },
-                  { label: "Creator", sub: "$24/mo", color: "#F59E0B" },
+                  { label: "Creator", sub: "$24/mo", color: "var(--color-primary)" },
                   { label: "Pro", sub: "$49/mo", color: "#8B5CF6" },
                   { label: "Studio", sub: "$99/mo", color: "#E1306C" },
                   { label: "Agency", sub: "$249/mo", color: "#16A34A" },
@@ -420,7 +420,7 @@ export default function PricingPage() {
                   </tr>
                   {rows.map(({ label, values }, ri) => (
                     <tr key={label} style={{ borderTop: "1px solid rgba(0,0,0,0.04)", backgroundColor: ri % 2 === 0 ? "#fff" : "#FAFAF8" }}>
-                      <td className="px-5 py-3 font-medium" style={{ color: "#292524" }}>{label}</td>
+                      <td className="px-5 py-3 font-medium" style={{ color: "var(--color-text)" }}>{label}</td>
                       {values.map((val, i) => (
                         <td key={i} className="text-center px-3 py-3">
                           {val === true ? (
@@ -428,7 +428,7 @@ export default function PricingPage() {
                           ) : val === false ? (
                             <span className="text-gray-300">—</span>
                           ) : (
-                            <span className="text-xs font-semibold" style={{ color: "#292524" }}>{val}</span>
+                            <span className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{val}</span>
                           )}
                         </td>
                       ))}
@@ -457,7 +457,7 @@ export default function PricingPage() {
             ].map((item) => (
               <div key={item.label} className="bg-white rounded-xl p-3 text-center" style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
                 <p className="text-xs font-semibold mb-1" style={{ color: "#1E40AF" }}>{item.label}</p>
-                <p className="text-sm font-bold" style={{ color: "#292524" }}>{item.cost}</p>
+                <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{item.cost}</p>
               </div>
             ))}
           </div>
@@ -489,12 +489,12 @@ export default function PricingPage() {
       {/* CTA banner */}
       <div className="max-w-6xl mx-auto px-4 pb-20">
         <div className="rounded-2xl p-8 sm:p-12 text-center" style={{ background: "linear-gradient(135deg, #1C1814, #2D2218)" }}>
-          <h2 className="text-3xl font-extrabold mb-3" style={{ color: "#FFF8F0" }}>Ready to grow faster?</h2>
+          <h2 className="text-3xl font-extrabold mb-3" style={{ color: "var(--color-bg)" }}>Ready to grow faster?</h2>
           <p className="mb-6" style={{ color: "#A8967E" }}>Start your 7-day free trial. No credit card required.</p>
           <Link
             href="/register"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold"
-            style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+            style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
           >
             Start for free <ArrowRight className="w-5 h-5" />
           </Link>
@@ -505,10 +505,10 @@ export default function PricingPage() {
       <footer className="border-t py-8" style={{ borderColor: "rgba(245,215,160,0.2)" }}>
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
               <Zap className="w-3 h-3 text-white" />
             </div>
-            <span className="text-sm font-bold" style={{ color: "#292524" }}>MarketHub Pro</span>
+            <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>MarketHub Pro</span>
           </div>
           <p className="text-xs" style={{ color: "#A8967E" }}>© 2026 MarketHub Pro · All rights reserved</p>
           <div className="flex gap-4">

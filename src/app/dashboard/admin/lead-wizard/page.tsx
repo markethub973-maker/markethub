@@ -12,10 +12,10 @@ import {
 } from "lucide-react";
 
 // ── Constants ────────────────────────────────────────────────────────────────
-const AMBER = "#F59E0B";
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 const RED   = "#EF4444";
-const card  = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const card  = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
 const OFFER_TYPES = [
   { id: "service",   icon: Zap,         label: "Service",         desc: "DJ, fotograf, curier, consultant…" },
@@ -459,7 +459,7 @@ export default function LeadWizardPage() {
         {step === 1 && (
           <div className="rounded-2xl p-6 space-y-5" style={card}>
             <div>
-              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Ce vinzi sau promovezi?</h2>
+              <h2 className="text-xl font-bold mb-1" style={{ color: "var(--color-text)" }}>Ce vinzi sau promovezi?</h2>
               <p className="text-sm" style={{ color: "#A8967E" }}>Fii specific — AI-ul va genera strategia optimă de găsire a clienților</p>
             </div>
 
@@ -471,7 +471,7 @@ export default function LeadWizardPage() {
                     ? { backgroundColor: `${AMBER}12`, border: `2px solid ${AMBER}`, boxShadow: `0 0 0 4px ${AMBER}10` }
                     : { backgroundColor: "rgba(245,215,160,0.06)", border: "1px solid rgba(245,215,160,0.2)" }}>
                   <Icon className="w-5 h-5" style={{ color: offerType === id ? AMBER : "#A8967E" }} />
-                  <span className="font-bold text-sm" style={{ color: "#292524" }}>{label}</span>
+                  <span className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{label}</span>
                   <span className="text-xs" style={{ color: "#A8967E" }}>{desc}</span>
                   {offerType === id && <Check className="w-3 h-3 absolute" style={{ color: AMBER }} />}
                 </button>
@@ -489,7 +489,7 @@ export default function LeadWizardPage() {
                   "Descrie ce vinzi și cui îi este util..."
                 }
                 className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
-                style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }} />
             </div>
 
             <button type="button"
@@ -506,7 +506,7 @@ export default function LeadWizardPage() {
         {step === 2 && (
           <div className="rounded-2xl p-6 space-y-5" style={card}>
             <div>
-              <h2 className="text-xl font-bold mb-1" style={{ color: "#292524" }}>Cine este clientul ideal?</h2>
+              <h2 className="text-xl font-bold mb-1" style={{ color: "var(--color-text)" }}>Cine este clientul ideal?</h2>
               <p className="text-sm" style={{ color: "#A8967E" }}>Cu cât ești mai specific, cu atât leads-urile sunt mai relevante</p>
             </div>
 
@@ -535,7 +535,7 @@ export default function LeadWizardPage() {
               <input value={location} onChange={e => setLocation(e.target.value)}
                 placeholder="Ex: București, România sau Europe"
                 className="w-full px-4 py-2.5 rounded-xl text-sm focus:outline-none"
-                style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }} />
             </div>
 
             {/* Budget */}
@@ -586,29 +586,29 @@ export default function LeadWizardPage() {
             <div className="rounded-2xl p-5 space-y-3" style={card}>
               <div className="flex items-center gap-2">
                 <Wand2 className="w-4 h-4" style={{ color: AMBER }} />
-                <p className="text-sm font-bold" style={{ color: "#292524" }}>Analiza AI</p>
+                <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Analiza AI</p>
               </div>
               <div className="grid sm:grid-cols-2 gap-3">
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,215,160,0.08)" }}>
                   <p className="text-xs font-bold mb-1" style={{ color: "#78614E" }}>Oferta reformulată</p>
-                  <p className="text-xs" style={{ color: "#292524" }}>{suggestion.offer_summary}</p>
+                  <p className="text-xs" style={{ color: "var(--color-text)" }}>{suggestion.offer_summary}</p>
                 </div>
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,215,160,0.08)" }}>
                   <p className="text-xs font-bold mb-1" style={{ color: "#78614E" }}>Profilul clientului ideal</p>
-                  <p className="text-xs" style={{ color: "#292524" }}>{suggestion.target_profile}</p>
+                  <p className="text-xs" style={{ color: "var(--color-text)" }}>{suggestion.target_profile}</p>
                 </div>
               </div>
               {suggestion.affiliate_angle && (
                 <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.15)" }}>
                   <p className="text-xs font-bold mb-1" style={{ color: "#6366F1" }}>🎯 Unghi afiliat</p>
-                  <p className="text-xs" style={{ color: "#292524" }}>{suggestion.affiliate_angle}</p>
+                  <p className="text-xs" style={{ color: "var(--color-text)" }}>{suggestion.affiliate_angle}</p>
                 </div>
               )}
             </div>
 
             {/* Keywords — editable chips */}
             <div className="rounded-2xl p-5 space-y-3" style={card}>
-              <p className="text-sm font-bold" style={{ color: "#292524" }}>Cuvinte-cheie detectate</p>
+              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Cuvinte-cheie detectate</p>
               <p className="text-xs" style={{ color: "#A8967E" }}>Acestea sunt folosite în căutări. Modifică după nevoie.</p>
               <div className="flex flex-wrap gap-2">
                 {keywords.map(kw => (
@@ -621,7 +621,7 @@ export default function LeadWizardPage() {
             {/* Sources — toggleable + query editable */}
             <div className="rounded-2xl p-5 space-y-3" style={card}>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-bold" style={{ color: "#292524" }}>Surse recomandate de AI</p>
+                <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Surse recomandate de AI</p>
                 <span className="text-xs" style={{ color: "#A8967E" }}>
                   {Object.values(enabledSources).filter(Boolean).length} active
                 </span>
@@ -648,7 +648,7 @@ export default function LeadWizardPage() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-base">{PLATFORM_ICONS[src.id] || "🔍"}</span>
-                            <span className="font-bold text-sm" style={{ color: "#292524" }}>{src.platform}</span>
+                            <span className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{src.platform}</span>
                             <span className="text-xs px-1.5 py-0.5 rounded-full font-semibold"
                               style={{
                                 backgroundColor: src.intent_level === "high" ? "rgba(239,68,68,0.1)" : src.intent_level === "medium" ? `${AMBER}15` : "rgba(148,163,184,0.1)",
@@ -667,7 +667,7 @@ export default function LeadWizardPage() {
                                 onKeyDown={e => e.key === "Enter" && setEditingQuery(null)}
                                 autoFocus
                                 className="flex-1 text-xs px-2 py-1.5 rounded-lg focus:outline-none"
-                                style={{ border: `1px solid ${AMBER}50`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                                style={{ border: `1px solid ${AMBER}50`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }} />
                               <button type="button" onClick={() => setEditingQuery(null)}
                                 className="px-2 py-1 rounded-lg text-xs font-bold"
                                 style={{ backgroundColor: `${AMBER}15`, color: AMBER }}>
@@ -734,7 +734,7 @@ export default function LeadWizardPage() {
               <div className="rounded-2xl p-5 space-y-3" style={card}>
                 <div className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" style={{ color: AMBER }} />
-                  <p className="text-sm font-bold" style={{ color: "#292524" }}>
+                  <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                     {searching ? "Search in progress…" : "AI scoring prospects…"}
                   </p>
                 </div>
@@ -775,7 +775,7 @@ export default function LeadWizardPage() {
                 {/* Summary */}
                 <div className="rounded-2xl p-4 flex items-center gap-4 flex-wrap" style={card}>
                   <div className="flex-1">
-                    <p className="font-bold" style={{ color: "#292524" }}>{leads.length} prospects found</p>
+                    <p className="font-bold" style={{ color: "var(--color-text)" }}>{leads.length} prospects found</p>
                     <p className="text-xs" style={{ color: "#A8967E" }}>din {rawResults.length} rezultate totale</p>
                   </div>
                   <div className="flex gap-3">
@@ -808,7 +808,7 @@ export default function LeadWizardPage() {
                     <div key={i} className="rounded-2xl p-4 space-y-2.5 transition-all hover:shadow-md" style={card}>
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <p className="font-bold text-sm truncate" style={{ color: "#292524" }}>
+                          <p className="font-bold text-sm truncate" style={{ color: "var(--color-text)" }}>
                             {lead.title || lead.contact_hint || `Prospect #${i + 1}`}
                           </p>
                           <p className="text-xs" style={{ color: "#A8967E" }}>{lead.platform}</p>
@@ -940,7 +940,7 @@ export default function LeadWizardPage() {
               <div className="rounded-2xl p-4 flex items-center gap-4" style={card}>
                 <div className="flex-1">
                   <p className="text-xs font-bold mb-0.5" style={{ color: "#A8967E" }}>Lead selectat</p>
-                  <p className="font-bold" style={{ color: "#292524" }}>
+                  <p className="font-bold" style={{ color: "var(--color-text)" }}>
                     {selectedLead.title || selectedLead.contact_hint || "Prospect"}
                   </p>
                   <p className="text-xs" style={{ color: "#A8967E" }}>{selectedLead.platform}</p>
@@ -952,7 +952,7 @@ export default function LeadWizardPage() {
             {/* Message area */}
             <div className="rounded-2xl p-5 space-y-4" style={card}>
               <div className="flex items-center justify-between">
-                <p className="font-bold" style={{ color: "#292524" }}>Mesaj personalizat AI</p>
+                <p className="font-bold" style={{ color: "var(--color-text)" }}>Mesaj personalizat AI</p>
                 {outreach && (
                   <p className="text-xs font-semibold px-2 py-1 rounded-lg"
                     style={{ backgroundColor: "rgba(29,185,84,0.1)", color: GREEN }}>
@@ -988,7 +988,7 @@ export default function LeadWizardPage() {
                   {activePlatform === "email" && outreach.subject_line && (
                     <div className="rounded-lg px-3 py-2" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.2)" }}>
                       <span className="text-xs font-bold" style={{ color: "#78614E" }}>Subiect: </span>
-                      <span className="text-xs" style={{ color: "#292524" }}>{outreach.subject_line}</span>
+                      <span className="text-xs" style={{ color: "var(--color-text)" }}>{outreach.subject_line}</span>
                     </div>
                   )}
 
@@ -999,7 +999,7 @@ export default function LeadWizardPage() {
                       onChange={() => {}} readOnly
                       rows={5}
                       className="w-full px-4 py-3 rounded-xl text-sm resize-none focus:outline-none"
-                      style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "#292524" }}
+                      style={{ border: `1px solid ${AMBER}25`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }}
                     />
                     <button type="button"
                       onClick={() => copyMessage(outreach.messages[activePlatform as keyof typeof outreach.messages] || "")}

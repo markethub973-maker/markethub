@@ -69,7 +69,7 @@ interface Pulse {
 
 const STATUS_CONFIG = {
   ok:       { color: "#10B981", glow: "rgba(16,185,129,0.4)",  label: "ALL SYSTEMS GO",      pulse: false, icon: CheckCircle2 },
-  warning:  { color: "#F59E0B", glow: "rgba(245,158,11,0.4)",  label: "ATTENTION REQUIRED",  pulse: true,  icon: AlertTriangle },
+  warning:  { color: "var(--color-primary)", glow: "rgba(245,158,11,0.4)",  label: "ATTENTION REQUIRED",  pulse: true,  icon: AlertTriangle },
   critical: { color: "#EF4444", glow: "rgba(239,68,68,0.5)",   label: "CRITICAL — ACT NOW",  pulse: true,  icon: AlertCircle },
 } as const;
 
@@ -131,7 +131,7 @@ export default function AdminCommandCenter() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl p-6 flex items-center justify-center" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+      <div className="rounded-2xl p-6 flex items-center justify-center" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
         <div className="w-6 h-6 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
       </div>
     );
@@ -139,7 +139,7 @@ export default function AdminCommandCenter() {
 
   if (!status) {
     return (
-      <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: "#FFFCF7", border: "1px dashed rgba(239,68,68,0.3)" }}>
+      <div className="rounded-2xl p-6 text-center" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px dashed rgba(239,68,68,0.3)" }}>
         <p className="text-sm" style={{ color: "#A8967E" }}>Command Center offline. Check /api/cost-monitor/status.</p>
       </div>
     );
@@ -193,7 +193,7 @@ export default function AdminCommandCenter() {
           <p className="text-xs uppercase tracking-widest font-bold" style={{ color: cfg.color }}>
             🧠 Command Center
           </p>
-          <p className="text-base font-bold mt-0.5" style={{ color: "#FFF8F0" }}>
+          <p className="text-base font-bold mt-0.5" style={{ color: "var(--color-bg)" }}>
             {cfg.label}
           </p>
           <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
@@ -311,8 +311,8 @@ export default function AdminCommandCenter() {
               </p>
               <div className="space-y-1.5">
                 {status.recent_alerts.slice(0, 5).map((a) => (
-                  <div key={a.id} className="text-xs" style={{ color: "#FFF8F0" }}>
-                    <span style={{ color: a.threshold === "95" ? "#EF4444" : "#F59E0B" }}>●</span>{" "}
+                  <div key={a.id} className="text-xs" style={{ color: "var(--color-bg)" }}>
+                    <span style={{ color: a.threshold === "95" ? "#EF4444" : "var(--color-primary)" }}>●</span>{" "}
                     {a.message}
                   </div>
                 ))}
@@ -340,7 +340,7 @@ export default function AdminCommandCenter() {
                         }}
                       >
                         <div className="flex items-center justify-between gap-2 mb-1.5">
-                          <span className="text-sm font-semibold" style={{ color: "#FFF8F0" }}>
+                          <span className="text-sm font-semibold" style={{ color: "var(--color-bg)" }}>
                             {r.resource.replace(/_/g, " ")}
                           </span>
                           <span className="text-xs font-bold" style={{ color: sc.color }}>
@@ -363,7 +363,7 @@ export default function AdminCommandCenter() {
                             {r.current.toLocaleString()} / {r.limit.toLocaleString()} {r.unit}
                           </span>
                           {r.projection_days != null && r.projection_days < 30 && (
-                            <span style={{ color: r.projection_days < 7 ? "#EF4444" : "#F59E0B" }}>
+                            <span style={{ color: r.projection_days < 7 ? "#EF4444" : "var(--color-primary)" }}>
                               ~{r.projection_days}d remaining
                             </span>
                           )}
@@ -395,7 +395,7 @@ export default function AdminCommandCenter() {
                 ? new Date(status.resources[0].checked_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })
                 : "—"}
             </span>
-            <a href="/dashboard/admin/cockpit" className="font-semibold hover:underline" style={{ color: "#F59E0B" }}>
+            <a href="/dashboard/admin/cockpit" className="font-semibold hover:underline" style={{ color: "var(--color-primary)" }}>
               Open full Cockpit →
             </a>
           </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Loader2, Sparkles, ChevronDown, ChevronUp, Send, Lightbulb, AlertTriangle, Clock, ImageIcon, TrendingUp, Zap } from "lucide-react";
 
-const AMBER = "#F59E0B";
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 const RED = "#EF4444";
 
@@ -118,11 +118,11 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
         className="w-full flex items-center justify-between px-5 py-3.5 transition-all hover:bg-amber-500/5">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
             <Sparkles className="w-4 h-4 text-white" />
           </div>
           <div className="text-left">
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               APEX — Marketing Intelligence
             </p>
             <p className="text-xs" style={{ color: "#A8967E" }}>
@@ -166,7 +166,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                 style={{ background: `linear-gradient(135deg, ${AMBER}10, ${AMBER}05)`, border: `1px solid ${AMBER}25` }}>
                 <div className="flex gap-2">
                   <Zap className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: AMBER }} />
-                  <p className="text-sm" style={{ color: "#292524", lineHeight: 1.6 }}>{advice.main_insight}</p>
+                  <p className="text-sm" style={{ color: "var(--color-text)", lineHeight: 1.6 }}>{advice.main_insight}</p>
                 </div>
               </div>
 
@@ -194,7 +194,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                   {(advice.tips || []).map((tip, i) => (
                     <div key={i} className="rounded-xl px-4 py-3"
                       style={{ backgroundColor: "rgba(245,215,160,0.06)", border: "1px solid rgba(245,215,160,0.12)" }}>
-                      <p className="text-xs font-bold mb-1" style={{ color: "#292524" }}>
+                      <p className="text-xs font-bold mb-1" style={{ color: "var(--color-text)" }}>
                         {tip.icon} {tip.title}
                       </p>
                       <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.6 }}>{tip.body}</p>
@@ -219,7 +219,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                   {(advice.alternatives || []).map((alt, i) => (
                     <div key={i} className="rounded-xl px-4 py-3"
                       style={{ backgroundColor: "rgba(29,185,84,0.04)", border: "1px solid rgba(29,185,84,0.15)" }}>
-                      <p className="text-xs font-bold mb-1" style={{ color: "#292524" }}>
+                      <p className="text-xs font-bold mb-1" style={{ color: "var(--color-text)" }}>
                         🔀 {alt.idea}
                       </p>
                       <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.6 }}>
@@ -237,7 +237,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                     <div key={i} className="rounded-xl px-4 py-3 flex gap-2"
                       style={{ backgroundColor: "rgba(245,215,160,0.06)", border: "1px solid rgba(245,215,160,0.12)" }}>
                       <span className="text-sm flex-shrink-0 font-bold" style={{ color: AMBER }}>{i + 1}.</span>
-                      <p className="text-xs" style={{ color: "#292524", lineHeight: 1.6 }}>{idea}</p>
+                      <p className="text-xs" style={{ color: "var(--color-text)", lineHeight: 1.6 }}>{idea}</p>
                     </div>
                   ))}
                 </div>
@@ -251,7 +251,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                       style={{ backgroundColor: `${AMBER}08`, border: `1px solid ${AMBER}25` }}>
                       <div className="flex items-center gap-2 mb-2">
                         <Clock className="w-4 h-4" style={{ color: AMBER }} />
-                        <p className="text-xs font-bold" style={{ color: "#292524" }}>Best posting time</p>
+                        <p className="text-xs font-bold" style={{ color: "var(--color-text)" }}>Best posting time</p>
                       </div>
                       <p className="text-xs font-bold" style={{ color: AMBER }}>
                         {advice.timing.best_platform} — {advice.timing.best_time}
@@ -264,7 +264,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                       style={{ backgroundColor: "rgba(245,215,160,0.06)", border: "1px solid rgba(245,215,160,0.15)" }}>
                       <div className="flex items-center gap-2 mb-2">
                         <ImageIcon className="w-4 h-4" style={{ color: "#78614E" }} />
-                        <p className="text-xs font-bold" style={{ color: "#292524" }}>Recommended format</p>
+                        <p className="text-xs font-bold" style={{ color: "var(--color-text)" }}>Recommended format</p>
                       </div>
                       <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.6 }}>{advice.format_tip}</p>
                     </div>
@@ -285,7 +285,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                     ].map(({ platform, time }) => (
                       <div key={platform} className="flex justify-between items-center">
                         <span className="text-xs font-semibold" style={{ color: "#A8967E" }}>{platform}</span>
-                        <span className="text-xs" style={{ color: "#292524" }}>{time}</span>
+                        <span className="text-xs" style={{ color: "var(--color-text)" }}>{time}</span>
                       </div>
                     ))}
                   </div>
@@ -305,7 +305,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                     ].map(({ platform, spec }) => (
                       <div key={platform} className="flex justify-between items-start gap-2">
                         <span className="text-xs font-semibold flex-shrink-0" style={{ color: "#A8967E" }}>{platform}</span>
-                        <span className="text-xs text-right" style={{ color: "#292524" }}>{spec}</span>
+                        <span className="text-xs text-right" style={{ color: "var(--color-text)" }}>{spec}</span>
                       </div>
                     ))}
                   </div>
@@ -337,7 +337,7 @@ export default function MarketingAdvisor({ step, offerType, offerDescription, au
                 onKeyDown={e => e.key === "Enter" && question.trim() && fetchAdvice(question.trim())}
                 placeholder="e.g. What type of photos work best for weddings on Instagram?"
                 className="flex-1 text-xs px-3 py-2 rounded-lg focus:outline-none"
-                style={{ border: `1px solid ${AMBER}20`, backgroundColor: "#FFFDF9", color: "#292524" }}
+                style={{ border: `1px solid ${AMBER}20`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }}
               />
               <button
                 type="button"

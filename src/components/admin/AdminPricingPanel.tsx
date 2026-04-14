@@ -94,12 +94,12 @@ export default function AdminPricingPanel() {
 
   return (
     <div className="rounded-2xl p-6 space-y-5"
-      style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+      style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold" style={{ color: "#292524" }}>Pricing Management</h2>
+          <h2 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>Pricing Management</h2>
           <p className="text-sm mt-0.5" style={{ color: "#A8967E" }}>Subscription prices saved directly to Supabase</p>
         </div>
         <div className="flex items-center gap-2">
@@ -130,7 +130,7 @@ export default function AdminPricingPanel() {
             <AlertTriangle className="w-3.5 h-3.5" />
             Table missing — run this SQL in Supabase → SQL Editor, then refresh:
           </div>
-          <code className="block bg-white/60 rounded p-2 font-mono text-[11px] whitespace-pre" style={{ color: "#292524" }}>
+          <code className="block bg-white/60 rounded p-2 font-mono text-[11px] whitespace-pre" style={{ color: "var(--color-text)" }}>
             {SQL_MIGRATION}
           </code>
         </div>
@@ -147,7 +147,7 @@ export default function AdminPricingPanel() {
       {/* Plans grid */}
       {loading ? (
         <div className="flex justify-center py-10">
-          <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#F59E0B" }} />
+          <Loader2 className="w-5 h-5 animate-spin" style={{ color: "var(--color-primary)" }} />
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -157,7 +157,7 @@ export default function AdminPricingPanel() {
             return (
               <div key={plan.id} className="rounded-xl p-4"
                 style={{
-                  backgroundColor: justSaved ? "rgba(16,185,129,0.05)" : "#FFF8F0",
+                  backgroundColor: justSaved ? "rgba(16,185,129,0.05)" : "var(--color-bg)",
                   border: `1px solid ${justSaved ? "rgba(16,185,129,0.3)" : "rgba(245,215,160,0.3)"}`,
                   transition: "border-color 0.3s",
                 }}>
@@ -172,7 +172,7 @@ export default function AdminPricingPanel() {
                 {editingPlan === plan.id ? (
                   <div className="space-y-2 mt-2">
                     <div className="flex items-center gap-1.5 px-2 py-1.5 rounded-lg"
-                      style={{ border: "1px solid rgba(245,158,11,0.4)", backgroundColor: "#FFFCF7" }}>
+                      style={{ border: "1px solid rgba(245,158,11,0.4)", backgroundColor: "var(--color-bg-secondary)" }}>
                       <span className="text-sm font-bold" style={{ color: "#A8967E" }}>$</span>
                       <input
                         type="number" min={0} step={1} autoFocus
@@ -181,7 +181,7 @@ export default function AdminPricingPanel() {
                         placeholder="0"
                         aria-label="Plan price in USD"
                         className="flex-1 text-sm font-bold focus:outline-none bg-transparent"
-                        style={{ color: "#292524" }}
+                        style={{ color: "var(--color-text)" }}
                       />
                       <span className="text-xs" style={{ color: "#C4AA8A" }}>/mo</span>
                     </div>
@@ -193,7 +193,7 @@ export default function AdminPricingPanel() {
                       </button>
                       <button type="button" onClick={handleSave} disabled={saving || isFree}
                         className="flex-1 flex items-center justify-center gap-1 py-1.5 rounded-lg text-xs font-bold disabled:opacity-50"
-                        style={{ backgroundColor: "#F59E0B", color: "white" }}>
+                        style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
                         {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Database className="w-3 h-3" />}
                         Save
                       </button>
@@ -202,7 +202,7 @@ export default function AdminPricingPanel() {
                 ) : (
                   <div className="flex items-end justify-between mt-2">
                     <div>
-                      <p className="text-2xl font-bold" style={{ color: justSaved ? "#059669" : "#F59E0B" }}>
+                      <p className="text-2xl font-bold" style={{ color: justSaved ? "#059669" : "var(--color-primary)" }}>
                         ${plan.price.toFixed(2)}
                       </p>
                       {justSaved && (
@@ -213,7 +213,7 @@ export default function AdminPricingPanel() {
                     </div>
                     <button type="button" onClick={() => startEdit(plan)} disabled={isFree}
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-30"
-                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B" }}>
+                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)" }}>
                       <Edit3 className="w-3 h-3" />Edit
                     </button>
                   </div>

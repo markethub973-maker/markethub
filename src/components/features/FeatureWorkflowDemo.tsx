@@ -35,7 +35,7 @@ interface Props {
   accent?: string;        // hex color for accent (defaults to amber)
 }
 
-const DEFAULT_ACCENT = "#F59E0B";
+const DEFAULT_ACCENT = "var(--color-primary)";
 
 export default function FeatureWorkflowDemo({ kind, accent = DEFAULT_ACCENT }: Props) {
   return (
@@ -113,7 +113,7 @@ function PromptToImage({ accent }: { accent: string }) {
       {/* Prompt typing */}
       <div
         className="w-full max-w-xs rounded-lg px-3 py-2 text-xs font-mono overflow-hidden whitespace-nowrap"
-        style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.08)", color: "#292524" }}
+        style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.08)", color: "var(--color-text)" }}
       >
         <span className="opacity-50">prompt:</span>{" "}
         <span
@@ -162,7 +162,7 @@ function TextToMany({ accent }: { accent: string }) {
       {/* Source caption */}
       <div
         className="rounded-lg px-3 py-2 text-xs"
-        style={{ backgroundColor: "white", border: `2px solid ${accent}`, color: "#292524" }}
+        style={{ backgroundColor: "white", border: `2px solid ${accent}`, color: "var(--color-text)" }}
       >
         Original caption
       </div>
@@ -205,7 +205,7 @@ function TextVsText({ accent }: { accent: string }) {
         <span className="text-xs font-bold" style={{ color: accent }}>vs</span>
         <div
           className="rounded-lg px-3 py-3 text-xs flex-1 text-center font-bold"
-          style={{ backgroundColor: "white", border: `2px solid ${accent}`, color: "#292524", animation: "mhGlow 4s infinite" }}
+          style={{ backgroundColor: "white", border: `2px solid ${accent}`, color: "var(--color-text)", animation: "mhGlow 4s infinite" }}
         >
           Draft B
           <div className="h-1 mt-1 rounded" style={{ backgroundColor: "rgba(0,0,0,0.1)" }}>
@@ -240,7 +240,7 @@ function ListToBuckets({ accent }: { accent: string }) {
             style={{
               backgroundColor: "white",
               border: "1px solid rgba(0,0,0,0.1)",
-              color: "#292524",
+              color: "var(--color-text)",
               animation: "mhSlideRight 5s infinite",
               animationDelay: `${i * 0.2}s`,
             }}
@@ -249,7 +249,7 @@ function ListToBuckets({ accent }: { accent: string }) {
           </span>
         ))}
       </div>
-      <Hash className="w-6 h-6" style={{ color: "#F59E0B", animation: "mhPulse 5s infinite" }} />
+      <Hash className="w-6 h-6" style={{ color: "var(--color-primary)", animation: "mhPulse 5s infinite" }} />
       <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
         {buckets.map(({ Icon, label, color }, i) => (
           <div

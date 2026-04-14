@@ -177,15 +177,15 @@ export default function DashboardPage() {
             <div
               key={p.platform}
               className="rounded-xl p-4"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
             >
               <div className="flex items-center justify-between mb-3">
                 <PlatformBadge platform={p.platform} />
-                <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
                   Live
                 </span>
               </div>
-              <p className="text-xl font-bold" style={{ color: "#292524" }}>
+              <p className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
                 {formatNumber(p.views)}
               </p>
               <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>
@@ -216,10 +216,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Trending Now */}
-          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <div className="rounded-xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
             <div className="flex items-center gap-2 mb-4">
-              <Flame className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Trending Now</h3>
+              <Flame className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Trending Now</h3>
             </div>
             <div className="space-y-3">
               {ytVideos.slice(0, 5).map((v, i) => (
@@ -253,7 +253,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <Instagram className="w-4 h-4" style={{ color: "#E1306C" }} />
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>
                   {igError.toLowerCase().includes("token") || igError.toLowerCase().includes("expired") || igError.toLowerCase().includes("session")
                     ? "Expired Instagram token"
                     : "Instagram — connection error"}
@@ -269,10 +269,10 @@ export default function DashboardPage() {
 
         {/* Instagram Insights */}
         {igData && (
-          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <div className="rounded-xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
             <div className="flex items-center gap-2 mb-4">
               <Instagram className="w-4 h-4" style={{ color: "#E1306C" }} />
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Instagram — @{igData.username}</h3>
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Instagram — @{igData.username}</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
               {[
@@ -283,7 +283,7 @@ export default function DashboardPage() {
               ].map(s => (
                 <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(225,48,108,0.06)" }}>
                   <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>{s.icon}{s.label}</div>
-                  <p className="text-base font-bold" style={{ color: "#292524" }}>{s.val}</p>
+                  <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>{s.val}</p>
                 </div>
               ))}
             </div>
@@ -309,7 +309,7 @@ export default function DashboardPage() {
             <div className="flex items-center gap-3">
               <FbIcon />
               <div>
-                <p className="text-sm font-semibold" style={{ color: "#292524" }}>Facebook token expired</p>
+                <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>Facebook token expired</p>
                 <p className="text-xs" style={{ color: "#A8967E" }}>Reconnect your Instagram account in Settings to restore access</p>
               </div>
             </div>
@@ -321,10 +321,10 @@ export default function DashboardPage() {
 
         {/* Facebook Page Insights */}
         {fbData && (
-          <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <div className="rounded-xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
             <div className="flex items-center gap-2 mb-4">
               <FbIcon />
-              <h3 className="font-semibold" style={{ color: "#292524" }}>Facebook — {fbData.name}</h3>
+              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Facebook — {fbData.name}</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
@@ -335,7 +335,7 @@ export default function DashboardPage() {
               ].map(s => (
                 <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(24,119,242,0.06)" }}>
                   <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>{s.icon}{s.label}</div>
-                  <p className="text-base font-bold" style={{ color: "#292524" }}>{s.val}</p>
+                  <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>{s.val}</p>
                 </div>
               ))}
             </div>
@@ -343,10 +343,10 @@ export default function DashboardPage() {
         )}
 
         {/* Top Videos Table */}
-        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
           <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-            <h3 className="font-semibold" style={{ color: "#292524" }}>Top Videos Trending RO</h3>
-            <a href="/videos" className="text-xs font-semibold hover:underline" style={{ color: "#F59E0B" }}>
+            <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Top Videos Trending RO</h3>
+            <a href="/videos" className="text-xs font-semibold hover:underline" style={{ color: "var(--color-primary)" }}>
               View all →
             </a>
           </div>
@@ -360,7 +360,7 @@ export default function DashboardPage() {
                     <th key={col} className="text-right px-3 py-3 last:px-5">
                       <button type="button" onClick={() => toggleSort(col)}
                         className="inline-flex items-center gap-1 hover:text-[#F59E0B] transition-colors cursor-pointer"
-                        style={{ color: sortCol === col ? "#F59E0B" : "#A8967E", fontWeight: sortCol === col ? 700 : 500 }}>
+                        style={{ color: sortCol === col ? "var(--color-primary)" : "#A8967E", fontWeight: sortCol === col ? 700 : 500 }}>
                         {col === "publishedAt" ? "Published" : col === "er" ? "ER" : col.charAt(0).toUpperCase() + col.slice(1)}
                         <span className="text-xs">{sortCol === col ? (sortDir === "desc" ? "↓" : "↑") : "↕"}</span>
                       </button>
@@ -399,7 +399,7 @@ export default function DashboardPage() {
                         {formatNumber(v.likes)}
                       </td>
                       <td className="px-3 py-3 text-right">
-                        <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
+                        <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>
                           {er}%
                         </span>
                       </td>

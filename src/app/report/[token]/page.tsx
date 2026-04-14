@@ -67,12 +67,12 @@ export default function PublicReportPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FFFCF7" }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
         <div className="text-center px-6">
           <p className="text-4xl mb-4">🔗</p>
-          <h1 className="text-xl font-bold mb-2" style={{ color: "#292524" }}>Invalid or expired link</h1>
+          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>Invalid or expired link</h1>
           <p className="text-sm" style={{ color: "#A8967E" }}>This report link is invalid. Ask the agency for a new one.</p>
-          <a href="https://markethubpromo.com" className="inline-block mt-6 text-sm font-semibold" style={{ color: "#F59E0B" }}>
+          <a href="https://markethubpromo.com" className="inline-block mt-6 text-sm font-semibold" style={{ color: "var(--color-primary)" }}>
             markethubpromo.com →
           </a>
         </div>
@@ -80,7 +80,7 @@ export default function PublicReportPage() {
     );
   }
 
-  const engColor = data.e >= 5 ? "#16A34A" : data.e >= 3 ? "#F59E0B" : "#DC2626";
+  const engColor = data.e >= 5 ? "#16A34A" : data.e >= 3 ? "var(--color-primary)" : "#DC2626";
   const updatedLabel = data.ts ? timeAgo(data.ts) : "—";
 
   return (
@@ -90,7 +90,7 @@ export default function PublicReportPage() {
         className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm"
-            style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>M</div>
+            style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}>M</div>
           <span className="font-semibold text-sm" style={{ color: "#F5D7A0" }}>MarketHub Pro</span>
         </div>
         <span className="text-xs" style={{ color: "#78614E" }}>Read-only analytics report</span>
@@ -99,7 +99,7 @@ export default function PublicReportPage() {
       <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
         {/* Client header */}
         <div className="rounded-2xl p-6 flex items-center gap-4"
-          style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 2px 8px rgba(120,97,78,0.08)" }}>
+          style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 2px 8px rgba(120,97,78,0.08)" }}>
           {data.av ? (
             <img
               src={`/api/image-proxy?url=${encodeURIComponent(data.av)}`}
@@ -113,7 +113,7 @@ export default function PublicReportPage() {
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-bold" style={{ color: "#292524" }}>{data.n}</h1>
+              <h1 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>{data.n}</h1>
               {data.ver && (
                 <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
                   style={{ backgroundColor: "rgba(59,130,246,0.1)", color: "#3B82F6" }}>✓ Verified</span>
@@ -135,18 +135,18 @@ export default function PublicReportPage() {
         {/* Instagram stats */}
         {(data.f > 0 || data.p > 0) && (
           <div>
-            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <span>📸</span> Instagram Analytics
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
                 { label: "Followers", value: fmt(data.f), color: "#E1306C" },
                 { label: "Following", value: fmt(data.fw), color: "#A8967E" },
-                { label: "Posts", value: fmt(data.p), color: "#292524" },
+                { label: "Posts", value: fmt(data.p), color: "var(--color-text)" },
                 { label: "Engagement Rate", value: `${data.e}%`, color: engColor },
               ].map(s => (
                 <div key={s.label} className="rounded-xl p-4 text-center"
-                  style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+                  style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
                   <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{s.label}</p>
                 </div>
@@ -158,17 +158,17 @@ export default function PublicReportPage() {
         {/* TikTok stats */}
         {data.tf > 0 && (
           <div>
-            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <span>🎵</span> TikTok Analytics
             </h2>
             <div className="grid grid-cols-3 gap-3">
               {[
                 { label: "Followers", value: fmt(data.tf), color: "#FF0050" },
                 { label: "Total Likes", value: fmt(data.tl), color: "#FF0050" },
-                { label: "Videos", value: fmt(data.tv), color: "#292524" },
+                { label: "Videos", value: fmt(data.tv), color: "var(--color-text)" },
               ].map(s => (
                 <div key={s.label} className="rounded-xl p-4 text-center"
-                  style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+                  style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
                   <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
                   <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{s.label}</p>
                 </div>
@@ -180,7 +180,7 @@ export default function PublicReportPage() {
         {/* Recent posts */}
         {data.posts?.length > 0 && (
           <div>
-            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <span>🖼</span> Recent Posts
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -191,7 +191,7 @@ export default function PublicReportPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-xl overflow-hidden group"
-                  style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+                  style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
                   <div className="aspect-square relative overflow-hidden bg-[#F5E8D4]">
                     {post.th ? (
                       <img
@@ -225,7 +225,7 @@ export default function PublicReportPage() {
           <p className="text-xs pt-3" style={{ color: "#C4AA8A" }}>
             This report was generated by{" "}
             <a href="https://markethubpromo.com" target="_blank" rel="noopener noreferrer"
-              className="font-semibold" style={{ color: "#F59E0B" }}>MarketHub Pro</a>
+              className="font-semibold" style={{ color: "var(--color-primary)" }}>MarketHub Pro</a>
             {" "}· Data snapshot from {updatedLabel} · For live data, contact your agency
           </p>
         </div>

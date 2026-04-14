@@ -291,13 +291,13 @@ export default function VideosPage() {
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && fetchSearch(searchInput)}
               className="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg focus:outline-none"
-              style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7", color: "#292524" }}
+              style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }}
             />
           </div>
           <button
             onClick={() => fetchSearch(searchInput)}
             className="px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors"
-            style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+            style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
             type="button"
           >
             Search
@@ -325,7 +325,7 @@ export default function VideosPage() {
             className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
             style={isGlobal && mode !== "search"
               ? { backgroundColor: "#FF0000", color: "white", border: "1px solid #FF0000" }
-              : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)", opacity: mode === "search" ? 0.5 : 1 }
+              : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)", opacity: mode === "search" ? 0.5 : 1 }
             }
           >
             <Globe className="w-3.5 h-3.5" />
@@ -341,7 +341,7 @@ export default function VideosPage() {
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all"
               style={!isGlobal && mode !== "search"
                 ? { backgroundColor: "#FF0000", color: "white", border: "1px solid #FF0000" }
-                : { backgroundColor: "#FFFCF7", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)", opacity: mode === "search" ? 0.5 : 1 }
+                : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)", opacity: mode === "search" ? 0.5 : 1 }
               }
             >
               {!isGlobal ? selectedCountry?.label : "🗺️ International"}
@@ -352,7 +352,7 @@ export default function VideosPage() {
               <div
                 className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
                 style={{
-                  backgroundColor: "#FFFCF7",
+                  backgroundColor: "var(--color-bg-secondary)",
                   border: "1px solid rgba(245,215,160,0.4)",
                   boxShadow: "0 8px 24px rgba(120,97,78,0.15)",
                   maxHeight: "300px",
@@ -385,7 +385,7 @@ export default function VideosPage() {
             value={sort}
             onChange={(e) => setSort(e.target.value)}
             className="px-3 py-2 text-sm rounded-lg focus:outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFFCF7", color: "#5C4A35" }}
+            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg-secondary)", color: "#5C4A35" }}
             title="Sort by"
             aria-label="Sort by"
           >
@@ -396,12 +396,12 @@ export default function VideosPage() {
 
           <div className="ml-auto flex items-center gap-2">
             {mode === "trending" && (
-              <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
+              <span className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>
                 <TrendingUp className="w-3 h-3" /> Trending {currentLabel}
               </span>
             )}
             {mode === "search" && (
-              <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>
                 Results for: &quot;{search}&quot;
               </span>
             )}
@@ -412,7 +412,7 @@ export default function VideosPage() {
         {/* Loading */}
         {loading && (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} />
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: "var(--color-primary)" }} />
             <span className="ml-3" style={{ color: "#A8967E" }}>Loading YouTube data...</span>
           </div>
         )}
@@ -427,7 +427,7 @@ export default function VideosPage() {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-xl overflow-hidden group block transition-shadow hover:shadow-md"
-                style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
+                style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
               >
                 {/* Thumbnail */}
                 <div className="relative h-44 overflow-hidden" style={{ backgroundColor: "#EDE0C8" }}>
@@ -447,7 +447,7 @@ export default function VideosPage() {
                   <div className="flex items-center gap-2 mb-2">
                     <PlatformBadge platform="youtube" />
                   </div>
-                  <h3 className="font-semibold text-sm leading-tight line-clamp-2 mb-1" style={{ color: "#292524" }}>
+                  <h3 className="font-semibold text-sm leading-tight line-clamp-2 mb-1" style={{ color: "var(--color-text)" }}>
                     {v.title}
                   </h3>
                   <p className="text-xs mb-3" style={{ color: "#C4AA8A" }}>{v.channel} · {formatDate(v.publishedAt)}</p>
@@ -470,7 +470,7 @@ export default function VideosPage() {
 
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-xs" style={{ color: "#A8967E" }}>Engagement Rate</span>
-                    <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>
                       {engagementRate(v)}%
                     </span>
                   </div>
@@ -490,15 +490,15 @@ export default function VideosPage() {
       {/* Multi-Regional Trending Section */}
       <div className="px-6 pb-8 space-y-3">
         <div className="flex items-center gap-2 pt-2">
-          <LayoutGrid className="w-4 h-4" style={{ color: "#F59E0B" }} />
-          <h2 className="font-bold text-sm" style={{ color: "#292524" }}>Compare Trends Across Regions</h2>
-          <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+          <LayoutGrid className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+          <h2 className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Compare Trends Across Regions</h2>
+          <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
             RO · US · GB · DE
           </span>
         </div>
         <div
           className="rounded-xl p-4"
-          style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
+          style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
         >
           <MultiRegionalTrending />
         </div>

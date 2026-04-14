@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Loader2, Save, TrendingUp, DollarSign, Zap, Search, Percent, ToggleLeft, ToggleRight } from "lucide-react";
 
-const AMBER = "#F59E0B";
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 const RED = "#EF4444";
 
@@ -96,23 +96,23 @@ export default function AdminMarkupPanel() {
     <div className="space-y-6">
 
       {/* ── Calculator preview ─────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "#FFFCF7", border: `2px solid ${AMBER}30` }}>
+      <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: `2px solid ${AMBER}30` }}>
         <div className="flex items-center gap-2">
           <DollarSign className="w-5 h-5" style={{ color: AMBER }} />
-          <h3 className="font-bold" style={{ color: "#292524" }}>Simulator de preț — cum vede clientul</h3>
+          <h3 className="font-bold" style={{ color: "var(--color-text)" }}>Simulator de preț — cum vede clientul</h3>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs font-bold mb-1 block" style={{ color: "#78614E" }}>Cost API real ($)</label>
             <input type="number" value={previewApi} onChange={e => setPreviewApi(e.target.value)} min="0" step="0.5"
               className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
-              style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+              style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }} />
           </div>
           <div>
             <label className="text-xs font-bold mb-1 block" style={{ color: "#78614E" }}>Valoarea afacerii clientului ($)</label>
             <input type="number" value={previewValue} onChange={e => setPreviewValue(e.target.value)} min="0" step="100"
               className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
-              style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+              style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }} />
           </div>
         </div>
         {/* Price breakdown */}
@@ -130,7 +130,7 @@ export default function AdminMarkupPanel() {
             </div>
           ))}
           <div className="border-t pt-2 flex justify-between items-center" style={{ borderColor: `${AMBER}25` }}>
-            <span className="text-sm font-bold" style={{ color: "#292524" }}>Total clientul plătește</span>
+            <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>Total clientul plătește</span>
             <span className="text-lg font-bold" style={{ color: GREEN }}>${preview.total.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-xs" style={{ color: "#A8967E" }}>
@@ -143,11 +143,11 @@ export default function AdminMarkupPanel() {
       </div>
 
       {/* ── Settings ───────────────────────────────────────────────────────── */}
-      <div className="rounded-2xl p-5 space-y-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+      <div className="rounded-2xl p-5 space-y-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Percent className="w-5 h-5" style={{ color: AMBER }} />
-            <h3 className="font-bold" style={{ color: "#292524" }}>Configurare comisioane</h3>
+            <h3 className="font-bold" style={{ color: "var(--color-text)" }}>Configurare comisioane</h3>
           </div>
           <button type="button" onClick={handleSave} disabled={saving}
             className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm disabled:opacity-60"
@@ -177,7 +177,7 @@ export default function AdminMarkupPanel() {
         {/* Value fee toggle */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-bold" style={{ color: "#292524" }}>2. Comision pe valoarea afacerii clientului</p>
+            <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>2. Comision pe valoarea afacerii clientului</p>
             <p className="text-xs" style={{ color: "#A8967E" }}>Platforma ia X% din valoarea declarată de client per tranzacție</p>
           </div>
           <button type="button" onClick={() => setSettings(s => ({ ...s, value_fee_enabled: !s.value_fee_enabled }))}>
@@ -206,7 +206,7 @@ export default function AdminMarkupPanel() {
                 <input type="number" min="0" step="1" value={settings.value_fee_min_usd}
                   onChange={e => setSettings(s => ({ ...s, value_fee_min_usd: Number(e.target.value) }))}
                   className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
-                  style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                  style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }} />
                 <p className="text-xs mt-1" style={{ color: "#A8967E" }}>Dacă % e sub minim, se ia minimul</p>
               </div>
               <div>
@@ -214,7 +214,7 @@ export default function AdminMarkupPanel() {
                 <input type="number" min="0" step="10" value={settings.value_fee_max_usd}
                   onChange={e => setSettings(s => ({ ...s, value_fee_max_usd: Number(e.target.value) }))}
                   className="w-full px-3 py-2 rounded-lg text-sm focus:outline-none"
-                  style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "#292524" }} />
+                  style={{ border: `1px solid ${AMBER}30`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }} />
                 <p className="text-xs mt-1" style={{ color: "#A8967E" }}>Cap pentru clienți cu valori mari</p>
               </div>
             </div>
@@ -231,10 +231,10 @@ export default function AdminMarkupPanel() {
 
       {/* ── 30d cost overview ──────────────────────────────────────────────── */}
       {costs30d && (
-        <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+        <div className="rounded-2xl p-5 space-y-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5" style={{ color: AMBER }} />
-            <h3 className="font-bold" style={{ color: "#292524" }}>Costuri platformă — ultimele 30 de zile</h3>
+            <h3 className="font-bold" style={{ color: "var(--color-text)" }}>Costuri platformă — ultimele 30 de zile</h3>
           </div>
           <div className="grid grid-cols-3 gap-3">
             {[
@@ -245,7 +245,7 @@ export default function AdminMarkupPanel() {
               <div key={label} className="rounded-xl p-3 text-center"
                 style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.15)" }}>
                 <p className="text-xs" style={{ color: "#A8967E" }}>{label}</p>
-                <p className="text-base font-bold mt-1" style={{ color: "#292524" }}>{value}</p>
+                <p className="text-base font-bold mt-1" style={{ color: "var(--color-text)" }}>{value}</p>
               </div>
             ))}
           </div>
@@ -255,7 +255,7 @@ export default function AdminMarkupPanel() {
               {Object.entries(costs30d.by_service).map(([svc, usd]) => (
                 <div key={svc} className="flex justify-between text-xs py-1.5 border-b" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
                   <span style={{ color: "#78614E" }}>{svc === "anthropic" ? "🤖 Anthropic AI" : "🔍 Apify Search"}</span>
-                  <span className="font-mono font-bold" style={{ color: "#292524" }}>{fmt(usd)}</span>
+                  <span className="font-mono font-bold" style={{ color: "var(--color-text)" }}>{fmt(usd)}</span>
                 </div>
               ))}
             </div>
@@ -264,7 +264,7 @@ export default function AdminMarkupPanel() {
               {Object.entries(costs30d.by_operation).sort(([,a],[,b]) => b-a).slice(0,6).map(([op, usd]) => (
                 <div key={op} className="flex justify-between text-xs py-1.5 border-b" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
                   <span style={{ color: "#78614E" }}>{OP_LABELS[op] || op}</span>
-                  <span className="font-mono font-bold" style={{ color: "#292524" }}>{fmt(usd)}</span>
+                  <span className="font-mono font-bold" style={{ color: "var(--color-text)" }}>{fmt(usd)}</span>
                 </div>
               ))}
             </div>

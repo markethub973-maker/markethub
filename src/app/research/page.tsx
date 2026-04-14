@@ -12,8 +12,8 @@ import {
 import { useUserRegion } from "@/lib/useUserRegion";
 import { getLocalMarket } from "@/lib/localMarketConfig";
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
-const AMBER = "#F59E0B";
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const AMBER = "var(--color-primary)";
 const IG = "#E1306C";
 const FB = "#1877F2";
 const TT = "#010101";
@@ -583,7 +583,7 @@ export default function ResearchPage() {
             style={{ background: "linear-gradient(135deg, rgba(0,43,127,0.08) 0%, rgba(252,209,22,0.10) 50%, rgba(206,17,38,0.08) 100%)", border: "1px solid rgba(0,43,127,0.25)" }}>
             <span className="text-3xl flex-shrink-0">🇷🇴</span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold" style={{ color: "#292524" }}>
+              <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                 Activate Romania Local Market Mode
               </p>
               <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
@@ -618,7 +618,7 @@ export default function ResearchPage() {
                       onClick={() => { setTab(id); setResults(null); setError(""); setQuery(""); setMode("username"); setSortBy(null); setExpandedRows({}); }}
                       className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
                       style={tab === id
-                        ? { backgroundColor: color, color: id === "tiktok" ? "#FFF8F0" : "white", boxShadow: `0 2px 8px ${color}40` }
+                        ? { backgroundColor: color, color: id === "tiktok" ? "var(--color-bg)" : "white", boxShadow: `0 2px 8px ${color}40` }
                         : { backgroundColor: "rgba(245,215,160,0.1)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
                       <Icon className="w-3.5 h-3.5" />
                       {label}
@@ -655,12 +655,12 @@ export default function ResearchPage() {
                 onKeyDown={e => e.key === "Enter" && handleSearch()}
                 placeholder={getPlaceholder()}
                 className="flex-1 text-sm bg-transparent focus:outline-none"
-                style={{ color: "#292524" }} />
+                style={{ color: "var(--color-text)" }} />
             </div>
             <button type="button" onClick={handleSearch}
               disabled={loading || !query.trim()}
               className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 transition-all"
-              style={{ backgroundColor: tabColor, color: tab === "tiktok" ? "#FFF8F0" : "white" }}>
+              style={{ backgroundColor: tabColor, color: tab === "tiktok" ? "var(--color-bg)" : "white" }}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
               {loading ? "Searching…" : "Search"}
             </button>
@@ -737,7 +737,7 @@ export default function ResearchPage() {
                     <div className="rounded-xl overflow-hidden" style={card}>
                       {items.map((r: any, i: number) => (
                         <div key={i} className="px-4 py-3" style={{ borderBottom: "1px solid rgba(245,215,160,0.15)" }}>
-                          <p className="text-sm font-semibold" style={{ color: "#292524" }}>{r.question}</p>
+                          <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>{r.question}</p>
                           {r.answer && <p className="text-xs mt-1 line-clamp-2" style={{ color: "#78614E" }}>{r.answer}</p>}
                         </div>
                       ))}
@@ -750,7 +750,7 @@ export default function ResearchPage() {
                             {r.position && <span className="text-xs font-bold px-1.5 py-0.5 rounded mr-2"
                               style={{ backgroundColor: `${AMBER}15`, color: AMBER }}>#{r.position}</span>}
                             <a href={r.url} target="_blank" rel="noopener noreferrer"
-                              className="text-sm font-semibold hover:underline" style={{ color: "#292524" }}>
+                              className="text-sm font-semibold hover:underline" style={{ color: "var(--color-text)" }}>
                               {r.title}
                             </a>
                             <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>{r.displayedUrl}</p>
@@ -784,7 +784,7 @@ export default function ResearchPage() {
               <div className="rounded-xl p-4 flex items-center gap-3" style={{ ...card, borderColor: `${YT}30` }}>
                 <Play className="w-8 h-8" style={{ color: YT }} />
                 <div>
-                  <p className="font-bold" style={{ color: "#292524" }}>{results.channelInfo.name}</p>
+                  <p className="font-bold" style={{ color: "var(--color-text)" }}>{results.channelInfo.name}</p>
                   {results.channelInfo.subscribers > 0 && (
                     <p className="text-xs font-semibold" style={{ color: YT }}>{fmtNum(results.channelInfo.subscribers)} subscribers</p>
                   )}
@@ -837,7 +837,7 @@ export default function ResearchPage() {
                             <td className="px-3 py-2">
                               <div className="flex items-center gap-2 min-w-0">
                                 {v.thumbnail && <img src={v.thumbnail} alt="" className="w-16 h-10 rounded object-cover flex-shrink-0" />}
-                                <p className="font-semibold line-clamp-2" style={{ color: "#292524" }}>{v.title}</p>
+                                <p className="font-semibold line-clamp-2" style={{ color: "var(--color-text)" }}>{v.title}</p>
                               </div>
                             </td>
                             <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: YT }}>{fmtNum(v.views)}</td>
@@ -862,7 +862,7 @@ export default function ResearchPage() {
                             <tr style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
                               <td colSpan={listView === "detailed" ? 8 : 5} className="px-4 py-3">
                                 <div className="space-y-1">
-                                  {v.description && <p style={{ color: "#292524" }}>{v.description}</p>}
+                                  {v.description && <p style={{ color: "var(--color-text)" }}>{v.description}</p>}
                                   {v.url && (
                                     <a href={v.url} target="_blank" rel="noopener noreferrer"
                                       className="inline-flex items-center gap-1 font-semibold" style={{ color: YT }}>
@@ -891,7 +891,7 @@ export default function ResearchPage() {
               <SaveLeadsButton color="#6366F1" count={1} />
             </div>
             <div className="rounded-xl p-4" style={{ ...card, borderColor: "rgba(99,102,241,0.3)" }}>
-              <p className="font-bold" style={{ color: "#292524" }}>{results.domain}</p>
+              <p className="font-bold" style={{ color: "var(--color-text)" }}>{results.domain}</p>
               {results.home_title && <p className="text-sm mt-0.5" style={{ color: "#78614E" }}>{results.home_title}</p>}
               {results.home_description && <p className="text-xs mt-1" style={{ color: "#A8967E" }}>{results.home_description}</p>}
               <p className="text-xs mt-2 font-semibold" style={{ color: "#6366F1" }}>{results.total} pages crawled</p>
@@ -901,7 +901,7 @@ export default function ResearchPage() {
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <a href={p.url} target="_blank" rel="noopener noreferrer"
-                      className="text-sm font-semibold hover:underline" style={{ color: "#292524" }}>{p.title || p.url}</a>
+                      className="text-sm font-semibold hover:underline" style={{ color: "var(--color-text)" }}>{p.title || p.url}</a>
                     <p className="text-xs mt-0.5 truncate" style={{ color: "#C4AA8A" }}>{p.url}</p>
                   </div>
                   <span className="text-xs flex-shrink-0 px-2 py-0.5 rounded-full"
@@ -946,7 +946,7 @@ export default function ResearchPage() {
                     style={{ border: `2px solid ${IG}` }} />
                 )}
                 <div>
-                  <p className="font-bold" style={{ color: "#292524" }}>@{results.profile.username}</p>
+                  <p className="font-bold" style={{ color: "var(--color-text)" }}>@{results.profile.username}</p>
                   {results.profile.fullName && <p className="text-sm" style={{ color: "#78614E" }}>{results.profile.fullName}</p>}
                   {results.profile.followers > 0 && <p className="text-xs mt-0.5 font-semibold" style={{ color: IG }}>{fmtNum(results.profile.followers)} followers</p>}
                 </div>
@@ -1012,7 +1012,7 @@ export default function ResearchPage() {
                                 </div>
                               </div>
                             </td>
-                            <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: "#292524" }}>{fmtNum(p.likes)}</td>
+                            <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: "var(--color-text)" }}>{fmtNum(p.likes)}</td>
                             <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(p.comments)}</td>
                             <td className="px-3 py-2 text-right font-bold tabular-nums" style={{ color: erColor }}>{p.engRate != null ? `${p.engRate}%` : "—"}</td>
                             {listView === "detailed" && (
@@ -1037,7 +1037,7 @@ export default function ResearchPage() {
                             <tr style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
                               <td colSpan={listView === "detailed" ? 9 : 5} className="px-4 py-3">
                                 <div className="space-y-1">
-                                  {p.caption && <p style={{ color: "#292524" }}>{p.caption}</p>}
+                                  {p.caption && <p style={{ color: "var(--color-text)" }}>{p.caption}</p>}
                                   {p.hashtags?.length > 0 && (
                                     <p style={{ color: "#A8967E" }}>{p.hashtags.map((h: string) => `#${h}`).join(" ")}</p>
                                   )}
@@ -1082,7 +1082,7 @@ export default function ResearchPage() {
                     <button key={v} type="button" onClick={() => setListView(v)}
                       className="px-3 py-1 rounded-md text-xs font-bold transition-all"
                       style={listView === v
-                        ? { backgroundColor: TT, color: "#FFF8F0" }
+                        ? { backgroundColor: TT, color: "var(--color-bg)" }
                         : { color: "#78614E" }}>
                       {v === "compact" ? "Less" : "More"}
                     </button>
@@ -1123,14 +1123,14 @@ export default function ResearchPage() {
                               <div className="flex items-center gap-2 min-w-0">
                                 {v.cover && <img src={v.cover} alt="" className="w-9 h-12 rounded object-cover flex-shrink-0" />}
                                 <div className="min-w-0">
-                                  <p className="font-bold truncate" style={{ color: "#292524" }}>@{v.author}</p>
+                                  <p className="font-bold truncate" style={{ color: "var(--color-text)" }}>@{v.author}</p>
                                   {listView === "compact" && v.authorFollowers > 0 && (
                                     <p className="text-[10px]" style={{ color: "#A8967E" }}>{fmtNum(v.authorFollowers)} followers</p>
                                   )}
                                 </div>
                               </div>
                             </td>
-                            <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: "#292524" }}>{fmtNum(v.plays)}</td>
+                            <td className="px-3 py-2 text-right font-semibold tabular-nums" style={{ color: "var(--color-text)" }}>{fmtNum(v.plays)}</td>
                             <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(v.likes)}</td>
                             <td className="px-3 py-2 text-right tabular-nums" style={{ color: "#78614E" }}>{fmtNum(v.shares)}</td>
                             {listView === "detailed" && (
@@ -1158,7 +1158,7 @@ export default function ResearchPage() {
                             <tr style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
                               <td colSpan={listView === "detailed" ? 10 : 6} className="px-4 py-3">
                                 <div className="space-y-1">
-                                  {v.description && <p style={{ color: "#292524" }}>{v.description}</p>}
+                                  {v.description && <p style={{ color: "var(--color-text)" }}>{v.description}</p>}
                                   {v.music && <p style={{ color: "#A8967E" }}>♪ {v.music.name} — {v.music.author}</p>}
                                   {v.hashtags?.length > 0 && (
                                     <p style={{ color: "#A8967E" }}>{v.hashtags.map((h: string) => `#${h}`).join(" ")}</p>
@@ -1204,7 +1204,7 @@ export default function ResearchPage() {
           <div className="space-y-3">
             {results.pageInfo && (
               <div className="rounded-xl p-4" style={{ ...card, borderColor: `${FB}30` }}>
-                <p className="font-bold" style={{ color: "#292524" }}>{results.pageInfo.name}</p>
+                <p className="font-bold" style={{ color: "var(--color-text)" }}>{results.pageInfo.name}</p>
                 {results.pageInfo.followers > 0 && <p className="text-xs font-semibold mt-0.5" style={{ color: FB }}>{fmtNum(results.pageInfo.followers)} followers</p>}
               </div>
             )}
@@ -1260,7 +1260,7 @@ export default function ResearchPage() {
                                       <Facebook className="w-4 h-4" style={{ color: FB }} />
                                     </div>}
                                 <div className="min-w-0">
-                                  <p className="line-clamp-2" style={{ color: "#292524" }}>{p.text || "—"}</p>
+                                  <p className="line-clamp-2" style={{ color: "var(--color-text)" }}>{p.text || "—"}</p>
                                 </div>
                               </div>
                             </td>
@@ -1288,7 +1288,7 @@ export default function ResearchPage() {
                             <tr style={{ backgroundColor: "rgba(245,215,160,0.06)" }}>
                               <td colSpan={listView === "detailed" ? 8 : 5} className="px-4 py-3">
                                 <div className="space-y-1">
-                                  {p.text && <p style={{ color: "#292524" }}>{p.text}</p>}
+                                  {p.text && <p style={{ color: "var(--color-text)" }}>{p.text}</p>}
                                   {p.url && (
                                     <a href={p.url} target="_blank" rel="noopener noreferrer"
                                       className="inline-flex items-center gap-1 font-semibold" style={{ color: FB }}>
@@ -1326,7 +1326,7 @@ export default function ResearchPage() {
               <div className="rounded-xl p-4" style={{ ...card, borderColor: `${FB}30` }}>
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4" style={{ color: FB }} />
-                  <p className="font-bold" style={{ color: "#292524" }}>Grup: {results.groupInfo.name}</p>
+                  <p className="font-bold" style={{ color: "var(--color-text)" }}>Grup: {results.groupInfo.name}</p>
                 </div>
                 {results.groupInfo.url && (
                   <a href={results.groupInfo.url} target="_blank" rel="noopener noreferrer"
@@ -1358,7 +1358,7 @@ export default function ResearchPage() {
                             <span className="text-xs" style={{ color: "#C4AA8A" }}>{timeAgo(p.time)}</span>
                           )}
                         </div>
-                        <p className="text-sm" style={{ color: "#292524" }}>
+                        <p className="text-sm" style={{ color: "var(--color-text)" }}>
                           {isOpen ? p.text : (p.text || "").slice(0, 220) + ((p.text || "").length > 220 ? "…" : "")}
                         </p>
                         <div className="flex gap-4 mt-2 flex-wrap">
@@ -1422,7 +1422,7 @@ export default function ResearchPage() {
                         style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#A8967E" }}>{p.flair}</span>}
                     </div>
                     <a href={p.permalink} target="_blank" rel="noopener noreferrer"
-                      className="text-sm font-semibold hover:underline" style={{ color: "#292524" }}>{p.title}</a>
+                      className="text-sm font-semibold hover:underline" style={{ color: "var(--color-text)" }}>{p.title}</a>
                     {p.text && <p className="text-xs mt-1 line-clamp-3" style={{ color: "#78614E" }}>{p.text}</p>}
                     <div className="flex gap-4 mt-2">
                       <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: RD }}>
@@ -1483,7 +1483,7 @@ export default function ResearchPage() {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-bold" style={{ color: "#292524" }}>{r.reviewer}</span>
+                          <span className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{r.reviewer}</span>
                           <div className="flex gap-0.5">
                             {[1,2,3,4,5].map(s => (
                               <Star key={s} className="w-3 h-3" fill={s <= r.rating ? rColor : "none"}
@@ -1535,8 +1535,8 @@ export default function ResearchPage() {
                             <img src={item.photo} alt="" className="w-16 h-16 rounded object-cover flex-shrink-0" />
                           )}
                           <div className="flex-1 min-w-0 space-y-1">
-                            {item.title && <p className="font-semibold text-sm" style={{ color: "#292524" }}>{item.title}{item.isPromoted && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${localMarket!.color}15`, color: localMarket!.color }}>PROMOVAT</span>}</p>}
-                            {item.name && !item.title && <p className="font-semibold text-sm" style={{ color: "#292524" }}>{item.name}</p>}
+                            {item.title && <p className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>{item.title}{item.isPromoted && <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${localMarket!.color}15`, color: localMarket!.color }}>PROMOVAT</span>}</p>}
+                            {item.name && !item.title && <p className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>{item.name}</p>}
                             {item.price !== undefined && item.price !== null && (
                               <p className="text-sm font-bold" style={{ color: localMarket!.color }}>
                                 {item.price} {item.currency || localMarket!.currency}

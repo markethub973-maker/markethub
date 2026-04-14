@@ -107,7 +107,7 @@ export default function HashtagSuggester({ caption, platform, currentHashtags, o
         >
           <div
             className="w-full max-w-lg rounded-2xl overflow-hidden flex flex-col"
-            style={{ backgroundColor: "#FFFCF7", maxHeight: "85dvh" }}
+            style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "85dvh" }}
           >
             <div
               className="flex items-center gap-3 px-5 py-3 border-b"
@@ -117,7 +117,7 @@ export default function HashtagSuggester({ caption, platform, currentHashtags, o
               }}
             >
               <Hash className="w-5 h-5" style={{ color: "#8B5CF6" }} />
-              <p className="flex-1 text-sm font-bold" style={{ color: "#292524" }}>
+              <p className="flex-1 text-sm font-bold" style={{ color: "var(--color-text)" }}>
                 Hashtag suggestions ({platform})
               </p>
               <button type="button" onClick={() => setOpen(false)} style={{ color: "#78614E" }}>
@@ -180,7 +180,7 @@ export default function HashtagSuggester({ caption, platform, currentHashtags, o
             {suggestions.length > 0 && (
               <div
                 className="px-5 py-3 border-t flex items-center justify-between gap-3"
-                style={{ borderColor: "rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}
+                style={{ borderColor: "rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}
               >
                 <button
                   type="button"

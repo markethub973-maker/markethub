@@ -12,7 +12,7 @@ export default function NotFound() {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-6"
-      style={{ backgroundColor: "#FFFCF7" }}
+      style={{ backgroundColor: "var(--color-bg-secondary)" }}
     >
       <div className="max-w-md w-full text-center">
         <div
@@ -22,18 +22,18 @@ export default function NotFound() {
               "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(217,119,6,0.1))",
           }}
         >
-          <Compass className="w-10 h-10" style={{ color: "#D97706" }} />
+          <Compass className="w-10 h-10" style={{ color: "var(--color-primary-hover)" }} />
         </div>
 
         <h1
           className="text-5xl font-bold mb-2"
-          style={{ color: "#292524", fontFamily: "system-ui" }}
+          style={{ color: "var(--color-text)", fontFamily: "system-ui" }}
         >
           404
         </h1>
         <h2
           className="text-xl font-bold mb-3"
-          style={{ color: "#292524" }}
+          style={{ color: "var(--color-text)" }}
         >
           We couldn&apos;t find that page
         </h2>
@@ -47,7 +47,7 @@ export default function NotFound() {
             href="/"
             className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all hover:scale-[1.02]"
             style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
               color: "#1C1814",
               boxShadow: "0 4px 12px rgba(245,158,11,0.3)",
             }}
@@ -60,7 +60,7 @@ export default function NotFound() {
             className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all"
             style={{
               backgroundColor: "white",
-              color: "#292524",
+              color: "var(--color-text)",
               border: "1px solid rgba(245,215,160,0.4)",
             }}
           >

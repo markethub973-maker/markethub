@@ -65,7 +65,7 @@ export default function ThumbnailPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <Header title="Thumbnail Generator" subtitle="YouTube-style thumbnails (1280×720) in one click" />
 
       <main className="max-w-4xl mx-auto px-6 py-6 space-y-5">
@@ -75,7 +75,7 @@ export default function ThumbnailPage() {
         >
           <div className="flex items-center gap-2">
             <Youtube className="w-5 h-5" style={{ color: "#FF0000" }} />
-            <h2 className="text-sm font-bold" style={{ color: "#292524" }}>
+            <h2 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
               Design your thumbnail
             </h2>
           </div>
@@ -91,7 +91,7 @@ export default function ThumbnailPage() {
               maxLength={120}
               placeholder="e.g. I Tested 10 AI Tools in 60 Seconds"
               className="w-full rounded-lg px-3 py-2 text-sm"
-              style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+              style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             />
           </div>
 
@@ -106,7 +106,7 @@ export default function ThumbnailPage() {
                 onChange={(e) => setTopic(e.target.value)}
                 placeholder="productivity, fitness, crypto..."
                 className="w-full rounded-lg px-3 py-2 text-sm"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
             </div>
             <div>
@@ -119,7 +119,7 @@ export default function ThumbnailPage() {
                 onChange={(e) => setAccent(e.target.value)}
                 placeholder="a shocked YouTuber, glowing laptop..."
                 className="w-full rounded-lg px-3 py-2 text-sm"
-                style={{ backgroundColor: "#FFF8F0", border: "1px solid rgba(245,215,160,0.4)", color: "#292524", outline: "none" }}
+                style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
             </div>
           </div>
@@ -137,7 +137,7 @@ export default function ThumbnailPage() {
                   className="text-left rounded-lg px-3 py-2 transition-all"
                   style={{
                     backgroundColor: style === s.id ? "#FF0000" : "rgba(0,0,0,0.03)",
-                    color: style === s.id ? "white" : "#292524",
+                    color: style === s.id ? "white" : "var(--color-text)",
                     border: `1px solid ${style === s.id ? "#FF0000" : "rgba(0,0,0,0.06)"}`,
                   }}
                 >
@@ -195,7 +195,7 @@ export default function ThumbnailPage() {
                 href={result.image_url}
                 download
                 className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-bold"
-                style={{ backgroundColor: "#292524", color: "white" }}
+                style={{ backgroundColor: "var(--color-text)", color: "white" }}
               >
                 <Download className="w-3 h-3" />
                 Download

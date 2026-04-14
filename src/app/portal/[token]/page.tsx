@@ -71,9 +71,9 @@ function timeAgo(ts: string): string {
   return `${Math.floor(h / 86400000 / 24)}d ago`;
 }
 
-function StatBox({ label, value, color = "#F59E0B" }: { label: string; value: string; color?: string }) {
+function StatBox({ label, value, color = "var(--color-primary)" }: { label: string; value: string; color?: string }) {
   return (
-    <div className="rounded-xl p-4 text-center" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+    <div className="rounded-xl p-4 text-center" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
       <p className="text-2xl font-bold" style={{ color }}>{value}</p>
       <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{label}</p>
     </div>
@@ -143,7 +143,7 @@ export default function ClientPortalPage() {
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF7F2" }}>
-        <svg className="w-8 h-8 animate-spin" style={{ color: "#F59E0B" }} fill="none" viewBox="0 0 24 24">
+        <svg className="w-8 h-8 animate-spin" style={{ color: "var(--color-primary)" }} fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
         </svg>
@@ -156,10 +156,10 @@ export default function ClientPortalPage() {
       <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: "#FAF7F2" }}>
         <form onSubmit={submitPassword}
           className="w-full max-w-sm rounded-2xl p-8"
-          style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 4px 16px rgba(120,97,78,0.12)" }}>
+          style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 4px 16px rgba(120,97,78,0.12)" }}>
           <div className="text-center mb-6">
             <p className="text-4xl mb-3">🔒</p>
-            <h1 className="text-lg font-bold" style={{ color: "#292524" }}>Protected report</h1>
+            <h1 className="text-lg font-bold" style={{ color: "var(--color-text)" }}>Protected report</h1>
             <p className="text-xs mt-1" style={{ color: "#A8967E" }}>This report is password-protected. Ask the agency for the password.</p>
           </div>
           <input
@@ -172,8 +172,8 @@ export default function ClientPortalPage() {
             className="w-full px-4 py-3 text-sm rounded-xl focus:outline-none mb-3"
             style={{
               border: `1px solid ${wrongPassword ? "#DC2626" : "rgba(245,215,160,0.4)"}`,
-              backgroundColor: "#FFF8F0",
-              color: "#292524",
+              backgroundColor: "var(--color-bg)",
+              color: "var(--color-text)",
             }}
           />
           {wrongPassword && (
@@ -185,7 +185,7 @@ export default function ClientPortalPage() {
             type="submit"
             disabled={passwordSubmitting || !passwordInput.trim()}
             className="w-full px-4 py-3 rounded-xl text-sm font-bold disabled:opacity-50"
-            style={{ backgroundColor: "#F59E0B", color: "white" }}>
+            style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
             {passwordSubmitting ? "Verifying..." : "Unlock report"}
           </button>
         </form>
@@ -198,9 +198,9 @@ export default function ClientPortalPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF7F2" }}>
         <div className="text-center px-6">
           <p className="text-4xl mb-4">⏰</p>
-          <h1 className="text-xl font-bold mb-2" style={{ color: "#292524" }}>Link expired</h1>
+          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>Link expired</h1>
           <p className="text-sm" style={{ color: "#A8967E" }}>This report link has expired. Ask the agency for a new one.</p>
-          <a href="https://markethubpromo.com" className="inline-block mt-6 text-sm font-semibold" style={{ color: "#F59E0B" }}>
+          <a href="https://markethubpromo.com" className="inline-block mt-6 text-sm font-semibold" style={{ color: "var(--color-primary)" }}>
             markethubpromo.com →
           </a>
         </div>
@@ -213,9 +213,9 @@ export default function ClientPortalPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAF7F2" }}>
         <div className="text-center px-6">
           <p className="text-4xl mb-4">🔗</p>
-          <h1 className="text-xl font-bold mb-2" style={{ color: "#292524" }}>Link not found</h1>
+          <h1 className="text-xl font-bold mb-2" style={{ color: "var(--color-text)" }}>Link not found</h1>
           <p className="text-sm" style={{ color: "#A8967E" }}>{errMsg || "This link is invalid. Ask the agency for a new one."}</p>
-          <a href="https://markethubpromo.com" className="inline-block mt-6 text-sm font-semibold" style={{ color: "#F59E0B" }}>
+          <a href="https://markethubpromo.com" className="inline-block mt-6 text-sm font-semibold" style={{ color: "var(--color-primary)" }}>
             markethubpromo.com →
           </a>
         </div>
@@ -224,7 +224,7 @@ export default function ClientPortalPage() {
   }
 
   const d = portal.data || {};
-  const accent = portal.accent_color || "#F59E0B";
+  const accent = portal.accent_color || "var(--color-primary)";
   const agencyName = portal.agency_name || "MarketHub Pro";
   const agencyLogo = portal.agency_logo_url || "";
   const engColor = (d.ig_engagement || 0) >= 5 ? "#16A34A" : (d.ig_engagement || 0) >= 3 ? accent : "#DC2626";
@@ -254,7 +254,7 @@ export default function ClientPortalPage() {
 
         {/* Client header */}
         <div className="rounded-2xl p-6 flex items-center gap-4"
-          style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 2px 8px rgba(120,97,78,0.08)" }}>
+          style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 2px 8px rgba(120,97,78,0.08)" }}>
           {d.ig_avatar ? (
             <img
               src={`/api/image-proxy?url=${encodeURIComponent(d.ig_avatar)}`}
@@ -268,7 +268,7 @@ export default function ClientPortalPage() {
           )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl font-bold" style={{ color: "#292524" }}>{portal.client_name}</h1>
+              <h1 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>{portal.client_name}</h1>
               {d.ig_verified && (
                 <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
                   style={{ backgroundColor: "rgba(59,130,246,0.1)", color: "#3B82F6" }}>✓ Verified</span>
@@ -294,13 +294,13 @@ export default function ClientPortalPage() {
         {/* Instagram stats */}
         {(d.ig_followers || 0) > 0 && (
           <div>
-            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <span>📸</span> Instagram Analytics
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <StatBox label="Followers" value={fmt(d.ig_followers || 0)} color="#E1306C" />
               <StatBox label="Following" value={fmt(d.ig_following || 0)} color="#A8967E" />
-              <StatBox label="Posts" value={fmt(d.ig_posts || 0)} color="#292524" />
+              <StatBox label="Posts" value={fmt(d.ig_posts || 0)} color="var(--color-text)" />
               <StatBox label="Engagement Rate" value={`${d.ig_engagement || 0}%`} color={engColor} />
             </div>
           </div>
@@ -309,13 +309,13 @@ export default function ClientPortalPage() {
         {/* TikTok stats */}
         {(d.tt_followers || 0) > 0 && (
           <div>
-            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <span>🎵</span> TikTok Analytics
             </h2>
             <div className="grid grid-cols-3 gap-3">
               <StatBox label="Followers" value={fmt(d.tt_followers || 0)} color="#FF0050" />
               <StatBox label="Total Likes" value={fmt(d.tt_likes || 0)} color="#FF0050" />
-              <StatBox label="Videos" value={fmt(d.tt_videos || 0)} color="#292524" />
+              <StatBox label="Videos" value={fmt(d.tt_videos || 0)} color="var(--color-text)" />
             </div>
           </div>
         )}
@@ -323,7 +323,7 @@ export default function ClientPortalPage() {
         {/* Recent posts */}
         {(d.posts?.length || 0) > 0 && (
           <div>
-            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#292524" }}>
+            <h2 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "var(--color-text)" }}>
               <span>🖼</span> Recent Posts
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -334,7 +334,7 @@ export default function ClientPortalPage() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded-xl overflow-hidden group"
-                  style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.3)" }}>
+                  style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}>
                   <div className="aspect-square relative overflow-hidden bg-[#F5E8D4]">
                     {post.th ? (
                       <img
@@ -366,13 +366,13 @@ export default function ClientPortalPage() {
         {approvals && approvals.approvals.length > 0 && (
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold flex items-center gap-2" style={{ color: "#292524" }}>
+              <h2 className="text-sm font-bold flex items-center gap-2" style={{ color: "var(--color-text)" }}>
                 <span>📝</span> Posts for approval
               </h2>
               <div className="flex gap-2 text-xs">
                 {approvals.counts.pending > 0 && (
                   <span className="px-2 py-0.5 rounded-full font-semibold"
-                    style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B" }}>
+                    style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary)" }}>
                     {approvals.counts.pending} pending
                   </span>
                 )}
@@ -397,7 +397,7 @@ export default function ClientPortalPage() {
                     ? "#10B981"
                     : a.approval_status === "rejected"
                       ? "#EF4444"
-                      : "#F59E0B";
+                      : "var(--color-primary)";
                 const statusLabel =
                   a.approval_status === "approved"
                     ? "✓ Approved"
@@ -412,7 +412,7 @@ export default function ClientPortalPage() {
                     rel="noopener noreferrer"
                     className="block rounded-2xl overflow-hidden transition-transform hover:scale-[1.01]"
                     style={{
-                      backgroundColor: "#FFFCF7",
+                      backgroundColor: "var(--color-bg-secondary)",
                       border: "1px solid rgba(245,215,160,0.3)",
                       textDecoration: "none",
                     }}
@@ -458,7 +458,7 @@ export default function ClientPortalPage() {
                           {a.comments_count > 0 && (
                             <span
                               className="text-xs px-2 py-0.5 rounded-full font-semibold ml-auto"
-                              style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#F59E0B" }}
+                              style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary)" }}
                             >
                               💬 {a.comments_count}
                             </span>
@@ -466,7 +466,7 @@ export default function ClientPortalPage() {
                         </div>
                         <p
                           className="text-sm line-clamp-2"
-                          style={{ color: "#292524" }}
+                          style={{ color: "var(--color-text)" }}
                         >
                           {a.caption || <em style={{ color: "#A8967E" }}>(no caption)</em>}
                         </p>
@@ -495,7 +495,7 @@ export default function ClientPortalPage() {
         {(d.ig_followers || 0) === 0 && (d.tt_followers || 0) === 0 && (
           <div className="text-center py-12">
             <p className="text-4xl mb-3">📊</p>
-            <p className="font-semibold" style={{ color: "#292524" }}>Analytics coming soon</p>
+            <p className="font-semibold" style={{ color: "var(--color-text)" }}>Analytics coming soon</p>
             <p className="text-sm mt-1" style={{ color: "#78614E" }}>Data will appear here once the agency connects the accounts.</p>
           </div>
         )}

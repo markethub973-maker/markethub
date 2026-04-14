@@ -36,7 +36,7 @@ const STATUS_CONFIG = {
     Icon: CheckCircle2,
   },
   degraded: {
-    color: "#F59E0B",
+    color: "var(--color-primary)",
     bg: "rgba(245,158,11,0.1)",
     label: "Partial Degradation",
     short: "Degraded",
@@ -80,7 +80,7 @@ export default function StatusPage() {
   const cfg = data ? STATUS_CONFIG[data.overall] : STATUS_CONFIG.operational;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <header
         className="border-b"
         style={{ borderColor: "rgba(245,215,160,0.3)", backgroundColor: "white" }}
@@ -89,9 +89,9 @@ export default function StatusPage() {
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm font-bold transition-all hover:opacity-80"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Activity className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Activity className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             MarketHub Pro
           </Link>
           <Link
@@ -106,7 +106,7 @@ export default function StatusPage() {
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-10">
-        <h1 className="text-3xl font-bold mb-2" style={{ color: "#292524" }}>
+        <h1 className="text-3xl font-bold mb-2" style={{ color: "var(--color-text)" }}>
           Platform Status
         </h1>
         <p className="text-sm mb-8" style={{ color: "#78614E" }}>
@@ -135,7 +135,7 @@ export default function StatusPage() {
             >
               Current Status
             </p>
-            <p className="text-2xl font-bold" style={{ color: "#292524" }}>
+            <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>
               {cfg.label}
             </p>
             {data && (
@@ -177,7 +177,7 @@ export default function StatusPage() {
               >
                 <sc.Icon className="w-5 h-5 flex-shrink-0" style={{ color: sc.color }} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold" style={{ color: "#292524" }}>
+                  <p className="text-sm font-semibold" style={{ color: "var(--color-text)" }}>
                     {s.name}
                   </p>
                   {s.message && (
@@ -207,13 +207,13 @@ export default function StatusPage() {
         >
           <p className="text-xs" style={{ color: "#78614E" }}>
             Subscribe to incident updates by following us on social media or
-            <Link href="/help" className="font-bold hover:underline" style={{ color: "#D97706" }}>
+            <Link href="/help" className="font-bold hover:underline" style={{ color: "var(--color-primary-hover)" }}>
               {" "}contacting support
             </Link>
             . For real-time alerts, point your favorite uptime monitor at
             <code
               className="mx-1 px-1.5 py-0.5 rounded"
-              style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "#292524", fontSize: "11px" }}
+              style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "var(--color-text)", fontSize: "11px" }}
             >
               /api/health
             </code>

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { ChevronDown, ChevronUp, Zap, RefreshCw } from "lucide-react";
 
-const AMBER = "#F59E0B";
+const AMBER = "var(--color-primary)";
 const GREEN = "#1DB954";
 
 interface CostLine {
@@ -101,7 +101,7 @@ export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0
         <div className="flex items-center gap-3">
           <Zap className="w-4 h-4" style={{ color: AMBER }} />
           <div className="text-left">
-            <p className="text-xs font-bold" style={{ color: "#292524" }}>
+            <p className="text-xs font-bold" style={{ color: "var(--color-text)" }}>
               Current session cost
             </p>
             <p className="text-xs" style={{ color: "#A8967E" }}>
@@ -137,7 +137,7 @@ export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0
                     </span>
                   ) : null}
                 </div>
-                <span className="font-mono font-semibold" style={{ color: "#292524" }}>
+                <span className="font-mono font-semibold" style={{ color: "var(--color-text)" }}>
                   {fmt(line.cost_usd)}
                 </span>
               </div>
@@ -149,19 +149,19 @@ export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0
             style={{ backgroundColor: "rgba(245,215,160,0.06)", border: "1px solid rgba(245,215,160,0.15)" }}>
             <div className="flex justify-between text-xs">
               <span style={{ color: "#A8967E" }}>AI processing cost</span>
-              <span className="font-mono" style={{ color: "#292524" }}>{fmt(data.anthropic_usd)}</span>
+              <span className="font-mono" style={{ color: "var(--color-text)" }}>{fmt(data.anthropic_usd)}</span>
             </div>
             <div className="flex justify-between text-xs">
               <span style={{ color: "#A8967E" }}>Search cost (Apify)</span>
-              <span className="font-mono" style={{ color: "#292524" }}>{fmt(data.apify_usd)}</span>
+              <span className="font-mono" style={{ color: "var(--color-text)" }}>{fmt(data.apify_usd)}</span>
             </div>
             <div className="flex justify-between text-xs">
               <span style={{ color: "#A8967E" }}>Real API cost total</span>
-              <span className="font-mono" style={{ color: "#292524" }}>{fmtTotal(data.api_cost_usd)}</span>
+              <span className="font-mono" style={{ color: "var(--color-text)" }}>{fmtTotal(data.api_cost_usd)}</span>
             </div>
             <div className="flex justify-between text-xs">
               <span style={{ color: "#A8967E" }}>Platform fee ({data.markup_percent}%)</span>
-              <span className="font-mono" style={{ color: "#292524" }}>{fmtTotal(data.api_markup_usd)}</span>
+              <span className="font-mono" style={{ color: "var(--color-text)" }}>{fmtTotal(data.api_markup_usd)}</span>
             </div>
             {data.value_fee_enabled && data.campaign_value_usd > 0 && (
               <div className="flex justify-between text-xs">

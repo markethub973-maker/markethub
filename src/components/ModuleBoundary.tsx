@@ -63,13 +63,13 @@ export class ModuleBoundary extends React.Component<Props, State> {
 
     return (
       <div className="rounded-2xl p-6 flex flex-col items-center gap-4 text-center"
-        style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(239,68,68,0.2)" }}>
+        style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(239,68,68,0.2)" }}>
         <div className="w-12 h-12 rounded-xl flex items-center justify-center"
           style={{ backgroundColor: "rgba(239,68,68,0.08)" }}>
           <AlertTriangle className="w-6 h-6" style={{ color: "#EF4444" }} />
         </div>
         <div>
-          <p className="font-bold text-base" style={{ color: "#292524" }}>
+          <p className="font-bold text-base" style={{ color: "var(--color-text)" }}>
             {this.props.name ? `${this.props.name} unavailable` : "Module unavailable"}
           </p>
           <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
@@ -84,7 +84,7 @@ export class ModuleBoundary extends React.Component<Props, State> {
         </div>
         <button type="button" onClick={this.reset}
           className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all"
-          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B", border: "1px solid rgba(245,158,11,0.25)" }}>
+          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.25)" }}>
           <RefreshCw className="w-4 h-4" /> Try again
         </button>
       </div>
@@ -147,7 +147,7 @@ export function ServiceErrorBanner({
       style={{ backgroundColor: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.15)" }}>
       <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
       <div className="flex-1">
-        <p className="font-semibold" style={{ color: "#292524" }}>
+        <p className="font-semibold" style={{ color: "var(--color-text)" }}>
           {service ? `${service} unavailable` : "Service error"}
           {degraded && <span className="ml-2 text-xs font-normal" style={{ color: "#A8967E" }}>(degraded service)</span>}
         </p>
@@ -156,7 +156,7 @@ export function ServiceErrorBanner({
       {onRetry && (
         <button type="button" onClick={onRetry}
           className="flex items-center gap-1 text-xs font-bold flex-shrink-0"
-          style={{ color: "#F59E0B" }}>
+          style={{ color: "var(--color-primary)" }}>
           <RefreshCw className="w-3 h-3" /> Retry
         </button>
       )}

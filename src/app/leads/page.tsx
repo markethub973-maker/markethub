@@ -10,8 +10,8 @@ import {
   Sparkles, Mail, Send, Upload,
 } from "lucide-react";
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
-const AMBER = "#F59E0B";
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const AMBER = "var(--color-primary)";
 const IG = "#E1306C";
 const FB = "#1877F2";
 const TT = "#010101";
@@ -92,7 +92,7 @@ type Lead = {
 // filter pills follow the same sequence so the user reads it as a funnel.
 const PIPELINE_STAGES: { key: string; label: string; color: string }[] = [
   { key: "new", label: "New", color: "#A8967E" },
-  { key: "contacted", label: "Contacted", color: "#F59E0B" },
+  { key: "contacted", label: "Contacted", color: "var(--color-primary)" },
   { key: "replied", label: "Replied", color: "#3B82F6" },
   { key: "interested", label: "Interested", color: "#8B5CF6" },
   { key: "client", label: "Client", color: "#1DB954" },
@@ -436,7 +436,7 @@ export default function LeadsPage() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <AlertCircle className="w-5 h-5" style={{ color: "#6366F1" }} />
-                <p className="font-bold" style={{ color: "#292524" }}>Tables don't exist yet in Supabase</p>
+                <p className="font-bold" style={{ color: "var(--color-text)" }}>Tables don't exist yet in Supabase</p>
               </div>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setShowSQL(s => !s)}
@@ -457,7 +457,7 @@ export default function LeadsPage() {
             </p>
             {showSQL && (
               <pre className="text-xs rounded-xl p-4 overflow-x-auto"
-                style={{ backgroundColor: "#1C1814", color: "#FFF8F0", border: "1px solid rgba(245,215,160,0.1)" }}>
+                style={{ backgroundColor: "#1C1814", color: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.1)" }}>
                 {SQL_MIGRATION}
               </pre>
             )}
@@ -468,12 +468,12 @@ export default function LeadsPage() {
         <div className="rounded-2xl p-5 space-y-3" style={card}>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: GREEN }} />
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>Apify Webhook — Setup</p>
+            <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Apify Webhook — Setup</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(29,185,84,0.06)", border: "1px solid rgba(29,185,84,0.15)" }}>
               <p className="font-bold mb-1" style={{ color: GREEN }}>Webhook URL</p>
-              <code className="block font-mono text-xs break-all" style={{ color: "#292524" }}>
+              <code className="block font-mono text-xs break-all" style={{ color: "var(--color-text)" }}>
                 https://markethubpromo.com/api/webhooks/apify
               </code>
               <p className="mt-1" style={{ color: "#A8967E" }}>Add it in Apify → Actor → Settings → Webhooks</p>
@@ -486,7 +486,7 @@ export default function LeadsPage() {
             </div>
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(99,102,241,0.06)", border: "1px solid rgba(99,102,241,0.15)" }}>
               <p className="font-bold mb-1" style={{ color: "#6366F1" }}>ENV Variable</p>
-              <code className="font-mono" style={{ color: "#292524" }}>APIFY_WEBHOOK_SECRET=<span style={{ color: "#A8967E" }}>any_secret_string</span></code>
+              <code className="font-mono" style={{ color: "var(--color-text)" }}>APIFY_WEBHOOK_SECRET=<span style={{ color: "#A8967E" }}>any_secret_string</span></code>
               <p className="mt-1" style={{ color: "#A8967E" }}>Add it in Vercel + .env.local</p>
             </div>
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(245,215,160,0.08)", border: "1px solid rgba(245,215,160,0.2)" }}>
@@ -555,7 +555,7 @@ export default function LeadsPage() {
               <Search className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#C4AA8A" }} />
               <input type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Search by name, phone, city..."
-                className="flex-1 text-xs bg-transparent focus:outline-none" style={{ color: "#292524" }} />
+                className="flex-1 text-xs bg-transparent focus:outline-none" style={{ color: "var(--color-text)" }} />
             </div>
 
             {/* Type filter */}
@@ -677,11 +677,11 @@ export default function LeadsPage() {
                       {/* Source label is the FIRST visible element in the title row, then the lead name */}
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider flex-shrink-0"
-                          style={{ backgroundColor: color, color: lead.lead_type === "tiktok" ? "#FFF8F0" : "white" }}>
+                          style={{ backgroundColor: color, color: lead.lead_type === "tiktok" ? "var(--color-bg)" : "white" }}>
                           <Icon className="w-2.5 h-2.5" />
                           {TYPE_LABELS[lead.lead_type] || lead.lead_type}
                         </span>
-                        <p className="text-sm font-bold" style={{ color: "#292524" }}>{lead.name || "—"}</p>
+                        <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{lead.name || "—"}</p>
                       </div>
                       {lead.category && (
                         <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{lead.category}</p>
@@ -797,7 +797,7 @@ export default function LeadsPage() {
                         autoFocus rows={2}
                         placeholder="Add a note about this lead..."
                         className="flex-1 text-xs px-3 py-2 rounded-xl resize-none focus:outline-none"
-                        style={{ border: `1px solid ${AMBER}40`, backgroundColor: "#FFFDF9", color: "#292524" }}
+                        style={{ border: `1px solid ${AMBER}40`, backgroundColor: "#FFFDF9", color: "var(--color-text)" }}
                       />
                       <div className="flex flex-col gap-1">
                         <button type="button" onClick={() => handleSaveNote(lead.id)}
@@ -848,7 +848,7 @@ export default function LeadsPage() {
                   <Mail className="w-4 h-4" style={{ color: "#6366F1" }} />
                 </div>
                 <div>
-                  <p className="font-bold text-sm" style={{ color: "#292524" }}>AI Email Composer</p>
+                  <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>AI Email Composer</p>
                   <p className="text-xs" style={{ color: "#A8967E" }}>
                     To: <span className="font-mono">{emailingLead.email}</span>
                     {emailingLead.name ? ` · ${emailingLead.name}` : ""}
@@ -873,7 +873,7 @@ export default function LeadsPage() {
                 rows={3}
                 placeholder="E.g. I want to propose a collaboration for promoting a new product. Or: Pitch for an Instagram marketing package."
                 className="w-full text-xs px-3 py-2 rounded-xl resize-none focus:outline-none"
-                style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "#292524" }}
+                style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "var(--color-text)" }}
               />
               <p className="text-[10px]" style={{ color: "#C4AA8A" }}>
                 Leave blank for a generic introduction message. The AI will use the lead's name, bio and niche.
@@ -913,7 +913,7 @@ export default function LeadsPage() {
                     title="Email subject"
                     placeholder="Email subject"
                     className="w-full text-sm px-3 py-2 rounded-xl focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "#292524" }}
+                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "var(--color-text)" }}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -925,7 +925,7 @@ export default function LeadsPage() {
                     title="Email body"
                     placeholder="Email body"
                     className="w-full text-xs px-3 py-2 rounded-xl resize-y focus:outline-none font-mono"
-                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "#292524" }}
+                    style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFDF9", color: "var(--color-text)" }}
                   />
                 </div>
                 <div className="flex gap-2">

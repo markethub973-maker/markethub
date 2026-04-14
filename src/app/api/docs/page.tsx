@@ -354,13 +354,13 @@ const ENDPOINTS: Endpoint[] = [
 
 const METHOD_COLORS: Record<string, { bg: string; color: string }> = {
   GET: { bg: "rgba(16,185,129,0.12)", color: "#10B981" },
-  POST: { bg: "rgba(245,158,11,0.12)", color: "#F59E0B" },
+  POST: { bg: "rgba(245,158,11,0.12)", color: "var(--color-primary)" },
   DELETE: { bg: "rgba(239,68,68,0.12)", color: "#EF4444" },
 };
 
 export default function ApiDocsPage() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FFFCF7" }}>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
       <header
         className="border-b sticky top-0 z-10"
         style={{
@@ -373,9 +373,9 @@ export default function ApiDocsPage() {
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-sm font-bold"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Code className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Code className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             MarketHub Pro API
           </Link>
           <Link
@@ -390,7 +390,7 @@ export default function ApiDocsPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-10">
-        <h1 className="text-4xl font-bold mb-3" style={{ color: "#292524" }}>
+        <h1 className="text-4xl font-bold mb-3" style={{ color: "var(--color-text)" }}>
           API Documentation
         </h1>
         <p className="text-base mb-8" style={{ color: "#78614E" }}>
@@ -402,16 +402,16 @@ export default function ApiDocsPage() {
         <section className="mb-10">
           <h2
             className="text-xl font-bold mb-3 flex items-center gap-2"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Key className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Key className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             Authentication
           </h2>
-          <p className="text-sm mb-4" style={{ color: "#292524" }}>
+          <p className="text-sm mb-4" style={{ color: "var(--color-text)" }}>
             Every /api/v1/* endpoint requires a token via the{" "}
             <code
               className="px-1 py-0.5 rounded text-xs"
-              style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "#292524" }}
+              style={{ backgroundColor: "rgba(0,0,0,0.06)", color: "var(--color-text)" }}
             >
               Authorization: Bearer mkt_live_...
             </code>{" "}
@@ -430,7 +430,7 @@ export default function ApiDocsPage() {
             </p>
             <ol
               className="text-sm space-y-1 list-decimal pl-5"
-              style={{ color: "#292524" }}
+              style={{ color: "var(--color-text)" }}
             >
               <li>
                 Sign in to your account and open{" "}
@@ -459,9 +459,9 @@ export default function ApiDocsPage() {
         <section className="mb-10">
           <h2
             className="text-xl font-bold mb-3 flex items-center gap-2"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Zap className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Zap className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             Rate limits
           </h2>
           <div
@@ -469,7 +469,7 @@ export default function ApiDocsPage() {
             style={{
               backgroundColor: "white",
               border: "1px solid rgba(0,0,0,0.06)",
-              color: "#292524",
+              color: "var(--color-text)",
             }}
           >
             <ul className="space-y-2">
@@ -497,9 +497,9 @@ export default function ApiDocsPage() {
         <section className="mb-10">
           <h2
             className="text-xl font-bold mb-4 flex items-center gap-2"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Code className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Code className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             Endpoints
           </h2>
 
@@ -527,7 +527,7 @@ export default function ApiDocsPage() {
                     </span>
                     <code
                       className="text-sm font-mono"
-                      style={{ color: "#292524" }}
+                      style={{ color: "var(--color-text)" }}
                     >
                       {ep.path}
                     </code>
@@ -535,7 +535,7 @@ export default function ApiDocsPage() {
                   <div className="p-5">
                     <h3
                       className="text-base font-bold mb-1"
-                      style={{ color: "#292524" }}
+                      style={{ color: "var(--color-text)" }}
                     >
                       {ep.title}
                     </h3>
@@ -562,7 +562,7 @@ export default function ApiDocsPage() {
                                 <td className="py-2 pr-3">
                                   <code
                                     className="font-mono"
-                                    style={{ color: "#D97706" }}
+                                    style={{ color: "var(--color-primary-hover)" }}
                                   >
                                     {p.name}
                                   </code>
@@ -583,7 +583,7 @@ export default function ApiDocsPage() {
                                 </td>
                                 <td
                                   className="py-2 text-xs"
-                                  style={{ color: "#292524" }}
+                                  style={{ color: "var(--color-text)" }}
                                 >
                                   {p.desc}
                                 </td>
@@ -612,9 +612,9 @@ export default function ApiDocsPage() {
         <section className="mb-10">
           <h2
             className="text-xl font-bold mb-3 flex items-center gap-2"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <Lock className="w-5 h-5" style={{ color: "#F59E0B" }} />
+            <Lock className="w-5 h-5" style={{ color: "var(--color-primary)" }} />
             Errors
           </h2>
           <div
@@ -644,12 +644,12 @@ export default function ApiDocsPage() {
                     <td className="px-4 py-3">
                       <code
                         className="font-mono font-bold"
-                        style={{ color: "#292524" }}
+                        style={{ color: "var(--color-text)" }}
                       >
                         {code}
                       </code>
                     </td>
-                    <td className="px-4 py-3 text-xs" style={{ color: "#292524" }}>
+                    <td className="px-4 py-3 text-xs" style={{ color: "var(--color-text)" }}>
                       {desc}
                     </td>
                   </tr>
@@ -663,14 +663,14 @@ export default function ApiDocsPage() {
         <section className="mb-10">
           <h2
             className="text-xl font-bold mb-3 flex items-center gap-2"
-            style={{ color: "#292524" }}
+            style={{ color: "var(--color-text)" }}
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2"><path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2"/><path d="m6 17 3.13-5.78c.53-.97.43-2.22-.26-3.07A4 4 0 0 1 17 4.5"/><path d="m12 7.5-3.92 6.83"/></svg>
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" strokeWidth="2"><path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2"/><path d="m6 17 3.13-5.78c.53-.97.43-2.22-.26-3.07A4 4 0 0 1 17 4.5"/><path d="m12 7.5-3.92 6.83"/></svg>
             Webhooks
           </h2>
-          <p className="text-sm mb-4" style={{ color: "#292524" }}>
+          <p className="text-sm mb-4" style={{ color: "var(--color-text)" }}>
             Get notified at your URL when events happen. Each delivery is signed with HMAC-SHA256 using your webhook secret.
-            Configure webhooks at <Link href="/settings" className="underline" style={{ color: "#D97706" }}>Settings → Webhooks</Link>.
+            Configure webhooks at <Link href="/settings" className="underline" style={{ color: "var(--color-primary-hover)" }}>Settings → Webhooks</Link>.
           </p>
 
           <div
@@ -697,7 +697,7 @@ export default function ApiDocsPage() {
                 ["audio.generated", "When AI audio gen succeeds"],
               ].map(([ev, desc]) => (
                 <div key={ev} className="flex items-baseline gap-2">
-                  <code style={{ color: "#D97706" }}>{ev}</code>
+                  <code style={{ color: "var(--color-primary-hover)" }}>{ev}</code>
                   <span style={{ color: "#78614E" }}>— {desc}</span>
                 </div>
               ))}
@@ -759,7 +759,7 @@ def receive():
 
         {/* Integration recipes */}
         <section className="mb-10">
-          <h2 className="text-xl font-bold mb-3" style={{ color: "#292524" }}>
+          <h2 className="text-xl font-bold mb-3" style={{ color: "var(--color-text)" }}>
             Quick recipes
           </h2>
           <div className="space-y-3">
@@ -767,7 +767,7 @@ def receive():
               className="rounded-xl p-4"
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
-              <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+              <p className="text-sm font-bold mb-2" style={{ color: "var(--color-text)" }}>
                 Slack notification on every published post
               </p>
               <p className="text-xs mb-2" style={{ color: "#78614E" }}>
@@ -783,7 +783,7 @@ def receive():
               className="rounded-xl p-4"
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
-              <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+              <p className="text-sm font-bold mb-2" style={{ color: "var(--color-text)" }}>
                 Sync new leads into your CRM via Zapier
               </p>
               <p className="text-xs mb-2" style={{ color: "#78614E" }}>
@@ -801,7 +801,7 @@ def receive():
               className="rounded-xl p-4"
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
-              <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+              <p className="text-sm font-bold mb-2" style={{ color: "var(--color-text)" }}>
                 Push every AI image into Notion
               </p>
               <p className="text-xs mb-2" style={{ color: "#78614E" }}>
@@ -817,7 +817,7 @@ def receive():
               className="rounded-xl p-4"
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
-              <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+              <p className="text-sm font-bold mb-2" style={{ color: "var(--color-text)" }}>
                 Auto-fill alt-text on every uploaded image (WordPress)
               </p>
               <p className="text-xs mb-2" style={{ color: "#78614E" }}>
@@ -848,7 +848,7 @@ def receive():
             border: "1px solid rgba(245,158,11,0.2)",
           }}
         >
-          <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+          <p className="text-sm font-bold mb-2" style={{ color: "var(--color-text)" }}>
             More endpoints coming soon
           </p>
           <p className="text-xs mb-4" style={{ color: "#78614E" }}>
@@ -858,7 +858,7 @@ def receive():
             <a
               href="mailto:support@markethubpromo.com"
               className="font-bold underline"
-              style={{ color: "#D97706" }}
+              style={{ color: "var(--color-primary-hover)" }}
             >
               support@markethubpromo.com
             </a>

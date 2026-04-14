@@ -6,14 +6,14 @@ import { Plus, Trash2, Edit3, Send, Download, Check, X, Loader2, FileText, Dolla
 interface Service { name: string; qty: number; price: number; }
 interface Proposal { id: string; client_name: string; client_email: string; title: string; services: Service[]; total_value: number; currency: string; valid_days: number; status: string; notes: string; created_at: string; sent_at: string | null; }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
 const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
   draft: { bg: "rgba(100,116,139,0.1)", color: "#64748B", label: "Draft" },
   sent: { bg: "rgba(99,102,241,0.1)", color: "#6366F1", label: "Sent" },
   accepted: { bg: "rgba(16,185,129,0.1)", color: "#10B981", label: "Accepted" },
   rejected: { bg: "rgba(239,68,68,0.08)", color: "#EF4444", label: "Rejected" },
-  expired: { bg: "rgba(245,158,11,0.1)", color: "#F59E0B", label: "Expired" },
+  expired: { bg: "rgba(245,158,11,0.1)", color: "var(--color-primary)", label: "Expired" },
 };
 
 const emptyForm = { client_name: "", client_email: "", title: "", services: [{ name: "", qty: 1, price: 0 }] as Service[], currency: "USD", valid_days: 30, notes: "" };
@@ -120,7 +120,7 @@ export default function ProposalsPage() {
           <Plus className="w-4 h-4" /> New proposal
         </button>
 
-        {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>
+        {loading ? <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
         : proposals.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <FileText className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
@@ -134,11 +134,11 @@ export default function ProposalsPage() {
                 <div key={p.id} className="rounded-xl p-4 flex items-center gap-3" style={card}>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-bold text-sm" style={{ color: "#292524" }}>{p.title}</p>
+                      <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{p.title}</p>
                       <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{ backgroundColor: st.bg, color: st.color }}>{st.label}</span>
                     </div>
                     <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{p.client_name} {p.client_email ? `· ${p.client_email}` : ""}</p>
-                    <p className="text-sm font-bold mt-1" style={{ color: "#F59E0B" }}>${Number(p.total_value).toFixed(2)} {p.currency}</p>
+                    <p className="text-sm font-bold mt-1" style={{ color: "var(--color-primary)" }}>${Number(p.total_value).toFixed(2)} {p.currency}</p>
                   </div>
                   <div className="flex gap-1 shrink-0">
                     <button type="button" onClick={() => download(p)} title="Download PDF"
@@ -151,7 +151,7 @@ export default function ProposalsPage() {
                         {sendingId === p.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
                       </button>
                     )}
-                    <button type="button" onClick={() => openEdit(p)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "#D97706" }}><Edit3 className="w-3.5 h-3.5" /></button>
+                    <button type="button" onClick={() => openEdit(p)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(245,158,11,0.08)", color: "var(--color-primary-hover)" }}><Edit3 className="w-3.5 h-3.5" /></button>
                     <button type="button" onClick={() => del(p.id)} className="p-1.5 rounded-lg" style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#EF4444" }}><Trash2 className="w-3.5 h-3.5" /></button>
                   </div>
                 </div>
@@ -165,10 +165,10 @@ export default function ProposalsPage() {
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4"
           style={{ backgroundColor: "rgba(0,0,0,0.6)" }}
           onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
-          <div className="w-full md:max-w-2xl rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "#FFFCF7", maxHeight: "92dvh" }}>
-            <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0" }}>
-              <FileText className="w-4 h-4" style={{ color: "#F59E0B" }} />
-              <p className="font-bold text-sm flex-1" style={{ color: "#292524" }}>{editId ? "Edit proposal" : "New proposal"}</p>
+          <div className="w-full md:max-w-2xl rounded-t-2xl md:rounded-2xl overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "92dvh" }}>
+            <div className="flex items-center gap-3 px-4 py-3 shrink-0" style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}>
+              <FileText className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+              <p className="font-bold text-sm flex-1" style={{ color: "var(--color-text)" }}>{editId ? "Edit proposal" : "New proposal"}</p>
               <button type="button" onClick={() => setShowForm(false)} style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
             </div>
             <div className="overflow-y-auto p-4 space-y-3">
@@ -181,7 +181,7 @@ export default function ProposalsPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-medium" style={{ color: "#78614E" }}>Services</label>
-                  <button type="button" onClick={addService} className="text-xs flex items-center gap-1" style={{ color: "#F59E0B" }}><Plus className="w-3 h-3" />Add</button>
+                  <button type="button" onClick={addService} className="text-xs flex items-center gap-1" style={{ color: "var(--color-primary)" }}><Plus className="w-3 h-3" />Add</button>
                 </div>
                 <div className="space-y-2">
                   {form.services.map((s, i) => (
@@ -194,7 +194,7 @@ export default function ProposalsPage() {
                   ))}
                 </div>
                 <div className="flex justify-end mt-2">
-                  <p className="text-sm font-bold" style={{ color: "#F59E0B" }}>Total: ${totalValue.toFixed(2)} {form.currency}</p>
+                  <p className="text-sm font-bold" style={{ color: "var(--color-primary)" }}>Total: ${totalValue.toFixed(2)} {form.currency}</p>
                 </div>
               </div>
 

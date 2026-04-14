@@ -31,10 +31,10 @@ export default function ViewsChart() {
   }, []);
 
   return (
-    <div className="rounded-xl p-5" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+    <div className="rounded-xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="font-semibold" style={{ color: "#292524" }}>YouTube Trending RO — Views</h3>
+          <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>YouTube Trending RO — Views</h3>
           <p className="text-xs" style={{ color: "#A8967E" }}>Top 10 trending videos right now (millions)</p>
         </div>
         <span className="text-xs font-semibold px-2.5 py-1 rounded-full" style={{ backgroundColor: "rgba(255,0,0,0.08)", color: "#cc0000" }}>
@@ -52,12 +52,12 @@ export default function ViewsChart() {
             <XAxis type="number" tick={{ fontSize: 10, fill: "#C4AA8A" }} tickFormatter={(v) => v + "M"} />
             <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#5C4A35" }} width={160} />
             <Tooltip
-              contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFFCF7", color: "#292524" }}
+              contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)" }}
               formatter={(v) => [`${v}M views`, "Views"]}
             />
             <Bar dataKey="views" radius={[0, 4, 4, 0]}>
               {data.map((_, i) => (
-                <Cell key={i} fill={i === 0 ? "#FF0000" : i < 3 ? "#F59E0B" : "rgba(245,158,11,0.4)"} />
+                <Cell key={i} fill={i === 0 ? "#FF0000" : i < 3 ? "var(--color-primary)" : "rgba(245,158,11,0.4)"} />
               ))}
             </Bar>
           </BarChart>

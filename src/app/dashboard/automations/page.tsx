@@ -104,7 +104,7 @@ export default function AutomationsPage() {
   }, {});
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6" style={{ color: "#292524" }}>
+    <div className="max-w-6xl mx-auto p-6 space-y-6" style={{ color: "var(--color-text)" }}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Automations</h1>
@@ -159,7 +159,7 @@ export default function AutomationsPage() {
                       <p className="text-sm font-bold truncate flex-1">{t.name}</p>
                       <span
                         className="text-[9px] uppercase font-bold px-1.5 py-0.5 rounded"
-                        style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "#D97706" }}
+                        style={{ backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary-hover)" }}
                       >
                         {t.required_plan}
                       </span>
@@ -211,7 +211,7 @@ export default function AutomationsPage() {
               const color =
                 r.status === "succeeded" ? "#10B981"
                 : r.status === "failed" ? "#EF4444"
-                : "#F59E0B";
+                : "var(--color-primary)";
               return (
                 <div
                   key={r.id}

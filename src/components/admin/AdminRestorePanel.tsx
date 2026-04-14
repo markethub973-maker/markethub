@@ -4,7 +4,7 @@ import { useState } from "react";
 import { RotateCcw, CheckCircle2, XCircle, Loader2, ChevronDown, ExternalLink, Shield, Activity } from "lucide-react";
 
 const card = {
-  backgroundColor: "#FFFCF7",
+  backgroundColor: "var(--color-bg-secondary)",
   border: "1px solid rgba(245,215,160,0.25)",
   boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
 };
@@ -104,7 +104,7 @@ export default function AdminRestorePanel() {
             <Shield size={18} />
           </div>
           <div>
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>Sistema Restore & Health Monitor</p>
+            <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Sistema Restore & Health Monitor</p>
             <p className="text-xs" style={{ color: "#A8967E" }}>Auto-redeploy pe 3 consecutive failures · HMAC webhooks · Rate limiting activ</p>
           </div>
         </div>
@@ -194,7 +194,7 @@ export default function AdminRestorePanel() {
                 onClick={() => handleRestore(false)}
                 disabled={restoring}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-                style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "white" }}
+                style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "white" }}
               >
                 {restoring ? <Loader2 size={14} className="animate-spin" /> : <RotateCcw size={14} />}
                 Restore ultimul deployment
@@ -243,7 +243,7 @@ export default function AdminRestorePanel() {
                   <div key={d.id} className="flex items-center justify-between rounded-lg px-3 py-2"
                        style={{ background: "rgba(0,0,0,0.02)", border: "1px solid rgba(245,215,160,0.2)" }}>
                     <div>
-                      <p className="text-xs font-mono font-medium" style={{ color: "#292524" }}>{d.id.slice(0, 12)}…</p>
+                      <p className="text-xs font-mono font-medium" style={{ color: "var(--color-text)" }}>{d.id.slice(0, 12)}…</p>
                       <p className="text-xs" style={{ color: "#A8967E" }}>
                         {new Date(d.createdAt).toLocaleString("ro-RO")} · {d.url}
                       </p>

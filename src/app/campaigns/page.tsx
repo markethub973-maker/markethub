@@ -47,12 +47,12 @@ const platformColors: Record<string, string> = {
   LinkedIn: "#0A66C2",
   YouTube: "#FF0000",
   Twitter: "#1DA1F2",
-  Multi: "#F59E0B",
+  Multi: "var(--color-primary)",
 };
 
 const statusConfig: Record<string, { color: string; bg: string; label: string }> = {
   active: { color: "#10B981", bg: "rgba(16,185,129,0.1)", label: "Active" },
-  paused: { color: "#F59E0B", bg: "rgba(245,158,11,0.1)", label: "Paused" },
+  paused: { color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)", label: "Paused" },
   completed: { color: "#6366F1", bg: "rgba(99,102,241,0.1)", label: "Completed" },
   draft: { color: "#A8967E", bg: "rgba(168,150,126,0.1)", label: "Draft" },
 };
@@ -247,7 +247,7 @@ export default function CampaignsPage() {
   const hasSocialLinks = campaigns.some(c => c.igUsername || c.tiktokUsername);
 
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: "#13100D", color: "#FFF8F0" }}>
+    <div className="min-h-screen p-6" style={{ backgroundColor: "#13100D", color: "var(--color-bg)" }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -277,7 +277,7 @@ export default function CampaignsPage() {
             <button
               onClick={openNew}
               className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-all"
-              style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+              style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
             >
               <Plus className="w-4 h-4" />
               New Campaign
@@ -289,7 +289,7 @@ export default function CampaignsPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
           {[
             { label: "Active Campaigns", value: totals.activeCampaigns.toString(), icon: Target, color: "#10B981" },
-            { label: "Total Budget", value: fmtCurrency(totals.totalBudget), icon: DollarSign, color: "#F59E0B" },
+            { label: "Total Budget", value: fmtCurrency(totals.totalBudget), icon: DollarSign, color: "var(--color-primary)" },
             { label: "Spent", value: fmtCurrency(totals.totalSpent), icon: DollarSign, color: "#EF4444" },
             { label: "Revenue", value: fmtCurrency(totals.totalRevenue), icon: TrendingUp, color: "#10B981" },
             { label: "Conversions", value: fmt(totals.totalConversions), icon: BarChart3, color: "#6366F1" },
@@ -311,7 +311,7 @@ export default function CampaignsPage() {
         <div className="flex gap-3 mb-4">
           <select title="Filter by status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
             className="rounded-lg px-3 py-2 text-sm outline-none"
-            style={{ backgroundColor: "#1C1814", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }}>
+            style={{ backgroundColor: "#1C1814", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }}>
             <option value="all">All statuses</option>
             <option value="active">Active</option>
             <option value="paused">Paused</option>
@@ -320,7 +320,7 @@ export default function CampaignsPage() {
           </select>
           <select title="Filter by platform" value={filterPlatform} onChange={(e) => setFilterPlatform(e.target.value)}
             className="rounded-lg px-3 py-2 text-sm outline-none"
-            style={{ backgroundColor: "#1C1814", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }}>
+            style={{ backgroundColor: "#1C1814", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }}>
             <option value="all">All platforms</option>
             {Object.keys(platformColors).map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
@@ -340,7 +340,7 @@ export default function CampaignsPage() {
           {filtered.map((c) => {
             const expanded = expandedId === c.id;
             const sc = statusConfig[c.status];
-            const pc = platformColors[c.platform] || "#F59E0B";
+            const pc = platformColors[c.platform] || "var(--color-primary)";
             const budgetPct = c.budget > 0 ? Math.min((c.spent / c.budget) * 100, 100) : 0;
             const campaignRoi = roi(c);
             const isFetching = fetchingId === c.id;
@@ -353,7 +353,7 @@ export default function CampaignsPage() {
                 <div className="flex items-center gap-4 p-4 cursor-pointer" onClick={() => setExpandedId(expanded ? null : c.id)}>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <h3 className="text-sm font-bold truncate" style={{ color: "#FFF8F0" }}>{c.name}</h3>
+                      <h3 className="text-sm font-bold truncate" style={{ color: "var(--color-bg)" }}>{c.name}</h3>
                       <span className="text-xs px-2 py-0.5 rounded-full shrink-0" style={{ backgroundColor: sc.bg, color: sc.color }}>{sc.label}</span>
                       <span className="text-xs px-2 py-0.5 rounded-full shrink-0" style={{ backgroundColor: `${pc}15`, color: pc }}>{c.platform}</span>
                       {c.igUsername && (
@@ -380,7 +380,7 @@ export default function CampaignsPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-xs" style={{ color: "#A8967E" }}>Spent</p>
-                      <p className="text-sm font-bold" style={{ color: budgetPct > 90 ? "#EF4444" : "#FFF8F0" }}>{fmtCurrency(c.spent)}</p>
+                      <p className="text-sm font-bold" style={{ color: budgetPct > 90 ? "#EF4444" : "var(--color-bg)" }}>{fmtCurrency(c.spent)}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs" style={{ color: "#A8967E" }}>ROI</p>
@@ -439,7 +439,7 @@ export default function CampaignsPage() {
                       ].map((m, i) => (
                         <div key={i} className="rounded-lg p-3" style={{ backgroundColor: "rgba(255,248,240,0.03)" }}>
                           <p className="text-[10px] uppercase tracking-wider" style={{ color: "#6B5E50" }}>{m.label}</p>
-                          <p className="text-sm font-bold mt-1" style={{ color: "#FFF8F0" }}>{m.value}</p>
+                          <p className="text-sm font-bold mt-1" style={{ color: "var(--color-bg)" }}>{m.value}</p>
                         </div>
                       ))}
                     </div>
@@ -447,7 +447,7 @@ export default function CampaignsPage() {
                     {/* Social Data */}
                     {hasSocial && (sd.igFollowers || sd.ttFollowers) && (
                       <div>
-                        <p className="text-xs font-semibold mb-2" style={{ color: "#F59E0B" }}>Live social media data</p>
+                        <p className="text-xs font-semibold mb-2" style={{ color: "var(--color-primary)" }}>Live social media data</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
                           {sd.igFollowers !== undefined && [
                             { label: "IG Followers", value: fmt(sd.igFollowers), icon: Users, color: "#E4405F" },
@@ -460,7 +460,7 @@ export default function CampaignsPage() {
                                 <m.icon className="w-3 h-3" style={{ color: m.color }} />
                                 <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
                               </div>
-                              <p className="text-sm font-bold" style={{ color: "#FFF8F0" }}>{m.value}</p>
+                              <p className="text-sm font-bold" style={{ color: "var(--color-bg)" }}>{m.value}</p>
                             </div>
                           ))}
                           {sd.ttFollowers !== undefined && [
@@ -472,7 +472,7 @@ export default function CampaignsPage() {
                                 <m.icon className="w-3 h-3" style={{ color: m.color }} />
                                 <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
                               </div>
-                              <p className="text-sm font-bold" style={{ color: "#FFF8F0" }}>{m.value}</p>
+                              <p className="text-sm font-bold" style={{ color: "var(--color-bg)" }}>{m.value}</p>
                             </div>
                           ))}
                         </div>
@@ -486,7 +486,7 @@ export default function CampaignsPage() {
 
                     {hasSocial && !sd.igFollowers && !sd.ttFollowers && (
                       <div className="rounded-lg p-4 text-center" style={{ backgroundColor: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.15)" }}>
-                        <p className="text-xs" style={{ color: "#F59E0B" }}>
+                        <p className="text-xs" style={{ color: "var(--color-primary)" }}>
                           Click <RefreshCw className="w-3 h-3 inline" /> to sync social media data
                         </p>
                       </div>
@@ -524,7 +524,7 @@ export default function CampaignsPage() {
                   <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Ex: Black Friday 2026"
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
 
                 {/* Client */}
@@ -533,7 +533,7 @@ export default function CampaignsPage() {
                   <input value={form.client} onChange={(e) => setForm({ ...form, client: e.target.value })}
                     placeholder="Client name"
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
 
                 {/* Platform */}
@@ -541,7 +541,7 @@ export default function CampaignsPage() {
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Platform</label>
                   <select title="Platform" value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }}>
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }}>
                     {Object.keys(platformColors).map((p) => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
@@ -551,7 +551,7 @@ export default function CampaignsPage() {
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Status</label>
                   <select title="Status" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Campaign["status"] })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }}>
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }}>
                     {Object.entries(statusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                   </select>
                 </div>
@@ -564,7 +564,7 @@ export default function CampaignsPage() {
                   <input value={form.igUsername} onChange={(e) => setForm({ ...form, igUsername: e.target.value })}
                     placeholder="Ex: nike"
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(228,64,95,0.2)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(228,64,95,0.2)", color: "var(--color-bg)" }} />
                 </div>
 
                 {/* TikTok Username */}
@@ -575,7 +575,7 @@ export default function CampaignsPage() {
                   <input value={form.tiktokUsername} onChange={(e) => setForm({ ...form, tiktokUsername: e.target.value })}
                     placeholder="Ex: nike"
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(0,242,234,0.2)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(0,242,234,0.2)", color: "var(--color-bg)" }} />
                 </div>
 
                 {/* Budget */}
@@ -583,7 +583,7 @@ export default function CampaignsPage() {
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Budget (USD)</label>
                   <input type="number" value={form.budget || ""} onChange={(e) => setForm({ ...form, budget: parseFloat(e.target.value) || 0 })}
                     placeholder="0" className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
 
                 {/* Dates */}
@@ -591,13 +591,13 @@ export default function CampaignsPage() {
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Start date</label>
                   <input type="date" title="Start date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>End date</label>
                   <input type="date" title="End date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
 
                 {/* Spent, Impressions, Clicks, Conversions, Revenue */}
@@ -605,31 +605,31 @@ export default function CampaignsPage() {
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Spent (USD)</label>
                   <input type="number" placeholder="0" value={form.spent || ""} onChange={(e) => setForm({ ...form, spent: parseFloat(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Impressions</label>
                   <input type="number" placeholder="0" value={form.impressions || ""} onChange={(e) => setForm({ ...form, impressions: parseInt(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Clicks</label>
                   <input type="number" placeholder="0" value={form.clicks || ""} onChange={(e) => setForm({ ...form, clicks: parseInt(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Conversions</label>
                   <input type="number" placeholder="0" value={form.conversions || ""} onChange={(e) => setForm({ ...form, conversions: parseInt(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Revenue (USD)</label>
                   <input type="number" placeholder="0" value={form.revenue || ""} onChange={(e) => setForm({ ...form, revenue: parseFloat(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
 
                 {/* Notes */}
@@ -638,14 +638,14 @@ export default function CampaignsPage() {
                   <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     rows={3} placeholder="Note despre campanie..."
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "#FFF8F0" }} />
+                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-bg)" }} />
                 </div>
               </div>
 
               <div className="flex gap-3 mt-6">
                 <button type="button" onClick={handleSave} disabled={!form.name.trim()}
                   className="flex-1 py-2.5 rounded-lg text-sm font-bold disabled:opacity-40"
-                  style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}>
+                  style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}>
                   {editId ? "Save" : "Create campaign"}
                 </button>
                 <button type="button" onClick={() => setShowForm(false)}

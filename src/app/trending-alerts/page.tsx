@@ -16,15 +16,15 @@ interface AlertConfig {
   keywords: string[]; categories: string[]; email: string; active: boolean;
 }
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none" };
 
 function fmtDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short" }) + " " +
     new Date(iso).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
 }
 
-const scoreColor = (s: number) => s >= 70 ? "#EF4444" : s >= 40 ? "#F59E0B" : "#10B981";
+const scoreColor = (s: number) => s >= 70 ? "#EF4444" : s >= 40 ? "var(--color-primary)" : "#10B981";
 
 export default function TrendingAlertsPage() {
   const [alerts, setAlerts] = useState<TrendingAlert[]>([]);
@@ -93,7 +93,7 @@ export default function TrendingAlertsPage() {
         {/* Config */}
         {showConfig && (
           <div className="rounded-2xl p-4 space-y-3" style={{ ...card, border: "1px solid rgba(124,58,237,0.2)" }}>
-            <p className="font-bold text-sm" style={{ color: "#292524" }}>⚙️ Keywords to track</p>
+            <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>⚙️ Keywords to track</p>
             <div className="flex flex-wrap gap-1.5">
               {config.keywords.map(k => (
                 <span key={k} className="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs"
@@ -142,7 +142,7 @@ export default function TrendingAlertsPage() {
 
         {/* Alerts */}
         {loading ? (
-          <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} /></div>
+          <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} /></div>
         ) : alerts.length === 0 ? (
           <div className="rounded-2xl p-12 text-center" style={card}>
             <Bell className="w-8 h-8 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
@@ -162,7 +162,7 @@ export default function TrendingAlertsPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-bold text-sm" style={{ color: "#292524" }}>{alert.product}</p>
+                    <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>{alert.product}</p>
                     <span className="text-[10px] px-2 py-0.5 rounded-full font-bold"
                       style={{ backgroundColor: `${scoreColor(alert.trend_score)}15`, color: scoreColor(alert.trend_score) }}>
                       🔥 {alert.trend_score}/100

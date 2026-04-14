@@ -90,7 +90,7 @@ export default function AssetPicker({ onSelect }: Props) {
         >
           <div
             className="w-full max-w-3xl rounded-2xl overflow-hidden flex flex-col"
-            style={{ backgroundColor: "#FFFCF7", maxHeight: "85dvh" }}
+            style={{ backgroundColor: "var(--color-bg-secondary)", maxHeight: "85dvh" }}
           >
             <div
               className="flex items-center gap-3 px-5 py-3 border-b"
@@ -100,7 +100,7 @@ export default function AssetPicker({ onSelect }: Props) {
               }}
             >
               <Layers className="w-5 h-5" style={{ color: "#6366F1" }} />
-              <p className="flex-1 text-sm font-bold" style={{ color: "#292524" }}>
+              <p className="flex-1 text-sm font-bold" style={{ color: "var(--color-text)" }}>
                 Pick from your library
               </p>
               <button type="button" onClick={() => setOpen(false)} style={{ color: "#78614E" }}>
@@ -118,9 +118,9 @@ export default function AssetPicker({ onSelect }: Props) {
                   placeholder="Search prompts..."
                   className="w-full rounded-md pl-9 pr-3 py-1.5 text-sm"
                   style={{
-                    backgroundColor: "#FFF8F0",
+                    backgroundColor: "var(--color-bg)",
                     border: "1px solid rgba(245,215,160,0.4)",
-                    color: "#292524",
+                    color: "var(--color-text)",
                     outline: "none",
                   }}
                 />

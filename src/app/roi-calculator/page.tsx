@@ -3,8 +3,8 @@ import { useState } from "react";
 import Header from "@/components/layout/Header";
 import { TrendingUp, DollarSign, Users, Clock, BarChart3, Download } from "lucide-react";
 
-const card = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "#292524", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
+const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
 
 function fmtCurrency(n: number) { return "$" + Math.round(n).toLocaleString("en-US"); }
 function fmtNum(n: number) { return n >= 1e6 ? (n/1e6).toFixed(1)+"M" : n >= 1e3 ? (n/1e3).toFixed(1)+"K" : String(Math.round(n)); }
@@ -98,21 +98,21 @@ td{padding:8px 12px;border-bottom:1px solid rgba(245,215,160,0.3);font-size:13px
           {/* Inputs */}
           <div className="space-y-3">
             <div className="rounded-2xl p-4 space-y-3" style={card}>
-              <div className="flex items-center gap-2"><Users className="w-4 h-4" style={{ color: "#E1306C" }} /><p className="font-bold text-sm" style={{ color: "#292524" }}>Social Media Growth</p></div>
+              <div className="flex items-center gap-2"><Users className="w-4 h-4" style={{ color: "#E1306C" }} /><p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Social Media Growth</p></div>
               {[["followersStart", "Followers start"], ["followersEnd", "Followers end"], ["engagementRate", "Engagement rate (%)"], ["leadsGenerated", "Leads generated/month"]].map(([k, l]) => (
                 <div key={k}><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>{l}</label><input type="number" value={(inputs as any)[k] || ""} onChange={f(k as any)} style={inp} /></div>
               ))}
             </div>
 
             <div className="rounded-2xl p-4 space-y-3" style={card}>
-              <div className="flex items-center gap-2"><DollarSign className="w-4 h-4" style={{ color: "#10B981" }} /><p className="font-bold text-sm" style={{ color: "#292524" }}>Client Revenue</p></div>
+              <div className="flex items-center gap-2"><DollarSign className="w-4 h-4" style={{ color: "#10B981" }} /><p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Client Revenue</p></div>
               {[["avgOrderValue", "Average order value ($)"], ["conversionRate", "Leads conversion rate (%)"]].map(([k, l]) => (
                 <div key={k}><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>{l}</label><input type="number" value={(inputs as any)[k] || ""} onChange={f(k as any)} style={inp} /></div>
               ))}
             </div>
 
             <div className="rounded-2xl p-4 space-y-3" style={card}>
-              <div className="flex items-center gap-2"><Clock className="w-4 h-4" style={{ color: "#6366F1" }} /><p className="font-bold text-sm" style={{ color: "#292524" }}>Agency Cost</p></div>
+              <div className="flex items-center gap-2"><Clock className="w-4 h-4" style={{ color: "#6366F1" }} /><p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Agency Cost</p></div>
               {[["hoursPerMonth", "Hours worked/month"], ["hourlyRate", "Hourly rate ($)"], ["adSpend", "Ad spend ($)"], ["monthlyRetainer", "Monthly retainer ($)"]].map(([k, l]) => (
                 <div key={k}><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>{l}</label><input type="number" value={(inputs as any)[k] || ""} onChange={f(k as any)} style={inp} /></div>
               ))}
@@ -122,7 +122,7 @@ td{padding:8px 12px;border-bottom:1px solid rgba(245,215,160,0.3);font-size:13px
           {/* Results */}
           <div className="space-y-3">
             <div className="rounded-2xl p-5 space-y-4" style={{ ...card, border: `1px solid ${roi >= 0 ? "rgba(16,185,129,0.3)" : "rgba(239,68,68,0.2)"}` }}>
-              <p className="font-bold text-sm" style={{ color: "#292524" }}>Calculated results</p>
+              <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Calculated results</p>
 
               {[
                 { label: "Followers gained", value: `+${fmtNum(followersGained)} (${followersGrowthPct.toFixed(1)}%)`, color: "#E1306C" },
@@ -151,7 +151,7 @@ td{padding:8px 12px;border-bottom:1px solid rgba(245,215,160,0.3);font-size:13px
 
             {/* Summary text */}
             <div className="rounded-xl p-4 text-sm" style={{ backgroundColor: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.2)", color: "#78614E", lineHeight: 1.7 }}>
-              <strong style={{ color: "#292524" }}>Client takeaway:</strong><br />
+              <strong style={{ color: "var(--color-text)" }}>Client takeaway:</strong><br />
               By investing <strong>{fmtCurrency(agencyCost)}/month</strong> in our services, you generated a total value of <strong style={{ color: "#10B981" }}>{fmtCurrency(totalValue)}</strong>, with an ROI of <strong style={{ color: "#10B981" }}>{roiMultiple.toFixed(1)}x</strong>. You gained <strong>+{fmtNum(followersGained)} followers</strong> and <strong>{inputs.leadsGenerated} new leads</strong>.
             </div>
           </div>

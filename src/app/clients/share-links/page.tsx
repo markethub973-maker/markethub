@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 const cardStyle = {
-  backgroundColor: "#FFFCF7",
+  backgroundColor: "var(--color-bg-secondary)",
   border: "1px solid rgba(245,215,160,0.25)",
   boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
 };
@@ -36,7 +36,7 @@ function timeUntil(iso: string | null): { label: string; color: string } {
   if (ms < 0) return { label: "Expired", color: "#DC2626" };
   const days = Math.floor(ms / 86400000);
   if (days < 1) return { label: `${Math.floor(ms / 3600000)}h left`, color: "#DC2626" };
-  if (days < 7) return { label: `${days}d left`, color: "#F59E0B" };
+  if (days < 7) return { label: `${days}d left`, color: "var(--color-primary)" };
   return { label: `${days}d left`, color: "#16A34A" };
 }
 
@@ -204,13 +204,13 @@ export default function ShareLinksPage() {
         {!loading && links.length === 0 && (
           <div className="rounded-xl p-12 text-center" style={cardStyle}>
             <Link2 className="w-10 h-10 mx-auto mb-3" style={{ color: "#C4AA8A" }} />
-            <p className="text-sm font-semibold mb-1" style={{ color: "#292524" }}>No share links yet</p>
+            <p className="text-sm font-semibold mb-1" style={{ color: "var(--color-text)" }}>No share links yet</p>
             <p className="text-xs mb-4" style={{ color: "#A8967E" }}>
               Go to Clients and click <strong>Live Link</strong> next to any client to generate one.
             </p>
             <Link href="/clients"
               className="inline-flex items-center gap-1 px-5 py-2.5 rounded-xl text-sm font-bold"
-              style={{ backgroundColor: "#F59E0B", color: "white" }}>
+              style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
               <Plus className="w-4 h-4" />
               Go to Clients
             </Link>
@@ -220,7 +220,7 @@ export default function ShareLinksPage() {
         {/* Loading state */}
         {loading && (
           <div className="rounded-xl p-12 text-center" style={cardStyle}>
-            <Loader2 className="w-6 h-6 mx-auto animate-spin" style={{ color: "#F59E0B" }} />
+            <Loader2 className="w-6 h-6 mx-auto animate-spin" style={{ color: "var(--color-primary)" }} />
           </div>
         )}
 
@@ -231,7 +231,7 @@ export default function ShareLinksPage() {
             const url = typeof window !== "undefined" ? `${window.location.origin}/portal/${link.token}` : "";
             const isEditing = editingId === link.id;
             const isBusy = busyId === link.id;
-            const accent = link.accent_color || "#F59E0B";
+            const accent = link.accent_color || "var(--color-primary)";
 
             return (
               <div key={link.id} className="rounded-xl overflow-hidden" style={cardStyle}>
@@ -246,7 +246,7 @@ export default function ShareLinksPage() {
                   {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-sm font-bold" style={{ color: "#292524" }}>{link.client_name}</h3>
+                      <h3 className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{link.client_name}</h3>
                       {link.agency_name && (
                         <span className="text-xs px-2 py-0.5 rounded-full font-semibold"
                           style={{ backgroundColor: `${accent}15`, color: accent }}>
@@ -277,7 +277,7 @@ export default function ShareLinksPage() {
                       <div className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
                         <Eye className="w-3 h-3" /> Views
                       </div>
-                      <p className="text-sm font-bold mt-0.5" style={{ color: "#292524" }}>{link.view_count}</p>
+                      <p className="text-sm font-bold mt-0.5" style={{ color: "var(--color-text)" }}>{link.view_count}</p>
                     </div>
                     <div className="text-center">
                       <div className="flex items-center gap-1 text-xs" style={{ color: "#A8967E" }}>
@@ -306,7 +306,7 @@ export default function ShareLinksPage() {
                     <button type="button" onClick={() => extendLink(link.id, 30)} disabled={isBusy}
                       title="Extend +30 days"
                       className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold"
-                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#F59E0B" }}>
+                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)" }}>
                       {isBusy ? <Loader2 className="w-3 h-3 animate-spin" /> : <Calendar className="w-3 h-3" />}
                       <span className="hidden sm:inline">+30d</span>
                     </button>
@@ -340,26 +340,26 @@ export default function ShareLinksPage() {
                         <input type="text" placeholder="Your agency name" value={formAgencyName}
                           onChange={e => setFormAgencyName(e.target.value)}
                           className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                       </div>
                       <div>
                         <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Logo URL</label>
                         <input type="url" placeholder="https://..." value={formLogoUrl}
                           onChange={e => setFormLogoUrl(e.target.value)}
                           className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                       </div>
                       <div>
                         <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Accent color</label>
                         <div className="flex gap-2">
-                          <input type="color" value={formAccent || "#F59E0B"}
+                          <input type="color" value={formAccent || "var(--color-primary)"}
                             onChange={e => setFormAccent(e.target.value)}
                             className="w-10 h-9 rounded cursor-pointer"
                             style={{ border: "1px solid rgba(245,215,160,0.4)" }} />
-                          <input type="text" placeholder="#F59E0B" value={formAccent}
+                          <input type="text" placeholder="var(--color-primary)" value={formAccent}
                             onChange={e => setFormAccent(e.target.value)}
                             className="flex-1 px-3 py-2 text-sm rounded-lg focus:outline-none"
-                            style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }} />
+                            style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                         </div>
                       </div>
                     </div>
@@ -391,7 +391,7 @@ export default function ShareLinksPage() {
                           disabled={formClearPassword}
                           onChange={e => setFormPassword(e.target.value)}
                           className="flex-1 px-3 py-2 text-sm rounded-lg focus:outline-none disabled:opacity-50"
-                          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "#FFF8F0", color: "#292524" }}
+                          style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
                         />
                         {link.has_password && (
                           <label className="flex items-center gap-1 text-xs font-semibold cursor-pointer px-3 py-2 rounded-lg"
@@ -411,7 +411,7 @@ export default function ShareLinksPage() {
                     <div className="flex gap-2">
                       <button type="button" onClick={() => saveEdit(link.id)} disabled={isBusy}
                         className="flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold disabled:opacity-50"
-                        style={{ backgroundColor: "#F59E0B", color: "white" }}>
+                        style={{ backgroundColor: "var(--color-primary)", color: "white" }}>
                         {isBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                         Save
                       </button>

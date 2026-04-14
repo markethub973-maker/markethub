@@ -105,7 +105,7 @@ const PANEL_LABEL_STYLE: React.CSSProperties = {
   left: 12,
   fontSize: 9,
   letterSpacing: 2,
-  color: "#F59E0B",
+  color: "var(--color-primary)",
   background: "#0A0807",
   padding: "0 8px",
   fontFamily: "monospace",
@@ -115,7 +115,7 @@ const PANEL_LABEL_STYLE: React.CSSProperties = {
 const SEV_COLORS: Record<string, string> = {
   critical: "#EF4444",
   high: "#F97316",
-  medium: "#F59E0B",
+  medium: "var(--color-primary)",
   low: "#84CC16",
   info: "#0EA5E9",
 };
@@ -245,15 +245,15 @@ export default function CockpitPage() {
 
   if (sessionExpired) {
     return (
-      <div style={{ background: "#0A0807", minHeight: "100vh", color: "#FFF8F0", padding: 32, fontFamily: "monospace" }}>
-        <h1 style={{ color: "#F59E0B" }}>⚠️ Sesiune admin expirată</h1>
+      <div style={{ background: "#0A0807", minHeight: "100vh", color: "var(--color-bg)", padding: 32, fontFamily: "monospace" }}>
+        <h1 style={{ color: "var(--color-primary)" }}>⚠️ Sesiune admin expirată</h1>
         <p style={{ color: "#C4AA8A" }}>Re-loghează prin tunnel și revino.</p>
         <button
           onClick={() => window.location.reload()}
           style={{
             marginTop: 16,
             padding: "10px 20px",
-            background: "#F59E0B",
+            background: "var(--color-primary)",
             color: "#1C1814",
             border: "none",
             borderRadius: 8,
@@ -273,7 +273,7 @@ export default function CockpitPage() {
         minHeight: "100vh",
         background:
           "radial-gradient(ellipse at top, #1C1410 0%, #0A0807 40%, #000 100%)",
-        color: "#FFF8F0",
+        color: "var(--color-bg)",
         padding: "24px 20px 200px",
         fontFamily: "-apple-system,BlinkMacSystemFont,sans-serif",
       }}
@@ -299,7 +299,7 @@ export default function CockpitPage() {
             padding: "6px 12px",
             background: "rgba(245,158,11,0.08)",
             borderRadius: 6,
-            color: "#F59E0B",
+            color: "var(--color-primary)",
             textDecoration: "none",
             fontSize: 11,
             letterSpacing: 1,
@@ -308,8 +308,8 @@ export default function CockpitPage() {
           <ArrowLeft size={12} /> ADMIN
         </Link>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 10, color: "#F59E0B", letterSpacing: 3 }}>MARKETHUB PRO // COCKPIT</div>
-          <div style={{ fontSize: 20, fontWeight: 900, color: "#FFF8F0", marginTop: 2 }}>
+          <div style={{ fontSize: 10, color: "var(--color-primary)", letterSpacing: 3 }}>MARKETHUB PRO // COCKPIT</div>
+          <div style={{ fontSize: 20, fontWeight: 900, color: "var(--color-bg)", marginTop: 2 }}>
             MISSION CONTROL
           </div>
         </div>
@@ -318,7 +318,7 @@ export default function CockpitPage() {
             LAST UPDATE: {lastUpdate?.toLocaleTimeString("ro-RO") ?? "—"}
           </div>
           <div style={{ marginTop: 2 }}>
-            STATUS: <span style={{ color: status === "healthy" ? "#10B981" : status === "degraded" ? "#F59E0B" : "#EF4444" }}>
+            STATUS: <span style={{ color: status === "healthy" ? "#10B981" : status === "degraded" ? "var(--color-primary)" : "#EF4444" }}>
               {status.toUpperCase()}
             </span>
           </div>
@@ -387,7 +387,7 @@ export default function CockpitPage() {
                       boxShadow: `0 0 8px ${s.ok ? "#10B981" : "#EF4444"}`,
                     }}
                   />
-                  <div style={{ flex: 1, textTransform: "uppercase", color: "#FFF8F0", letterSpacing: 1 }}>
+                  <div style={{ flex: 1, textTransform: "uppercase", color: "var(--color-bg)", letterSpacing: 1 }}>
                     {name}
                   </div>
                   <div style={{ color: "#C4AA8A" }}>{s.latency_ms}ms</div>
@@ -425,7 +425,7 @@ export default function CockpitPage() {
           icon={<Radio size={12} />}
           value={state?.metrics.events_last_hour ?? 0}
           sub="security"
-          color="#F59E0B"
+          color="var(--color-primary)"
         />
         <GaugeCard
           label="HIGH 24H"
@@ -439,7 +439,7 @@ export default function CockpitPage() {
           icon={<Cpu size={12} />}
           value={state?.crons.recently_active ?? 0}
           sub="< 2h"
-          color="#F59E0B"
+          color="var(--color-primary)"
         />
       </div>
 
@@ -471,7 +471,7 @@ export default function CockpitPage() {
                     borderRadius: 2,
                   }}
                 >
-                  <div style={{ fontSize: 11, color: "#FFF8F0", fontWeight: 600 }}>{f.title}</div>
+                  <div style={{ fontSize: 11, color: "var(--color-bg)", fontWeight: 600 }}>{f.title}</div>
                   <div
                     style={{
                       fontSize: 9,
@@ -510,8 +510,8 @@ export default function CockpitPage() {
                     borderRadius: 3,
                   }}
                 >
-                  <span style={{ color: "#FFF8F0" }}>{row.ip}</span>
-                  <span style={{ color: "#F59E0B", fontWeight: 700 }}>{row.count}</span>
+                  <span style={{ color: "var(--color-bg)" }}>{row.ip}</span>
+                  <span style={{ color: "var(--color-primary)", fontWeight: 700 }}>{row.count}</span>
                 </div>
               ))}
             </div>
@@ -548,7 +548,7 @@ export default function CockpitPage() {
                 <span style={{ color: SEV_COLORS[e.severity] ?? "#C4AA8A", minWidth: 60 }}>
                   [{e.severity.toUpperCase()}]
                 </span>
-                <span style={{ color: "#F59E0B", minWidth: 130 }}>{e.type}</span>
+                <span style={{ color: "var(--color-primary)", minWidth: 130 }}>{e.type}</span>
                 <span style={{ color: "#C4AA8A" }}>{e.ip ?? "—"}</span>
               </div>
             ))}
@@ -576,7 +576,7 @@ export default function CockpitPage() {
                 <span style={{ color: "#78614E", minWidth: 70 }}>
                   {new Date(c.ran_at).toLocaleTimeString("ro-RO", { hour12: false })}
                 </span>
-                <span style={{ color: "#F59E0B" }}>{c.job}</span>
+                <span style={{ color: "var(--color-primary)" }}>{c.job}</span>
               </div>
             ))}
           </div>
@@ -605,7 +605,7 @@ export default function CockpitPage() {
               gap: 8,
               marginBottom: 8,
               fontSize: 9,
-              color: "#F59E0B",
+              color: "var(--color-primary)",
               letterSpacing: 2,
               fontFamily: "monospace",
             }}
@@ -638,7 +638,7 @@ export default function CockpitPage() {
                   style={{
                     fontFamily: "monospace",
                     fontSize: 9,
-                    color: "#F59E0B",
+                    color: "var(--color-primary)",
                     marginRight: 6,
                   }}
                 >
@@ -648,7 +648,7 @@ export default function CockpitPage() {
               </div>
             ))}
             {chatBusy && (
-              <div style={{ color: "#F59E0B", fontFamily: "monospace", fontSize: 10 }}>
+              <div style={{ color: "var(--color-primary)", fontFamily: "monospace", fontSize: 10 }}>
                 ▶ processing…
               </div>
             )}
@@ -668,7 +668,7 @@ export default function CockpitPage() {
                 border: "1px solid rgba(245,158,11,0.3)",
                 borderRadius: 4,
                 padding: "10px 14px",
-                color: "#FFF8F0",
+                color: "var(--color-bg)",
                 fontSize: 13,
                 fontFamily: "monospace",
                 outline: "none",
@@ -679,7 +679,7 @@ export default function CockpitPage() {
               disabled={chatBusy || !chatInput.trim()}
               style={{
                 padding: "10px 20px",
-                background: "#F59E0B",
+                background: "var(--color-primary)",
                 color: "#1C1814",
                 border: "none",
                 borderRadius: 4,
@@ -714,7 +714,7 @@ export default function CockpitPage() {
                   background: "rgba(245,158,11,0.08)",
                   border: "1px solid rgba(245,158,11,0.2)",
                   borderRadius: 100,
-                  color: "#F59E0B",
+                  color: "var(--color-primary)",
                   fontSize: 10,
                   cursor: "pointer",
                   fontFamily: "monospace",
@@ -752,7 +752,7 @@ function GaugeCard({
       <div
         style={{
           fontSize: 9,
-          color: "#F59E0B",
+          color: "var(--color-primary)",
           letterSpacing: 1.5,
           fontFamily: "monospace",
           marginBottom: 6,

@@ -50,7 +50,7 @@ const SEVERITY_ORDER: Finding["severity"][] = ["critical", "high", "medium", "lo
 const SEVERITY_STYLE: Record<Finding["severity"], { bg: string; fg: string; label: string }> = {
   critical: { bg: "#DC2626", fg: "#FEE2E2", label: "CRITICAL" },
   high: { bg: "#EA580C", fg: "#FED7AA", label: "HIGH" },
-  medium: { bg: "#F59E0B", fg: "#FEF3C7", label: "MEDIUM" },
+  medium: { bg: "var(--color-primary)", fg: "#FEF3C7", label: "MEDIUM" },
   low: { bg: "#65A30D", fg: "#D9F99D", label: "LOW" },
   info: { bg: "#0891B2", fg: "#CFFAFE", label: "INFO" },
 };
@@ -139,7 +139,7 @@ export default function MaintenancePage() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: "#1C1814", color: "#FFF8F0", padding: "32px 24px" }}>
+    <div style={{ minHeight: "100vh", background: "#1C1814", color: "var(--color-bg)", padding: "32px 24px" }}>
       <div style={{ maxWidth: 1000, margin: "0 auto" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
           <Link
@@ -166,7 +166,7 @@ export default function MaintenancePage() {
               marginLeft: "auto",
               padding: "8px 14px",
               background: "rgba(245,158,11,0.15)",
-              color: "#F59E0B",
+              color: "var(--color-primary)",
               border: "1px solid rgba(245,158,11,0.3)",
               borderRadius: 8,
               fontSize: 13,
@@ -291,7 +291,7 @@ export default function MaintenancePage() {
               style={{
                 marginTop: 16,
                 padding: "10px 20px",
-                background: "#F59E0B",
+                background: "var(--color-primary)",
                 color: "#1C1814",
                 border: "none",
                 borderRadius: 8,
@@ -459,7 +459,7 @@ function FindingCard({
     >
       <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "#FFF8F0", marginBottom: 6 }}>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--color-bg)", marginBottom: 6 }}>
             {finding.title}
           </div>
           <div style={{ fontSize: 11, color: "#C4AA8A" }}>
@@ -488,7 +488,7 @@ function FindingCard({
                     border: "1px solid rgba(245,158,11,0.25)",
                     borderRadius: 6,
                     fontSize: 12,
-                    color: "#F59E0B",
+                    color: "var(--color-primary)",
                     whiteSpace: "pre-wrap",
                     marginBottom: 10,
                   }}

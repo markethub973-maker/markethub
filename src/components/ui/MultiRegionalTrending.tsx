@@ -216,7 +216,7 @@ export default function MultiRegionalTrending() {
               onClick={() => setDropdownOpen((p) => !p)}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all"
               style={{
-                backgroundColor: dropdownOpen ? "#F59E0B" : "#FFFCF7",
+                backgroundColor: dropdownOpen ? "var(--color-primary)" : "var(--color-bg-secondary)",
                 color: dropdownOpen ? "#1C1814" : "#78614E",
                 border: "1px solid rgba(245,215,160,0.5)",
               }}
@@ -230,7 +230,7 @@ export default function MultiRegionalTrending() {
               <div
                 className="absolute top-full right-0 mt-1 z-50 rounded-xl overflow-hidden"
                 style={{
-                  backgroundColor: "#FFFCF7",
+                  backgroundColor: "var(--color-bg-secondary)",
                   border: "1px solid rgba(245,215,160,0.4)",
                   boxShadow: "0 8px 24px rgba(120,97,78,0.15)",
                   width: "220px",
@@ -246,7 +246,7 @@ export default function MultiRegionalTrending() {
                     className="w-full text-xs px-2.5 py-1.5 rounded-lg focus:outline-none"
                     style={{
                       backgroundColor: "rgba(245,215,160,0.15)",
-                      color: "#292524",
+                      color: "var(--color-text)",
                       border: "1px solid rgba(245,215,160,0.3)",
                     }}
                     autoFocus
@@ -287,8 +287,8 @@ export default function MultiRegionalTrending() {
             className="text-xs px-2.5 py-1 rounded-lg border transition-colors"
             style={
               categoryId === cat.id
-                ? { backgroundColor: "#F59E0B", color: "#1C1814", borderColor: "#F59E0B" }
-                : { backgroundColor: "#FFFCF7", color: "#78614E", borderColor: "rgba(245,215,160,0.4)" }
+                ? { backgroundColor: "var(--color-primary)", color: "#1C1814", borderColor: "var(--color-primary)" }
+                : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", borderColor: "rgba(245,215,160,0.4)" }
             }
           >
             {cat.label}
@@ -304,14 +304,14 @@ export default function MultiRegionalTrending() {
             className="flex items-center gap-1 rounded-lg overflow-hidden"
             style={{
               border: activeRegion === code ? "1px solid #F59E0B" : "1px solid rgba(245,215,160,0.35)",
-              backgroundColor: activeRegion === code ? "#FFF0CC" : "#FFFCF7",
+              backgroundColor: activeRegion === code ? "#FFF0CC" : "var(--color-bg-secondary)",
             }}
           >
             <button
               type="button"
               onClick={() => setActiveRegion(code)}
               className="text-xs px-2.5 py-1.5 font-medium"
-              style={{ color: activeRegion === code ? "#D97706" : "#78614E" }}
+              style={{ color: activeRegion === code ? "var(--color-primary-hover)" : "#78614E" }}
             >
               {countryMap[code]?.split(" ")[0]} {code}
             </button>
@@ -321,10 +321,10 @@ export default function MultiRegionalTrending() {
                 onClick={() => removeRegion(code)}
                 aria-label={`Remove ${code}`}
                 className="pr-1.5 py-1.5 transition-colors"
-                style={{ color: activeRegion === code ? "#D97706" : "#C4AA8A" }}
+                style={{ color: activeRegion === code ? "var(--color-primary-hover)" : "#C4AA8A" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#EF4444")}
                 onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = activeRegion === code ? "#D97706" : "#C4AA8A")
+                  (e.currentTarget.style.color = activeRegion === code ? "var(--color-primary-hover)" : "#C4AA8A")
                 }
               >
                 <X className="w-3 h-3" />
@@ -345,8 +345,8 @@ export default function MultiRegionalTrending() {
             placeholder="Filter by keyword..."
             className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg focus:outline-none"
             style={{
-              backgroundColor: "#FFFCF7",
-              color: "#292524",
+              backgroundColor: "var(--color-bg-secondary)",
+              color: "var(--color-text)",
               border: "1px solid rgba(245,215,160,0.35)",
             }}
           />
@@ -355,7 +355,7 @@ export default function MultiRegionalTrending() {
           type="button"
           onClick={applyKeyword}
           className="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors"
-          style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}
+          style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
         >
           Filter
         </button>
@@ -394,7 +394,7 @@ export default function MultiRegionalTrending() {
               rel="noopener noreferrer"
               className="flex items-center gap-3 p-2.5 rounded-lg transition-colors group"
               style={{ backgroundColor: "transparent" }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#FFF8F0")}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "var(--color-bg)")}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
             >
               <span className="text-xs font-bold text-[#C4AA8A] w-5 text-center shrink-0">{i + 1}</span>

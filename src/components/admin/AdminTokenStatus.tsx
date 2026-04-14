@@ -34,7 +34,7 @@ const PLATFORM_ICON: Record<string, string> = {
 
 const STATUS_CONFIG = {
   expired: { bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.3)", color: "#DC2626", label: "EXPIRED", icon: "🔴" },
-  warning: { bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.3)", color: "#D97706", label: "EXPIRES SOON", icon: "🟡" },
+  warning: { bg: "rgba(245,158,11,0.08)", border: "rgba(245,158,11,0.3)", color: "var(--color-primary-hover)", label: "EXPIRES SOON", icon: "🟡" },
   ok: { bg: "rgba(22,163,74,0.06)", border: "rgba(22,163,74,0.2)", color: "#16A34A", label: "OK", icon: "🟢" },
   never_expires: { bg: "rgba(99,102,241,0.06)", border: "rgba(99,102,241,0.15)", color: "#6366F1", label: "NO EXPIRY", icon: "🔵" },
   unknown: { bg: "rgba(120,97,78,0.06)", border: "rgba(120,97,78,0.15)", color: "#78614E", label: "UNKNOWN", icon: "⚪" },
@@ -81,7 +81,7 @@ export default function AdminTokenStatus() {
   const hasAlerts = (summary?.expired ?? 0) + (summary?.warning ?? 0) > 0;
 
   return (
-    <div className="rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)" }}>
+    <div className="rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
@@ -90,7 +90,7 @@ export default function AdminTokenStatus() {
             🔑
           </div>
           <div>
-            <h2 className="font-bold text-lg" style={{ color: "#292524" }}>API Credentials & Token Status</h2>
+            <h2 className="font-bold text-lg" style={{ color: "var(--color-text)" }}>API Credentials & Token Status</h2>
             <p className="text-xs" style={{ color: "#C4AA8A" }}>
               Credențiale externe: Instagram, Stripe, YouTube, Anthropic, RapidAPI
               {summary ? ` · ${summary.total} keys tracked` : ""}
@@ -100,7 +100,7 @@ export default function AdminTokenStatus() {
         </div>
         <button type="button" onClick={load} disabled={loading}
           className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg"
-          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}>
+          style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
           {loading ? (
             <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
@@ -121,7 +121,7 @@ export default function AdminTokenStatus() {
           )}
           {summary.warning > 0 && (
             <span className="text-xs font-bold px-3 py-1 rounded-full"
-              style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706", border: "1px solid rgba(245,158,11,0.3)" }}>
+              style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.3)" }}>
               🟡 {summary.warning} expiring soon
             </span>
           )}
@@ -142,7 +142,7 @@ export default function AdminTokenStatus() {
 
       {loading && !data ? (
         <div className="flex justify-center py-8">
-          <svg className="w-6 h-6 animate-spin" style={{ color: "#F59E0B" }} fill="none" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/>
           </svg>
@@ -161,7 +161,7 @@ export default function AdminTokenStatus() {
                   {/* Main info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center flex-wrap gap-2 mb-1">
-                      <span className="font-semibold text-sm" style={{ color: "#292524" }}>{t.label}</span>
+                      <span className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>{t.label}</span>
                       <span className="text-xs font-bold px-2 py-0.5 rounded-full"
                         style={{ backgroundColor: cfg.bg, color: cfg.color, border: `1px solid ${cfg.border}` }}>
                         {cfg.icon} {cfg.label}
@@ -214,7 +214,7 @@ export default function AdminTokenStatus() {
                       <div className="h-full rounded-full transition-all"
                         style={{
                           width: `${Math.min((t.expires_days / 60) * 100, 100)}%`,
-                          backgroundColor: t.expires_days <= 7 ? "#DC2626" : t.expires_days <= 14 ? "#F59E0B" : "#16A34A",
+                          backgroundColor: t.expires_days <= 7 ? "#DC2626" : t.expires_days <= 14 ? "var(--color-primary)" : "#16A34A",
                         }} />
                     </div>
                     <p className="text-xs mt-0.5 text-right" style={{ color: cfg.color }}>

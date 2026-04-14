@@ -14,7 +14,7 @@ import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
 import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame, Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
-const cardStyle = { backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
+const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
 type Tab = "recent" | "popular" | "search";
 
@@ -86,7 +86,7 @@ export default function MyChannelPage() {
         <div className="p-6">
           <div className="rounded-xl p-8 text-center" style={cardStyle}>
             <Youtube className="w-12 h-12 mx-auto mb-4" style={{ color: "#FF0000" }} />
-            <h3 className="font-bold text-lg mb-2" style={{ color: "#292524" }}>Channel not connected</h3>
+            <h3 className="font-bold text-lg mb-2" style={{ color: "var(--color-text)" }}>Channel not connected</h3>
             <p className="text-sm mb-4" style={{ color: "#A8967E" }}>Go to Settings and add your YouTube Channel ID.</p>
             <a href="/settings" className="inline-flex px-5 py-2.5 rounded-lg text-sm font-bold" style={{ backgroundColor: "#FF0000", color: "white" }}>
               Go to Settings →
@@ -112,7 +112,7 @@ export default function MyChannelPage() {
 
   const statCards = data ? [
     { icon: <Users className="w-4 h-4" />, label: "Subscribers", val: formatNumber(data.subscribers), color: "#FF0000" },
-    { icon: <Eye className="w-4 h-4" />, label: "Total Views", val: formatNumber(data.totalViews), color: "#F59E0B" },
+    { icon: <Eye className="w-4 h-4" />, label: "Total Views", val: formatNumber(data.totalViews), color: "var(--color-primary)" },
     { icon: <PlayCircle className="w-4 h-4" />, label: "Videos", val: formatNumber(data.videoCount), color: "#39D3B8" },
     { icon: <TrendingUp className="w-4 h-4" />, label: "Avg Views/Video", val: data.videoCount > 0 ? formatNumber(Math.round(data.totalViews / data.videoCount)) : "—", color: "#4F4DF0" },
   ] : [];
@@ -149,7 +149,7 @@ export default function MyChannelPage() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <Youtube className="w-4 h-4 flex-shrink-0" style={{ color: "#FF0000" }} />
-                <h2 className="font-bold text-lg truncate" style={{ color: "#292524" }}>{data.name}</h2>
+                <h2 className="font-bold text-lg truncate" style={{ color: "var(--color-text)" }}>{data.name}</h2>
               </div>
               {data.description && <p className="text-xs line-clamp-2" style={{ color: "#A8967E" }}>{data.description}</p>}
               <p className="text-xs mt-1" style={{ color: "#C4AA8A" }}>
@@ -172,7 +172,7 @@ export default function MyChannelPage() {
                   {s.icon}
                   <span className="text-xs font-semibold" style={{ color: "#A8967E" }}>{s.label}</span>
                 </div>
-                <p className="text-2xl font-bold" style={{ color: "#292524" }}>{s.val}</p>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>{s.val}</p>
               </div>
             ))}
           </div>
@@ -181,18 +181,18 @@ export default function MyChannelPage() {
         {/* Views Chart */}
         {chartData.length > 0 && (
           <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="font-semibold mb-4" style={{ color: "#292524" }}>Views per video (top 8)</h3>
+            <h3 className="font-semibold mb-4" style={{ color: "var(--color-text)" }}>Views per video (top 8)</h3>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 40 }}>
                 <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#A8967E" }} angle={-30} textAnchor="end" interval={0} />
                 <YAxis tick={{ fontSize: 10, fill: "#A8967E" }} tickFormatter={(v) => formatNumber(v)} />
                 <Tooltip
                   formatter={(v: any) => [formatNumber(v), "Views"]}
-                  contentStyle={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.35)", borderRadius: 8, fontSize: 12 }}
+                  contentStyle={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.35)", borderRadius: 8, fontSize: 12 }}
                 />
                 <Bar dataKey="views" radius={[4, 4, 0, 0]}>
                   {chartData.map((_: any, i: number) => (
-                    <Cell key={i} fill={i === 0 ? "#FF0000" : i === 1 ? "#F59E0B" : "#E8C87A"} />
+                    <Cell key={i} fill={i === 0 ? "#FF0000" : i === 1 ? "var(--color-primary)" : "#E8C87A"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -208,7 +208,7 @@ export default function MyChannelPage() {
               <button key={t.key} type="button" onClick={() => switchTab(t.key)}
                 className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-t-lg transition-colors"
                 style={tab === t.key
-                  ? { backgroundColor: "#FFFCF7", color: "#FF0000", borderBottom: "2px solid #FF0000" }
+                  ? { backgroundColor: "var(--color-bg-secondary)", color: "#FF0000", borderBottom: "2px solid #FF0000" }
                   : { color: "#A8967E" }}>
                 {t.icon}{t.label}
               </button>
@@ -242,7 +242,7 @@ export default function MyChannelPage() {
                 onKeyDown={e => e.key === "Enter" && handleSearch()}
                 placeholder="Search your channel..."
                 className="flex-1 px-3 py-2 text-sm rounded-lg focus:outline-none"
-                style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "#FFF8F0", color: "#292524" }}
+                style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
               />
               <button type="button" onClick={handleSearch}
                 className="px-4 py-2 rounded-lg text-sm font-bold"
@@ -304,7 +304,7 @@ export default function MyChannelPage() {
                             <div className="flex items-center justify-end gap-1"><MessageCircle className="w-3 h-3" />{formatNumber(v.comments)}</div>
                           </td>
                           <td className="px-3 py-3 text-right">
-                            <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "#D97706" }}>{er}%</span>
+                            <span className="text-xs font-semibold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)" }}>{er}%</span>
                           </td>
                           <td className="px-5 py-3 text-right text-xs" style={{ color: "#C4AA8A" }}>{formatDate(v.publishedAt)}</td>
                         </tr>
@@ -367,7 +367,7 @@ export default function MyChannelPage() {
         {/* YouTube Analytics */}
         <div
           className="rounded-xl p-5"
-          style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
+          style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
         >
           <YoutubeAnalyticsCard />
         </div>
