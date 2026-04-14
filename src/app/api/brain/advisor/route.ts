@@ -157,13 +157,24 @@ Output STRICT JSON:
       "action": "Imperative sentence — what to do",
       "why": "One line: specific reason tied to a number in the state",
       "priority": "high" | "medium" | "low",
-      "tool": "Which in-app tool or API handles this (e.g. 'Campaign Auto-Pilot', 'Brain Product Generator', 'Lead Enrichment', 'Content Strategy', 'Repurposer')",
+      "tool": "Which in-app tool or API handles this",
       "app_path": "/full/in-app/path",
-      "estimated_hours": 0.5
+      "estimated_hours": 0.5,
+      "prefill": {
+        "query": { "optional_key": "value that Brain can infer from state" },
+        "note": "Optional one-line hint shown next to the Execute button"
+      }
     }
   ],
-  "summary_headline": "One-sentence snapshot of current momentum (e.g. 'MRR growing 12% WoW — double down on top converter X.')"
+  "summary_headline": "One-sentence snapshot of current momentum"
 }
+
+The "prefill" object is OPTIONAL but powerful when you can be specific:
+  - /studio/campaign  → {"query": {"brief": "This week's brief based on state"}}
+  - /studio/repurpose → {"query": {"caption": "..."}}
+  - /brand/voice      → {"note": "Paste 5-10 past captions to auto-analyze"}
+  - /studio/content-gap → {"note": "Paste 5+ competitor captions + 3 of yours"}
+Include prefill ONLY if inferrable. Never fabricate quotes/stats.
 
 Rules:
 - If a critical foundation is missing (no brand voice set, no content strategy), make that #1 high-priority.
@@ -192,6 +203,7 @@ Rules:
         why: string;
         priority: "high" | "medium" | "low";
         tool: string;
+        prefill?: { query?: Record<string, string>; note?: string };
         app_path: string;
         estimated_hours?: number;
       }>;

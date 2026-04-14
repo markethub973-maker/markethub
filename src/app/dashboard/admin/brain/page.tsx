@@ -40,6 +40,38 @@ interface Recommendation {
   tool: string;
   app_path: string;
   estimated_hours?: number;
+  prefill?: {
+    query?: Record<string, string>;
+    note?: string;
+  };
+}
+
+interface DecisionLogEntry {
+  id: string;
+  action: string;
+  tool: string;
+  priority: string;
+  executed_at: number;
+  app_path_opened: string;
+}
+const LOG_KEY = "mhp_brain_decisions_v1";
+function loadLog(): DecisionLogEntry[] {
+  if (typeof window === "undefined") return [];
+  try { return JSON.parse(localStorage.getItem(LOG_KEY) ?? "[]") as DecisionLogEntry[]; }
+  catch { return []; }
+}
+function appendLog(entry: DecisionLogEntry) {
+  const all = [entry, ...loadLog()].slice(0, 50);
+  try { localStorage.setItem(LOG_KEY, JSON.stringify(all)); } catch { /* no-op */ }
+}
+function buildExecuteUrl(r: Recommendation): string {
+  if (!r.prefill?.query) return r.app_path;
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries(r.prefill.query)) {
+    if (typeof v === "string" && v.length > 0) q.set(k, v);
+  }
+  const qs = q.toString();
+  return qs ? `${r.app_path}?${qs}` : r.app_path;
 }
 
 interface BrainResponse {
@@ -61,6 +93,28 @@ export default function BrainCommandCenterPage() {
   const [data, setData] = useState<BrainResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [log, setLog] = useState<DecisionLogEntry[]>([]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setLog(loadLog());
+    setMounted(true);
+  }, []);
+
+  const onExecute = useCallback((r: Recommendation) => {
+    const url = buildExecuteUrl(r);
+    const entry: DecisionLogEntry = {
+      id: `d_${Date.now()}`,
+      action: r.action,
+      tool: r.tool,
+      priority: r.priority,
+      executed_at: Date.now(),
+      app_path_opened: url,
+    };
+    appendLog(entry);
+    setLog((prev) => [entry, ...prev].slice(0, 50));
+    window.open(url, "_blank");
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -227,20 +281,62 @@ export default function BrainCommandCenterPage() {
                         <p className="text-xs" style={{ color: "#78614E", lineHeight: 1.5 }}>
                           {r.why}
                         </p>
+                        {r.prefill?.note && (
+                          <p className="text-[11px] italic pt-1" style={{ color: "#A8967E" }}>
+                            → {r.prefill.note}
+                          </p>
+                        )}
                       </div>
-                      <Link
-                        href={r.app_path}
-                        target="_blank"
+                      <button
+                        type="button"
+                        onClick={() => onExecute(r)}
                         className="inline-flex items-center gap-1 px-4 py-2 rounded-lg text-xs font-bold flex-shrink-0"
                         style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "#1C1814" }}
                       >
                         Execute
                         <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      </button>
                     </div>
                   );
                 })}
             </section>
+
+            {/* Decision log */}
+            {mounted && log.length > 0 && (
+              <section className="space-y-2 pt-4">
+                <p className="text-xs font-bold uppercase tracking-wide" style={{ color: "#78614E" }}>
+                  Recent decisions · {log.length}
+                </p>
+                <div
+                  className="rounded-xl p-4 space-y-2"
+                  style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+                >
+                  {log.slice(0, 10).map((e) => {
+                    const meta = PRIO_META[e.priority] ?? PRIO_META.medium;
+                    return (
+                      <div key={e.id} className="flex items-center gap-3 py-1.5" style={{ borderBottom: "1px dashed rgba(0,0,0,0.05)" }}>
+                        <span
+                          className="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase"
+                          style={{ backgroundColor: meta.bg, color: meta.color }}
+                        >
+                          {meta.label}
+                        </span>
+                        <span className="text-[10px]" style={{ color: "#A8967E", minWidth: 60 }}>
+                          {e.tool}
+                        </span>
+                        <p className="text-xs flex-1" style={{ color: "var(--color-text)" }}>
+                          {e.action}
+                        </p>
+                        <span className="text-[10px]" style={{ color: "#A8967E" }}>
+                          {new Date(e.executed_at).toLocaleDateString()}{" "}
+                          {new Date(e.executed_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
 
             {/* Phase 3 teaser */}
             <section

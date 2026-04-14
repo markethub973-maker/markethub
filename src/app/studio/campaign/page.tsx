@@ -10,7 +10,8 @@
  *   ✕ Dismiss — drops this post from the plan
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import {
   Rocket, Loader2, Sparkles, CalendarPlus, X, Image as ImageIcon,
@@ -45,6 +46,13 @@ const PLATFORM_ICONS: Record<string, React.ElementType> = {
 
 export default function CampaignAutoPilotPage() {
   const [brief, setBrief] = useState("");
+
+  // Prefill from ?brief=... query param (CEO Brain Execute → deep link)
+  const sp = useSearchParams();
+  useEffect(() => {
+    const b = sp?.get("brief");
+    if (b && b.length > 0) setBrief(b);
+  }, [sp]);
   const [strategy, setStrategy] = useState("");
   const [posts, setPosts] = useState<PlannedPost[]>([]);
   const [planning, setPlanning] = useState(false);
