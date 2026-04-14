@@ -91,7 +91,8 @@ Rules:
 - Captions in ${isRo ? "Romanian" : "English"}, max 220 chars each, include 1-3 relevant hashtags.
 - Distribute across platforms (ex: 2 Instagram, 1 LinkedIn, 1 Facebook, 1 TikTok).
 - Image prompts must be usable for a fal.ai or DALL·E call — photographic, brand-appropriate, no people faces, no text-in-image.
-- Ground every caption in something specific from the website snippet.`;
+- Ground every caption in something specific from the website snippet.
+- Tone: warm human founder — professional but conversational, like a peer talking. Not academic, not corporate, not slangy.`;
 
   const r = await anthropic.messages.create({
     model: HAIKU,

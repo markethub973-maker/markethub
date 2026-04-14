@@ -48,7 +48,7 @@ Rules:
 - Round ${round === 1 ? "1: nudge + ask if timing is bad + restate the free demo offer" : "2: break-up message — 'sounds like timing isn't right, no problem, good luck with X, reach out anytime'"}.
 - Subject MUST reuse the subject tree (Re: or similar) — keep it short.
 - Sign "— Alex".
-- No emojis, no buzzwords.
+- No emojis, no buzzwords. Warm and human — write like one founder following up with another, not a CRM template. Avoid academic prose, avoid slang.
 
 OUTPUT STRICT JSON: {"subject":"...","body":"..."}`;
 

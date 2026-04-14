@@ -17,6 +17,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { generateJson } from "@/lib/llm";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -100,9 +101,10 @@ async function enrichLead(domain: string): Promise<EnrichedLead | null> {
 }
 
 async function composeMessage(
-  anthropic: Anthropic,
+  _anthropic: Anthropic,
   lead: EnrichedLead,
 ): Promise<{ subject: string; body: string } | null> {
+  void _anthropic; // kept for ABI-compat with callers, generateJson handles fallback.
   const ro = lead.language === "ro";
   const system = `You are Alex, founder of MarketHub Pro. You write short, honest, specific cold outreach emails offering a done-for-you AI marketing accelerator.
 - Romania pricing: €499 (regular €999). Link: https://get.markethubpromo.com/ro
@@ -117,38 +119,17 @@ Rules:
 - Max 110 words body, 60 char subject.
 - Sign "— Alex / Founder, MarketHub Pro / alex@markethubpromo.com".
 - Include the correct regional link based on domain.
-- No emojis, no buzzwords. Professional, direct.
+- No emojis, no buzzwords. Professional but warmly human — write like a founder on a Tuesday morning, not a marketing agency template. Avoid academic prose, avoid slang.
 
 OUTPUT STRICT JSON: {"subject":"...","body":"..."}`;
 
-  try {
-    const r = await anthropic.messages.create({
-      model: HAIKU,
-      max_tokens: 600,
-      system,
-      messages: [
-        {
-          role: "user",
-          content: `Target business:
-Domain: ${lead.domain}
-Language: ${lead.language}
-Site excerpt (first 2k chars of homepage):
-${lead.snippet}`,
-        },
-      ],
-    });
-    const text = r.content
-      .filter((b) => b.type === "text")
-      .map((b) => (b as { text: string }).text)
-      .join("");
-    const m = text.match(/\{[\s\S]*\}/);
-    if (!m) return null;
-    const parsed = JSON.parse(m[0]) as { subject?: string; body?: string };
-    if (!parsed.subject || !parsed.body) return null;
-    return { subject: parsed.subject.slice(0, 120), body: parsed.body };
-  } catch {
-    return null;
-  }
+  const parsed = await generateJson<{ subject?: string; body?: string }>(
+    system,
+    `Target business:\nDomain: ${lead.domain}\nLanguage: ${lead.language}\nSite excerpt (first 2k chars of homepage):\n${lead.snippet}`,
+    { maxTokens: 600 },
+  );
+  if (!parsed || !parsed.subject || !parsed.body) return null;
+  return { subject: parsed.subject.slice(0, 120), body: parsed.body };
 }
 
 async function sendEmail(to: string, subject: string, bodyText: string): Promise<boolean> {
