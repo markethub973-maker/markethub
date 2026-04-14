@@ -3,10 +3,12 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  X, CheckCircle2, Circle, Instagram, Search, Compass, Sparkles, ChevronRight, Zap,
+  X, CheckCircle2, Circle, Instagram, Search, Sparkles, ChevronRight, Zap,
+  Mic, Image as ImageIcon, CalendarDays, Rocket,
 } from "lucide-react";
 
-const STORAGE_KEY = "mkh_onboarding_v1";
+// v2 = reset state when steps changed (old v1 steps no longer apply)
+const STORAGE_KEY = "mkh_onboarding_v2";
 
 interface Step {
   id: string;
@@ -19,36 +21,60 @@ interface Step {
 
 const STEPS: Step[] = [
   {
+    id: "brand-voice",
+    label: "Set your Brand Voice",
+    description: "Every AI feature personalizes to your tone",
+    href: "/brand/voice",
+    icon: <Mic className="w-4 h-4" />,
+    accentColor: "#8B5CF6",
+  },
+  {
     id: "instagram",
-    label: "Connect Instagram",
-    description: "Link your account for live analytics",
+    label: "Connect a platform",
+    description: "Instagram, LinkedIn or Facebook — for auto-publish",
     href: "/integrations",
     icon: <Instagram className="w-4 h-4" />,
     accentColor: "#E1306C",
   },
   {
-    id: "leads",
-    label: "Find your first clients",
-    description: "Run Lead Finder with your offer",
-    href: "/lead-finder",
-    icon: <Search className="w-4 h-4" />,
+    id: "ai-image",
+    label: "Generate your first AI image",
+    description: "Studio → Image. ~5 seconds, ~$0.003",
+    href: "/studio/image",
+    icon: <ImageIcon className="w-4 h-4" />,
     accentColor: "#F59E0B",
   },
   {
-    id: "research",
-    label: "Research your market",
-    description: "Search leads on Google, OLX, Instagram",
-    href: "/research",
-    icon: <Compass className="w-4 h-4" />,
-    accentColor: "#8B5CF6",
-  },
-  {
-    id: "captions",
+    id: "caption",
     label: "Generate an AI caption",
-    description: "Caption for IG/TT post in 10 seconds",
+    description: "With your brand voice baked in",
     href: "/captions",
     icon: <Sparkles className="w-4 h-4" />,
     accentColor: "#16A34A",
+  },
+  {
+    id: "schedule",
+    label: "Schedule your first post",
+    description: "Calendar → pick a day → '+ New post'",
+    href: "/calendar",
+    icon: <CalendarDays className="w-4 h-4" />,
+    accentColor: "#0EA5E9",
+  },
+  {
+    id: "campaign",
+    label: "Launch a campaign (auto-pilot)",
+    description: "One brief → 5 ready posts with images",
+    href: "/studio/campaign",
+    icon: <Rocket className="w-4 h-4" />,
+    accentColor: "#EC4899",
+  },
+  {
+    id: "leads",
+    label: "Find your first clients",
+    description: "Lead Finder wizard with your offer",
+    href: "/lead-finder",
+    icon: <Search className="w-4 h-4" />,
+    accentColor: "#D97706",
   },
 ];
 
