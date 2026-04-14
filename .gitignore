@@ -49,3 +49,4 @@ next-env.d.ts
 .github/workflows/smoke-tests.yml
 .github/workflows/security-health-check.yml
 .github/workflows/verify-backups.yml
+.github/workflows/automation-cleanup.yml
