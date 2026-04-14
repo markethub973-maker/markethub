@@ -81,10 +81,11 @@ export default function ThemeSwitcher() {
     >
       <div
         ref={panelRef}
-        className="w-80 max-w-[calc(100vw-24px)] rounded-2xl shadow-2xl overflow-hidden mt-12"
+        className="w-80 max-w-[calc(100vw-24px)] rounded-2xl shadow-2xl overflow-y-auto mt-12"
         style={{
           backgroundColor: "var(--color-bg)",
           border: "1px solid var(--color-border)",
+          maxHeight: "calc(100vh - 80px)",
         }}
       >
         {/* Header */}
