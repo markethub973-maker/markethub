@@ -369,10 +369,10 @@ export default function PromoPage() {
             <span className="font-bold text-base" style={{ color: C.text }}>MarketHub Pro</span>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm" style={{ color: C.muted }}>
-            <a href="#features">Features</a>
-            <a href="#agents">AI Agents</a>
-            <a href="#pricing">Pricing</a>
             <Link href="/features">Features</Link>
+            <Link href="/for/agencies">Solutions</Link>
+            <Link href="/vs/buffer">Compare</Link>
+            <a href="#pricing">Pricing</a>
             <a href="#blog">Blog</a>
             <a href="#faq">FAQ</a>
           </div>

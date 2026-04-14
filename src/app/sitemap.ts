@@ -1,4 +1,7 @@
 import type { MetadataRoute } from "next";
+import { FEATURES } from "@/lib/featuresData";
+import { USE_CASES } from "@/lib/useCasesData";
+import { COMPARISONS } from "@/lib/comparisonsData";
 
 const SITE = "https://markethubpromo.com";
 
@@ -62,6 +65,33 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "yearly",
       priority: 0.3,
     },
+    // /features index + per-feature deep dives
+    {
+      url: `${SITE}/features`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.9,
+    },
+    ...FEATURES.map((f) => ({
+      url: `${SITE}/features/${f.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+    // /for/<audience> use-case landing pages
+    ...USE_CASES.map((u) => ({
+      url: `${SITE}/for/${u.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
+    // /vs/<competitor> comparison pages — high SEO intent
+    ...COMPARISONS.map((c) => ({
+      url: `${SITE}/vs/${c.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    })),
     // NOTE: /login intentionally NOT included — robots: noindex per SEO
     // metadata. Crawlers find it via direct links if needed.
   ];
