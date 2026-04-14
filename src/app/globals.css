@@ -293,6 +293,49 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.90);
 }
 
+/* ─── Chart bars (SVG) — glass drop-shadow + brightness lift ────── */
+/* Recharts renders bar shapes as <path> or <rect> inside .recharts-rectangle
+   containers. Pie/donut segments use .recharts-sector. CSS filters work on
+   SVG elements, so we apply drop-shadow for 3D + slight brightness/saturation
+   bump to mimic glass polish without changing the palette. */
+.recharts-bar-rectangle,
+.recharts-rectangle,
+.recharts-bar-rectangle path,
+.recharts-bar-rectangle rect,
+.recharts-sector,
+svg .recharts-layer path,
+svg .recharts-layer rect {
+  filter:
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15))
+    drop-shadow(0 4px 8px rgba(0, 0, 0, 0.10))
+    saturate(1.2)
+    brightness(1.05);
+  transition: filter 0.25s ease, transform 0.25s ease;
+}
+
+.recharts-bar-rectangle:hover,
+.recharts-rectangle:hover,
+.recharts-sector:hover {
+  filter:
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.20))
+    drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15))
+    saturate(1.35)
+    brightness(1.12);
+}
+
+/* Make bar outlines pop as a thin glass rim */
+.recharts-bar-rectangle path,
+.recharts-bar-rectangle rect {
+  stroke: rgba(255, 255, 255, 0.45);
+  stroke-width: 1;
+}
+
+/* Donut / pie slices — same glass lift */
+.recharts-pie-sector path {
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 2;
+}
+
 /* ─── Base styles ─────────────────────────────────────────────── */
 * {
   box-sizing: border-box;
