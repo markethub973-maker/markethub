@@ -501,6 +501,162 @@ export default function ApiDocsPage() {
           </div>
         </section>
 
+        {/* Webhooks */}
+        <section className="mb-10">
+          <h2
+            className="text-xl font-bold mb-3 flex items-center gap-2"
+            style={{ color: "#292524" }}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" strokeWidth="2"><path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2"/><path d="m6 17 3.13-5.78c.53-.97.43-2.22-.26-3.07A4 4 0 0 1 17 4.5"/><path d="m12 7.5-3.92 6.83"/></svg>
+            Webhooks
+          </h2>
+          <p className="text-sm mb-4" style={{ color: "#292524" }}>
+            Get notified at your URL when events happen. Each delivery is signed with HMAC-SHA256 using your webhook secret.
+            Configure webhooks at <Link href="/settings" className="underline" style={{ color: "#D97706" }}>Settings → Webhooks</Link>.
+          </p>
+
+          <div
+            className="rounded-xl p-4 mb-4"
+            style={{
+              backgroundColor: "white",
+              border: "1px solid rgba(0,0,0,0.06)",
+            }}
+          >
+            <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#78614E" }}>
+              Available events (10)
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
+              {[
+                ["post.scheduled", "When a post is created via API"],
+                ["post.published", "When auto-post cron publishes successfully"],
+                ["post.failed", "When auto-post fails on a platform"],
+                ["lead.created", "When a lead is created via API"],
+                ["lead.status_changed", "When pipeline_status updates"],
+                ["automation.completed", "When an n8n workflow finishes"],
+                ["automation.failed", "When an n8n workflow errors"],
+                ["image.generated", "When AI image gen succeeds"],
+                ["video.generated", "When AI video gen succeeds"],
+                ["audio.generated", "When AI audio gen succeeds"],
+              ].map(([ev, desc]) => (
+                <div key={ev} className="flex items-baseline gap-2">
+                  <code style={{ color: "#D97706" }}>{ev}</code>
+                  <span style={{ color: "#78614E" }}>— {desc}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: "#78614E" }}>
+            HMAC verification (Node.js)
+          </p>
+          <DocsCopyBlock
+            label="server.js"
+            code={`import crypto from "node:crypto";
+
+app.post("/webhooks/markethub", express.raw({ type: "application/json" }), (req, res) => {
+  const secret = process.env.MKT_WEBHOOK_SECRET;
+  const sig = req.headers["x-markethub-signature"]; // "sha256=<hex>"
+  const expected = "sha256=" + crypto.createHmac("sha256", secret)
+    .update(req.body)
+    .digest("hex");
+
+  // Constant-time compare
+  if (sig.length !== expected.length || !crypto.timingSafeEqual(
+    Buffer.from(sig), Buffer.from(expected)
+  )) {
+    return res.status(401).end();
+  }
+
+  const event = req.headers["x-markethub-event"];
+  const payload = JSON.parse(req.body);
+  console.log("Got event:", event, payload.data);
+  res.status(200).end();
+});`}
+          />
+
+          <p className="text-xs font-bold uppercase tracking-wider mt-4 mb-2" style={{ color: "#78614E" }}>
+            HMAC verification (Python)
+          </p>
+          <DocsCopyBlock
+            label="webhook_receiver.py"
+            code={`import hmac, hashlib, os, json
+from flask import Flask, request
+
+app = Flask(__name__)
+SECRET = os.environ["MKT_WEBHOOK_SECRET"].encode()
+
+@app.route("/webhooks/markethub", methods=["POST"])
+def receive():
+    raw = request.get_data()  # raw bytes — DON'T parse JSON first
+    sig = request.headers.get("X-MarketHub-Signature", "")
+    expected = "sha256=" + hmac.new(SECRET, raw, hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(sig, expected):
+        return "", 401
+    event = request.headers.get("X-MarketHub-Event")
+    payload = json.loads(raw)
+    print(f"Got {event}:", payload["data"])
+    return "", 200`}
+          />
+        </section>
+
+        {/* Integration recipes */}
+        <section className="mb-10">
+          <h2 className="text-xl font-bold mb-3" style={{ color: "#292524" }}>
+            Quick recipes
+          </h2>
+          <div className="space-y-3">
+            <div
+              className="rounded-xl p-4"
+              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+                Slack notification on every published post
+              </p>
+              <p className="text-xs mb-2" style={{ color: "#78614E" }}>
+                1. Create a Slack incoming webhook URL.
+                2. In MarketHub /settings → Webhooks → New, paste the Slack URL,
+                subscribe to <code>post.published</code>.
+                3. Slack receives a POST per published post — write a tiny
+                middleware to format the payload into a Slack message.
+              </p>
+            </div>
+
+            <div
+              className="rounded-xl p-4"
+              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+                Sync new leads into your CRM via Zapier
+              </p>
+              <p className="text-xs mb-2" style={{ color: "#78614E" }}>
+                1. Zap Trigger: <em>Webhooks by Zapier · Catch Hook</em>.
+                2. Copy the Zap webhook URL.
+                3. In MarketHub: New webhook → paste URL, subscribe to
+                <code>lead.created</code>.
+                4. Add a Zap action: <em>HubSpot · Create Contact</em> mapping
+                fields from <code>data.name</code>, <code>data.email</code>, etc.
+                Now every API-created lead lands in HubSpot automatically.
+              </p>
+            </div>
+
+            <div
+              className="rounded-xl p-4"
+              style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+            >
+              <p className="text-sm font-bold mb-2" style={{ color: "#292524" }}>
+                Push every AI image into Notion
+              </p>
+              <p className="text-xs mb-2" style={{ color: "#78614E" }}>
+                1. In Make.com, create a scenario with HTTP Webhook trigger.
+                2. Subscribe to <code>image.generated</code>.
+                3. Add Notion module: Create page in your Assets database with
+                <code>data.image_url</code>, <code>data.prompt</code>,
+                <code>data.cost_usd</code>. Done — every AI image is archived.
+              </p>
+            </div>
+          </div>
+        </section>
+
         <div
           className="rounded-xl p-5 text-center"
           style={{
