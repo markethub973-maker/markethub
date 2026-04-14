@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
+import { buildBrandVoicePrompt } from "@/lib/brandVoice";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -77,12 +78,17 @@ export async function POST(req: NextRequest) {
     ? `Target platforms: ${body.platforms.join(", ")}.\n\n`
     : "";
 
+  // Append brand voice (if configured) to the system prompt so the plan
+  // sounds like the user's past content, not generic SaaS copy.
+  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const fullSystem = SYSTEM + voicePrompt;
+
   try {
     const anthropic = new Anthropic({ apiKey });
     const r = await anthropic.messages.create({
       model: HAIKU,
       max_tokens: 3000,
-      system: SYSTEM,
+      system: fullSystem,
       messages: [{ role: "user", content: `${context}Brief: ${body.brief.trim()}` }],
     });
     const text = r.content

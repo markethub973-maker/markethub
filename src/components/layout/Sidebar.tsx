@@ -70,6 +70,7 @@ const navGroups = [
       { href: "/studio/image", label: "AI Image Studio", icon: Sparkles },
       { href: "/studio/video", label: "AI Video Studio", icon: Sparkles },
       { href: "/studio/campaign", label: "Campaign Auto-Pilot", icon: Sparkles },
+      { href: "/brand/voice", label: "Brand Voice", icon: Sparkles },
       { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
       { href: "/bio", label: "Link in Bio", icon: Link2 },
       { href: "/monthly-report", label: "Performance Report", icon: BarChart3 },
