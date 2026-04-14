@@ -160,6 +160,145 @@ const ENDPOINTS: Endpoint[] = [
   },
   {
     method: "POST",
+    path: "/api/v1/ai/caption-variants",
+    title: "Generate 3 caption variants (A/B test)",
+    description: "Given a draft caption, returns 3 angles: punchy / story / question. Uses your Brand Voice. Pro+.",
+    params: [
+      { name: "caption", required: true, type: "string", desc: "Source caption (10-3000 chars)" },
+      { name: "platform", required: false, type: "string", desc: "instagram (default) | linkedin | twitter | tiktok | facebook | youtube" },
+    ],
+    example_curl: `curl -X POST -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"caption":"Here is why we built MarketHub Pro...","platform":"linkedin"}' \\
+  https://markethubpromo.com/api/v1/ai/caption-variants`,
+    example_response: `{
+  "ok": true,
+  "variants": [
+    { "angle": "punchy", "caption": "..." },
+    { "angle": "story", "caption": "..." },
+    { "angle": "question", "caption": "..." }
+  ]
+}`,
+  },
+  {
+    method: "POST",
+    path: "/api/v1/ai/repurpose",
+    title: "Repurpose one caption across platforms",
+    description: "One caption → Instagram + LinkedIn + Twitter + TikTok + YouTube Shorts variants, each following that platform's rules. Pro+.",
+    params: [
+      { name: "caption", required: true, type: "string", desc: "Source caption (10-3000 chars)" },
+      { name: "source_platform", required: false, type: "string", desc: "Platform the original was written for (affects tone inference)" },
+      { name: "targets", required: false, type: "string[]", desc: "Subset like ['instagram','twitter']. Defaults to all 5." },
+    ],
+    example_curl: `curl -X POST -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"caption":"Our Q3 numbers are in...","source_platform":"linkedin","targets":["instagram","twitter","tiktok"]}' \\
+  https://markethubpromo.com/api/v1/ai/repurpose`,
+    example_response: `{ "ok": true, "variants": { "instagram": "...", "twitter": "...", "tiktok": "..." } }`,
+  },
+  {
+    method: "POST",
+    path: "/api/v1/ai/recycle",
+    title: "Refresh a past post in 3 angles",
+    description: "Evergreen Post Recycler: seasonal / counterexample / specific-story refresh angles of a previously published caption. Pro+.",
+    params: [
+      { name: "caption", required: true, type: "string", desc: "Original caption (the one that already performed)" },
+      { name: "platform", required: false, type: "string", desc: "instagram (default) | linkedin | twitter | ..." },
+      { name: "original_date", required: false, type: "ISO date", desc: "When the original ran (gives AI age context)" },
+    ],
+    example_curl: `curl -X POST -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"caption":"3 lessons from scaling to 100 clients","platform":"linkedin","original_date":"2025-11-04"}' \\
+  https://markethubpromo.com/api/v1/ai/recycle`,
+    example_response: `{
+  "ok": true,
+  "variants": [
+    { "angle": "seasonal", "caption": "..." },
+    { "angle": "counterexample", "caption": "..." },
+    { "angle": "specific-story", "caption": "..." }
+  ]
+}`,
+  },
+  {
+    method: "POST",
+    path: "/api/v1/ai/ab-winner",
+    title: "Pick the stronger of two draft captions",
+    description: "Returns winner + per-draft scores + 3 reasons + a merged 'best of both' caption. Pro+.",
+    params: [
+      { name: "variant_a", required: true, type: "string", desc: "First draft (>=10 chars)" },
+      { name: "variant_b", required: true, type: "string", desc: "Second draft (>=10 chars, distinct from A)" },
+      { name: "platform", required: false, type: "string", desc: "Target platform for scoring" },
+      { name: "has_image", required: false, type: "boolean", desc: "Whether the post will include media" },
+      { name: "goal", required: false, type: "string", desc: "Optional outcome goal ('signups', 'comments'...)" },
+    ],
+    example_curl: `curl -X POST -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"variant_a":"Most agencies waste 8h/week on...","variant_b":"What if you got 8h back every week?","platform":"linkedin","has_image":true}' \\
+  https://markethubpromo.com/api/v1/ai/ab-winner`,
+    example_response: `{
+  "ok": true,
+  "winner": "B",
+  "confidence": 78,
+  "scores": { "a": 62, "b": 81 },
+  "reasons": ["stronger hook", "question opens a loop", "matches LinkedIn style"],
+  "best_of_both": "..."
+}`,
+  },
+  {
+    method: "POST",
+    path: "/api/v1/ai/hashtags",
+    title: "Platform-aware hashtag suggestions",
+    description: "Generate hashtags from a caption. Count and style tuned to the platform. Pro+.",
+    params: [
+      { name: "caption", required: true, type: "string", desc: "Caption to base hashtags on" },
+      { name: "platform", required: false, type: "string", desc: "instagram (default) | linkedin | tiktok | ..." },
+      { name: "count", required: false, type: "number", desc: "3-30, default 15" },
+    ],
+    example_curl: `curl -X POST -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"caption":"New AI tool for marketing agencies","platform":"instagram","count":15}' \\
+  https://markethubpromo.com/api/v1/ai/hashtags`,
+    example_response: `{ "ok": true, "hashtags": ["#marketingagency", "#aitools", ...], "platform": "instagram", "count": 15 }`,
+  },
+  {
+    method: "POST",
+    path: "/api/v1/ai/thumbnail",
+    title: "Generate YouTube thumbnail (1280x720)",
+    description: "Title + topic + style → 16:9 thumbnail image. Auto-saved to Asset Library. Pro+.",
+    params: [
+      { name: "title", required: true, type: "string", desc: "Title text to render on the thumbnail (3-120 chars)" },
+      { name: "topic", required: false, type: "string", desc: "Niche / topic hint" },
+      { name: "accent", required: false, type: "string", desc: "Visual subject phrase ('a shocked YouTuber', 'a glowing laptop')" },
+      { name: "style", required: false, type: "string", desc: "bold | minimal | cinematic | meme | tech | tutorial" },
+    ],
+    example_curl: `curl -X POST -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"title":"I Tested 10 AI Tools","topic":"productivity","style":"bold"}' \\
+  https://markethubpromo.com/api/v1/ai/thumbnail`,
+    example_response: `{ "ok": true, "id": "uuid", "image_url": "https://...", "cost_usd": 0.003, "duration_ms": 5100 }`,
+  },
+  {
+    method: "POST",
+    path: "/api/v1/ai/video-caption",
+    title: "Video URL → transcript + captions + hashtags",
+    description: "Transcribes a public video/audio URL via Whisper then writes platform-ready captions in one shot. Pro+.",
+    params: [
+      { name: "video_url", required: true, type: "string", desc: "Public https URL (mp4/mov/webm/mp3/m4a/wav)" },
+      { name: "targets", required: false, type: "string[]", desc: "Subset of platforms. Default: ['instagram','linkedin','tiktok']" },
+    ],
+    example_curl: `curl -X POST -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"video_url":"https://cdn.example.com/reel.mp4","targets":["instagram","tiktok"]}' \\
+  https://markethubpromo.com/api/v1/ai/video-caption`,
+    example_response: `{
+  "ok": true,
+  "transcript": "Hey everyone, today I am going to show you...",
+  "captions": { "instagram": "...", "tiktok": "..." },
+  "hashtags": ["#contentcreator", "#marketing", ...]
+}`,
+  },
+  {
+    method: "POST",
     path: "/api/v1/alt-text",
     title: "Generate image alt-text",
     description:
