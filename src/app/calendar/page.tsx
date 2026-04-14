@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import AiImageQuickGen from "@/components/calendar/AiImageQuickGen";
+import HashtagSuggester from "@/components/calendar/HashtagSuggester";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
   Edit3, Trash2, Check, CalendarDays, LayoutGrid, List, Loader2, RefreshCw, Zap,
@@ -488,7 +489,15 @@ export default function CalendarPage() {
                     style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Hashtags</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold" style={{ color: "#78614E" }}>Hashtags</label>
+                    <HashtagSuggester
+                      caption={form.caption}
+                      platform={form.platform}
+                      currentHashtags={form.hashtags}
+                      onAdd={(tags) => setForm(f => ({ ...f, hashtags: tags }))}
+                    />
+                  </div>
                   <input type="text" placeholder="#marketing #socialmedia #brand" value={form.hashtags}
                     onChange={e => setForm(f => ({ ...f, hashtags: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
