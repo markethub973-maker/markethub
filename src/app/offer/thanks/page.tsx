@@ -8,10 +8,19 @@
  * triggered by the Stripe webhook (email + Brain intake task creation).
  */
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Check, Mail, Calendar, Clock } from "lucide-react";
 
 export default function OfferThanksPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }} />}>
+      <ThanksContent />
+    </Suspense>
+  );
+}
+
+function ThanksContent() {
   const sp = useSearchParams();
   const sessionId = sp?.get("session_id") ?? null;
 
