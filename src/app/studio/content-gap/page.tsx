@@ -5,7 +5,8 @@
  * topics they cover that you don't, ranked by strategic importance.
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import {
   Target, Loader2, Sparkles, Calendar as CalIcon, Copy, Check,
@@ -31,6 +32,14 @@ function splitCaptions(raw: string): string[] {
 export default function ContentGapPage() {
   const [comp, setComp] = useState("");
   const [mine, setMine] = useState("");
+
+  // Prefill from ?niche=... (Brain Execute deep-link)
+  const sp = useSearchParams();
+  useEffect(() => {
+    const n = sp?.get("niche");
+    if (n && n.length > 0) setNiche(n);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sp]);
   const [niche, setNiche] = useState("");
   const [loading, setLoading] = useState(false);
   const [gaps, setGaps] = useState<Gap[] | null>(null);

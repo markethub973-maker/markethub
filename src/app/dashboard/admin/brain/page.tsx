@@ -15,7 +15,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Brain, Loader2, RefreshCw, ArrowRight, Zap, AlertCircle,
-  TrendingUp, Users, DollarSign, FileText, Target, Sparkles,
+  TrendingUp, Users, DollarSign, FileText, Target, Sparkles, Save, Flag,
 } from "lucide-react";
 
 interface State {
@@ -96,10 +96,62 @@ export default function BrainCommandCenterPage() {
   const [log, setLog] = useState<DecisionLogEntry[]>([]);
   const [mounted, setMounted] = useState(false);
 
+  // Goals state
+  const [goals, setGoals] = useState({
+    target_mrr_usd: "",
+    target_deadline: "",
+    primary_audience: "",
+    revenue_sources: "",
+    constraints: "",
+  });
+  const [savingGoals, setSavingGoals] = useState(false);
+  const [goalsSaved, setGoalsSaved] = useState(false);
+  const [showGoals, setShowGoals] = useState(false);
+
   useEffect(() => {
     setLog(loadLog());
     setMounted(true);
+    // Load goals
+    fetch("/api/brain/goals", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (d?.goals) {
+          setGoals({
+            target_mrr_usd: d.goals.target_mrr_usd?.toString() ?? "",
+            target_deadline: d.goals.target_deadline ?? "",
+            primary_audience: d.goals.primary_audience ?? "",
+            revenue_sources: Array.isArray(d.goals.revenue_sources) ? d.goals.revenue_sources.join(", ") : "",
+            constraints: d.goals.constraints ?? "",
+          });
+        }
+      })
+      .catch(() => {});
   }, []);
+
+  const saveGoals = async () => {
+    setSavingGoals(true);
+    setGoalsSaved(false);
+    try {
+      const res = await fetch("/api/brain/goals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target_mrr_usd: goals.target_mrr_usd ? parseFloat(goals.target_mrr_usd) : null,
+          target_deadline: goals.target_deadline || null,
+          primary_audience: goals.primary_audience || null,
+          revenue_sources: goals.revenue_sources
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          constraints: goals.constraints || null,
+        }),
+      });
+      if (res.ok) setGoalsSaved(true);
+      setTimeout(() => setGoalsSaved(false), 2000);
+    } finally {
+      setSavingGoals(false);
+    }
+  };
 
   const onExecute = useCallback((r: Recommendation) => {
     const url = buildExecuteUrl(r);
@@ -163,6 +215,108 @@ export default function BrainCommandCenterPage() {
             {loading ? "Thinking..." : "Re-analyze"}
           </button>
         </div>
+
+        {/* Goals panel — collapsible */}
+        <section
+          className="rounded-xl overflow-hidden"
+          style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+        >
+          <button
+            type="button"
+            onClick={() => setShowGoals(!showGoals)}
+            className="w-full flex items-center gap-3 px-4 py-3"
+          >
+            <Flag className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
+            <p className="text-sm font-bold flex-1 text-left" style={{ color: "var(--color-text)" }}>
+              Business goals {goals.target_mrr_usd ? `· target $${goals.target_mrr_usd} MRR` : "· not set"}
+            </p>
+            <span className="text-xs" style={{ color: "#A8967E" }}>
+              {showGoals ? "▼" : "▶"}
+            </span>
+          </button>
+          {showGoals && (
+            <div className="px-4 pb-4 space-y-3" style={{ borderTop: "1px solid rgba(0,0,0,0.06)", paddingTop: 12 }}>
+              <p className="text-xs" style={{ color: "#78614E" }}>
+                Set these once — Brain uses them as strategic compass for every recommendation.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
+                    Target MRR ($ USD)
+                  </label>
+                  <input
+                    type="number"
+                    value={goals.target_mrr_usd}
+                    onChange={(e) => setGoals({ ...goals, target_mrr_usd: e.target.value })}
+                    placeholder="30000"
+                    className="w-full rounded-md px-3 py-2 text-sm"
+                    style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
+                    Target deadline
+                  </label>
+                  <input
+                    type="date"
+                    value={goals.target_deadline}
+                    onChange={(e) => setGoals({ ...goals, target_deadline: e.target.value })}
+                    className="w-full rounded-md px-3 py-2 text-sm"
+                    style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
+                  Primary audience / ICP
+                </label>
+                <input
+                  type="text"
+                  value={goals.primary_audience}
+                  onChange={(e) => setGoals({ ...goals, primary_audience: e.target.value })}
+                  placeholder="Small marketing agencies in Europe, 5-15 people"
+                  className="w-full rounded-md px-3 py-2 text-sm"
+                  style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
+                  Revenue sources (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={goals.revenue_sources}
+                  onChange={(e) => setGoals({ ...goals, revenue_sources: e.target.value })}
+                  placeholder="SaaS subscriptions, Affiliate, Consulting, Data reports"
+                  className="w-full rounded-md px-3 py-2 text-sm"
+                  style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
+                  Constraints (optional)
+                </label>
+                <textarea
+                  value={goals.constraints}
+                  onChange={(e) => setGoals({ ...goals, constraints: e.target.value })}
+                  rows={2}
+                  placeholder="No paid ads until $10k MRR. No offers over $200. EU customers only."
+                  className="w-full rounded-md px-3 py-2 text-sm resize-none"
+                  style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={saveGoals}
+                disabled={savingGoals}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-xs font-bold disabled:opacity-40"
+                style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
+              >
+                {savingGoals ? <Loader2 className="w-3 h-3 animate-spin" /> : goalsSaved ? "Saved ✓" : <><Save className="w-3 h-3" /> Save goals</>}
+              </button>
+            </div>
+          )}
+        </section>
 
         {error && (
           <div

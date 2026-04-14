@@ -5,7 +5,8 @@
  * Instagram, LinkedIn, Twitter/X, TikTok and YouTube Shorts.
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
 import {
   Sparkles, Loader2, Copy, Check, Instagram, Linkedin, Twitter,
@@ -24,6 +25,13 @@ const TARGETS: { id: Target; label: string; icon: React.ElementType; color: stri
 
 export default function RepurposePage() {
   const [source, setSource] = useState("");
+
+  // Prefill from ?caption=... or ?source=... (Brain Execute deep-link)
+  const sp = useSearchParams();
+  useEffect(() => {
+    const s = sp?.get("caption") ?? sp?.get("source");
+    if (s && s.length > 0) setSource(s);
+  }, [sp]);
   const [sourcePlatform, setSourcePlatform] = useState<Target>("instagram");
   const [enabled, setEnabled] = useState<Set<Target>>(new Set(TARGETS.map((t) => t.id)));
   const [loading, setLoading] = useState(false);

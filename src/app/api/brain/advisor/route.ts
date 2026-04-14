@@ -146,6 +146,17 @@ export async function GET(req: NextRequest) {
 
   const state = await readState(user.id);
 
+  // Load optional goals — ignore if column/row missing
+  let goals: Record<string, unknown> | null = null;
+  try {
+    const { data: gData } = await service
+      .from("user_brand_voice")
+      .select("goals")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    goals = (gData?.goals as Record<string, unknown> | undefined) ?? null;
+  } catch { /* column missing, skip */ }
+
   const system = `You are CEO Brain — a strategic advisor for a bootstrapped SaaS business (MarketHub Pro).
 
 Given the current state of the platform + the operator's own content/lead pipeline, produce 3-5 concrete NEXT ACTIONS to grow revenue. Actions must be specific, not generic. Ground each one in a number from the state. Prefer actions the platform can execute via its own tools (Campaign Auto-Pilot, Brain Product Generator, Lead Finder, Content Calendar, etc.).
@@ -191,7 +202,12 @@ Rules:
       max_tokens: 1500,
       system,
       messages: [
-        { role: "user", content: `Platform state (snapshot):\n${JSON.stringify(state, null, 2)}` },
+        {
+          role: "user",
+          content: `Platform state (snapshot):\n${JSON.stringify(state, null, 2)}${
+            goals ? `\n\nBusiness goals (operator-set, use as strategic compass):\n${JSON.stringify(goals, null, 2)}` : ""
+          }`,
+        },
       ],
     });
     const text = r.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("");
