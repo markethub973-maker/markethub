@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
+import AiImageQuickGen from "@/components/calendar/AiImageQuickGen";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
   Edit3, Trash2, Check, CalendarDays, LayoutGrid, List, Loader2, RefreshCw, Zap,
