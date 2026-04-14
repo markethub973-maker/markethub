@@ -446,7 +446,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
     pathname === "/api/admin-secret-login" ||
-    pathname.startsWith("/api/auth/"); // OAuth callbacks have own state-token verification
+    pathname.startsWith("/api/auth/") || // OAuth callbacks have own state-token verification
+    pathname.startsWith("/api/offer/");  // public one-time checkout — called before login exists
 
   if (isMutating && pathname.startsWith("/api/") && !isCsrfExempt) {
     const origin = request.headers.get("origin");
