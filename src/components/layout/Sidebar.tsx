@@ -77,6 +77,7 @@ const navGroups = [
       { href: "/studio/repurpose", label: "Content Repurposer", icon: Sparkles },
       { href: "/studio/thumbnail", label: "Thumbnail Generator", icon: Sparkles },
       { href: "/studio/ab-winner", label: "A/B Winner Picker", icon: Sparkles },
+      { href: "/studio/recycle", label: "Post Recycler", icon: Sparkles },
       { href: "/brand/voice", label: "Brand Voice", icon: Sparkles },
       { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
       { href: "/bio", label: "Link in Bio", icon: Link2 },
