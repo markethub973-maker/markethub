@@ -84,6 +84,7 @@ const navGroups = [
       { href: "/studio/hashtag-scan", label: "Hashtag Scanner", icon: Sparkles },
       { href: "/studio/lead-enrich", label: "Lead Enrichment", icon: Sparkles },
       { href: "/brand/voice", label: "Brand Voice", icon: Sparkles },
+      { href: "/brand/strategy", label: "Content Strategy", icon: Sparkles },
       { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
       { href: "/bio", label: "Link in Bio", icon: Link2 },
       { href: "/monthly-report", label: "Performance Report", icon: BarChart3 },
