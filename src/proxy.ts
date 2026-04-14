@@ -265,6 +265,7 @@ const MAINT_PROBE_HEADER = "x-maint-probe";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get("host") ?? "";
 
   // Skip static files and Next internals
   if (
@@ -273,6 +274,32 @@ export async function proxy(request: NextRequest) {
     pathname.match(/\.(ico|png|jpg|jpeg|gif|svg|css|js|woff2?|ttf|map)$/)
   ) {
     return NextResponse.next();
+  }
+
+  // ── Marketing subdomain: get.markethubpromo.com ─────────────────────────
+  // Rewrite clean paths to the actual offer pages + hard-404 everything else
+  // so prospects never stumble into the in-app UI through this subdomain.
+  if (host === "get.markethubpromo.com") {
+    const url = request.nextUrl.clone();
+    if (pathname === "/" || pathname === "/intl") {
+      url.pathname = "/offer-intl";
+      return NextResponse.rewrite(url);
+    }
+    if (pathname === "/ro") {
+      url.pathname = "/offer-ro";
+      return NextResponse.rewrite(url);
+    }
+    if (pathname === "/thanks" || pathname.startsWith("/thanks/")) {
+      url.pathname = "/offer/thanks";
+      return NextResponse.rewrite(url);
+    }
+    // Public API for checkout
+    if (pathname.startsWith("/api/offer/")) {
+      return NextResponse.next();
+    }
+    // Everything else on this subdomain → hard 404 so the app UI is not
+    // reachable via the marketing hostname.
+    return new NextResponse(null, { status: 404 });
   }
 
   // Is this a synthetic probe request? We use this flag to suppress SIEM

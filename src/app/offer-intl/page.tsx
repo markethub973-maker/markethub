@@ -13,11 +13,11 @@ import {
 
 const INCLUDED = [
   { icon: Sparkles,   text: "Brand voice analysis + 30-day content strategy" },
-  { icon: Calendar,   text: "60 platform-optimized captions (LinkedIn, IG, FB, X, TikTok)" },
-  { icon: ImageIcon,  text: "20 AI-generated branded images for campaigns" },
-  { icon: Users,      text: "50 qualified leads in your niche + outreach setup" },
-  { icon: TrendingUp, text: "1-hour strategy call (Zoom) + 30-day performance report" },
-  { icon: Zap,        text: "All scheduled automatically — you review and approve" },
+  { icon: Calendar,   text: "60 captions distributed across 2–3 platforms you choose (within safe reach limits)" },
+  { icon: ImageIcon,  text: "20 AI-generated branded images for hero posts" },
+  { icon: Users,      text: "20–50 potential clients identified in your niche + pre-written outreach messages" },
+  { icon: TrendingUp, text: "1-hour strategy call (Zoom) + 30-day report on published posts" },
+  { icon: Zap,        text: "Scheduled automatically — you review and approve" },
 ];
 
 export default function OfferIntlPage() {
@@ -171,6 +171,15 @@ export default function OfferIntlPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="max-w-3xl mx-auto px-6 pb-4">
+        <p className="text-xs opacity-60 text-center leading-relaxed">
+          Post volume is calibrated below each platform&apos;s safe-reach threshold —
+          exact platform split is decided together on the strategy call.
+          We do not promise a fixed number of followers or sales; we deliver the
+          content and outreach infrastructure that makes growth possible.
+        </p>
       </section>
 
       <footer className="max-w-4xl mx-auto px-6 py-10 text-center text-xs opacity-50">

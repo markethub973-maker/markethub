@@ -13,10 +13,10 @@ import {
 
 const INCLUDED = [
   { icon: Sparkles,   text: "Analiză brand voice + strategie de conținut 30 zile" },
-  { icon: Calendar,   text: "60 postări gata de publicat (LinkedIn, IG, FB, X, TikTok)" },
-  { icon: ImageIcon,  text: "20 imagini AI branded pentru campanii" },
-  { icon: Users,      text: "50 lead-uri calificate în nișa ta + setup outreach" },
-  { icon: TrendingUp, text: "Call strategic 1h (Zoom) + raport performanță după 30 zile" },
+  { icon: Calendar,   text: "60 postări distribuite pe 2-3 platforme alese de tine (sub pragul safe de reach)" },
+  { icon: ImageIcon,  text: "20 imagini AI branded pentru postările cheie" },
+  { icon: Users,      text: "20–50 potențiali clienți identificați în nișa ta + mesaje outreach pre-scrise" },
+  { icon: TrendingUp, text: "Call strategic 1h (Zoom) + raport la 30 zile pe postările publicate" },
   { icon: Zap,        text: "Programare automată — tu doar revizuiești și aprobi" },
 ];
 
@@ -171,6 +171,15 @@ export default function OfferROPage() {
             </div>
           ))}
         </div>
+      </section>
+
+      <section className="max-w-3xl mx-auto px-6 pb-4">
+        <p className="text-xs opacity-60 text-center leading-relaxed">
+          Volumul de postări e calibrat sub pragul safe de reach al fiecărei platforme —
+          distribuția exactă pe platforme se decide împreună în call-ul strategic.
+          Nu promitem un număr fix de follower-i sau vânzări; livrăm infrastructura de conținut
+          și outreach care face creșterea posibilă.
+        </p>
       </section>
 
       <footer className="max-w-4xl mx-auto px-6 py-10 text-center text-xs opacity-50">
