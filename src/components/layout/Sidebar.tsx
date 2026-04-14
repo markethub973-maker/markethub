@@ -81,6 +81,7 @@ const navGroups = [
       { href: "/studio/video-caption", label: "Video → Caption", icon: Sparkles },
       { href: "/studio/hooks", label: "Hook Library", icon: Sparkles },
       { href: "/studio/content-gap", label: "Content Gap Analyzer", icon: Sparkles },
+      { href: "/studio/hashtag-scan", label: "Hashtag Scanner", icon: Sparkles },
       { href: "/brand/voice", label: "Brand Voice", icon: Sparkles },
       { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
       { href: "/bio", label: "Link in Bio", icon: Link2 },
