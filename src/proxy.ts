@@ -184,7 +184,9 @@ const PUBLIC_PATHS = [
   "/l/",                    // public Link in Bio pages
   "/portal/",               // public client portal pages
   "/promo",                 // public marketing landing page
-  "/offer",                 // AI Marketing Accelerator DFY landing + checkout
+  "/offer-ro",              // Romania-only DFY landing (€499) — shared in RO outreach
+  "/offer-intl",            // International DFY landing (€1000) — shared in EU/UK/US outreach
+  "/offer/thanks",          // post-payment confirmation (shared by both tiers)
   "/api/offer",             // one-time Stripe checkout for the DFY offer
   "/help",                  // public help / support page
   "/api/support",           // public support form submission endpoint
