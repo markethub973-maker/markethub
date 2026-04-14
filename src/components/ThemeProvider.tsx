@@ -25,8 +25,10 @@ import {
 export type ThemeId = "amber" | "emerald" | "indigo" | "mono" | "custom";
 
 export interface CustomColors {
-  primary: string;   // hex
-  accent: string;    // hex
+  primary: string;   // hex — brand color (buttons, accents, CTAs)
+  accent: string;    // hex — secondary highlight (badges, links)
+  bg: string;        // hex — main page background
+  surface: string;   // hex — cards / secondary panel surface
 }
 
 export interface ThemePreset {
@@ -57,7 +59,12 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const STORAGE_KEY = "markethub-theme";
 const CUSTOM_KEY = "markethub-custom-colors";
-const DEFAULT_CUSTOM: CustomColors = { primary: "#F59E0B", accent: "#EC8054" };
+const DEFAULT_CUSTOM: CustomColors = {
+  primary: "#F59E0B",
+  accent: "#EC8054",
+  bg: "#FFFCF7",
+  surface: "#FFFFFF",
+};
 
 // ── helpers ────────────────────────────────────────────────────────────────
 function isValidHex(c: string): boolean {
@@ -90,15 +97,24 @@ function darken(hex: string, pct = 15): string {
 function applyCustomColors(colors: CustomColors) {
   const root = document.documentElement;
   if (!isValidHex(colors.primary) || !isValidHex(colors.accent)) return;
+  const bg = isValidHex(colors.bg) ? colors.bg : "#FFFCF7";
+  const surface = isValidHex(colors.surface) ? colors.surface : "#FFFFFF";
   root.setAttribute("data-theme", "custom");
+  // Primary
   root.style.setProperty("--color-primary", colors.primary);
   root.style.setProperty("--color-primary-hover", darken(colors.primary, 12));
   root.style.setProperty("--color-primary-light", rgba(colors.primary, 0.10));
   root.style.setProperty("--color-primary-dark", darken(colors.primary, 35));
+  // Accent
   root.style.setProperty("--color-accent", colors.accent);
   root.style.setProperty("--color-accent-hover", darken(colors.accent, 12));
   root.style.setProperty("--color-accent-light", rgba(colors.accent, 0.10));
   root.style.setProperty("--color-accent-dark", darken(colors.accent, 35));
+  // Backgrounds — user-picked
+  root.style.setProperty("--color-bg", bg);
+  root.style.setProperty("--color-bg-secondary", surface);
+  root.style.setProperty("--color-bg-tertiary", darken(surface, 5));
+  // Borders — derived from primary at low alpha so they harmonize
   root.style.setProperty("--color-border", rgba(colors.primary, 0.15));
   root.style.setProperty("--color-border-hover", rgba(colors.primary, 0.30));
   // Sidebar / dark surface — derived from primary's darkest shade
@@ -114,6 +130,7 @@ function applyCustomColors(colors: CustomColors) {
 function clearCustomColors() {
   const root = document.documentElement;
   ["--color-primary", "--color-primary-hover", "--color-primary-light", "--color-primary-dark",
+   "--color-bg", "--color-bg-secondary", "--color-bg-tertiary",
    "--color-surface-dark", "--color-surface-dark-secondary", "--color-surface-dark-text",
    "--color-surface-dark-text-muted", "--color-surface-dark-text-dim", "--color-surface-dark-border",
    "--color-accent", "--color-accent-hover", "--color-accent-light", "--color-accent-dark",
@@ -129,7 +146,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     try {
       const saved = (localStorage.getItem(STORAGE_KEY) ?? "amber") as ThemeId;
       const customRaw = localStorage.getItem(CUSTOM_KEY);
-      const custom: CustomColors = customRaw ? JSON.parse(customRaw) : DEFAULT_CUSTOM;
+      const parsed = customRaw ? JSON.parse(customRaw) : {};
+      // Merge with defaults — older users (pre-v2) only had {primary, accent}
+      const custom: CustomColors = { ...DEFAULT_CUSTOM, ...parsed };
       if (custom.primary && custom.accent) setCustomColorsState(custom);
       const valid: ThemeId[] = ["amber", "emerald", "indigo", "mono", "custom"];
       const t = valid.includes(saved) ? saved : "amber";

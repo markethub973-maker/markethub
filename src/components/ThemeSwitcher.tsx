@@ -75,14 +75,18 @@ export default function ThemeSwitcher() {
     // No auto-close anymore — user must hit Apply to confirm
   };
 
-  const onPrimary = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomColors({ ...customColors, primary: e.target.value });
-    setDraftPicked(true);
-  };
-  const onAccent = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomColors({ ...customColors, accent: e.target.value });
-    setDraftPicked(true);
-  };
+  const onColor = (key: "primary" | "accent" | "bg" | "surface") =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setCustomColors({ ...customColors, [key]: e.target.value });
+      setDraftPicked(true);
+    };
+  const onHexInput = (key: "primary" | "accent" | "bg" | "surface") =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)) {
+        setCustomColors({ ...customColors, [key]: e.target.value });
+        setDraftPicked(true);
+      }
+    };
 
   // Floating trigger — always visible top-right, above every other layer
   const trigger = (
@@ -196,70 +200,55 @@ export default function ThemeSwitcher() {
               Your colors
             </p>
 
-            <div className="flex items-center gap-3">
-              <label className="text-xs flex-1 font-semibold" style={{ color: "var(--color-text)" }}>
-                Primary
-              </label>
-              <input
-                type="color"
-                value={customColors.primary}
-                onChange={onPrimary}
-                className="w-10 h-10 rounded cursor-pointer"
-                style={{ border: "1px solid var(--color-border)" }}
-                aria-label="Primary color"
-              />
-              <input
-                type="text"
-                value={customColors.primary}
-                onChange={(e) => /^#[0-9A-Fa-f]{0,6}$/.test(e.target.value) && setCustomColors({ ...customColors, primary: e.target.value })}
-                className="w-24 rounded px-2 py-1.5 text-xs font-mono"
-                style={{
-                  backgroundColor: "var(--color-bg)",
-                  border: "1px solid var(--color-border)",
-                  color: "var(--color-text)",
-                  outline: "none",
-                }}
-              />
-            </div>
-
-            <div className="flex items-center gap-3">
-              <label className="text-xs flex-1 font-semibold" style={{ color: "var(--color-text)" }}>
-                Accent
-              </label>
-              <input
-                type="color"
-                value={customColors.accent}
-                onChange={onAccent}
-                className="w-10 h-10 rounded cursor-pointer"
-                style={{ border: "1px solid var(--color-border)" }}
-                aria-label="Accent color"
-              />
-              <input
-                type="text"
-                value={customColors.accent}
-                onChange={(e) => /^#[0-9A-Fa-f]{0,6}$/.test(e.target.value) && setCustomColors({ ...customColors, accent: e.target.value })}
-                className="w-24 rounded px-2 py-1.5 text-xs font-mono"
-                style={{
-                  backgroundColor: "var(--color-bg)",
-                  border: "1px solid var(--color-border)",
-                  color: "var(--color-text)",
-                  outline: "none",
-                }}
-              />
-            </div>
+            {([
+              { key: "primary" as const, label: "Primary",    hint: "Buttons, CTAs, brand accents" },
+              { key: "accent"  as const, label: "Accent",     hint: "Badges, links, highlights" },
+              { key: "bg"      as const, label: "Background", hint: "Main page color" },
+              { key: "surface" as const, label: "Surface",    hint: "Cards, panels, dropdowns" },
+            ]).map((f) => (
+              <div key={f.key} className="flex items-center gap-3">
+                <div className="flex-1">
+                  <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{f.label}</p>
+                  <p className="text-[9px]" style={{ color: "var(--color-text-muted)" }}>{f.hint}</p>
+                </div>
+                <input
+                  type="color"
+                  value={customColors[f.key]}
+                  onChange={onColor(f.key)}
+                  className="w-10 h-10 rounded cursor-pointer"
+                  style={{ border: "1px solid var(--color-border)" }}
+                  aria-label={`${f.label} color`}
+                />
+                <input
+                  type="text"
+                  value={customColors[f.key]}
+                  onChange={onHexInput(f.key)}
+                  className="w-24 rounded px-2 py-1.5 text-xs font-mono"
+                  style={{
+                    backgroundColor: "var(--color-bg)",
+                    border: "1px solid var(--color-border)",
+                    color: "var(--color-text)",
+                    outline: "none",
+                  }}
+                />
+              </div>
+            ))}
 
             <div className="flex items-center gap-2 pt-1">
               <button
                 type="button"
-                onClick={() => setCustomColors({ primary: "#F59E0B", accent: "#EC8054" })}
+                onClick={() => {
+                  setCustomColors({ primary: "#F59E0B", accent: "#EC8054", bg: "#FFFCF7", surface: "#FFFFFF" });
+                  setDraftPicked(true);
+                }}
                 className="text-[11px] flex items-center gap-1 underline"
                 style={{ color: "var(--color-text-secondary)" }}
               >
                 <RotateCcw className="w-3 h-3" />
-                Reset
+                Reset all
               </button>
               <span className="text-[10px] flex-1 text-right" style={{ color: "var(--color-text-muted)" }}>
-                Lighter shades auto-derived
+                Sidebar + shadows auto-derived
               </span>
             </div>
           </div>

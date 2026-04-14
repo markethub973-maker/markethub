@@ -121,6 +121,11 @@ const themeInitScript = `
             s.setProperty('--color-accent-hover', dk(c.accent, 12));
             s.setProperty('--color-accent-light', rgba(c.accent, 0.10));
             s.setProperty('--color-accent-dark', dk(c.accent, 35));
+            if (c.bg && hex.test(c.bg)) s.setProperty('--color-bg', c.bg);
+            if (c.surface && hex.test(c.surface)) {
+              s.setProperty('--color-bg-secondary', c.surface);
+              s.setProperty('--color-bg-tertiary', dk(c.surface, 5));
+            }
             s.setProperty('--color-border', rgba(c.primary, 0.15));
             s.setProperty('--color-border-hover', rgba(c.primary, 0.30));
           }
