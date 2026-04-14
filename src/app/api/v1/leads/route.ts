@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/apiTokens";
 import { createServiceClient } from "@/lib/supabase/service";
+import { dispatchWebhookEvent } from "@/lib/outboundWebhooks";
 
 export const dynamic = "force-dynamic";
 
@@ -119,6 +120,17 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  if (data) {
+    void dispatchWebhookEvent(auth.user_id, "lead.created", {
+      lead_id: data.id,
+      name: data.name,
+      email: data.email,
+      source: data.source,
+      pipeline_status: data.pipeline_status,
+    });
+  }
+
   return NextResponse.json({ ok: true, lead: data }, { status: 201 });
 }
 
@@ -164,5 +176,15 @@ export async function PATCH(req: NextRequest) {
     .single();
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!data) return NextResponse.json({ error: "Lead not found or not yours" }, { status: 404 });
+
+  if (typeof updates.pipeline_status === "string") {
+    void dispatchWebhookEvent(auth.user_id, "lead.status_changed", {
+      lead_id: data.id,
+      name: data.name,
+      pipeline_status: data.pipeline_status,
+      contacted: data.contacted,
+    });
+  }
+
   return NextResponse.json({ ok: true, lead: data });
 }

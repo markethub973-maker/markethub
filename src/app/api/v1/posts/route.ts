@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/apiTokens";
 import { createServiceClient } from "@/lib/supabase/service";
+import { dispatchWebhookEvent } from "@/lib/outboundWebhooks";
 
 export const dynamic = "force-dynamic";
 
@@ -129,6 +130,16 @@ export async function POST(req: NextRequest) {
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  if (data) {
+    void dispatchWebhookEvent(auth.user_id, "post.scheduled", {
+      post_id: data.id,
+      caption: data.caption,
+      platforms: data.platforms,
+      scheduled_for: data.scheduled_for,
+    });
+  }
+
   return NextResponse.json({ ok: true, post: data }, { status: 201 });
 }
 
