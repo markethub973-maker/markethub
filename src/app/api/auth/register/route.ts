@@ -4,6 +4,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { sendWelcomeEmail, sendOnboarding1_Welcome } from "@/lib/resend";
 import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 import { logSecurityEvent } from "@/lib/siem";
+import { checkPasswordBreach } from "@/lib/hibp";
 
 const VALID_PLANS = ["free_test", "lite", "pro", "business", "enterprise"];
 
@@ -36,6 +37,21 @@ export async function POST(req: NextRequest) {
   }
   if (password.length < 8) {
     return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
+  }
+
+  // HaveIBeenPwned breach check — k-anonymity, password never leaves
+  // our server. If found in >100 leaks (= popular, definitely on every
+  // attacker wordlist) we block. If 1-99, warn but allow — could be
+  // a fresh sloppy choice the user will rotate.
+  const breach = await checkPasswordBreach(password);
+  if (breach.breached && breach.count > 100) {
+    return NextResponse.json(
+      {
+        error: `This password has appeared in ${breach.count.toLocaleString()} known data breaches and is unsafe to use. Pick a unique password.`,
+        password_breached: true,
+      },
+      { status: 400 },
+    );
   }
 
   const selectedPlan = VALID_PLANS.includes(plan) ? plan : "free_test";
