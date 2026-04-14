@@ -329,7 +329,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/outreach-batch") ||
       pathname.startsWith("/api/brain/demo") ||
       pathname.startsWith("/api/brain/mine-leads") ||
-      pathname.startsWith("/api/brain/mark-replied")
+      pathname.startsWith("/api/brain/mark-replied") ||
+      pathname.startsWith("/api/brain/forecast")
     ) {
       return NextResponse.next();
     }

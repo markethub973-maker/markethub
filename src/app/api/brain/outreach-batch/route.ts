@@ -202,7 +202,24 @@ export async function POST(req: NextRequest) {
 
   const results: Array<Record<string, unknown>> = [];
 
+  const svc = createServiceClient();
+
   for (const lead of leads) {
+    // Anti-spam cadence check — skip if domain was hit 3+ times in last 30d or explicitly blocked
+    const { data: cadence } = await svc
+      .from("outreach_cadence")
+      .select("total_sent_30d,blocked,last_sent_at")
+      .eq("domain", lead.domain)
+      .maybeSingle();
+    if (cadence?.blocked) {
+      results.push({ domain: lead.domain, status: "blocked", reason: "cadence_blocked" });
+      continue;
+    }
+    if (cadence && (cadence.total_sent_30d ?? 0) >= 3) {
+      results.push({ domain: lead.domain, status: "skipped", reason: "cadence_limit_reached_3_30d" });
+      continue;
+    }
+
     const enriched = await enrichLead(lead.domain);
     if (!enriched || !enriched.email) {
       results.push({ domain: lead.domain, status: "no_email" });
@@ -233,9 +250,8 @@ export async function POST(req: NextRequest) {
       subject: msg.subject,
     });
 
-    // Log to outreach_log table (best-effort — table may not exist yet).
+    // Log to outreach_log table
     try {
-      const svc = createServiceClient();
       await svc.from("outreach_log").insert({
         domain: lead.domain,
         email: enriched.email,
@@ -245,7 +261,18 @@ export async function POST(req: NextRequest) {
         status: sent ? "sent" : "send_failed",
       });
     } catch {
-      /* table missing — not fatal */
+      /* non-fatal */
+    }
+
+    // Update cadence row
+    try {
+      await svc.from("outreach_cadence").upsert({
+        domain: lead.domain,
+        last_sent_at: new Date().toISOString(),
+        total_sent_30d: (cadence?.total_sent_30d ?? 0) + 1,
+      });
+    } catch {
+      /* non-fatal */
     }
   }
 
