@@ -123,20 +123,31 @@ async function readState(userId: string): Promise<BrainState> {
 }
 
 export async function GET(req: NextRequest) {
-  void req;
-  // Admin gate
-  const supa = await createClient();
-  const { data: { user } } = await supa.auth.getUser();
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Resolve operator user id: either via cron secret header (n8n / scheduled jobs)
+  // or via admin session (in-app /dashboard/admin/brain).
+  let operatorId: string | null = null;
 
-  const service = createServiceClient();
-  const { data: profile } = await service
-    .from("profiles")
-    .select("is_admin")
-    .eq("id", user.id)
-    .maybeSingle();
-  if (!profile?.is_admin) {
-    return NextResponse.json({ error: "Admin only" }, { status: 403 });
+  const cronSecret = req.headers.get("x-brain-cron-secret");
+  if (cronSecret && process.env.BRAIN_CRON_SECRET && cronSecret === process.env.BRAIN_CRON_SECRET) {
+    operatorId = process.env.BRAIN_OPERATOR_USER_ID ?? null;
+    if (!operatorId) {
+      return NextResponse.json({ error: "BRAIN_OPERATOR_USER_ID not set" }, { status: 500 });
+    }
+  } else {
+    const supa = await createClient();
+    const { data: { user } } = await supa.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const svc = createServiceClient();
+    const { data: profile } = await svc
+      .from("profiles")
+      .select("is_admin")
+      .eq("id", user.id)
+      .maybeSingle();
+    if (!profile?.is_admin) {
+      return NextResponse.json({ error: "Admin only" }, { status: 403 });
+    }
+    operatorId = user.id;
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY_APP;
@@ -144,7 +155,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "AI not configured" }, { status: 500 });
   }
 
-  const state = await readState(user.id);
+  const service = createServiceClient();
+  const state = await readState(operatorId);
 
   // Load optional goals — ignore if column/row missing
   let goals: Record<string, unknown> | null = null;
@@ -152,7 +164,7 @@ export async function GET(req: NextRequest) {
     const { data: gData } = await service
       .from("user_brand_voice")
       .select("goals")
-      .eq("user_id", user.id)
+      .eq("user_id", operatorId)
       .maybeSingle();
     goals = (gData?.goals as Record<string, unknown> | undefined) ?? null;
   } catch { /* column missing, skip */ }
