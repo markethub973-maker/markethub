@@ -22,6 +22,14 @@ const PUBLIC_PATHS = [
 ];
 
 function isPublicPath(pathname: string): boolean {
+  // Marketing subdomain: every path served on get.markethubpromo.com is a
+  // public prospect page (the middleware rewrites / /ro /intl /thanks to the
+  // real offer routes and 404s everything else — but the browser still sees
+  // the external pathname like `/ro`, which wouldn't match our internal
+  // whitelist).
+  if (typeof window !== "undefined" && window.location.hostname === "get.markethubpromo.com") {
+    return true;
+  }
   if (PUBLIC_PATHS.includes(pathname)) return true;
   // Public slug routes
   if (pathname.startsWith("/l/")) return true;       // bio-link viewer

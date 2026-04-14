@@ -54,7 +54,8 @@ export default function AskConsultant() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const p = window.location.pathname;
-    if (p.startsWith("/offer") || p === "/promo" || p === "/pricing" || p === "/") {
+    const isMarketingSubdomain = window.location.hostname === "get.markethubpromo.com";
+    if (isMarketingSubdomain || p.startsWith("/offer") || p === "/promo" || p === "/pricing" || p === "/") {
       setHideOnPublic(true);
     }
   }, []);
