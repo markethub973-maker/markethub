@@ -35,6 +35,8 @@ const TYPE_CONFIG: Record<Type, { icon: React.ElementType; color: string; label:
 export default function AssetLibraryPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [q, setQ] = useState("");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -69,6 +71,37 @@ export default function AssetLibraryPage() {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 1500);
     } catch { /* no-op */ }
+  };
+
+  const toggleSelect = (composite: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(composite)) next.delete(composite);
+      else next.add(composite);
+      return next;
+    });
+  };
+
+  const clearSelection = () => setSelected(new Set());
+
+  const deleteSelected = async () => {
+    if (selected.size === 0 || deleting) return;
+    const count = selected.size;
+    if (!confirm(`Delete ${count} asset${count > 1 ? "s" : ""}? This cannot be undone.`)) return;
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/studio/assets/bulk-delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: Array.from(selected) }),
+      });
+      if (res.ok) {
+        clearSelection();
+        await load();
+      }
+    } finally {
+      setDeleting(false);
+    }
   };
 
   const counts = {
@@ -129,6 +162,38 @@ export default function AssetLibraryPage() {
           </p>
         </div>
 
+        {/* Selection action bar — shows when at least one asset selected */}
+        {selected.size > 0 && (
+          <div
+            className="rounded-lg p-3 flex items-center gap-3"
+            style={{
+              backgroundColor: "rgba(239,68,68,0.06)",
+              border: "1px solid rgba(239,68,68,0.3)",
+            }}
+          >
+            <p className="text-xs font-bold flex-1" style={{ color: "#B91C1C" }}>
+              {selected.size} selected
+            </p>
+            <button
+              type="button"
+              onClick={clearSelection}
+              className="text-xs font-bold px-3 py-1.5 rounded-md"
+              style={{ backgroundColor: "white", color: "#78614E" }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={deleteSelected}
+              disabled={deleting}
+              className="text-xs font-bold px-3 py-1.5 rounded-md flex items-center gap-1 disabled:opacity-40"
+              style={{ backgroundColor: "#EF4444", color: "white" }}
+            >
+              {deleting ? "Deleting..." : `Delete ${selected.size}`}
+            </button>
+          </div>
+        )}
+
         {/* Quick links to studios */}
         <div className="flex gap-2">
           <Link
@@ -179,12 +244,32 @@ export default function AssetLibraryPage() {
             {assets.map((a) => {
               const cfg = TYPE_CONFIG[a.type];
               const Icon = cfg.icon;
+              const composite = `${a.type}:${a.id}`;
+              const isSelected = selected.has(composite);
               return (
                 <div
                   key={`${a.type}-${a.id}`}
-                  className="rounded-xl overflow-hidden flex flex-col"
-                  style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
+                  className="rounded-xl overflow-hidden flex flex-col relative"
+                  style={{
+                    backgroundColor: "white",
+                    border: isSelected ? "2px solid #EF4444" : "1px solid rgba(0,0,0,0.06)",
+                  }}
                 >
+                  {/* Selection checkbox */}
+                  <button
+                    type="button"
+                    onClick={() => toggleSelect(composite)}
+                    className="absolute top-2 right-2 z-10 w-5 h-5 rounded flex items-center justify-center transition-all"
+                    style={{
+                      backgroundColor: isSelected ? "#EF4444" : "rgba(255,255,255,0.85)",
+                      border: "1px solid rgba(0,0,0,0.2)",
+                    }}
+                    aria-label={isSelected ? "Deselect" : "Select"}
+                    title={isSelected ? "Deselect" : "Select"}
+                  >
+                    {isSelected && <Check className="w-3 h-3" style={{ color: "white" }} />}
+                  </button>
+
                   {/* Preview */}
                   <div className="aspect-square relative" style={{ backgroundColor: "rgba(0,0,0,0.03)" }}>
                     {a.type === "image" && a.url && (
