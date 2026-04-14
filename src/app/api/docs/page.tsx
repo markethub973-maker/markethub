@@ -159,6 +159,25 @@ const ENDPOINTS: Endpoint[] = [
 }`,
   },
   {
+    method: "POST",
+    path: "/api/v1/alt-text",
+    title: "Generate image alt-text",
+    description:
+      "Accessibility alt-text (<=150 chars) for any public image URL. Powered by Claude Haiku vision. Pro+.",
+    params: [
+      { name: "image_url", required: true, type: "string", desc: "Public https URL of the image" },
+      { name: "context", required: false, type: "string", desc: "Optional caption or post intent (<=300 chars) to guide tone" },
+    ],
+    example_curl: `curl -X POST -H "Authorization: Bearer mkt_live_YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"image_url":"https://cdn.example.com/photo.jpg","context":"launch announcement"}' \\
+  https://markethubpromo.com/api/v1/alt-text`,
+    example_response: `{
+  "ok": true,
+  "alt_text": "Team of four engineers celebrating a product launch in a bright office, confetti mid-air"
+}`,
+  },
+  {
     method: "GET",
     path: "/api/health",
     title: "Health check",
