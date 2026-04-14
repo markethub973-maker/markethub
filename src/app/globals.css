@@ -187,38 +187,52 @@
   --glass-highlight: rgba(255, 255, 255, 0.90);
 }
 
-/* ─── Auto glass-card styling on the common card pattern ───────────
-   Any element whose inline border uses the standard 1px rgba(0,0,0,0.06)
-   wrapper (the dominant card style across the platform) gets the full
-   glass + 3D treatment: translucent bg, backdrop blur, soft inner
-   highlight on the top edge, layered shadow, hover lift. */
-[style*="border: 1px solid rgba(0,0,0,0.06)"] {
-  background-color: var(--glass-bg) !important;
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
-  border: 1px solid var(--glass-border) !important;
-  box-shadow:
-    var(--shadow-card),
-    inset 0 1px 0 var(--glass-highlight);
+/* ─── Auto glass-card styling ─────────────────────────────────────
+   React normalizes inline rgba() with spaces (rgba(0, 0, 0, 0.06)),
+   so the selector catches both variants. Also targets any element with
+   a rounded-xl / rounded-2xl Tailwind class + a visible background —
+   that's almost every card on the platform. */
+.rounded-xl,
+.rounded-2xl,
+.rounded-lg,
+[style*="rgba(0,0,0,0.06)"],
+[style*="rgba(0, 0, 0, 0.06)"],
+[style*="rgba(245,215,160"],
+[style*="rgba(245, 215, 160"] {
   transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
 }
-[style*="border: 1px solid rgba(0,0,0,0.06)"]:hover {
+
+/* Elements that claim a white / near-white / surface-secondary background
+   get the full glass-3D treatment — translucent bg, backdrop blur, soft
+   top-edge highlight, layered shadow, hover lift. */
+[style*="backgroundColor:\"white\""],
+[style*="backgroundColor: \"white\""],
+[style*="background-color: white"],
+[style*="background-color:white"],
+[style*="backgroundColor:\"#FFFFFF\""],
+[style*="backgroundColor: \"#FFFFFF\""],
+[style*="backgroundColor:\"#FFF\""],
+[style*="backgroundColor:\"var(--color-bg-secondary)\""],
+[style*="backgroundColor: \"var(--color-bg-secondary)\""] {
+  background-color: var(--glass-bg) !important;
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  box-shadow:
+    var(--shadow-card),
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+}
+
+[style*="backgroundColor:\"white\""]:hover,
+[style*="backgroundColor: \"white\""]:hover,
+[style*="background-color: white"]:hover,
+[style*="backgroundColor:\"var(--color-bg-secondary)\""]:hover {
   background-color: var(--glass-bg-strong) !important;
   box-shadow:
     var(--shadow-card-hover),
-    inset 0 1px 0 var(--glass-highlight);
-  transform: translateY(-1px);
-}
-
-/* Same treatment for rounded pill with similar border */
-[style*="border: 1px solid rgba(245,215,160"] {
-  background-color: var(--glass-bg) !important;
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
-  box-shadow:
-    var(--shadow-card),
-    inset 0 1px 0 var(--glass-highlight);
-  transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
+    inset 0 1px 0 var(--glass-highlight),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
 }
 
 /* ─── Base styles ─────────────────────────────────────────────── */
