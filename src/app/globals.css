@@ -202,51 +202,51 @@
   transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
 }
 
-/* ─── OUTER cards — true transparent glass like the reference ──── */
+/* ─── OUTER cards — true liquid glass with inner diagonal shine ── */
 .rounded-xl[style*="background-color"],
 .rounded-2xl[style*="background-color"],
 .rounded-lg[style*="background-color"] {
   position: relative;
-  /* Very light translucent white (25% alpha) — lets the colorful body
-     gradient show through clearly */
-  background-color: rgba(255, 255, 255, 0.25) !important;
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.45) 0%,
-    rgba(255, 255, 255, 0.15) 100%
-  ) !important;
+  /* Very translucent base (12% alpha) — clearly see-through */
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  /* Two-layer gradient creates the liquid-glass feel:
+     - Layer 1: bright radial blob top-left (the "shine" / reflection)
+     - Layer 2: subtle diagonal for overall sheen */
+  background-image:
+    radial-gradient(ellipse 80% 60% at 25% 15%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 65%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.05) 100%)
+    !important;
   backdrop-filter: blur(30px) saturate(1.8);
   -webkit-backdrop-filter: blur(30px) saturate(1.8);
-  /* Transparent border so the gradient-border pseudo-element below
-     can paint the glass edge refraction. */
-  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.30) !important;
   box-shadow:
-    /* Outer drop shadows for 3D lift */
-    0 4px 12px rgba(0, 0, 0, 0.08),
-    0 16px 40px rgba(0, 0, 0, 0.10),
+    /* Outer soft halo — glass edge glow */
+    0 0 0 0.5px rgba(255, 255, 255, 0.30),
+    0 2px 8px rgba(255, 255, 255, 0.15),
+    /* Drop shadows for 3D lift */
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 24px 56px rgba(0, 0, 0, 0.10),
     /* Glass edge refraction — 4 sides */
-    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),   /* top bright highlight */
-    inset 0 -1px 0 rgba(255, 255, 255, 0.40),    /* bottom soft bounce */
-    inset 1px 0 0 rgba(255, 255, 255, 0.35),     /* left side light */
-    inset -1px 0 0 rgba(255, 255, 255, 0.25);    /* right side dim */
-  transition: box-shadow 0.3s ease, transform 0.3s ease, background-image 0.3s ease;
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -1.5px 0 rgba(255, 255, 255, 0.40),
+    inset 1.5px 0 0 rgba(255, 255, 255, 0.30),
+    inset -1.5px 0 0 rgba(255, 255, 255, 0.20);
+  transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
 }
 
 .rounded-xl[style*="background-color"]:hover,
 .rounded-2xl[style*="background-color"]:hover,
 .rounded-lg[style*="background-color"]:hover {
-  background-image: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.55) 0%,
-    rgba(255, 255, 255, 0.25) 100%
-  ) !important;
+  background-color: rgba(255, 255, 255, 0.18) !important;
   box-shadow:
-    0 8px 20px rgba(0, 0, 0, 0.10),
-    0 24px 56px rgba(0, 0, 0, 0.14),
+    0 0 0 1px rgba(255, 255, 255, 0.40),
+    0 4px 16px rgba(255, 255, 255, 0.25),
+    0 12px 32px rgba(0, 0, 0, 0.10),
+    0 32px 72px rgba(0, 0, 0, 0.14),
     inset 0 1.5px 0 rgba(255, 255, 255, 1),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.55),
-    inset 1px 0 0 rgba(255, 255, 255, 0.45),
-    inset -1px 0 0 rgba(255, 255, 255, 0.35);
+    inset 0 -1.5px 0 rgba(255, 255, 255, 0.55),
+    inset 1.5px 0 0 rgba(255, 255, 255, 0.45),
+    inset -1.5px 0 0 rgba(255, 255, 255, 0.30);
   transform: translateY(-3px);
 }
 
