@@ -15,7 +15,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
-import { Image as ImageIcon, Sparkles, Loader2, Download, Clock, AlertCircle, Wand2 } from "lucide-react";
+import Link from "next/link";
+import { Image as ImageIcon, Sparkles, Loader2, Download, Clock, AlertCircle, Wand2, Film, Check } from "lucide-react";
 
 type Aspect = "1:1" | "16:9" | "9:16" | "4:5";
 
@@ -53,6 +54,9 @@ export default function AiImageStudioPage() {
   const [latest, setLatest] = useState<Gen | null>(null);
   const [gallery, setGallery] = useState<Gen[]>([]);
   const [err, setErr] = useState<string | null>(null);
+  // Animate (image-to-video) state for the "Just generated" card
+  const [animating, setAnimating] = useState(false);
+  const [animateResult, setAnimateResult] = useState<{ ok: boolean; video_url?: string; error?: string } | null>(null);
 
   const loadGallery = useCallback(async () => {
     try {
@@ -102,6 +106,39 @@ export default function AiImageStudioPage() {
       setErr(e instanceof Error ? e.message : "Failed");
     } finally {
       setBusy(false);
+    }
+  };
+
+  const animateLatest = async () => {
+    if (!latest?.image_url || animating) return;
+    setAnimating(true);
+    setAnimateResult(null);
+    try {
+      // Map image aspect to video aspect (1:1 → 1:1 etc.)
+      const videoAspect =
+        latest.aspect_ratio === "9:16" ? "9:16" :
+        latest.aspect_ratio === "16:9" ? "16:9" : "1:1";
+      const res = await fetch("/api/studio/video", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "image-to-video",
+          source_image_url: latest.image_url,
+          prompt: "Subtle motion, gentle camera drift, cinematic feel",
+          aspect_ratio: videoAspect,
+          duration_sec: 5,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setAnimateResult({ ok: false, error: data.error ?? "Failed" });
+      } else {
+        setAnimateResult({ ok: true, video_url: data.video_url });
+      }
+    } catch (e) {
+      setAnimateResult({ ok: false, error: e instanceof Error ? e.message : "Failed" });
+    } finally {
+      setAnimating(false);
     }
   };
 
@@ -212,22 +249,88 @@ export default function AiImageStudioPage() {
               className="w-full max-h-[520px] object-contain rounded-xl"
               style={{ backgroundColor: "rgba(0,0,0,0.03)" }}
             />
-            <div className="mt-3 flex items-center justify-between text-xs" style={{ color: "#78614E" }}>
+            <div className="mt-3 flex items-center justify-between text-xs gap-3 flex-wrap" style={{ color: "#78614E" }}>
               <span>
                 {latest.provider} · {latest.aspect_ratio} ·{" "}
                 {latest.duration_ms ? `${latest.duration_ms}ms` : "?"}
                 {latest.cost_usd ? ` · $${latest.cost_usd.toFixed(4)}` : ""}
               </span>
-              <a
-                href={latest.image_url}
-                download
-                className="inline-flex items-center gap-1 font-bold"
-                style={{ color: "#D97706" }}
-              >
-                <Download className="w-3 h-3" />
-                Download
-              </a>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={animateLatest}
+                  disabled={animating || Boolean(animateResult?.ok)}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-xs font-bold disabled:opacity-50"
+                  style={{
+                    background: "linear-gradient(135deg, #EC4899, #BE185D)",
+                    color: "white",
+                  }}
+                >
+                  {animating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Film className="w-3 h-3" />}
+                  {animating ? "Animating... (30-90s)" : animateResult?.ok ? "Animated" : "Animate (~$0.30)"}
+                </button>
+                <a
+                  href={latest.image_url}
+                  download
+                  className="inline-flex items-center gap-1 font-bold"
+                  style={{ color: "#D97706" }}
+                >
+                  <Download className="w-3 h-3" />
+                  Download
+                </a>
+              </div>
             </div>
+
+            {animateResult?.ok && animateResult.video_url && (
+              <div
+                className="mt-4 rounded-xl p-3"
+                style={{
+                  backgroundColor: "rgba(236,72,153,0.06)",
+                  border: "1px solid rgba(236,72,153,0.3)",
+                }}
+              >
+                <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: "#BE185D" }}>
+                  <Check className="w-3 h-3 inline mr-1" />
+                  Video generated from this image
+                </p>
+                <video
+                  src={animateResult.video_url}
+                  controls
+                  autoPlay
+                  loop
+                  muted
+                  className="w-full max-h-[400px] rounded-lg"
+                />
+                <div className="mt-2 flex items-center justify-between text-xs">
+                  <Link
+                    href="/studio/video"
+                    className="font-bold"
+                    style={{ color: "#BE185D" }}
+                  >
+                    See in Video Studio →
+                  </Link>
+                  <a
+                    href={animateResult.video_url}
+                    download
+                    className="inline-flex items-center gap-1 font-bold"
+                    style={{ color: "#D97706" }}
+                  >
+                    <Download className="w-3 h-3" />
+                    Download
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {animateResult && !animateResult.ok && (
+              <p
+                className="mt-3 text-xs flex items-center gap-1"
+                style={{ color: "#EF4444" }}
+              >
+                <AlertCircle className="w-3 h-3" />
+                Animate failed: {animateResult.error}
+              </p>
+            )}
           </div>
         )}
 
