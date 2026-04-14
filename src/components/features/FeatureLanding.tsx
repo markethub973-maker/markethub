@@ -13,6 +13,7 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles, ExternalLink, MessageCircle } from "lucide-react";
 import type { FeatureCatalogEntry } from "@/lib/featuresData";
+import FeatureWorkflowDemo from "./FeatureWorkflowDemo";
 
 interface Props {
   feature: FeatureCatalogEntry;
@@ -214,6 +215,12 @@ export default function FeatureLanding({ feature: f }: Props) {
 // the video-to-website skill in .claude/skills/video-to-website.md and host
 // the dedicated demo at /features/<slug>/demo (separate route).
 function FeatureDemo({ feature }: { feature: FeatureCatalogEntry }) {
+  // Workflow CSS-animated explainer (default for software features) —
+  // takes priority unless we have a real video file to play.
+  if (feature.demo_kind === "workflow" && feature.workflow_kind) {
+    return <FeatureWorkflowDemo kind={feature.workflow_kind} />;
+  }
+
   const aspectClass = feature.demo_kind === "video" ? "aspect-video" : "aspect-square";
   return (
     <div
