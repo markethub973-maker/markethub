@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import AiImageQuickGen from "@/components/calendar/AiImageQuickGen";
 import AssetPicker from "@/components/calendar/AssetPicker";
 import HashtagSuggester from "@/components/calendar/HashtagSuggester";
+import CaptionVariants from "@/components/calendar/CaptionVariants";
 import EngagementPredictor from "@/components/calendar/EngagementPredictor";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
@@ -484,7 +485,14 @@ export default function CalendarPage() {
                     style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Caption</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-semibold" style={{ color: "#78614E" }}>Caption</label>
+                    <CaptionVariants
+                      caption={form.caption}
+                      platform={form.platform}
+                      onPick={(c) => setForm(f => ({ ...f, caption: c }))}
+                    />
+                  </div>
                   <textarea placeholder="Post text..." value={form.caption}
                     onChange={e => setForm(f => ({ ...f, caption: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none" rows={3}

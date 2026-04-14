@@ -32,12 +32,28 @@ const C = {
 // ── Data ──────────────────────────────────────────────────────────────────────
 const FEATURES = [
   {
+    icon: <Sparkles className="w-5 h-5" />,
+    color: "#8B5CF6",
+    title: "AI Image + Video + Audio Studio",
+    description:
+      "Generate branded images ($0.003), short Reels ($0.30), voiceovers and music — all in one click. Brand voice profile means every output sounds like you, not generic stock.",
+    badge: "New",
+  },
+  {
+    icon: <Zap className="w-5 h-5" />,
+    color: "#F59E0B",
+    title: "Campaign Auto-Pilot — brief → full plan",
+    description:
+      "Type a campaign brief, get a 5-post content plan in 10 seconds: hooks, captions, hashtags, image prompts, suggested times. Generate all images, schedule all posts — one click each.",
+    badge: "Most loved",
+  },
+  {
     icon: <Search className="w-5 h-5" />,
     color: "#F59E0B",
     title: "AI Lead Finder — 50+ leads/week",
     description:
       "Describe your offer. AI scans 8 platforms simultaneously, scores every lead by fit (1–10), flags competitors, and writes personalized outreach in your language. You review and send.",
-    badge: "Most used",
+    badge: null,
   },
   {
     icon: <BarChart2 className="w-5 h-5" />,
@@ -78,6 +94,14 @@ const FEATURES = [
     description:
       "Share live IG + TikTok dashboards with clients under your agency brand. Custom logo, colors, password protection. Clients see their data, not your platform.",
     badge: null,
+  },
+  {
+    icon: <PenTool className="w-5 h-5" />,
+    color: "#0EA5E9",
+    title: "Public REST API + Webhooks",
+    description:
+      "Build integrations on top of MarketHub. List posts/leads/automations, push events to your Slack/Notion/Zapier on post.published, lead.created, image.generated. HMAC-signed.",
+    badge: "Pro+",
   },
 ];
 
