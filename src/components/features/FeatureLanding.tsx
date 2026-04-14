@@ -204,34 +204,60 @@ export default function FeatureLanding({ feature: f }: Props) {
   );
 }
 
-// ── Demo slot — swappable later for Spline / Lottie / video ────────────────
+// ── Demo slot — swappable based on feature.demo_kind ──────────────────────
+//
+//   "screenshot" → static <img>
+//   "video"      → autoplay/loop/muted <video> (drop MP4 in public/demos/)
+//   "spline"     → 3D scene iframe (paste Spline export URL)
+//
+// For full scroll-driven product demos (iPhone-style exploded view), follow
+// the video-to-website skill in .claude/skills/video-to-website.md and host
+// the dedicated demo at /features/<slug>/demo (separate route).
 function FeatureDemo({ feature }: { feature: FeatureCatalogEntry }) {
-  // SCREENSHOT FALLBACK: if we have a real screenshot path, use it; else
-  // show a friendly emoji placeholder. Replace with <SplineEmbed /> /
-  // <LottiePlayer /> / <video> later — only this function changes.
+  const aspectClass = feature.demo_kind === "video" ? "aspect-video" : "aspect-square";
   return (
     <div
-      className="rounded-2xl overflow-hidden aspect-square flex items-center justify-center relative"
+      className={`rounded-2xl overflow-hidden ${aspectClass} flex items-center justify-center relative`}
       style={{
         background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(139,92,246,0.08))",
         border: "1px solid rgba(245,158,11,0.2)",
       }}
     >
-      {feature.demo_src ? (
+      {feature.demo_kind === "video" && feature.demo_src ? (
+        <video
+          src={feature.demo_src}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover"
+          poster={feature.demo_src.replace(/\.(mp4|mov|webm)$/i, ".jpg")}
+        />
+      ) : feature.demo_kind === "spline" && feature.demo_src ? (
+        <iframe
+          src={feature.demo_src}
+          title={`${feature.title} 3D preview`}
+          className="w-full h-full border-0"
+          loading="lazy"
+        />
+      ) : feature.demo_src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={feature.demo_src}
           alt={`${feature.title} preview`}
           className="w-full h-full object-cover"
           onError={(e) => {
-            // Hide the broken image so the emoji placeholder shows through
             (e.currentTarget as HTMLImageElement).style.display = "none";
           }}
           loading="lazy"
         />
       ) : null}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none" style={{ zIndex: 1 }}>
-        <div className="text-center" style={{ opacity: feature.demo_src ? 0 : 1 }}>
+      {/* Friendly placeholder when no demo asset present yet */}
+      <div
+        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+        style={{ zIndex: 1, opacity: feature.demo_src ? 0 : 1 }}
+      >
+        <div className="text-center">
           <p className="text-7xl mb-2">{feature.emoji}</p>
           <p className="text-[10px] uppercase tracking-wider font-bold" style={{ color: "#A8967E" }}>
             Demo coming soon
