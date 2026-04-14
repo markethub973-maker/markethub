@@ -63,6 +63,97 @@ export async function POST(req: Request) {
     const plan = session.metadata?.plan;
     const sessionType = session.metadata?.type;
 
+    // ── AI Marketing Accelerator DFY offer purchase ──────────────────────
+    // Public landing → one-time payment; no userId (prospect has no account yet).
+    if (session.metadata?.offer === "ai_marketing_accelerator") {
+      const tier = session.metadata?.tier ?? "unknown";
+      const businessName = session.metadata?.business_name ?? "";
+      const website = session.metadata?.website ?? "";
+      const clientEmail =
+        session.customer_email ??
+        session.customer_details?.email ??
+        session.metadata?.email ??
+        null;
+      const amount = ((session.amount_total ?? 0) / 100).toFixed(2);
+      const currency = (session.currency ?? "eur").toUpperCase();
+
+      if (clientEmail && process.env.RESEND_API_KEY) {
+        // Welcome email from Eduard persona — sets expectations for 5-7 day delivery.
+        const welcomeHtml = `
+          <div style="font-family:system-ui,-apple-system,sans-serif;max-width:640px;margin:0 auto;color:#222;">
+            <p>Hi ${businessName ? `${businessName} team` : "there"},</p>
+            <p>Eduard here — I just saw your payment come through. Welcome aboard 🎉</p>
+            <p>Here's exactly what happens next:</p>
+            <ol style="padding-left:20px;line-height:1.7;">
+              <li><b>Right now (auto):</b> this email, so you have a paper trail. Receipt is attached to the Stripe confirmation you'll get separately.</li>
+              <li><b>Within 24h:</b> I'll send you a short intake form (brand voice, audience, what to avoid) — takes ~10 min to complete.</li>
+              <li><b>Day 1:</b> 30-min strategy call on Zoom. I'll propose 3 slots.</li>
+              <li><b>Day 5–7:</b> I deliver 60 captions + 20 images + 30-day calendar + 50 qualified leads — everything in your inbox, nothing to install.</li>
+            </ol>
+            <p>If you want to speed things up, reply to this email with:</p>
+            <ul>
+              <li>Your website (if not already shared): ${website || "—"}</li>
+              <li>2–3 competitors whose content you like</li>
+              <li>1–2 things you absolutely do <i>not</i> want in your content</li>
+            </ul>
+            <p>Looking forward to it.</p>
+            <p>— Eduard<br/>
+            <span style="color:#888;font-size:12px;">Founder, MarketHub Pro<br/>
+            eduard@markethubpromo.com · markethubpromo.com</span></p>
+            <hr style="margin-top:24px;border:0;border-top:1px solid #eee;"/>
+            <p style="font-size:11px;color:#aaa;">Order ref: ${session.id} · ${currency} ${amount} · Tier: ${tier}</p>
+          </div>`;
+        try {
+          await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "Eduard <eduard@markethubpromo.com>",
+              to: [clientEmail],
+              bcc: ["office@markethubpromo.com"],
+              subject: "Welcome aboard — your AI Marketing Accelerator kickoff",
+              html: welcomeHtml,
+              reply_to: "eduard@markethubpromo.com",
+            }),
+          });
+        } catch (e) {
+          console.error("[stripe webhook] offer welcome email failed:", e);
+        }
+
+        // Internal alert — so operator sees the sale in real time.
+        try {
+          await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              from: "MarketHub Pro <office@markethubpromo.com>",
+              to: ["markethub973@gmail.com"],
+              subject: `💰 New Accelerator sale — ${currency} ${amount} (${tier})`,
+              html: `
+                <p><b>${currency} ${amount}</b> paid for AI Marketing Accelerator (<b>${tier}</b>).</p>
+                <ul>
+                  <li>Email: ${clientEmail}</li>
+                  <li>Business: ${businessName || "—"}</li>
+                  <li>Website: ${website || "—"}</li>
+                  <li>Stripe session: ${session.id}</li>
+                </ul>
+                <p>Welcome email has been auto-sent from Eduard to the client. Start onboarding.</p>`,
+            }),
+          });
+        } catch (e) {
+          console.error("[stripe webhook] offer internal alert failed:", e);
+        }
+      }
+
+      return NextResponse.json({ received: true, offer: "ai_marketing_accelerator" });
+    }
+
     // ── AI credit pack purchase ──────────────────────────────────────────
     if (sessionType === "ai_credits" && userId) {
       const creditsUsd = parseFloat(session.metadata?.credits_usd ?? "0");

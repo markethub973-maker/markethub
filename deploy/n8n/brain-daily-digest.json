@@ -81,7 +81,7 @@
     },
     {
       "parameters": {
-        "fromEmail": "brain@markethubpromo.com",
+        "fromEmail": "Eduard <eduard@markethubpromo.com>",
         "toEmail": "={{ $json.to }}",
         "subject": "={{ $json.subject }}",
         "emailFormat": "html",
