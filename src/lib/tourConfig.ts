@@ -13,7 +13,7 @@ export const FULL_TOUR: TourStep[] = [
     page: "/",
     target: "sidebar-logo",
     title: "Welcome to MarketHub Pro 👋",
-    description: "This guide will walk you through every feature of the platform step by step. Takes ~2 minutes.",
+    description: "This guide walks you through every feature step by step. Takes ~3 minutes.",
     position: "right",
   },
   {
@@ -61,7 +61,71 @@ export const FULL_TOUR: TourStep[] = [
     page: "/captions",
     target: "page-header",
     title: "AI Captions ✨",
-    description: "Automatically generate titles, descriptions and hashtags for any type of content using Claude AI.",
+    description: "Generate titles, descriptions and hashtags for any content. Uses your Brand Voice profile for on-tone output.",
+    position: "bottom",
+  },
+  {
+    id: "calendar",
+    page: "/calendar",
+    target: "page-header",
+    title: "Content Calendar 📅",
+    description: "Schedule posts across Instagram, Facebook, LinkedIn, Twitter. Every field has an AI gate: caption variants, hashtag suggester, engagement predictor, alt-text.",
+    position: "bottom",
+  },
+  {
+    id: "studio-image",
+    page: "/studio/image",
+    target: "page-header",
+    title: "AI Image Studio 🎨",
+    description: "Generate on-brand images via Flux Schnell (Fal.ai). Supports 1:1, 9:16, 16:9, 4:5 — perfect for every platform.",
+    position: "bottom",
+  },
+  {
+    id: "studio-video",
+    page: "/studio/video",
+    target: "page-header",
+    title: "AI Video Studio 🎬",
+    description: "Turn a prompt — or an image — into a 5-10s video via Seedance 2.0. Great for Reels, TikTok, Shorts.",
+    position: "bottom",
+  },
+  {
+    id: "studio-audio",
+    page: "/studio/audio",
+    target: "page-header",
+    title: "AI Audio Studio 🎵",
+    description: "Text-to-speech voiceovers, background music, sound effects. All three in one panel.",
+    position: "bottom",
+  },
+  {
+    id: "studio-reels",
+    page: "/studio/reels",
+    target: "page-header",
+    title: "Reels Script Studio 🎭",
+    description: "Generate hook, beats and a full script for Instagram Reels / TikTok / YouTube Shorts in your Brand Voice.",
+    position: "bottom",
+  },
+  {
+    id: "studio-campaign",
+    page: "/studio/campaign",
+    target: "page-header",
+    title: "Campaign Auto-Pilot 🚀",
+    description: "One brief → 5 ready-to-schedule posts with AI-generated images and hashtags. Bulk schedule to the calendar.",
+    position: "bottom",
+  },
+  {
+    id: "studio-queue",
+    page: "/studio/queue",
+    target: "page-header",
+    title: "Publish Queue ⏱️",
+    description: "See every scheduled post across platforms, with status, retry and manual publish buttons.",
+    position: "bottom",
+  },
+  {
+    id: "studio-assets",
+    page: "/studio/assets",
+    target: "page-header",
+    title: "Asset Library 🗂️",
+    description: "Every AI asset you've generated — images, videos, audio — in one gallery. Bulk delete, one-click alt-text for accessibility.",
     position: "bottom",
   },
   {
@@ -73,19 +137,19 @@ export const FULL_TOUR: TourStep[] = [
     position: "bottom",
   },
   {
-    id: "settings-connect",
+    id: "settings-brand-voice",
     page: "/settings",
     target: "page-header",
-    title: "Connect your accounts ⚙️",
-    description: "Important first step: connect YouTube and Instagram for real data. Click the 'Integrations' tab.",
+    title: "Brand Voice & API ⚙️",
+    description: "Define your Brand Voice once — every AI feature (captions, images, reels, campaigns) uses it. Plus: connect accounts, manage API tokens and webhooks.",
     position: "bottom",
   },
   {
     id: "account-connections",
     page: "/settings",
     target: "account-connections",
-    title: "YouTube & Instagram 🔗",
-    description: "Connect YouTube for your own channel stats and Instagram Business for real reach, engagement and demographics.",
+    title: "Connect accounts 🔗",
+    description: "Connect YouTube, Instagram, Facebook, LinkedIn, Twitter for real data and auto-publishing.",
     position: "right",
   },
   {
@@ -93,7 +157,7 @@ export const FULL_TOUR: TourStep[] = [
     page: "/",
     target: "sidebar-logo",
     title: "You're ready! 🚀",
-    description: "The tour is finished. Connect your accounts in Settings → Integrations for real data. You can ask the AI assistant anything.",
+    description: "Tour complete. Tip: start in Settings → Brand Voice to unlock the full power of every AI feature.",
     position: "right",
   },
 ];
@@ -120,5 +184,29 @@ export const PAGE_GUIDES: Record<string, TourStep[]> = {
   ],
   "/leads": [
     { id: "pg-leads-filter", page: "/leads", target: "leads-filter", title: "Filter leads", description: "Filter by score (hot/warm/cold), platform or status.", position: "bottom" },
+  ],
+  "/calendar": [
+    { id: "pg-cal-header", page: "/calendar", target: "page-header", title: "Schedule posts", description: "Pick a date and click '+' to create a post. Every field has AI-powered helpers.", position: "bottom" },
+  ],
+  "/studio/image": [
+    { id: "pg-img-header", page: "/studio/image", target: "page-header", title: "AI Image Studio", description: "Write a prompt, pick an aspect ratio, click Generate. ~5s per image (~$0.003).", position: "bottom" },
+  ],
+  "/studio/video": [
+    { id: "pg-vid-header", page: "/studio/video", target: "page-header", title: "AI Video Studio", description: "Prompt or start-image → 5-10s video. Great for Reels, TikTok, Shorts.", position: "bottom" },
+  ],
+  "/studio/audio": [
+    { id: "pg-aud-header", page: "/studio/audio", target: "page-header", title: "AI Audio Studio", description: "Three modes: Text→Speech (voiceovers), Music (background tracks), Sound Effects.", position: "bottom" },
+  ],
+  "/studio/reels": [
+    { id: "pg-reels-header", page: "/studio/reels", target: "page-header", title: "Reels Script Studio", description: "Give a topic; the AI outputs hook + beats + script in your Brand Voice.", position: "bottom" },
+  ],
+  "/studio/campaign": [
+    { id: "pg-camp-header", page: "/studio/campaign", target: "page-header", title: "Campaign Auto-Pilot", description: "Brief → 5 posts with images + hashtags. Use 'Generate all' then 'Schedule all'.", position: "bottom" },
+  ],
+  "/studio/queue": [
+    { id: "pg-queue-header", page: "/studio/queue", target: "page-header", title: "Publish Queue", description: "Every scheduled post across platforms — with status, retry and manual publish.", position: "bottom" },
+  ],
+  "/studio/assets": [
+    { id: "pg-assets-header", page: "/studio/assets", target: "page-header", title: "Asset Library", description: "Every AI asset in one place. Images have an 'Alt' button for one-click accessibility text.", position: "bottom" },
   ],
 };
