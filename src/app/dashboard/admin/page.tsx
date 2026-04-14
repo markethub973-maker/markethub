@@ -34,6 +34,7 @@ import AdminSupportTickets from "@/components/admin/AdminSupportTickets";
 import AdminSecurityAgents from "@/components/admin/AdminSecurityAgents";
 import Admin2FAPanel from "@/components/admin/Admin2FAPanel";
 import AdminEmailPreview from "@/components/admin/AdminEmailPreview";
+import AdminAiUsage from "@/components/admin/AdminAiUsage";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 // ── Panel definitions ──────────────────────────────────────────────────────────
@@ -43,7 +44,7 @@ type PanelId =
   | "tokens" | "platform" | "credentials" | "anthropic" | "markup"
   | "audit" | "health" | "tests" | "plantest" | "restore"
   | "persona" | "progress" | "testaccounts" | "business" | "security"
-  | "support" | "secagents" | "twofa" | "emailpreview";
+  | "support" | "secagents" | "twofa" | "emailpreview" | "aiusage";
 
 interface PanelDef {
   id: PanelId;
@@ -78,6 +79,7 @@ const PANELS: PanelDef[] = [
   { id: "secagents",   label: "Security Agents", icon: Activity,     color: "#10B981", bg: "rgba(16,185,129,0.12)",group: "Security & QA" },
   { id: "twofa",       label: "Admin 2FA",       icon: Shield,       color: "#F59E0B", bg: "rgba(245,158,11,0.12)",group: "Security & QA" },
   { id: "emailpreview",label: "Email Preview",   icon: Mail,         color: "#D97706", bg: "rgba(217,119,6,0.12)", group: "Security & QA" },
+  { id: "aiusage",     label: "AI Usage",        icon: Cpu,          color: "#8B5CF6", bg: "rgba(139,92,246,0.12)",group: "Platform & API" },
   { id: "audit",       label: "Audit Log",       icon: BookOpen,     color: "#6366F1", bg: "rgba(99,102,241,0.1)", group: "Security & QA" },
   { id: "health",      label: "Health Check",    icon: Activity,     color: "#10B981", bg: "rgba(16,185,129,0.1)", group: "Security & QA" },
   { id: "tests",       label: "Integration Tests",icon: Bug,         color: "#F59E0B", bg: "rgba(245,158,11,0.1)", group: "Security & QA" },
@@ -106,6 +108,7 @@ const PANEL_CONTENT: Record<PanelId, React.ReactNode> = {
   secagents:    <ModuleBoundary name="Security Agents" minimal><AdminSecurityAgents /></ModuleBoundary>,
   twofa:        <ModuleBoundary name="Admin 2FA" minimal><Admin2FAPanel /></ModuleBoundary>,
   emailpreview: <ModuleBoundary name="Email Preview" minimal><AdminEmailPreview /></ModuleBoundary>,
+  aiusage:      <ModuleBoundary name="AI Usage" minimal><AdminAiUsage /></ModuleBoundary>,
   audit:        <ModuleBoundary name="Audit Log" minimal><AdminAuditLog /></ModuleBoundary>,
   health:       <ModuleBoundary name="Health Check" minimal><AdminHealthCheck /></ModuleBoundary>,
   tests:        <ModuleBoundary name="Integration Tests" minimal><AdminTestRunner /></ModuleBoundary>,
