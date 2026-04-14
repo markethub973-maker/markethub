@@ -67,6 +67,7 @@ const navGroups = [
     items: [
       { href: "/calendar", label: "Calendar", icon: CalendarDays },
       { href: "/captions", label: "AI Captions", icon: Sparkles },
+      { href: "/studio/image", label: "AI Image Studio", icon: Sparkles },
       { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
       { href: "/bio", label: "Link in Bio", icon: Link2 },
       { href: "/monthly-report", label: "Performance Report", icon: BarChart3 },
