@@ -326,13 +326,19 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/brain-private/mine-leads";
       return NextResponse.rewrite(url);
     }
+    // Office — CEO command room with expert agents
+    if (pathname === "/office" || pathname === "/brain-private/office") {
+      url.pathname = "/brain-private/office";
+      return NextResponse.rewrite(url);
+    }
     // Brain APIs the dashboard uses — allow through on this subdomain.
     if (
       pathname.startsWith("/api/brain/outreach-batch") ||
       pathname.startsWith("/api/brain/demo") ||
       pathname.startsWith("/api/brain/mine-leads") ||
       pathname.startsWith("/api/brain/mark-replied") ||
-      pathname.startsWith("/api/brain/forecast")
+      pathname.startsWith("/api/brain/forecast") ||
+      pathname.startsWith("/api/brain/ask-agent")
     ) {
       return NextResponse.next();
     }

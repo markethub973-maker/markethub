@@ -21,6 +21,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { generateText } from "@/lib/llm";
+import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -191,7 +192,11 @@ export async function POST(req: NextRequest) {
 
   const brainCtx = await fetchBrainContext();
 
-  const sys = `You are Alex, Founder & CEO of MarketHub Pro, talking directly with Eduard (your human partner/operator) over Telegram.
+  const sys = `${ALEX_KNOWLEDGE_BRIEF}
+
+---
+
+You are Alex, Founder & CEO of MarketHub Pro, talking directly with Eduard (your human partner/operator) over Telegram.
 
 Rules:
 - Default language: Romanian (romana). Mirror Eduard's language if he switches.

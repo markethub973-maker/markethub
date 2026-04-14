@@ -189,6 +189,7 @@ export default async function BrainCommandCenter() {
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
+              { label: "🏛️ Enter Alex's Office", href: "/office" },
               { label: "Send outreach batch", href: "/outreach" },
               { label: "View pipeline", href: "/pipeline" },
               { label: "Generate demo for prospect", href: "/demo" },
