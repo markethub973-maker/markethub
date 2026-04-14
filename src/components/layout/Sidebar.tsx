@@ -157,12 +157,12 @@ function UpgradeModal({
     >
       <div
         className="relative w-full max-w-sm rounded-2xl p-6 shadow-2xl"
-        style={{ backgroundColor: "#1C1814", border: "1px solid rgba(245,215,160,0.15)" }}
+        style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.15)" }}
         onClick={e => e.stopPropagation()}
       >
         <button type="button" onClick={onClose} aria-label="Close"
           className="absolute top-4 right-4 p-1 rounded-lg"
-          style={{ color: "#A8967E" }}>
+          style={{ color: "var(--color-surface-dark-text-muted)" }}>
           <X size={16} />
         </button>
 
@@ -170,21 +170,21 @@ function UpgradeModal({
         <div className="flex justify-center mb-4">
           <div className="w-14 h-14 rounded-2xl flex items-center justify-center"
             style={{ background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)" }}>
-            <Lock size={24} style={{ color: "#F59E0B" }} />
+            <Lock size={24} style={{ color: "var(--color-primary)" }} />
           </div>
         </div>
 
-        <h3 className="text-lg font-bold text-center mb-1" style={{ color: "#FFF8F0" }}>
+        <h3 className="text-lg font-bold text-center mb-1" style={{ color: "var(--color-surface-dark-text)" }}>
           {gate.label}
         </h3>
-        <p className="text-sm text-center mb-1" style={{ color: "#A8967E" }}>
+        <p className="text-sm text-center mb-1" style={{ color: "var(--color-surface-dark-text-muted)" }}>
           {gate.description}
         </p>
 
         {/* Current plan badge */}
-        <p className="text-xs text-center mb-4" style={{ color: "#78614E" }}>
+        <p className="text-xs text-center mb-4" style={{ color: "var(--color-surface-dark-text-dim)" }}>
           Your current plan:{" "}
-          <span className="font-bold" style={{ color: PLAN_COLORS[userPlan as PlanId] ?? "#F59E0B" }}>
+          <span className="font-bold" style={{ color: PLAN_COLORS[userPlan as PlanId] ?? "var(--color-primary)" }}>
             {PLAN_LABELS[userPlan as PlanId] ?? userPlan}
           </span>
         </p>
@@ -201,8 +201,8 @@ function UpgradeModal({
                 <span className="text-sm font-semibold flex-1" style={{ color }}>
                   {PLAN_LABELS[p]}
                 </span>
-                <span className="text-xs font-bold" style={{ color: "#FFF8F0" }}>
-                  ${price}<span className="font-normal text-xs" style={{ color: "#A8967E" }}>/mo</span>
+                <span className="text-xs font-bold" style={{ color: "var(--color-surface-dark-text)" }}>
+                  ${price}<span className="font-normal text-xs" style={{ color: "var(--color-surface-dark-text-muted)" }}>/mo</span>
                 </span>
               </div>
             );
@@ -213,13 +213,13 @@ function UpgradeModal({
           href={`/register?plan=${minPlan ?? "lite"}`}
           onClick={onClose}
           className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-bold"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "#1C1814" }}
+          style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "var(--color-surface-dark)" }}
         >
           Upgrade Now <ArrowRight size={15} />
         </Link>
         <button type="button" onClick={onClose}
           className="mt-2 w-full py-2 text-xs"
-          style={{ color: "#78614E" }}>
+          style={{ color: "var(--color-surface-dark-text-dim)" }}>
           Maybe later
         </button>
       </div>
@@ -289,7 +289,7 @@ export default function Sidebar() {
       <button
         type="button"
         className="md:hidden fixed top-4 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-xl"
-        style={{ backgroundColor: "#1C1814", border: "1px solid rgba(245,215,160,0.2)" }}
+        style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.2)" }}
         onClick={() => setMobileOpen(true)}
         aria-label="Open menu"
       >
@@ -311,7 +311,7 @@ export default function Sidebar() {
       <aside
         className={`fixed left-0 top-0 h-screen w-64 flex flex-col z-40 transition-transform duration-300
           ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
-        style={{ backgroundColor: "#1C1814" }}
+        style={{ backgroundColor: "var(--color-surface-dark)" }}
       >
         {/* Logo */}
         <div
@@ -320,14 +320,14 @@ export default function Sidebar() {
           style={{ borderBottom: "1px solid rgba(245,215,160,0.1)" }}
         >
           <div className="w-8 h-8 rounded-lg flex items-center justify-center"
-            style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)" }}>
+            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
             <Zap className="w-4 h-4 text-white" />
           </div>
-          <span className="font-bold text-lg tracking-tight flex-1" style={{ color: "#FFF8F0" }}>MarketHub Pro</span>
+          <span className="font-bold text-lg tracking-tight flex-1" style={{ color: "var(--color-surface-dark-text)" }}>MarketHub Pro</span>
           <button
             type="button"
             className="md:hidden p-1 rounded-lg"
-            style={{ color: "#A8967E" }}
+            style={{ color: "var(--color-surface-dark-text-muted)" }}
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
           >
@@ -352,12 +352,12 @@ export default function Sidebar() {
                   className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
                   style={hasActiveItem ? {
                     backgroundColor: "rgba(245,158,11,0.15)",
-                    color: "#F59E0B",
+                    color: "var(--color-primary)",
                     border: "1px solid rgba(245,158,11,0.3)",
                   } : allLocked ? {
                     color: "#4A3F35",
                   } : {
-                    color: "#A8967E",
+                    color: "var(--color-surface-dark-text-muted)",
                   }}
                   onMouseEnter={e => {
                     if (!hasActiveItem) e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.04)";
@@ -404,7 +404,7 @@ export default function Sidebar() {
                           >
                             <Icon className="w-4 h-4" />
                             <span className="flex-1 text-left">{label}</span>
-                            <Lock className="w-3 h-3 flex-shrink-0" style={{ color: "#F59E0B", opacity: 0.5 }} />
+                            <Lock className="w-3 h-3 flex-shrink-0" style={{ color: "var(--color-primary)", opacity: 0.5 }} />
                           </button>
                         );
                       }
@@ -417,19 +417,19 @@ export default function Sidebar() {
                           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all"
                           style={active ? {
                             backgroundColor: "rgba(245,158,11,0.2)",
-                            color: "#F59E0B",
+                            color: "var(--color-primary)",
                           } : {
-                            color: "#A8967E",
+                            color: "var(--color-surface-dark-text-muted)",
                           }}
                           onMouseEnter={e => {
                             if (!active) {
-                              e.currentTarget.style.color = "#FFF8F0";
+                              e.currentTarget.style.color = "var(--color-surface-dark-text)";
                               e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
                             }
                           }}
                           onMouseLeave={e => {
                             if (!active) {
-                              e.currentTarget.style.color = "#A8967E";
+                              e.currentTarget.style.color = "var(--color-surface-dark-text-muted)";
                               e.currentTarget.style.backgroundColor = "transparent";
                             }
                           }}
@@ -454,11 +454,11 @@ export default function Sidebar() {
               className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all mb-2"
               style={pathname === "/dashboard/admin" ? {
                 backgroundColor: "rgba(245,158,11,0.15)",
-                color: "#F59E0B",
+                color: "var(--color-primary)",
                 border: "1px solid rgba(245,158,11,0.3)",
-              } : { color: "#A8967E" }}
-              onMouseEnter={e => { e.currentTarget.style.color = "#FFF8F0"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-              onMouseLeave={e => { e.currentTarget.style.color = "#A8967E"; e.currentTarget.style.backgroundColor = "transparent"; }}
+              } : { color: "var(--color-surface-dark-text-muted)" }}
+              onMouseEnter={e => { e.currentTarget.style.color = "var(--color-surface-dark-text)"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.backgroundColor = "transparent"; }}
             >
               <Shield className="w-4 h-4" />
               Admin
@@ -468,9 +468,9 @@ export default function Sidebar() {
           <Link
             href="/integrations"
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-            style={{ color: "#A8967E" }}
-            onMouseEnter={e => { e.currentTarget.style.color = "#FFF8F0"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "#A8967E"; e.currentTarget.style.backgroundColor = "transparent"; }}
+            style={{ color: "var(--color-surface-dark-text-muted)" }}
+            onMouseEnter={e => { e.currentTarget.style.color = "var(--color-surface-dark-text)"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.backgroundColor = "transparent"; }}
           >
             <Puzzle className="w-4 h-4" />
             Integrations
@@ -479,9 +479,9 @@ export default function Sidebar() {
           <Link
             href="/settings"
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-            style={{ color: "#A8967E" }}
-            onMouseEnter={e => { e.currentTarget.style.color = "#FFF8F0"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "#A8967E"; e.currentTarget.style.backgroundColor = "transparent"; }}
+            style={{ color: "var(--color-surface-dark-text-muted)" }}
+            onMouseEnter={e => { e.currentTarget.style.color = "var(--color-surface-dark-text)"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.backgroundColor = "transparent"; }}
           >
             <Settings className="w-4 h-4" />
             Settings
@@ -493,17 +493,17 @@ export default function Sidebar() {
               style={{ background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.15)" }}>
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: PLAN_COLORS[userPlan as PlanId] ?? "#F59E0B" }} />
+                  style={{ backgroundColor: PLAN_COLORS[userPlan as PlanId] ?? "var(--color-primary)" }} />
                 <p className="text-xs font-bold" style={{ color: "#F5D7A0" }}>{planLabel}</p>
               </div>
               <Link href="/dashboard/billing"
                 className="mt-2 block w-full py-1.5 rounded-md text-xs font-medium text-center"
-                style={{ color: "#A8967E" }}>
+                style={{ color: "var(--color-surface-dark-text-muted)" }}>
                 Plan & Billing
               </Link>
               <Link href="/upgrade"
                 className="mt-1 block w-full py-1.5 rounded-md text-xs font-bold text-center"
-                style={{ backgroundColor: "#F59E0B", color: "#1C1814" }}>
+                style={{ backgroundColor: "var(--color-primary)", color: "var(--color-surface-dark)" }}>
                 Upgrade
               </Link>
             </div>
@@ -513,9 +513,9 @@ export default function Sidebar() {
             type="button"
             onClick={handleLogout}
             className="mt-2 flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full transition-all"
-            style={{ color: "#A8967E" }}
+            style={{ color: "var(--color-surface-dark-text-muted)" }}
             onMouseEnter={e => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.08)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "#A8967E"; e.currentTarget.style.backgroundColor = "transparent"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.backgroundColor = "transparent"; }}
           >
             <LogOut className="w-4 h-4" />
             Logout

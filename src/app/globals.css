@@ -34,6 +34,15 @@
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-danger:  #EF4444;
+
+  /* Sidebar / dark-surface palette — kept dark across themes for contrast,
+     but the dark tint shifts per theme so sidebar feels on-brand. */
+  --color-surface-dark: #1C1814;
+  --color-surface-dark-secondary: #2A2520;
+  --color-surface-dark-text: #FFF8F0;
+  --color-surface-dark-text-muted: #A8967E;
+  --color-surface-dark-text-dim: #78614E;
+  --color-surface-dark-border: rgba(245, 215, 160, 0.15);
 }
 
 /* Emerald + Pink — fresh, growth-focused, very light */
@@ -62,6 +71,13 @@
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-danger:  #EF4444;
+
+  --color-surface-dark: #0F2A23;
+  --color-surface-dark-secondary: #1C3D33;
+  --color-surface-dark-text: #E1F5EE;
+  --color-surface-dark-text-muted: #7CA398;
+  --color-surface-dark-text-dim: #4F6B62;
+  --color-surface-dark-border: rgba(190, 240, 220, 0.15);
 }
 
 /* Indigo + Coral — soft tech startup */
@@ -90,6 +106,13 @@
   --color-success: #10B981;
   --color-warning: #F59E0B;
   --color-danger:  #EF4444;
+
+  --color-surface-dark: #1E1B4B;
+  --color-surface-dark-secondary: #2D2A6B;
+  --color-surface-dark-text: #EEEDFE;
+  --color-surface-dark-text-muted: #A5A4C0;
+  --color-surface-dark-text-dim: #5E5C7A;
+  --color-surface-dark-border: rgba(200, 200, 255, 0.15);
 }
 
 /* Mono + Lime — clean minimalist */
@@ -118,6 +141,13 @@
   --color-success: #84CC16;
   --color-warning: #F59E0B;
   --color-danger:  #EF4444;
+
+  --color-surface-dark: #0A0A09;
+  --color-surface-dark-secondary: #1F1F1E;
+  --color-surface-dark-text: #FCFCFC;
+  --color-surface-dark-text-muted: #A3A3A3;
+  --color-surface-dark-text-dim: #525252;
+  --color-surface-dark-border: rgba(255, 255, 255, 0.10);
 }
 
 /* Optional dark mode override (works on top of any theme).

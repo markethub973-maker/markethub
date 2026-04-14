@@ -101,12 +101,21 @@ function applyCustomColors(colors: CustomColors) {
   root.style.setProperty("--color-accent-dark", darken(colors.accent, 35));
   root.style.setProperty("--color-border", rgba(colors.primary, 0.15));
   root.style.setProperty("--color-border-hover", rgba(colors.primary, 0.30));
+  // Sidebar / dark surface — derived from primary's darkest shade
+  root.style.setProperty("--color-surface-dark", darken(colors.primary, 70));
+  root.style.setProperty("--color-surface-dark-secondary", darken(colors.primary, 55));
+  root.style.setProperty("--color-surface-dark-text", "#FFFCF7");
+  root.style.setProperty("--color-surface-dark-text-muted", rgba(colors.primary, 0.55));
+  root.style.setProperty("--color-surface-dark-text-dim", rgba(colors.primary, 0.35));
+  root.style.setProperty("--color-surface-dark-border", rgba(colors.primary, 0.15));
 }
 
 /** Clear inline overrides — preset CSS class kicks back in. */
 function clearCustomColors() {
   const root = document.documentElement;
   ["--color-primary", "--color-primary-hover", "--color-primary-light", "--color-primary-dark",
+   "--color-surface-dark", "--color-surface-dark-secondary", "--color-surface-dark-text",
+   "--color-surface-dark-text-muted", "--color-surface-dark-text-dim", "--color-surface-dark-border",
    "--color-accent", "--color-accent-hover", "--color-accent-light", "--color-accent-dark",
    "--color-border", "--color-border-hover"].forEach((v) => root.style.removeProperty(v));
 }
