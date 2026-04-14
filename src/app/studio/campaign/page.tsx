@@ -151,6 +151,31 @@ export default function CampaignAutoPilotPage() {
     setPosts((p) => p.map((x, i) => (i === idx ? { ...x, dismissed: true } : x)));
   };
 
+  // Schedule every visible post that isn't already scheduled
+  const scheduleAll = async () => {
+    const indexes = posts
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => !p.dismissed && !p.scheduled && !p.scheduling)
+      .map(({ i }) => i);
+    if (indexes.length === 0) return;
+    // Sequential to keep DB writes ordered + avoid /api/calendar burst
+    for (const i of indexes) {
+      // eslint-disable-next-line no-await-in-loop
+      await addToCalendar(i);
+    }
+  };
+
+  // Generate images for every visible post that doesn't have one yet
+  const generateAllImages = async () => {
+    const indexes = posts
+      .map((p, i) => ({ p, i }))
+      .filter(({ p }) => !p.dismissed && !p.image_url && !p.image_loading)
+      .map(({ i }) => i);
+    if (indexes.length === 0) return;
+    // Parallel — Fal handles concurrency fine and image gen takes ~3s each
+    await Promise.all(indexes.map((i) => generateImage(i)));
+  };
+
   const visible = posts.filter((p) => !p.dismissed);
 
   return (
@@ -244,6 +269,56 @@ export default function CampaignAutoPilotPage() {
             </p>
           </div>
         )}
+
+        {/* Bulk action bar — shows when there are visible posts */}
+        {visible.length > 0 && (() => {
+          const needImage = visible.filter((p) => !p.image_url).length;
+          const needSchedule = visible.filter((p) => !p.scheduled).length;
+          const totalCost = needImage * 0.003;
+          if (needImage === 0 && needSchedule === 0) return null;
+          return (
+            <div
+              className="rounded-xl p-4 flex items-center gap-3 flex-wrap"
+              style={{
+                background: "linear-gradient(135deg, rgba(245,158,11,0.06), rgba(16,185,129,0.06))",
+                border: "1px solid rgba(245,158,11,0.25)",
+              }}
+            >
+              <p className="text-xs font-bold flex-1" style={{ color: "#292524" }}>
+                Bulk actions
+              </p>
+              {needImage > 0 && (
+                <button
+                  type="button"
+                  onClick={generateAllImages}
+                  className="px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5"
+                  style={{
+                    backgroundColor: "rgba(139,92,246,0.12)",
+                    color: "#8B5CF6",
+                  }}
+                >
+                  <ImageIcon className="w-3 h-3" />
+                  Generate all {needImage} images
+                  <span className="text-[10px] opacity-70">${totalCost.toFixed(3)}</span>
+                </button>
+              )}
+              {needSchedule > 0 && (
+                <button
+                  type="button"
+                  onClick={scheduleAll}
+                  className="px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5"
+                  style={{
+                    backgroundColor: "#292524",
+                    color: "white",
+                  }}
+                >
+                  <CalendarPlus className="w-3 h-3" />
+                  Schedule all {needSchedule} posts
+                </button>
+              )}
+            </div>
+          );
+        })()}
 
         {/* 5 post cards */}
         {visible.length > 0 && (
