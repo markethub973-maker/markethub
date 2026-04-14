@@ -372,6 +372,7 @@ export default function PromoPage() {
             <a href="#features">Features</a>
             <a href="#agents">AI Agents</a>
             <a href="#pricing">Pricing</a>
+            <Link href="/features">Features</Link>
             <a href="#blog">Blog</a>
             <a href="#faq">FAQ</a>
           </div>
@@ -425,12 +426,12 @@ export default function PromoPage() {
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="#pricing"
+              href="/features"
               className="flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold border"
               style={{ color: C.muted, border: `1px solid ${C.amberBorder}`, backgroundColor: C.card }}
             >
               <Play className="w-4 h-4" />
-              View pricing
+              Browse all features
             </Link>
           </div>
 
