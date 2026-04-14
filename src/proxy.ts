@@ -164,6 +164,7 @@ const PUBLIC_PATHS = [
   "/api/stripe/webhook",
   "/api/apify/webhook",
   "/api/webhooks",          // all webhook receivers do their own HMAC auth
+  "/api/telegram",          // Telegram bot — verifies its own secret token header
   "/api/cron",              // cron routes verify CRON_SECRET themselves
   "/api/maint",             // maintenance agent routes verify CRON_SECRET themselves
   "/api/cockpit",           // cockpit routes self-authenticate (state/assistant via isAdminAuthorized cookie, watchdog/backup/daily-report/reactive-siem via Bearer CRON_SECRET)
