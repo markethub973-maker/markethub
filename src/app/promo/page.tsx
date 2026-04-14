@@ -372,8 +372,8 @@ export default function PromoPage() {
             <Link href="/features">Features</Link>
             <Link href="/for/agencies">Solutions</Link>
             <Link href="/vs/buffer">Compare</Link>
+            <Link href="/guides">Guides</Link>
             <a href="#pricing">Pricing</a>
-            <a href="#blog">Blog</a>
             <a href="#faq">FAQ</a>
           </div>
           <div className="flex items-center gap-3">

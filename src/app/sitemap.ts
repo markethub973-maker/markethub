@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { FEATURES } from "@/lib/featuresData";
 import { USE_CASES } from "@/lib/useCasesData";
 import { COMPARISONS } from "@/lib/comparisonsData";
+import { GUIDES } from "@/lib/guidesData";
 
 const SITE = "https://markethubpromo.com";
 
@@ -91,6 +92,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    // /guides + /guides/<slug> how-to articles
+    {
+      url: `${SITE}/guides`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    },
+    ...GUIDES.map((g) => ({
+      url: `${SITE}/guides/${g.slug}`,
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
     })),
     // NOTE: /login intentionally NOT included — robots: noindex per SEO
     // metadata. Crawlers find it via direct links if needed.
