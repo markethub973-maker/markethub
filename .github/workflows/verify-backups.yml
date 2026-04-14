@@ -1,0 +1,23 @@
+name: Verify Backups (weekly Sunday 05:00 UTC)
+
+on:
+  schedule:
+    - cron: "0 5 * * 0"
+  workflow_dispatch: {}
+
+concurrency:
+  group: verify-backups
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify latest backup
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 90 \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-backup-verify/1" \
+            https://markethubpromo.com/api/cockpit/backup-verify
