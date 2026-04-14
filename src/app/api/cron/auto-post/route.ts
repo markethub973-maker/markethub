@@ -3,6 +3,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 import { timingSafeEqual } from "crypto";
+import { dispatchWebhookEvent } from "@/lib/outboundWebhooks";
 import {
   publishToLinkedIn,
   publishToFacebook,
@@ -176,6 +177,14 @@ export async function GET(req: NextRequest) {
         })
         .eq("id", post.id);
       published++;
+
+      // Webhook fan-out
+      void dispatchWebhookEvent(post.user_id, "post.published", {
+        post_id: post.id,
+        platform,
+        external_id: result.external_id ?? null,
+        published_at: new Date().toISOString(),
+      });
     } else {
       await svc
         .from("scheduled_posts")
@@ -185,6 +194,13 @@ export async function GET(req: NextRequest) {
         })
         .eq("id", post.id);
       failed++;
+
+      // Webhook fan-out for failure
+      void dispatchWebhookEvent(post.user_id, "post.failed", {
+        post_id: post.id,
+        platform,
+        error: result.error ?? "unknown",
+      });
 
       // Send email so the user knows the auto-post failed
       if (profile?.email) {
