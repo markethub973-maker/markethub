@@ -202,30 +202,47 @@
   transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
 }
 
-/* ─── OUTER cards (white / surface backgrounds) — full glass 3D ─── */
-[style*="background-color: white"],
-[style*="background-color:white"],
-[style*="background-color: var(--color-bg-secondary)"],
-[style*="background-color: rgb(255, 255, 255)"],
-[style*="background-color: #FFFFFF"],
-[style*="background-color: #FFF"] {
-  background-color: var(--glass-bg) !important;
-  backdrop-filter: blur(20px) saturate(1.5);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5);
-  border: 1px solid var(--glass-border) !important;
-  box-shadow:
-    var(--shadow-card),
-    inset 0 1px 0 var(--glass-highlight),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+/* ─── Glass helper: liquid-glass background gradient ───────────── */
+:root {
+  --glass-gradient: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.40) 50%,
+    rgba(255, 255, 255, 0.60) 100%
+  );
+  --glass-border-gradient: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.40) 50%,
+    rgba(255, 255, 255, 0.75) 100%
+  );
 }
 
-[style*="background-color: white"]:hover,
-[style*="background-color: var(--color-bg-secondary)"]:hover {
-  background-color: var(--glass-bg-strong) !important;
+/* ─── OUTER cards — strong visible glass ────────────────────────── */
+.rounded-xl[style*="background-color"],
+.rounded-2xl[style*="background-color"],
+.rounded-lg[style*="background-color"] {
+  position: relative;
+  background: var(--glass-gradient) !important;
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  box-shadow:
+    var(--shadow-card),
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px rgba(255, 255, 255, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.rounded-xl[style*="background-color"]:hover,
+.rounded-2xl[style*="background-color"]:hover,
+.rounded-lg[style*="background-color"]:hover {
   box-shadow:
     var(--shadow-card-hover),
-    inset 0 1px 0 var(--glass-highlight),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 8px rgba(255, 255, 255, 0.5),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
   transform: translateY(-2px);
 }
 
@@ -268,9 +285,37 @@ body {
   margin: 0;
   padding: 0;
   font-family: Inter, Arial, sans-serif;
-  background: var(--color-bg);
+  /* Soft gradient body so glass cards on top have something to refract
+     — without this, translucent cards on a same-color page bg look matte. */
+  background:
+    radial-gradient(ellipse at top left, rgba(245,158,11,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(236,128,84,0.08) 0%, transparent 60%),
+    var(--color-bg);
+  background-attachment: fixed;
   color: var(--color-text);
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+/* Swap radial tints per theme so the glass refraction stays on-brand */
+[data-theme="emerald"] body {
+  background:
+    radial-gradient(ellipse at top left, rgba(16,185,129,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(244,114,182,0.08) 0%, transparent 60%),
+    var(--color-bg);
+  background-attachment: fixed;
+}
+[data-theme="indigo"] body {
+  background:
+    radial-gradient(ellipse at top left, rgba(129,140,248,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(251,146,60,0.08) 0%, transparent 60%),
+    var(--color-bg);
+  background-attachment: fixed;
+}
+[data-theme="mono"] body {
+  background:
+    radial-gradient(ellipse at top left, rgba(64,64,64,0.06) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(132,204,22,0.08) 0%, transparent 60%),
+    var(--color-bg);
+  background-attachment: fixed;
 }
 
 /* Scrollbar — picks up theme accent automatically */
