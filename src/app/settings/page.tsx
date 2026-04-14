@@ -6,6 +6,7 @@ import Header from "@/components/layout/Header";
 import InstagramConnect from "@/components/settings/InstagramConnect";
 import AccountConnections from "@/components/settings/AccountConnections";
 import RegionSettings from "@/components/settings/RegionSettings";
+import ApiTokensPanel from "@/components/settings/ApiTokensPanel";
 import { createClient } from "@/lib/supabase/client";
 import {
   Zap, User, Plug, CreditCard, CheckCircle, XCircle,
@@ -639,6 +640,11 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
+
+        {/* API Tokens section — always visible for Pro+ */}
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,158,11,0.25)" }}>
+          <ApiTokensPanel />
+        </div>
 
         {/* Privacy & Data section — always visible */}
         <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(139,92,246,0.2)" }}>
