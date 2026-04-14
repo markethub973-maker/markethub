@@ -363,7 +363,7 @@ export default function Sidebar() {
                     if (!hasActiveItem) e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.04)";
                   }}
                   onMouseLeave={e => {
-                    if (!hasActiveItem) e.currentTarget.style.backgroundColor = "transparent";
+                    if (!hasActiveItem) e.currentTarget.style.removeProperty("background-color");
                   }}
                 >
                   <GroupIcon className="w-4 h-4" />
@@ -399,7 +399,7 @@ export default function Sidebar() {
                             }}
                             onMouseLeave={e => {
                               e.currentTarget.style.color = "#3D3028";
-                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.removeProperty("background-color");
                             }}
                           >
                             <Icon className="w-4 h-4" />
@@ -430,7 +430,7 @@ export default function Sidebar() {
                           onMouseLeave={e => {
                             if (!active) {
                               e.currentTarget.style.color = "var(--color-surface-dark-text-muted)";
-                              e.currentTarget.style.backgroundColor = "transparent";
+                              e.currentTarget.style.removeProperty("background-color");
                             }
                           }}
                         >
@@ -458,7 +458,7 @@ export default function Sidebar() {
                 border: "1px solid rgba(245,158,11,0.3)",
               } : { color: "var(--color-surface-dark-text-muted)" }}
               onMouseEnter={e => { e.currentTarget.style.color = "var(--color-surface-dark-text)"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-              onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.removeProperty("background-color"); }}
             >
               <Shield className="w-4 h-4" />
               Admin
@@ -470,7 +470,7 @@ export default function Sidebar() {
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
             style={{ color: "var(--color-surface-dark-text-muted)" }}
             onMouseEnter={e => { e.currentTarget.style.color = "var(--color-surface-dark-text)"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.removeProperty("background-color"); }}
           >
             <Puzzle className="w-4 h-4" />
             Integrations
@@ -481,7 +481,7 @@ export default function Sidebar() {
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
             style={{ color: "var(--color-surface-dark-text-muted)" }}
             onMouseEnter={e => { e.currentTarget.style.color = "var(--color-surface-dark-text)"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.removeProperty("background-color"); }}
           >
             <Settings className="w-4 h-4" />
             Settings
@@ -515,7 +515,7 @@ export default function Sidebar() {
             className="mt-2 flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full transition-all"
             style={{ color: "var(--color-surface-dark-text-muted)" }}
             onMouseEnter={e => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.08)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = "var(--color-surface-dark-text-muted)"; e.currentTarget.style.removeProperty("background-color"); }}
           >
             <LogOut className="w-4 h-4" />
             Logout
