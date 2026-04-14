@@ -92,6 +92,57 @@ function saveCompetitors(list: Competitor[]) {
   localStorage.setItem("mhp_competitors", JSON.stringify(list));
 }
 
+// ── Snapshot tracker (local, no DDL needed) ──────────────────────────────────
+// Ring-buffer of daily stats per competitor; used to compute deltas
+// (followers / posts / engagement) over the last 24h+ without a cron.
+interface Snapshot {
+  t: number;           // Date.now()
+  igFollowers?: number;
+  igPosts?: number;
+  igEngage?: number;   // engagementRate percent
+  ttFollowers?: number;
+  ttLikes?: number;
+  ttVideos?: number;
+}
+const SNAP_KEY = "mhp_competitor_snapshots_v1";
+const SNAP_MAX = 30;  // per-competitor ring buffer size
+type SnapStore = Record<string, Snapshot[]>;
+
+export function loadSnaps(): SnapStore {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(localStorage.getItem(SNAP_KEY) ?? "{}") as SnapStore;
+  } catch { return {}; }
+}
+export function pushSnap(id: string, snap: Snapshot) {
+  const all = loadSnaps();
+  const list = all[id] ?? [];
+  // Coalesce: if last snapshot is <1h old, overwrite instead of appending
+  const last = list[list.length - 1];
+  if (last && Date.now() - last.t < 60 * 60 * 1000) {
+    list[list.length - 1] = snap;
+  } else {
+    list.push(snap);
+    if (list.length > SNAP_MAX) list.shift();
+  }
+  all[id] = list;
+  try { localStorage.setItem(SNAP_KEY, JSON.stringify(all)); } catch { /* storage full */ }
+}
+export function getBaselineSnap(id: string, minAgeMs = 24 * 60 * 60 * 1000): Snapshot | null {
+  const list = loadSnaps()[id] ?? [];
+  const cutoff = Date.now() - minAgeMs;
+  // Most recent snapshot older than cutoff
+  for (let i = list.length - 1; i >= 0; i--) {
+    if (list[i].t <= cutoff) return list[i];
+  }
+  return null;
+}
+function formatDelta(n: number): { text: string; color: string } {
+  if (n === 0) return { text: "0", color: "#A8967E" };
+  if (n > 0) return { text: `+${n.toLocaleString()}`, color: "#10B981" };
+  return { text: n.toLocaleString(), color: "#EF4444" };
+}
+
 // ── Monetization Spy Panel ────────────────────────────────────────────────────
 function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
   const [selected, setSelected] = useState("");
@@ -280,6 +331,17 @@ export default function CompetitorsPage() {
         lastUpdated: Date.now(),
       };
 
+      // Seed the first snapshot — deltas will start appearing after 24h
+      pushSnap(newComp.id, {
+        t: Date.now(),
+        igFollowers: igData?.profile.followers,
+        igPosts: igData?.profile.postsCount,
+        igEngage: igData?.engagementRate,
+        ttFollowers: tiktokData?.followers,
+        ttLikes: tiktokData?.likes,
+        ttVideos: tiktokData?.videos,
+      });
+
       setCompetitors(prev => [...prev, newComp]);
       setFormName("");
       setFormIG("");
@@ -301,6 +363,18 @@ export default function CompetitorsPage() {
       fetchIGData(comp.igUsername),
       fetchTTData(comp.tiktokUsername),
     ]);
+
+    // Persist today's stats into the per-competitor ring buffer so the
+    // UI can compute 24h deltas on the next load.
+    pushSnap(id, {
+      t: Date.now(),
+      igFollowers: igData?.profile.followers,
+      igPosts: igData?.profile.postsCount,
+      igEngage: igData?.engagementRate,
+      ttFollowers: tiktokData?.followers,
+      ttLikes: tiktokData?.likes,
+      ttVideos: tiktokData?.videos,
+    });
 
     setCompetitors(prev => prev.map(c =>
       c.id === id ? { ...c, igData: igData || c.igData, tiktokData: tiktokData || c.tiktokData, lastUpdated: Date.now() } : c
@@ -506,7 +580,21 @@ export default function CompetitorsPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>{formatNum(comp.igData?.profile.followers || 0)}</td>
+                        <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>
+                          {formatNum(comp.igData?.profile.followers || 0)}
+                          {(() => {
+                            const base = getBaselineSnap(comp.id);
+                            const now = comp.igData?.profile.followers;
+                            if (!base?.igFollowers || typeof now !== "number") return null;
+                            const d = now - base.igFollowers;
+                            const fd = formatDelta(d);
+                            return (
+                              <span className="block text-[10px] font-normal mt-0.5" style={{ color: fd.color }} title={`Δ since ${new Date(base.t).toLocaleDateString()}`}>
+                                {fd.text}
+                              </span>
+                            );
+                          })()}
+                        </td>
                         <td className="px-3 py-3 text-center">
                           <span className="px-2 py-0.5 rounded-full text-xs font-bold"
                             style={{
@@ -517,7 +605,21 @@ export default function CompetitorsPage() {
                           </span>
                         </td>
                         <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(comp.igData?.profile.postsCount || 0)}</td>
-                        <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>{formatNum(comp.tiktokData?.followers || 0)}</td>
+                        <td className="px-3 py-3 text-center font-bold" style={{ color: "#292524" }}>
+                          {formatNum(comp.tiktokData?.followers || 0)}
+                          {(() => {
+                            const base = getBaselineSnap(comp.id);
+                            const now = comp.tiktokData?.followers;
+                            if (!base?.ttFollowers || typeof now !== "number") return null;
+                            const d = now - base.ttFollowers;
+                            const fd = formatDelta(d);
+                            return (
+                              <span className="block text-[10px] font-normal mt-0.5" style={{ color: fd.color }} title={`Δ since ${new Date(base.t).toLocaleDateString()}`}>
+                                {fd.text}
+                              </span>
+                            );
+                          })()}
+                        </td>
                         <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(comp.tiktokData?.likes || 0)}</td>
                         <td className="px-3 py-3 text-center" style={{ color: "#78614E" }}>{formatNum(comp.tiktokData?.videos || 0)}</td>
                       </tr>
