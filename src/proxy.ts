@@ -177,6 +177,7 @@ const PUBLIC_PATHS = [
   "/security",              // public security disclosure page (RFC 9116 policy)
   "/.well-known/",          // RFC 9116 security.txt + future well-known files
   "/changelog",             // public release notes
+  "/api/docs",              // public API documentation
   "/api/bio-link/",         // public slug API for Link in Bio viewer
   "/api/client-portal/",   // public token API for client portal viewer
   "/l/",                    // public Link in Bio pages
