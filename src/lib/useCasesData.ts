@@ -28,9 +28,9 @@ export const USE_CASES: UseCase[] = [
     audience_label: "Marketing agencies",
     hero_emoji: "🏢",
     hero_h1: "Run 10 client calendars without 10 logins.",
-    hero_pain: "Your team is great. Your tools fight you. Stop paying for Buffer + Canva + Loom + ChatGPT + a CRM. One subscription, every client in one workspace, every AI tool included.",
+    hero_pain: "Your team is great. Your tools fight you. Stop paying for 5 separate subscriptions for scheduling, design, transcription, AI writing, and your CRM. One platform, every client in one workspace, every AI tool included.",
     pain_bullets: [
-      "8h/week lost switching between Buffer, Canva, Whisper, and a CRM",
+      "8h/week lost switching between scheduling, design, transcription, and CRM tools",
       "Onboarding new accounts takes a full day per client",
       "Each team member uses different AI tools — outputs feel inconsistent",
       "Reporting clients on what worked = 4 spreadsheets and a prayer",
@@ -51,7 +51,7 @@ export const USE_CASES: UseCase[] = [
       { num: "10+",   label: "client workspaces, one login" },
       { num: "8h",    label: "saved per week, per account" },
       { num: "19",    label: "AI features included on Pro" },
-      { num: "$0",    label: "extra for Buffer / Canva / Whisper" },
+      { num: "$0",    label: "extra for design / transcription / AI tools" },
     ],
     testimonial_block: {
       quote: "We replaced 4 tools and dropped our content ops from 14 hours/week to under 4. The brand voice stays consistent across every client.",

@@ -57,7 +57,7 @@ export const GUIDES: Guide[] = [
     title: "How to clone your voice once and use it on every Reel",
     reading_minutes: 3,
     audience: "Solo creators",
-    tagline: "Drop a 10-second voice sample once, generate unlimited voiceovers in YOUR voice via F5-TTS.",
+    tagline: "Drop a 10-second voice sample once, generate unlimited voiceovers in YOUR voice.",
     intro: "Re-recording the same voiceover 30 times because you stumbled on one word kills the joy of making content. With voice cloning, you record yourself ONCE — then every script you type comes back in your voice, ready to drop into a Reel.",
     steps: [
       { heading: "Record a clean 10-15 second sample", body: "Use any decent mic (your phone in a quiet room is fine). Read 2-3 sentences clearly — the more natural your tone, the better the clone." },
@@ -71,7 +71,7 @@ export const GUIDES: Guide[] = [
     cta_label: "Open AI Audio Studio",
     pro_tip: "The reference URL + transcript are saved locally — you only set them once. After the first time, every clone takes 10 seconds of typing.",
     seo_keywords: [
-      "voice clone for Reels", "F5-TTS voice cloning", "AI voice clone Instagram", "your voice TikTok AI",
+      "voice clone for Reels", "zero-shot voice cloning", "AI voice clone Instagram", "your voice TikTok AI",
     ],
   },
   {

@@ -77,7 +77,7 @@ export const FULL_TOUR: TourStep[] = [
     page: "/studio/image",
     target: "page-header",
     title: "AI Image Studio 🎨",
-    description: "Generate on-brand images via Flux Schnell (Fal.ai). Supports 1:1, 9:16, 16:9, 4:5 — perfect for every platform.",
+    description: "Generate on-brand images instantly. Supports 1:1, 9:16, 16:9, 4:5 — perfect for every platform.",
     position: "bottom",
   },
   {
@@ -85,7 +85,7 @@ export const FULL_TOUR: TourStep[] = [
     page: "/studio/video",
     target: "page-header",
     title: "AI Video Studio 🎬",
-    description: "Turn a prompt — or an image — into a 5-10s video via Seedance 2.0. Great for Reels, TikTok, Shorts.",
+    description: "Turn a prompt — or an image — into a 5-10s video. Great for Reels, TikTok, Shorts.",
     position: "bottom",
   },
   {
