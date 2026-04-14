@@ -75,6 +75,7 @@ const navGroups = [
       { href: "/studio/queue", label: "Publish Queue", icon: Clock },
       { href: "/studio/campaign", label: "Campaign Auto-Pilot", icon: Sparkles },
       { href: "/studio/repurpose", label: "Content Repurposer", icon: Sparkles },
+      { href: "/studio/thumbnail", label: "Thumbnail Generator", icon: Sparkles },
       { href: "/brand/voice", label: "Brand Voice", icon: Sparkles },
       { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
       { href: "/bio", label: "Link in Bio", icon: Link2 },
