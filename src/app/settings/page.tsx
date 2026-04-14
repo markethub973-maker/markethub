@@ -7,6 +7,7 @@ import InstagramConnect from "@/components/settings/InstagramConnect";
 import AccountConnections from "@/components/settings/AccountConnections";
 import RegionSettings from "@/components/settings/RegionSettings";
 import ApiTokensPanel from "@/components/settings/ApiTokensPanel";
+import AiUsageWidget from "@/components/settings/AiUsageWidget";
 import { createClient } from "@/lib/supabase/client";
 import {
   Zap, User, Plug, CreditCard, CheckCircle, XCircle,
@@ -640,6 +641,11 @@ export default function SettingsPage() {
             </div>
           </div>
         )}
+
+        {/* AI Usage section — show even for free tier (read-only insight) */}
+        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,158,11,0.25)" }}>
+          <AiUsageWidget />
+        </div>
 
         {/* API Tokens section — always visible for Pro+ */}
         <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(245,158,11,0.25)" }}>
