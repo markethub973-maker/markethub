@@ -327,7 +327,9 @@ export async function proxy(request: NextRequest) {
     // Brain APIs the dashboard uses — allow through on this subdomain.
     if (
       pathname.startsWith("/api/brain/outreach-batch") ||
-      pathname.startsWith("/api/brain/demo")
+      pathname.startsWith("/api/brain/demo") ||
+      pathname.startsWith("/api/brain/mine-leads") ||
+      pathname.startsWith("/api/brain/mark-replied")
     ) {
       return NextResponse.next();
     }

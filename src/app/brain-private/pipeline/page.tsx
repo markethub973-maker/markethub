@@ -6,6 +6,7 @@
 import { createServiceClient } from "@/lib/supabase/service";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import MarkRepliedButton from "@/components/brain/MarkRepliedButton";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -102,12 +103,13 @@ export default async function Pipeline() {
                 <th className="text-left px-4 py-3 text-xs uppercase">FU1</th>
                 <th className="text-left px-4 py-3 text-xs uppercase">FU2</th>
                 <th className="text-left px-4 py-3 text-xs uppercase">Reply</th>
+                <th className="text-left px-4 py-3 text-xs uppercase">Actions</th>
               </tr>
             </thead>
             <tbody>
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center" style={{ color: "#666" }}>
+                  <td colSpan={9} className="px-4 py-8 text-center" style={{ color: "#666" }}>
                     No outreach yet. <Link href="/outreach" style={{ color: "#F59E0B" }}>Send a batch</Link>.
                   </td>
                 </tr>
@@ -139,6 +141,9 @@ export default async function Pipeline() {
                   <td className="px-4 py-2 text-xs" style={{ color: "#888" }}>{(r.follow_up_1_sent_at || "").slice(5, 16).replace("T"," ") || "—"}</td>
                   <td className="px-4 py-2 text-xs" style={{ color: "#888" }}>{(r.follow_up_2_sent_at || "").slice(5, 16).replace("T"," ") || "—"}</td>
                   <td className="px-4 py-2 text-xs" style={{ color: "#888" }}>{(r.replied_at || "").slice(5, 16).replace("T"," ") || "—"}</td>
+                  <td className="px-4 py-2">
+                    <MarkRepliedButton id={r.id} alreadyReplied={Boolean(r.replied_at)} />
+                  </td>
                 </tr>
               ))}
             </tbody>
