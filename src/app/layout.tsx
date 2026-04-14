@@ -3,7 +3,6 @@ import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/components/auth/AuthGuard";
-import ReportIssueButton from "@/components/ui/ReportIssueButton";
 import AskConsultant from "@/components/ui/AskConsultant";
 import CookieConsent from "@/components/ui/CookieConsent";
 
@@ -123,9 +122,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           `}
         </Script>
         <AuthGuard>{children}</AuthGuard>
-        {/* M4 Sprint 1 — floating help button visible on every page */}
-        <ReportIssueButton />
-        {/* M9 Sprint 1 — floating AI consultant (bottom-left) */}
+        {/* M9 Sprint 1 — floating AI consultant (bottom-left).
+            The bottom-right "Help" widget (chat / tour / report issue) is
+            rendered inside AuthGuard as OnboardingWidget. */}
         <AskConsultant />
         {/* GDPR cookie consent banner — gates analytics loading */}
         <CookieConsent />
