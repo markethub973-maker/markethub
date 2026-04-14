@@ -128,6 +128,17 @@ export async function GET(req: NextRequest) {
   let operatorId: string | null = null;
 
   const cronSecret = req.headers.get("x-brain-cron-secret");
+  // TEMP DEBUG — remove after verification
+  if (req.nextUrl.searchParams.get("debug") === "1") {
+    return NextResponse.json({
+      got_header: Boolean(cronSecret),
+      header_len: cronSecret?.length ?? 0,
+      env_present: Boolean(process.env.BRAIN_CRON_SECRET),
+      env_len: process.env.BRAIN_CRON_SECRET?.length ?? 0,
+      match: Boolean(cronSecret && process.env.BRAIN_CRON_SECRET && cronSecret === process.env.BRAIN_CRON_SECRET),
+      operator_env_present: Boolean(process.env.BRAIN_OPERATOR_USER_ID),
+    });
+  }
   if (cronSecret && process.env.BRAIN_CRON_SECRET && cronSecret === process.env.BRAIN_CRON_SECRET) {
     // Allow override via ?operator=<uuid> so a single cron can loop multiple operators.
     const overrideId = req.nextUrl.searchParams.get("operator");
