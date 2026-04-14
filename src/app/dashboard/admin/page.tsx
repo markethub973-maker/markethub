@@ -6,7 +6,7 @@ import {
   LogOut, Users, DollarSign, CheckCircle2, X,
   Key, Shield, FlaskConical, BarChart3, Tag, Cpu,
   Zap, Settings, Bug, RefreshCw, BookOpen, Link2,
-  Activity, ChevronRight,
+  Activity, ChevronRight, Mail,
 } from "lucide-react";
 import AdminStatsCard from "@/components/admin/AdminStatsCard";
 import AdminUsersTable from "@/components/admin/AdminUsersTable";
@@ -33,6 +33,7 @@ import AdminCommandCenter from "@/components/admin/AdminCommandCenter";
 import AdminSupportTickets from "@/components/admin/AdminSupportTickets";
 import AdminSecurityAgents from "@/components/admin/AdminSecurityAgents";
 import Admin2FAPanel from "@/components/admin/Admin2FAPanel";
+import AdminEmailPreview from "@/components/admin/AdminEmailPreview";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 
 // ── Panel definitions ──────────────────────────────────────────────────────────
@@ -42,7 +43,7 @@ type PanelId =
   | "tokens" | "platform" | "credentials" | "anthropic" | "markup"
   | "audit" | "health" | "tests" | "plantest" | "restore"
   | "persona" | "progress" | "testaccounts" | "business" | "security"
-  | "support" | "secagents" | "twofa";
+  | "support" | "secagents" | "twofa" | "emailpreview";
 
 interface PanelDef {
   id: PanelId;
@@ -76,6 +77,7 @@ const PANELS: PanelDef[] = [
   { id: "security",    label: "Security Events", icon: Shield,       color: "#EF4444", bg: "rgba(239,68,68,0.12)", group: "Security & QA" },
   { id: "secagents",   label: "Security Agents", icon: Activity,     color: "#10B981", bg: "rgba(16,185,129,0.12)",group: "Security & QA" },
   { id: "twofa",       label: "Admin 2FA",       icon: Shield,       color: "#F59E0B", bg: "rgba(245,158,11,0.12)",group: "Security & QA" },
+  { id: "emailpreview",label: "Email Preview",   icon: Mail,         color: "#D97706", bg: "rgba(217,119,6,0.12)", group: "Security & QA" },
   { id: "audit",       label: "Audit Log",       icon: BookOpen,     color: "#6366F1", bg: "rgba(99,102,241,0.1)", group: "Security & QA" },
   { id: "health",      label: "Health Check",    icon: Activity,     color: "#10B981", bg: "rgba(16,185,129,0.1)", group: "Security & QA" },
   { id: "tests",       label: "Integration Tests",icon: Bug,         color: "#F59E0B", bg: "rgba(245,158,11,0.1)", group: "Security & QA" },
@@ -103,6 +105,7 @@ const PANEL_CONTENT: Record<PanelId, React.ReactNode> = {
   security:     <ModuleBoundary name="Security Events" minimal><AdminSecurityPanel /></ModuleBoundary>,
   secagents:    <ModuleBoundary name="Security Agents" minimal><AdminSecurityAgents /></ModuleBoundary>,
   twofa:        <ModuleBoundary name="Admin 2FA" minimal><Admin2FAPanel /></ModuleBoundary>,
+  emailpreview: <ModuleBoundary name="Email Preview" minimal><AdminEmailPreview /></ModuleBoundary>,
   audit:        <ModuleBoundary name="Audit Log" minimal><AdminAuditLog /></ModuleBoundary>,
   health:       <ModuleBoundary name="Health Check" minimal><AdminHealthCheck /></ModuleBoundary>,
   tests:        <ModuleBoundary name="Integration Tests" minimal><AdminTestRunner /></ModuleBoundary>,
