@@ -164,8 +164,8 @@ export default function AiUsageWidget() {
       </div>
 
       <p className="text-[10px]" style={{ color: "#A8967E" }}>
-        Costs are pass-through from our AI provider (Fal.ai). Included in your
-        plan up to your monthly allowance.
+        AI usage is included in your plan up to your monthly allowance.
+        Overage is billed at our cost basis.
       </p>
     </div>
   );

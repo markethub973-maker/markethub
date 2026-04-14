@@ -21,10 +21,19 @@ export default function robots(): MetadataRoute.Robots {
           "/terms",
           "/blocked",
           "/upgrade-required",
-          "/l/",        // bio-link public pages
-          "/portal/",   // client portal public pages
-          "/approve/",  // client approval public pages
-          "/report/",   // shared report public pages
+          "/changelog",
+          "/status",
+          "/help",
+          "/l/",         // bio-link public pages
+          "/portal/",    // client portal public pages
+          "/approve/",   // client approval public pages
+          "/report/",    // shared report public pages
+          "/features",   // marketing — feature catalog + deep-dives
+          "/features/",
+          "/for/",       // marketing — use-case landing pages
+          "/vs/",        // marketing — competitor comparison pages
+          "/guides",     // marketing — how-to articles
+          "/guides/",
         ],
         disallow: [
           "/api/",
@@ -73,6 +82,9 @@ export default function robots(): MetadataRoute.Robots {
           "/demographics",
           "/instagram-search",
           "/ads-library",
+          "/studio/",       // authenticated AI studios
+          "/brand/",        // authenticated brand voice + strategy
+          "/lead-finder",
         ],
       },
     ],

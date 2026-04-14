@@ -33,8 +33,11 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com data:",
       // Images: allow self, data URIs, and key CDNs used in the app
       "img-src 'self' data: blob: https://*.cdninstagram.com https://*.fbcdn.net https://picsum.photos https://api.dicebear.com https://*.googleapis.com",
-      // API/fetch connections
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.anthropic.com https://api.stripe.com https://graph.facebook.com https://api.apify.com https://api.resend.com",
+      // API/fetch connections — only domains the BROWSER actually contacts.
+      // Anthropic / Apify / Resend / Graph API / etc are all called server-side
+      // from /api/* routes, so they don't belong in CSP and would leak the
+      // tech stack to anyone who opens DevTools.
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com",
       // Frames: only Stripe
       "frame-src https://js.stripe.com https://hooks.stripe.com",
       // No plugins
@@ -46,6 +49,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Remove "X-Powered-By: Next.js" header — no need to advertise the framework
+  poweredByHeader: false,
   serverExternalPackages: ["stripe"],
   images: {
     remotePatterns: [

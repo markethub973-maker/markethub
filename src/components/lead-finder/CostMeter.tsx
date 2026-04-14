@@ -148,7 +148,7 @@ export default function CostMeter({ sessionId, refreshTrigger, campaignValue = 0
           <div className="rounded-xl p-3 space-y-1.5"
             style={{ backgroundColor: "rgba(245,215,160,0.06)", border: "1px solid rgba(245,215,160,0.15)" }}>
             <div className="flex justify-between text-xs">
-              <span style={{ color: "#A8967E" }}>AI cost (Anthropic)</span>
+              <span style={{ color: "#A8967E" }}>AI processing cost</span>
               <span className="font-mono" style={{ color: "#292524" }}>{fmt(data.anthropic_usd)}</span>
             </div>
             <div className="flex justify-between text-xs">
