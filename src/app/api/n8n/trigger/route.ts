@@ -11,6 +11,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { triggerAutomation } from "@/lib/n8n";
+import { parseBody, N8NTriggerSchema } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -20,20 +21,11 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supa.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const body = (await req.json().catch(() => null)) as {
-    template_slug?: string;
-    inputs?: Record<string, unknown>;
-  } | null;
+  const parsed = await parseBody(req, N8NTriggerSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
 
-  if (!body?.template_slug) {
-    return NextResponse.json({ error: "template_slug required" }, { status: 400 });
-  }
-
-  const result = await triggerAutomation(
-    user.id,
-    body.template_slug,
-    body.inputs ?? {},
-  );
+  const result = await triggerAutomation(user.id, body.template_slug, body.inputs);
   return NextResponse.json(result, { status: result.ok ? 202 : 500 });
 }
 

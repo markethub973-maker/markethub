@@ -17,6 +17,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { searchResolvedIssues, markIssueUsed } from "@/lib/learningDB";
+import { parseBody, ConsultantChatSchema } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -59,14 +60,6 @@ Return ONLY valid JSON:
 Warm, concise, specific. No filler. Skip caveats unless truly relevant. If strategic, be opinionated.
 If you don't know, say so — don't invent features that don't exist.`;
 
-interface ChatBody {
-  message?: string;
-  session_id?: string;
-  page_url?: string;
-  form_state?: Record<string, unknown>;
-  recent_events?: string[]; // e.g. rage click counts, errors
-}
-
 interface AIResult {
   level: number;
   language: string;
@@ -76,10 +69,9 @@ interface AIResult {
 }
 
 export async function POST(req: NextRequest) {
-  const body = (await req.json().catch(() => null)) as ChatBody | null;
-  if (!body?.message || body.message.trim().length < 2) {
-    return NextResponse.json({ error: "Message is required" }, { status: 400 });
-  }
+  const parsed = await parseBody(req, ConsultantChatSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
 
   const supa = await createClient();
   const { data: { user } } = await supa.auth.getUser();

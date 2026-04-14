@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { parseBody, SupportTicketSchema } from "@/lib/validation";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -64,18 +65,9 @@ Don't make up answers. Acknowledge the limitation briefly, apologize, and say a 
 Warm but efficient. Skip filler. Address the actual question. Offer concrete next steps.`;
 
 export async function POST(req: NextRequest) {
-  const body = (await req.json().catch(() => null)) as {
-    message?: string;
-    subject?: string;
-    page_url?: string;
-    email?: string;
-    browser_info?: string;
-    screenshot_url?: string;
-  } | null;
-
-  if (!body?.message || body.message.trim().length < 5) {
-    return NextResponse.json({ error: "Message is required (min 5 chars)" }, { status: 400 });
-  }
+  const parsed = await parseBody(req, SupportTicketSchema);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
 
   // Get user (optional — ticket can be from anonymous)
   const supa = await createClient();
