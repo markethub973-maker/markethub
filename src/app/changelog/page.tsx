@@ -56,7 +56,7 @@ const RELEASES: Release[] = [
         icon: Shield,
         color: "#6366F1",
         title: "Security hardening",
-        desc: "AI-tier rate limit (Anthropic endpoints capped per IP), CSRF Origin-header verification, RFC 9116 security.txt, branded error pages with Sentry IDs.",
+        desc: "AI-tier rate limit (premium endpoints capped per IP), CSRF Origin-header verification, RFC 9116 security.txt, branded error pages with telemetry IDs.",
       },
       {
         icon: Cookie,

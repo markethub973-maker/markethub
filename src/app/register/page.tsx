@@ -206,7 +206,7 @@ export default function RegisterPage() {
                       {/* ── AI & Usage ── */}
                       <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: badge.color }}>AI &amp; Usage</p>
                       <Row icon={<Bot className="w-3.5 h-3.5" />} label="Premium AI Actions/month" value={fmtVal(plan.premium_actions_per_month)} />
-                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="Basic AI (Haiku)" value="Unlimited" />
+                      <Row icon={<Bot className="w-3.5 h-3.5" />} label="Basic AI" value="Unlimited" />
 
                       {/* ── Accounts & Channels ── */}
                       <p className="text-xs font-bold uppercase tracking-wide mt-4 mb-1" style={{ color: badge.color }}>Accounts & Channels</p>

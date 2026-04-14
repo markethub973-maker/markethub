@@ -291,7 +291,7 @@ export default function AiAudioStudioPage() {
             {mode === "tts" && "~$0.001 per second of speech · 5-15s render"}
             {mode === "music" && "~$0.002 per second · 15-30s render"}
             {mode === "sfx" && "~$0.01 per second · 5-10s render"}
-            {mode === "clone" && "~$0.002 per second · zero-shot voice cloning via F5-TTS"}
+            {mode === "clone" && "Zero-shot voice cloning · included in plan"}
           </p>
 
           {err && (

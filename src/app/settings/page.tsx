@@ -55,7 +55,7 @@ const API_KEYS = [
       { label: "A/B Title Generator", desc: "10 title/thumbnail variants for the same video — quick test" },
       { label: "Comment sentiment analysis", desc: "Process YouTube/IG comments and extract dominant sentiment" },
     ],
-    cost: "Pay-per-token (~$0.003/1K tokens Sonnet)",
+    cost: "Pay-per-use AI usage (admin only)",
   },
   {
     id: "youtube",

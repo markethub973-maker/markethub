@@ -281,7 +281,7 @@ const ENDPOINTS: Endpoint[] = [
     method: "POST",
     path: "/api/v1/ai/video-caption",
     title: "Video URL → transcript + captions + hashtags",
-    description: "Transcribes a public video/audio URL via Whisper then writes platform-ready captions in one shot. Pro+.",
+    description: "Transcribes a public video/audio URL then writes platform-ready captions in one shot. Pro+.",
     params: [
       { name: "video_url", required: true, type: "string", desc: "Public https URL (mp4/mov/webm/mp3/m4a/wav)" },
       { name: "targets", required: false, type: "string[]", desc: "Subset of platforms. Default: ['instagram','linkedin','tiktok']" },
@@ -302,7 +302,7 @@ const ENDPOINTS: Endpoint[] = [
     path: "/api/v1/alt-text",
     title: "Generate image alt-text",
     description:
-      "Accessibility alt-text (<=150 chars) for any public image URL. Powered by Claude Haiku vision. Pro+.",
+      "Accessibility alt-text (<=150 chars) for any public image URL. Powered by AI vision. Pro+.",
     params: [
       { name: "image_url", required: true, type: "string", desc: "Public https URL of the image" },
       { name: "context", required: false, type: "string", desc: "Optional caption or post intent (<=300 chars) to guide tone" },

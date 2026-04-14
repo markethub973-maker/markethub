@@ -69,7 +69,7 @@ export const FEATURES: FeatureCatalogEntry[] = [
     demo_kind: "workflow",
     workflow_kind: "prompt-to-image",
     emoji: "🎨",
-    seo_keywords: ["AI image generator for social media", "on-brand AI images", "Flux Schnell social"],
+    seo_keywords: ["AI image generator for social media", "on-brand AI images", "AI image creator"],
   },
   {
     slug: "ai-video",
@@ -80,7 +80,7 @@ export const FEATURES: FeatureCatalogEntry[] = [
     hero_pain: "Filming a 7-second clip can take 2 hours of setup. Type a sentence — get a usable video. Or animate a still image you already have.",
     app_path: APP("/studio/video"),
     outcomes: [
-      { label: "Prompt → clip",  body: "Plain English in, ready-to-post MP4 out. Powered by Seedance 2.0." },
+      { label: "Prompt → clip",  body: "Plain English in, ready-to-post MP4 out. Powered by our AI engine." },
       { label: "Image → motion", body: "Got a great photo? Animate it instead of starting from scratch." },
       { label: "Vertical-first",  body: "9:16 default — works for Reels, TikTok, Shorts without cropping." },
     ],
@@ -99,7 +99,7 @@ export const FEATURES: FeatureCatalogEntry[] = [
     demo_kind: "workflow",
     workflow_kind: "prompt-to-image",
     emoji: "🎬",
-    seo_keywords: ["AI video generator", "Seedance video", "text to video Reels TikTok"],
+    seo_keywords: ["AI video generator", "AI video for Reels", "text to video Reels TikTok"],
   },
   {
     slug: "ai-audio",
@@ -110,9 +110,9 @@ export const FEATURES: FeatureCatalogEntry[] = [
     hero_pain: "Drop a 10-second sample of your voice once. From then on, every script is rendered IN YOUR VOICE — no studio, no microphone, no second takes.",
     app_path: APP("/studio/audio"),
     outcomes: [
-      { label: "Your voice, scaled",  body: "F5-TTS zero-shot cloning. One sample, infinite voiceovers." },
+      { label: "Your voice, scaled",  body: "Zero-shot voice cloning. One sample, infinite voiceovers." },
       { label: "Music + SFX",          body: "Background tracks (5-30s) + one-shot sound effects all in one panel." },
-      { label: "$0.001/sec",           body: "Cheaper than coffee. No subscriptions stacked on top." },
+      { label: "Included in plan",     body: "No metered AI billing. No surprise invoices. Use as much as you need." },
     ],
     steps: [
       { title: "Upload your sample", body: "Record 10 seconds of yourself reading anything." },
@@ -129,7 +129,7 @@ export const FEATURES: FeatureCatalogEntry[] = [
     demo_kind: "workflow",
     workflow_kind: "voice-clone",
     emoji: "🎙️",
-    seo_keywords: ["voice cloning AI", "F5-TTS voice clone", "AI voiceover from sample"],
+    seo_keywords: ["voice cloning AI", "zero-shot voice clone", "AI voiceover from sample"],
   },
   {
     slug: "thumbnail",
@@ -165,12 +165,12 @@ export const FEATURES: FeatureCatalogEntry[] = [
     slug: "video-caption",
     category: "create",
     title: "Video → Caption",
-    tagline: "Whisper transcript + 5 platform captions in one shot.",
+    tagline: "Auto-transcript + 5 platform captions in one shot.",
     hero_h1: "Upload a video. Get every caption ready.",
     hero_pain: "Writing 5 different captions for the same video clip kills your day. Drop the URL — get transcript + Instagram + LinkedIn + Twitter + TikTok + YouTube captions, plus 12 hashtags.",
     app_path: APP("/studio/video-caption"),
     outcomes: [
-      { label: "Whisper-grade transcripts", body: "Multilingual, punctuated, ready to paste anywhere." },
+      { label: "Studio-grade transcripts", body: "Multilingual, punctuated, ready to paste anywhere." },
       { label: "5 platform captions",        body: "Each follows that platform's proven rules — char limits, hashtag style, tone." },
       { label: "Hashtags from your topic",   body: "Not generic. Pulled from what's actually in the video." },
     ],
@@ -189,7 +189,7 @@ export const FEATURES: FeatureCatalogEntry[] = [
     demo_kind: "workflow",
     workflow_kind: "video-to-text",
     emoji: "🎤",
-    seo_keywords: ["video to caption AI", "transcribe video to caption", "Whisper social captions"],
+    seo_keywords: ["video to caption AI", "transcribe video to caption", "AI social captions from video"],
   },
   // ── PLAN ─────────────────────────────────────────────────────────────────
   {
@@ -534,7 +534,7 @@ export const FEATURES: FeatureCatalogEntry[] = [
     app_path: APP("/studio/assets"),
     outcomes: [
       { label: "Images · video · audio", body: "All three media types in a single grid." },
-      { label: "Alt-text in 1 click",     body: "WCAG-ready accessibility text via Claude vision." },
+      { label: "Alt-text in 1 click",     body: "WCAG-ready accessibility text via AI vision." },
       { label: "Bulk delete",              body: "Multi-select cleanup when storage gets messy." },
     ],
     steps: [

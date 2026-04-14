@@ -165,7 +165,7 @@ export default function UpgradePage() {
             <div>
               <h3 className="font-semibold mb-2" style={{ color: "#1E40AF" }}>How Premium AI Actions Work</h3>
               <p className="text-sm" style={{ color: "#1E3A8A" }}>
-                Each plan includes a monthly quota of <strong>Premium AI Actions</strong> for advanced features like Lead Scoring, Outreach Generator, Full Campaign Builder and APEX Marketing Advisor. <strong>Basic AI</strong> (captions, drafts, Haiku-powered helpers) stays unlimited on every paid plan. Quotas reset on the 1st of each month.
+                Each plan includes a monthly quota of <strong>Premium AI Actions</strong> for advanced features like Lead Scoring, Outreach Generator, Full Campaign Builder and APEX Marketing Advisor. <strong>Basic AI</strong> (captions, drafts, everyday helpers) stays unlimited on every paid plan. Quotas reset on the 1st of each month.
               </p>
               <div className="mt-3 grid grid-cols-2 gap-3 text-xs">
                 {[

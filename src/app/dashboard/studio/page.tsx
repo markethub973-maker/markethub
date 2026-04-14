@@ -596,7 +596,7 @@ function YouTubeTab() {
             }}
           >
             <Sparkles size={11} style={{ display: "inline", marginRight: 4, verticalAlign: "middle" }} />
-            AI SEO Suggestions (Haiku)
+            AI SEO Suggestions
           </div>
           <Field label="What is the video about">
             <input
