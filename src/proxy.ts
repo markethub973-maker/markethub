@@ -276,6 +276,39 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // ── Private Brain Command Center: brain.markethubpromo.com ──────────────
+  // Password-gated single-user dashboard. Requires `brain_admin` cookie
+  // (set by POST /api/brain-admin/login). Everything else 404s so the app
+  // UI and marketing content are never reachable via this hostname.
+  if (host === "brain.markethubpromo.com") {
+    const url = request.nextUrl.clone();
+    const hasAuth = request.cookies.get("brain_admin")?.value === "1";
+
+    // Public: login page + login/logout API
+    if (pathname === "/login" || pathname === "/brain-login") {
+      url.pathname = "/brain-login";
+      return NextResponse.next({ request });
+    }
+    if (pathname.startsWith("/api/brain-admin/")) {
+      return NextResponse.next();
+    }
+
+    // Any other path requires auth
+    if (!hasAuth) {
+      url.pathname = "/brain-login";
+      return NextResponse.rewrite(url);
+    }
+
+    // Dashboard entry point
+    if (pathname === "/" || pathname === "/brain-private") {
+      url.pathname = "/brain-private";
+      return NextResponse.rewrite(url);
+    }
+
+    // Everything else → 404 (app is not reachable here)
+    return new NextResponse(null, { status: 404 });
+  }
+
   // ── Marketing subdomain: get.markethubpromo.com ─────────────────────────
   // Rewrite clean paths to the actual offer pages + hard-404 everything else
   // so prospects never stumble into the in-app UI through this subdomain.

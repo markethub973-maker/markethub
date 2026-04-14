@@ -26,9 +26,9 @@
 >
 > Want to see a free 5-post + 3-image demo tailored to your brand before you decide? No strings.
 >
-> — Eduard
+> — Alex
 Founder, MarketHub Pro
-eduard@markethubpromo.com
+alex@markethubpromo.com
 
 **Variante prin rotație** (evită pattern detection LinkedIn):
 - Schimbă "I noticed" cu "Saw your recent post on X" / "Your {product/service} caught my eye"
@@ -48,7 +48,7 @@ eduard@markethubpromo.com
 >
 > Worth a 10-min look? Landing: https://markethubpromo.com/offer-ro  (RO) · /offer-intl (EU/UK/US)
 >
-> — Eduard
+> — Alex
 > Founder, MarketHub Pro
 
 ## 4. Cold outreach — Romania (RO)
@@ -61,9 +61,9 @@ eduard@markethubpromo.com
 >
 > Vrei să-ți trimit un demo GRATIS cu 5 postări și 3 imagini făcute pe brand-ul tău, ca să vezi concret rezultatul înainte de decizie?
 >
-> — Eduard
+> — Alex
 Founder, MarketHub Pro
-eduard@markethubpromo.com
+alex@markethubpromo.com
 > https://markethubpromo.com/offer-ro  (RO) · /offer-intl (EU/UK/US)
 
 ---
@@ -123,7 +123,7 @@ eduard@markethubpromo.com
 ## 8. Checklist executare
 
 - [ ] Landing `/offer` verificat (paid checkout funcționează cu card test)
-- [ ] Stripe webhook setup să trimită email automat la plată (→ eduard@markethubpromo.com)
+- [ ] Stripe webhook setup să trimită email automat la plată (→ alex@markethubpromo.com)
 - [ ] Listă 100 leads cercetată (Google Maps + LinkedIn + Europages)
 - [ ] LinkedIn DM template salvat în Notion / Google Doc
 - [ ] Demo delivery workflow — Brain Advisor + AI Image + 1h de review manual

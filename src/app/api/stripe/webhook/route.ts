@@ -78,11 +78,11 @@ export async function POST(req: Request) {
       const currency = (session.currency ?? "eur").toUpperCase();
 
       if (clientEmail && process.env.RESEND_API_KEY) {
-        // Welcome email from Eduard persona — sets expectations for 5-7 day delivery.
+        // Welcome email from Alex persona — sets expectations for 5-7 day delivery.
         const welcomeHtml = `
           <div style="font-family:system-ui,-apple-system,sans-serif;max-width:640px;margin:0 auto;color:#222;">
             <p>Hi ${businessName ? `${businessName} team` : "there"},</p>
-            <p>Eduard here — I just saw your payment come through. Welcome aboard 🎉</p>
+            <p>Alex here — I just saw your payment come through. Welcome aboard 🎉</p>
             <p>Here's exactly what happens next:</p>
             <ol style="padding-left:20px;line-height:1.7;">
               <li><b>Right now (auto):</b> this email, so you have a paper trail. Receipt is attached to the Stripe confirmation you'll get separately.</li>
@@ -97,9 +97,9 @@ export async function POST(req: Request) {
               <li>1–2 things you absolutely do <i>not</i> want in your content</li>
             </ul>
             <p>Looking forward to it.</p>
-            <p>— Eduard<br/>
+            <p>— Alex<br/>
             <span style="color:#888;font-size:12px;">Founder, MarketHub Pro<br/>
-            eduard@markethubpromo.com · markethubpromo.com</span></p>
+            alex@markethubpromo.com · markethubpromo.com</span></p>
             <hr style="margin-top:24px;border:0;border-top:1px solid #eee;"/>
             <p style="font-size:11px;color:#aaa;">Order ref: ${session.id} · ${currency} ${amount} · Tier: ${tier}</p>
           </div>`;
@@ -111,12 +111,12 @@ export async function POST(req: Request) {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              from: "Eduard <eduard@markethubpromo.com>",
+              from: "Alex <alex@markethubpromo.com>",
               to: [clientEmail],
               bcc: ["office@markethubpromo.com"],
               subject: "Welcome aboard — your AI Marketing Accelerator kickoff",
               html: welcomeHtml,
-              reply_to: "eduard@markethubpromo.com",
+              reply_to: "alex@markethubpromo.com",
             }),
           });
         } catch (e) {
@@ -143,7 +143,7 @@ export async function POST(req: Request) {
                   <li>Website: ${website || "—"}</li>
                   <li>Stripe session: ${session.id}</li>
                 </ul>
-                <p>Welcome email has been auto-sent from Eduard to the client. Start onboarding.</p>`,
+                <p>Welcome email has been auto-sent from Alex to the client. Start onboarding.</p>`,
             }),
           });
         } catch (e) {
