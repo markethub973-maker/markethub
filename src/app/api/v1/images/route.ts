@@ -52,15 +52,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "prompt too long (max 2000 chars)" }, { status: 400 });
   }
 
-  // Plan gate — Pro+ only
+  // Plan gate — admins bypass.
   const service = createServiceClient();
   const { data: profile } = await service
     .from("profiles")
-    .select("plan,subscription_plan")
+    .select("plan,subscription_plan,is_admin")
     .eq("id", auth.user_id)
     .maybeSingle();
   const plan = (profile?.plan as string | null) ?? (profile?.subscription_plan as string | null) ?? "starter";
-  if (!["pro", "studio", "agency", "business"].includes(plan)) {
+  const isAdmin = Boolean(profile?.is_admin);
+  if (!isAdmin && !["pro", "studio", "agency", "business"].includes(plan)) {
     return NextResponse.json(
       {
         error: "AI image generation requires Pro plan or higher",
