@@ -1,7 +1,7 @@
 # Go-To-Market Playbook — AI Marketing Accelerator
 
 **Scop**: Închide 2-4 clienți (€1500-€4500) în 7-14 zile.
-**Landing**: https://markethubpromo.com/offer
+**Landing**: https://markethubpromo.com/offer-ro  (RO) · /offer-intl (EU/UK/US)
 **Tarife**: RO €499 · Global €1000 (launch, limit 10 clienți).
 
 ---
@@ -26,7 +26,9 @@
 >
 > Want to see a free 5-post + 3-image demo tailored to your brand before you decide? No strings.
 >
-> — Eduard, MarketHub Pro
+> — Eduard
+Founder, MarketHub Pro
+eduard@markethubpromo.com
 
 **Variante prin rotație** (evită pattern detection LinkedIn):
 - Schimbă "I noticed" cu "Saw your recent post on X" / "Your {product/service} caught my eye"
@@ -44,7 +46,7 @@
 >
 > Founding-client price is €1000 (first 10 clients, then double). If you're curious, I'll ship you a free 5-caption + 3-image demo using your real brand — zero commitment.
 >
-> Worth a 10-min look? Landing: https://markethubpromo.com/offer
+> Worth a 10-min look? Landing: https://markethubpromo.com/offer-ro  (RO) · /offer-intl (EU/UK/US)
 >
 > — Eduard
 > Founder, MarketHub Pro
@@ -59,8 +61,10 @@
 >
 > Vrei să-ți trimit un demo GRATIS cu 5 postări și 3 imagini făcute pe brand-ul tău, ca să vezi concret rezultatul înainte de decizie?
 >
-> — Eduard, MarketHub Pro
-> https://markethubpromo.com/offer
+> — Eduard
+Founder, MarketHub Pro
+eduard@markethubpromo.com
+> https://markethubpromo.com/offer-ro  (RO) · /offer-intl (EU/UK/US)
 
 ---
 
