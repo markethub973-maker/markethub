@@ -438,10 +438,10 @@ export default function PromoPage() {
           {/* Trust stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
             {[
-              { v: "50+", l: "leads found per week" },
-              { v: "16", l: "specialized AI agents" },
-              { v: "20+", l: "languages supported" },
-              { v: "3h", l: "saved daily per user" },
+              { v: "19",   l: "AI features included" },
+              { v: "5",    l: "platforms auto-publish" },
+              { v: "20+",  l: "languages supported" },
+              { v: "7d",   l: "free trial · no card" },
             ].map(s => (
               <div key={s.l} className="text-center">
                 <div className="text-3xl font-bold" style={{ color: C.amber }}>{s.v}</div>
