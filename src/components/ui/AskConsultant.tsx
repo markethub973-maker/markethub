@@ -48,6 +48,17 @@ export default function AskConsultant() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
+  // Hide on prospect-facing public pages — confusing for someone who has
+  // never logged in and would expose an admin-looking chat in a sales context.
+  const [hideOnPublic, setHideOnPublic] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = window.location.pathname;
+    if (p.startsWith("/offer") || p === "/promo" || p === "/pricing" || p === "/") {
+      setHideOnPublic(true);
+    }
+  }, []);
+
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -107,6 +118,8 @@ export default function AskConsultant() {
       send();
     }
   };
+
+  if (hideOnPublic) return null;
 
   return (
     <>

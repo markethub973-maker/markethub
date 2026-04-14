@@ -19,6 +19,17 @@ export default function ThemeSwitcher() {
   const [mounted, setMounted] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
+  // Hide on public prospect-facing pages — the theme picker is for logged-in
+  // users personalizing their workspace, not for leads evaluating the offer.
+  const [hide, setHide] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const p = window.location.pathname;
+    if (p.startsWith("/offer") || p === "/promo" || p === "/pricing" || p === "/") {
+      setHide(true);
+    }
+  }, []);
+
   // Snapshot of the active theme + colors WHEN the panel was opened.
   // Lets the user preview live and either Apply (keep) or Cancel
   // (revert all changes) before closing.
@@ -292,7 +303,7 @@ export default function ThemeSwitcher() {
     </div>
   );
 
-  if (!mounted) return null;
+  if (!mounted || hide) return null;
   return (
     <>
       {createPortal(trigger, document.body)}
