@@ -32,7 +32,7 @@ export default function OfferThanksPage() {
 
         <div className="text-left space-y-3 mb-8">
           {[
-            { icon: Mail,     t: "Check your inbox (next 5 min)", d: "Intake form + onboarding details from eduard@markethubpromo.com" },
+            { icon: Mail,     t: "Check your inbox (next 5 min)", d: "Intake form + onboarding details from office@markethubpromo.com" },
             { icon: Calendar, t: "Strategy call link (within 24h)", d: "We'll propose 3 slots — pick whichever works." },
             { icon: Clock,    t: "Delivery in 5-7 days", d: "60 captions + 20 images + content calendar + leads shipped to you." },
           ].map((s, i) => {
@@ -56,8 +56,8 @@ export default function OfferThanksPage() {
         <p className="text-xs opacity-60 mt-6">
           Any issues? Reply to the confirmation email or write to
           {" "}
-          <a href="mailto:eduard@markethubpromo.com" style={{ color: "#F59E0B" }}>
-            eduard@markethubpromo.com
+          <a href="mailto:office@markethubpromo.com" style={{ color: "#F59E0B" }}>
+            office@markethubpromo.com
           </a>
         </p>
       </div>

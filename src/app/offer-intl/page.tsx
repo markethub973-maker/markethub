@@ -176,7 +176,7 @@ export default function OfferIntlPage() {
       <footer className="max-w-4xl mx-auto px-6 py-10 text-center text-xs opacity-50">
         <p>
           Built on MarketHub Pro · Secure payment by Stripe ·
-          Questions? <a href="mailto:eduard@markethubpromo.com" style={{ color: "#F59E0B" }}>eduard@markethubpromo.com</a>
+          Questions? <a href="mailto:office@markethubpromo.com" style={{ color: "#F59E0B" }}>office@markethubpromo.com</a>
         </p>
       </footer>
     </div>

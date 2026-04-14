@@ -176,7 +176,7 @@ export default function OfferROPage() {
       <footer className="max-w-4xl mx-auto px-6 py-10 text-center text-xs opacity-50">
         <p>
           MarketHub Pro · Plată securizată Stripe ·
-          Întrebări? <a href="mailto:eduard@markethubpromo.com" style={{ color: "#F59E0B" }}>eduard@markethubpromo.com</a>
+          Întrebări? <a href="mailto:office@markethubpromo.com" style={{ color: "#F59E0B" }}>office@markethubpromo.com</a>
         </p>
       </footer>
     </div>
