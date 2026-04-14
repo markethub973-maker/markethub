@@ -184,6 +184,8 @@ const PUBLIC_PATHS = [
   "/l/",                    // public Link in Bio pages
   "/portal/",               // public client portal pages
   "/promo",                 // public marketing landing page
+  "/offer",                 // AI Marketing Accelerator DFY landing + checkout
+  "/api/offer",             // one-time Stripe checkout for the DFY offer
   "/help",                  // public help / support page
   "/api/support",           // public support form submission endpoint
   "/blocked",               // blocked account page

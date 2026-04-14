@@ -1,0 +1,15 @@
+[
+  {
+    "id": "resend-smtp-cred",
+    "name": "Resend SMTP",
+    "type": "smtp",
+    "data": {
+      "user": "resend",
+      "password": "re_TaaxVNTL_PmaGvYmESBm6gbxf2GQKnZoS",
+      "host": "smtp.resend.com",
+      "port": 465,
+      "secure": true,
+      "disableStartTls": false
+    }
+  }
+]
