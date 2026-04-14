@@ -164,252 +164,14 @@
   --color-border-hover: #3A3F3C;
 }
 
-/* ─── 3D glass cards (depth + transparency + blur) ───────────────── */
+/* ─── Subtle 3D shadows (no holographic / no rainbow) ────────────── */
 :root {
-  /* Layered shadows — more pronounced for visible 3D lift */
   --shadow-card:
-    0 2px 4px rgba(30, 22, 10, 0.06),
-    0 8px 20px rgba(30, 22, 10, 0.10),
-    0 20px 40px rgba(30, 22, 10, 0.08);
+    0 1px 3px rgba(30, 22, 10, 0.05),
+    0 4px 12px rgba(30, 22, 10, 0.08);
   --shadow-card-hover:
-    0 4px 8px rgba(30, 22, 10, 0.08),
-    0 14px 32px rgba(30, 22, 10, 0.14),
-    0 32px 64px rgba(30, 22, 10, 0.10);
-  --shadow-card-deep:
-    0 6px 12px rgba(30, 22, 10, 0.10),
-    0 20px 40px rgba(30, 22, 10, 0.14),
-    0 40px 80px rgba(30, 22, 10, 0.10);
-
-  /* Glass surface — translucent white with blur */
-  --glass-bg: rgba(255, 255, 255, 0.55);
-  --glass-bg-strong: rgba(255, 255, 255, 0.75);
-  --glass-border: rgba(255, 255, 255, 0.70);
-  --glass-highlight: rgba(255, 255, 255, 0.90);
-}
-
-/* ─── Auto glass-card styling ─────────────────────────────────────
-   React normalizes inline rgba() with spaces (rgba(0, 0, 0, 0.06)),
-   so the selector catches both variants. Also targets any element with
-   a rounded-xl / rounded-2xl Tailwind class + a visible background —
-   that's almost every card on the platform. */
-.rounded-xl,
-.rounded-2xl,
-.rounded-lg,
-[style*="rgba(0,0,0,0.06)"],
-[style*="rgba(0, 0, 0, 0.06)"],
-[style*="rgba(245,215,160"],
-[style*="rgba(245, 215, 160"] {
-  transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
-}
-
-/* ─── OUTER cards — iridescent holographic liquid glass ────────── */
-.rounded-xl[style*="background-color"],
-.rounded-2xl[style*="background-color"],
-.rounded-lg[style*="background-color"] {
-  position: relative;
-  background-color: rgba(255, 255, 255, 0.10) !important;
-  /* Stacked gradients — iridescent sheen + bright catch-light + sheen:
-     1) Diagonal shine stripe (white catch-light)
-     2) Bottom-right secondary reflection
-     3) Base diagonal holographic color sweep (cyan→pink→yellow→mint→violet) */
-  background-image:
-    /* Primary bright diagonal catch-light */
-    linear-gradient(120deg,
-      transparent 0%,
-      rgba(255, 255, 255, 0.00) 20%,
-      rgba(255, 255, 255, 0.85) 35%,
-      rgba(255, 255, 255, 0.15) 50%,
-      rgba(255, 255, 255, 0.00) 70%
-    ),
-    /* Secondary reflection bottom-right */
-    radial-gradient(ellipse 50% 40% at 85% 85%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0) 70%),
-    /* Conic rainbow swirl — soap bubble iridescence */
-    conic-gradient(from 210deg at 35% 35%,
-      rgba(255, 180, 230, 0.35) 0deg,
-      rgba(180, 220, 255, 0.35) 90deg,
-      rgba(180, 255, 200, 0.35) 180deg,
-      rgba(255, 230, 150, 0.35) 270deg,
-      rgba(255, 180, 230, 0.35) 360deg
-    ),
-    /* Base iridescent gradient — intensified */
-    linear-gradient(135deg,
-      rgba(120, 220, 255, 0.40) 0%,
-      rgba(255, 150, 220, 0.35) 25%,
-      rgba(255, 230, 120, 0.32) 50%,
-      rgba(150, 255, 200, 0.35) 75%,
-      rgba(180, 140, 255, 0.40) 100%
-    )
-    !important;
-  backdrop-filter: blur(30px) saturate(1.8);
-  -webkit-backdrop-filter: blur(30px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, 0.45) !important;
-  box-shadow:
-    /* Strong outer halo — bright glass edge glow */
-    0 0 0 1px rgba(255, 255, 255, 0.40),
-    0 0 12px rgba(255, 255, 255, 0.30),
-    0 4px 16px rgba(255, 255, 255, 0.20),
-    /* Drop shadows for 3D lift */
-    0 10px 28px rgba(0, 0, 0, 0.12),
-    0 28px 64px rgba(0, 0, 0, 0.12),
-    /* Glass edge refraction — 4 sides, MUCH stronger */
-    inset 0 2px 0 rgba(255, 255, 255, 1),        /* top bright line */
-    inset 0 4px 8px rgba(255, 255, 255, 0.5),    /* top glow fade */
-    inset 0 -2px 0 rgba(255, 255, 255, 0.55),    /* bottom bright line */
-    inset 0 -4px 8px rgba(255, 255, 255, 0.25),  /* bottom glow fade */
-    inset 2px 0 0 rgba(255, 255, 255, 0.45),     /* left side */
-    inset -2px 0 0 rgba(255, 255, 255, 0.30);    /* right side */
-  transition: box-shadow 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
-}
-
-.rounded-xl[style*="background-color"]:hover,
-.rounded-2xl[style*="background-color"]:hover,
-.rounded-lg[style*="background-color"]:hover {
-  background-color: rgba(255, 255, 255, 0.16) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.55),
-    0 0 20px rgba(255, 255, 255, 0.45),
-    0 6px 24px rgba(255, 255, 255, 0.30),
-    0 16px 40px rgba(0, 0, 0, 0.14),
-    0 40px 80px rgba(0, 0, 0, 0.14),
-    inset 0 2px 0 rgba(255, 255, 255, 1),
-    inset 0 4px 10px rgba(255, 255, 255, 0.65),
-    inset 0 -2px 0 rgba(255, 255, 255, 0.70),
-    inset 0 -4px 10px rgba(255, 255, 255, 0.35),
-    inset 2px 0 0 rgba(255, 255, 255, 0.55),
-    inset -2px 0 0 rgba(255, 255, 255, 0.40);
-  transform: translateY(-4px);
-}
-
-/* ─── INNER pills / stats / badges (rgba soft-tint backgrounds) ──
-   Any element with a tinted rgba background + rounded corners gets
-   a lighter glass polish — translucent bg + inner highlight + small
-   shadow, so nested stats feel like tiny glass beads inside the
-   outer glass cards. */
-.rounded-full[style*="background-color: rgba"],
-.rounded-lg[style*="background-color: rgba"],
-.rounded-md[style*="background-color: rgba"],
-.rounded-xl[style*="background-color: rgba"],
-.rounded-2xl[style*="background-color: rgba"],
-.rounded[style*="background-color: rgba"] {
-  backdrop-filter: blur(8px) saturate(1.3);
-  -webkit-backdrop-filter: blur(8px) saturate(1.3);
-  box-shadow:
-    0 1px 2px rgba(30, 22, 10, 0.08),
-    0 4px 12px rgba(30, 22, 10, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.75);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.rounded-full[style*="background-color: rgba"]:hover,
-.rounded-lg[style*="background-color: rgba"]:hover,
-.rounded-md[style*="background-color: rgba"]:hover,
-.rounded-xl[style*="background-color: rgba"]:hover {
-  box-shadow:
-    0 2px 4px rgba(30, 22, 10, 0.10),
-    0 8px 20px rgba(30, 22, 10, 0.10),
-    inset 0 1px 0 rgba(255, 255, 255, 0.90);
-}
-
-/* ─── Chart bars (SVG) — glass drop-shadow + brightness lift ────── */
-/* Recharts renders bar shapes as <path> or <rect> inside .recharts-rectangle
-   containers. Pie/donut segments use .recharts-sector. CSS filters work on
-   SVG elements, so we apply drop-shadow for 3D + slight brightness/saturation
-   bump to mimic glass polish without changing the palette. */
-.recharts-bar-rectangle,
-.recharts-rectangle,
-.recharts-bar-rectangle path,
-.recharts-bar-rectangle rect,
-.recharts-sector,
-svg .recharts-layer path,
-svg .recharts-layer rect {
-  filter:
-    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15))
-    drop-shadow(0 4px 8px rgba(0, 0, 0, 0.10))
-    saturate(1.2)
-    brightness(1.05);
-  transition: filter 0.25s ease, transform 0.25s ease;
-}
-
-.recharts-bar-rectangle:hover,
-.recharts-rectangle:hover,
-.recharts-sector:hover {
-  filter:
-    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.20))
-    drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15))
-    saturate(1.35)
-    brightness(1.12);
-}
-
-/* Make bar outlines pop as a thin glass rim */
-.recharts-bar-rectangle path,
-.recharts-bar-rectangle rect {
-  stroke: rgba(255, 255, 255, 0.45);
-  stroke-width: 1;
-}
-
-/* Donut / pie slices — same glass lift */
-.recharts-pie-sector path {
-  stroke: rgba(255, 255, 255, 0.35);
-  stroke-width: 2;
-}
-
-/* ─── Holographic / soap-bubble overlay on charts ────────────────
-   TWO iridescent layers + bright catch-lights = full rainbow glass. */
-.recharts-wrapper,
-.recharts-surface {
-  position: relative;
-}
-.recharts-wrapper::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 3;
-  /* Intense iridescent sweep — 8-color rainbow at higher alpha */
-  background: linear-gradient(
-    120deg,
-    rgba(120, 220, 255, 0.55) 0%,
-    rgba(180, 255, 230, 0.45) 15%,
-    rgba(255, 150, 220, 0.50) 30%,
-    rgba(255, 200, 120, 0.45) 45%,
-    rgba(255, 240, 140, 0.45) 55%,
-    rgba(150, 255, 180, 0.48) 70%,
-    rgba(140, 180, 255, 0.50) 85%,
-    rgba(200, 140, 255, 0.55) 100%
-  );
-  mix-blend-mode: screen;
-  border-radius: inherit;
-}
-/* Second overlay: conic swirl + catch-lights — full bubble shimmer */
-.recharts-wrapper::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 4;
-  background:
-    /* Catch-light 1 — big bright spot top-left */
-    radial-gradient(ellipse 25% 20% at 22% 18%, rgba(255, 255, 255, 0.95) 0%, transparent 60%),
-    /* Catch-light 2 — smaller bright spot bottom-right */
-    radial-gradient(ellipse 15% 12% at 78% 80%, rgba(255, 255, 255, 0.70) 0%, transparent 70%),
-    /* Conic iridescent swirl — rainbow sweep */
-    conic-gradient(
-      from 180deg at 40% 40%,
-      rgba(255, 180, 230, 0.30) 0deg,
-      rgba(180, 220, 255, 0.30) 90deg,
-      rgba(180, 255, 200, 0.30) 180deg,
-      rgba(255, 230, 150, 0.30) 270deg,
-      rgba(255, 180, 230, 0.30) 360deg
-    );
-  mix-blend-mode: screen;
-  border-radius: inherit;
-}
-
-/* Pie/donut sectors specifically — stroke becomes holographic rim */
-.recharts-pie-sector path,
-.recharts-sector {
-  stroke: rgba(255, 255, 255, 0.65) !important;
-  stroke-width: 1.5 !important;
+    0 2px 6px rgba(30, 22, 10, 0.08),
+    0 8px 24px rgba(30, 22, 10, 0.12);
 }
 
 /* ─── Base styles ─────────────────────────────────────────────── */
@@ -421,41 +183,9 @@ body {
   margin: 0;
   padding: 0;
   font-family: Inter, Arial, sans-serif;
-  /* Vibrant gradient body so glass cards on top visibly refract it.
-     Higher saturation than before — the reference design needs
-     colorful page bg to make glass edges pop. */
-  background:
-    radial-gradient(ellipse 80% 60% at top left,    rgba(245,158,11,0.22) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 80% at bottom right, rgba(236,128,84,0.18) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 60% at center,       rgba(139,92,246,0.08) 0%, transparent 70%),
-    var(--color-bg);
-  background-attachment: fixed;
+  background: var(--color-bg);
   color: var(--color-text);
   transition: background-color 0.2s ease, color 0.2s ease;
-}
-/* Swap radial tints per theme so the glass refraction stays on-brand */
-[data-theme="emerald"] body {
-  background:
-    radial-gradient(ellipse 80% 60% at top left,     rgba(16,185,129,0.22) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 80% at bottom right, rgba(244,114,182,0.18) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 60% at center,       rgba(99,102,241,0.08) 0%, transparent 70%),
-    var(--color-bg);
-  background-attachment: fixed;
-}
-[data-theme="indigo"] body {
-  background:
-    radial-gradient(ellipse 80% 60% at top left,     rgba(129,140,248,0.22) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 80% at bottom right, rgba(251,146,60,0.18) 0%, transparent 65%),
-    radial-gradient(ellipse 60% 60% at center,       rgba(236,72,153,0.08) 0%, transparent 70%),
-    var(--color-bg);
-  background-attachment: fixed;
-}
-[data-theme="mono"] body {
-  background:
-    radial-gradient(ellipse 80% 60% at top left,     rgba(64,64,64,0.10) 0%, transparent 60%),
-    radial-gradient(ellipse 70% 80% at bottom right, rgba(132,204,22,0.18) 0%, transparent 65%),
-    var(--color-bg);
-  background-attachment: fixed;
 }
 
 /* Scrollbar — picks up theme accent automatically */
@@ -470,11 +200,23 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
 
-/* ─── Theme-aware utility classes ─────────────────────────────── */
-/* Use these instead of hardcoded Tailwind colors so components
-   change automatically when the user picks a different theme.
-   Plain CSS so they work with any Tailwind version. */
+/* ─── Subtle glass cards — only in MAIN content, never in sidebar ──
+   Scoped via `main` tag so <aside> (sidebar) is completely untouched
+   no matter how many inline styles get applied/removed there. */
+main .rounded-xl[style*="background-color: rgb"],
+main .rounded-2xl[style*="background-color: rgb"],
+main .rounded-lg[style*="background-color: rgb"] {
+  box-shadow: var(--shadow-card);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+main .rounded-xl[style*="background-color: rgb"]:hover,
+main .rounded-2xl[style*="background-color: rgb"]:hover,
+main .rounded-lg[style*="background-color: rgb"]:hover {
+  box-shadow: var(--shadow-card-hover);
+  transform: translateY(-1px);
+}
 
+/* ─── Theme-aware utility classes ─────────────────────────────── */
 .bg-primary { background-color: var(--color-primary); }
 .bg-primary-light { background-color: var(--color-primary-light); }
 .bg-accent { background-color: var(--color-accent); }
