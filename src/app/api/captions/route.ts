@@ -5,6 +5,7 @@ import { getAnthropicErrorResponse } from "@/lib/anthropic-errors";
 import { getPlanConfig, getRemainingBudget, AI_ACTION_COSTS } from "@/lib/plan-config";
 import { getAppApiKey } from "@/lib/anthropic-client";
 import { requireAuth } from "@/lib/route-helpers";
+import { buildBrandVoicePrompt } from "@/lib/brandVoice";
 
 export async function POST(req: NextRequest) {
   const auth = await requireAuth();
@@ -82,12 +83,16 @@ Example format:
 
 Do not include any other text, explanations or markdown. Just the JSON array.`;
 
+  // Append brand voice (if configured) so captions sound like the user
+  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const promptWithVoice = voicePrompt ? `${prompt}${voicePrompt}` : prompt;
+
   try {
     const client = new Anthropic({ apiKey });
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2000,
-      messages: [{ role: "user", content: prompt }],
+      messages: [{ role: "user", content: promptWithVoice }],
     });
 
     const text = message.content[0].type === "text" ? message.content[0].text : "";
