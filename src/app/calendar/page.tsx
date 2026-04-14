@@ -7,6 +7,7 @@ import AiImageQuickGen from "@/components/calendar/AiImageQuickGen";
 import AssetPicker from "@/components/calendar/AssetPicker";
 import HashtagSuggester from "@/components/calendar/HashtagSuggester";
 import CaptionVariants from "@/components/calendar/CaptionVariants";
+import AltTextButton from "@/components/calendar/AltTextButton";
 import EngagementPredictor from "@/components/calendar/EngagementPredictor";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
@@ -540,9 +541,12 @@ export default function CalendarPage() {
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
                     style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFF8F0", color: "#292524" }} />
                   {form.image_url && (
-                    <img src={form.image_url} alt="Preview" className="mt-2 rounded-lg max-h-32 object-cover"
-                      style={{ border: "1px solid rgba(245,215,160,0.3)" }}
-                      onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                    <div className="mt-2 flex items-start gap-2">
+                      <img src={form.image_url} alt="Preview" className="rounded-lg max-h-32 object-cover"
+                        style={{ border: "1px solid rgba(245,215,160,0.3)" }}
+                        onError={e => { (e.target as HTMLImageElement).style.display = "none"; }} />
+                      <AltTextButton imageUrl={form.image_url} caption={form.caption} />
+                    </div>
                   )}
                 </div>
               </div>
