@@ -202,48 +202,52 @@
   transition: box-shadow 0.25s ease, transform 0.25s ease, background-color 0.2s ease;
 }
 
-/* ─── Glass helper: liquid-glass background gradient ───────────── */
-:root {
-  --glass-gradient: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.75) 0%,
-    rgba(255, 255, 255, 0.40) 50%,
-    rgba(255, 255, 255, 0.60) 100%
-  );
-  --glass-border-gradient: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(255, 255, 255, 0.40) 50%,
-    rgba(255, 255, 255, 0.75) 100%
-  );
-}
-
-/* ─── OUTER cards — strong visible glass ────────────────────────── */
+/* ─── OUTER cards — true transparent glass like the reference ──── */
 .rounded-xl[style*="background-color"],
 .rounded-2xl[style*="background-color"],
 .rounded-lg[style*="background-color"] {
   position: relative;
-  background: var(--glass-gradient) !important;
-  backdrop-filter: blur(20px) saturate(1.8);
-  -webkit-backdrop-filter: blur(20px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  /* Very light translucent white (25% alpha) — lets the colorful body
+     gradient show through clearly */
+  background-color: rgba(255, 255, 255, 0.25) !important;
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0.15) 100%
+  ) !important;
+  backdrop-filter: blur(30px) saturate(1.8);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+  /* Transparent border so the gradient-border pseudo-element below
+     can paint the glass edge refraction. */
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
   box-shadow:
-    var(--shadow-card),
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    inset 0 -2px 4px rgba(255, 255, 255, 0.3),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+    /* Outer drop shadows for 3D lift */
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    0 16px 40px rgba(0, 0, 0, 0.10),
+    /* Glass edge refraction — 4 sides */
+    inset 0 1.5px 0 rgba(255, 255, 255, 0.95),   /* top bright highlight */
+    inset 0 -1px 0 rgba(255, 255, 255, 0.40),    /* bottom soft bounce */
+    inset 1px 0 0 rgba(255, 255, 255, 0.35),     /* left side light */
+    inset -1px 0 0 rgba(255, 255, 255, 0.25);    /* right side dim */
+  transition: box-shadow 0.3s ease, transform 0.3s ease, background-image 0.3s ease;
 }
 
 .rounded-xl[style*="background-color"]:hover,
 .rounded-2xl[style*="background-color"]:hover,
 .rounded-lg[style*="background-color"]:hover {
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.25) 100%
+  ) !important;
   box-shadow:
-    var(--shadow-card-hover),
-    inset 0 1px 0 rgba(255, 255, 255, 1),
-    inset 0 -2px 8px rgba(255, 255, 255, 0.5),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px);
+    0 8px 20px rgba(0, 0, 0, 0.10),
+    0 24px 56px rgba(0, 0, 0, 0.14),
+    inset 0 1.5px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.55),
+    inset 1px 0 0 rgba(255, 255, 255, 0.45),
+    inset -1px 0 0 rgba(255, 255, 255, 0.35);
+  transform: translateY(-3px);
 }
 
 /* ─── INNER pills / stats / badges (rgba soft-tint backgrounds) ──
@@ -285,11 +289,13 @@ body {
   margin: 0;
   padding: 0;
   font-family: Inter, Arial, sans-serif;
-  /* Soft gradient body so glass cards on top have something to refract
-     — without this, translucent cards on a same-color page bg look matte. */
+  /* Vibrant gradient body so glass cards on top visibly refract it.
+     Higher saturation than before — the reference design needs
+     colorful page bg to make glass edges pop. */
   background:
-    radial-gradient(ellipse at top left, rgba(245,158,11,0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at bottom right, rgba(236,128,84,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at top left,    rgba(245,158,11,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 80% at bottom right, rgba(236,128,84,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 60% at center,       rgba(139,92,246,0.08) 0%, transparent 70%),
     var(--color-bg);
   background-attachment: fixed;
   color: var(--color-text);
@@ -298,22 +304,24 @@ body {
 /* Swap radial tints per theme so the glass refraction stays on-brand */
 [data-theme="emerald"] body {
   background:
-    radial-gradient(ellipse at top left, rgba(16,185,129,0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at bottom right, rgba(244,114,182,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at top left,     rgba(16,185,129,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 80% at bottom right, rgba(244,114,182,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 60% at center,       rgba(99,102,241,0.08) 0%, transparent 70%),
     var(--color-bg);
   background-attachment: fixed;
 }
 [data-theme="indigo"] body {
   background:
-    radial-gradient(ellipse at top left, rgba(129,140,248,0.10) 0%, transparent 55%),
-    radial-gradient(ellipse at bottom right, rgba(251,146,60,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at top left,     rgba(129,140,248,0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 80% at bottom right, rgba(251,146,60,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 60% at center,       rgba(236,72,153,0.08) 0%, transparent 70%),
     var(--color-bg);
   background-attachment: fixed;
 }
 [data-theme="mono"] body {
   background:
-    radial-gradient(ellipse at top left, rgba(64,64,64,0.06) 0%, transparent 55%),
-    radial-gradient(ellipse at bottom right, rgba(132,204,22,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 60% at top left,     rgba(64,64,64,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 80% at bottom right, rgba(132,204,22,0.18) 0%, transparent 65%),
     var(--color-bg);
   background-attachment: fixed;
 }
