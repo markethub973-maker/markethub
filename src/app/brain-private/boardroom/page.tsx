@@ -313,10 +313,11 @@ export default function Boardroom() {
     }
   };
 
-  // Oval geometry — even smaller table for a cleaner room feel
-  const tableCx = 50; const tableCy = 52; const tableRx = 20; const tableRy = 16;
-  // Seats hug the table closer
-  const seatRx = 27; const seatRy = 23;
+  // Oval geometry — wider table (conference-room shape), all agents sit
+  // spread horizontally around it.
+  const tableCx = 50; const tableCy = 52; const tableRx = 36; const tableRy = 13;
+  // Seats further out on the horizontal axis, closer vertically
+  const seatRx = 43; const seatRy = 19;
 
   const seatPos = (angle: number) => ({
     left: `${tableCx + seatRx * Math.cos((angle * Math.PI) / 180)}%`,
