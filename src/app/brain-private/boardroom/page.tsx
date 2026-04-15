@@ -37,29 +37,8 @@ const SEATS: Seat[] = [
 interface Contribution { agent_id: string; agent_name: string; text: string; sessionId?: string; }
 interface Phase { active: string | null; contributions: Contribution[]; synthesis: string | null; asking: boolean; }
 
-// Ambient board activities — rotate randomly to feel alive even when idle
-const AMBIENT_FEED = [
-  { agent: "cmo",        msg: "Revizuiesc poziționarea competitorilor" },
-  { agent: "content",    msg: "Scriu 3 hook-uri LinkedIn pentru mâine" },
-  { agent: "sales",      msg: "Fac research pe 2 lead-uri calde" },
-  { agent: "analyst",    msg: "Calculez CAC-ul pe canalele active" },
-  { agent: "researcher", msg: "Scanez 15 domenii noi din Cluj" },
-  { agent: "competitive",msg: "Urmăresc ultimul update Buffer" },
-  { agent: "copywriter", msg: "Testez 3 variante subject line" },
-  { agent: "strategist", msg: "Mapez Wardley pe următoarele 6 luni" },
-  { agent: "finance",    msg: "Rulez scenariul de preț €699" },
-  { agent: "alex",       msg: "Ascult echipa" },
-  { agent: "alex",       msg: "Gândesc la ce e prioritate azi" },
-  { agent: "content",    msg: "Optimizez 2 articole pentru SEO" },
-  { agent: "sales",      msg: "Pregătesc ofertă customizată" },
-];
-
-// Default kickoff question — autonomous debate topic based on what we built
-// last night. When the user opens the boardroom fresh, the team auto-starts
-// a working session about it; Alex synthesizes and "calls" the user at the end.
-const AUTO_KICKOFF_QUESTION = `Ieri seară am lansat împreună AI Marketing Accelerator (€499 RO / €1000 Global pe get.markethubpromo.com), am pregătit 20 domenii target, outreach engine e live, Alex poate trimite batch-uri cu dual-agent review. Suntem la 0 clienți, 0 MRR, target €3000 MRR în 60 zile.
-
-Care este PRIMUL lucru concret pe care trebuie să-l facem azi dimineață ca să închidem primul client în 72 de ore? Fiecare spuneți din unghiul vostru.`;
+// No fake ambient feed — removed. All displayed activity is real data from DB.
+// No auto-kickoff question — removed. User initiates every session manually.
 
 export default function Boardroom() {
   const [question, setQuestion] = useState("");
@@ -85,15 +64,10 @@ export default function Boardroom() {
     } catch { /* ignore */ }
   }, [phase.contributions, phase.synthesis]);
   const [error, setError] = useState<string | null>(null);
-  const [autoStarted, setAutoStarted] = useState(false);
-  const [ambientAgent, setAmbientAgent] = useState<string | null>(null);
-  const [ambientMsg, setAmbientMsg] = useState<string>("");
-  const [whisper, setWhisper] = useState<{ from: string; to: string } | null>(null);
-  const [liveFeed, setLiveFeed] = useState<string[]>([
-    "09:12 · Nora a adăugat 8 lead-uri noi în pipeline",
-    "09:04 · Marcus a generat 3 captions pentru IG",
-    "08:58 · Ethan a calculat conversion rate: 2.3%",
-  ]);
+  const [ambientAgent] = useState<string | null>(null); // kept for compatibility, never set
+  const [ambientMsg] = useState<string>(""); // kept for compatibility, never set
+  const [whisper] = useState<{ from: string; to: string } | null>(null); // kept for compatibility, never set
+  const [liveFeed, setLiveFeed] = useState<string[]>([]);
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -207,24 +181,8 @@ export default function Boardroom() {
     if (phase.asking) setQuestion("");
   }, [phase.asking]);
 
-  // AUTONOMOUS SESSION — run once on page load. Board debates the kickoff
-  // question on its own, Alex delivers the call-to-operator at the end.
-  useEffect(() => {
-    if (autoStarted) return;
-    setAutoStarted(true);
-    setQuestion(""); // force empty on mount, ignore any browser autofill
-    // Small delay so user sees the calm room first (ambient activity),
-    // then the discussion starts naturally — like entering a meeting
-    // already in progress.
-    const t = setTimeout(() => {
-      // Do NOT populate the input — just dispatch the debate.
-      // The input stays empty so the operator can type a different question
-      // while the auto-session runs.
-      void askAutoQuestion(AUTO_KICKOFF_QUESTION);
-    }, 3500);
-    timersRef.current.push(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // No auto-kickoff — user initiates every session manually.
+  // (removed: autonomous fake debate that wasn't driven by real data)
 
   const askAutoQuestion = async (q: string) => {
     setError(null);
@@ -255,61 +213,24 @@ export default function Boardroom() {
     }
   };
 
-  // Autonomous life: random agent "pulse" every 5-9 seconds — makes board feel alive
+  // Real activity feed — pulls actual events from DB (outreach sent/replied,
+  // critical ops incidents, delegate decisions, boardroom sessions). Updates
+  // every 20s. No synthetic data.
   useEffect(() => {
-    if (phase.asking) return;
-    const tick = () => {
-      const item = AMBIENT_FEED[Math.floor(Math.random() * AMBIENT_FEED.length)];
-      setAmbientAgent(item.agent);
-      setAmbientMsg(item.msg);
-      const off = setTimeout(() => setAmbientAgent(null), 2800);
-      timersRef.current.push(off);
+    const fetchActivity = async () => {
+      try {
+        const r = await fetch("/api/brain/activity");
+        if (!r.ok) return;
+        const d = await r.json();
+        if (Array.isArray(d.events)) {
+          setLiveFeed(d.events.slice(0, 6));
+        }
+      } catch { /* no-op */ }
     };
-    tick();
-    const iv = setInterval(tick, 4500 + Math.random() * 3500);
+    void fetchActivity();
+    const iv = setInterval(fetchActivity, 20000);
     return () => clearInterval(iv);
-  }, [phase.asking]);
-
-  // Autonomous whisper — random pair of agents "whisper" every 10-18s
-  useEffect(() => {
-    if (phase.asking) return;
-    const ids = SEATS.filter((s) => s.kind === "agent").map((s) => s.id);
-    const tick = () => {
-      const a = ids[Math.floor(Math.random() * ids.length)];
-      let b = ids[Math.floor(Math.random() * ids.length)];
-      while (b === a) b = ids[Math.floor(Math.random() * ids.length)];
-      setWhisper({ from: a, to: b });
-      const off = setTimeout(() => setWhisper(null), 2200);
-      timersRef.current.push(off);
-    };
-    const iv = setInterval(tick, 8000 + Math.random() * 8000);
-    return () => clearInterval(iv);
-  }, [phase.asking]);
-
-  // Live feed — add synthetic "activity logs" every 12-20s
-  useEffect(() => {
-    if (phase.asking) return;
-    const activities = [
-      "Vera a revizuit declarația de poziționare",
-      "Sofia a răspuns la 2 obiecții de preț",
-      "Marcus a publicat 1 LinkedIn post",
-      "Ethan a updatat dashboard CAC",
-      "Iris a rescris 3 subject lines",
-      "Kai a detectat un feature nou la Later",
-      "Leo a propus un experiment pe pricing",
-      "Dara a verificat payback period",
-      "Nora a validat 12 domenii RO",
-      "Alex a aprobat outreach batch",
-    ];
-    const iv = setInterval(() => {
-      const now = new Date();
-      const hh = String(now.getHours()).padStart(2, "0");
-      const mm = String(now.getMinutes()).padStart(2, "0");
-      const a = activities[Math.floor(Math.random() * activities.length)];
-      setLiveFeed((prev) => [`${hh}:${mm} · ${a}`, ...prev].slice(0, 6));
-    }, 10000 + Math.random() * 10000);
-    return () => clearInterval(iv);
-  }, [phase.asking]);
+  }, []);
 
   const ask = async () => {
     const q = question.trim();
@@ -387,9 +308,7 @@ export default function Boardroom() {
             ? "Ședință în desfășurare · echipa dezbate..."
             : phase.synthesis
             ? "Alex a închis ședința · raportul e în panoul său"
-            : autoStarted
-            ? "Pregătesc ședința de dimineață..."
-            : "Ai intrat în ședință"}
+            : "Scrie o întrebare sau vorbește cu mic-ul — echipa răspunde"}
         </p>
         {delegateActive && (
           <div className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-bold"
