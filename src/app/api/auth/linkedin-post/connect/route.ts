@@ -15,8 +15,9 @@ export async function GET(req: NextRequest) {
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/linkedin-post/callback`;
   // openid/profile/email: basic user info
   // w_member_social: post to user's personal profile
-  // w_organization_social: post to company pages user manages (Community Management API)
-  const scope = "openid profile email w_member_social w_organization_social";
+  // w_organization_social requires additional LinkedIn approval even with Community
+  // Management API listed — pending. For now, company page uses LinkedIn Scheduler.
+  const scope = "openid profile email w_member_social";
 
   const params = new URLSearchParams({
     response_type: "code",
