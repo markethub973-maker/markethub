@@ -30,9 +30,14 @@ const AGENTS: Array<{
   kind: "security" | "maintenance" | "core";
 }> = [
   { job: "security-scan", label: "Daily Security Scan", max_stale_min: 60 * 30, severity: "critical", kind: "security" },
-  { job: "abuse-scan", label: "Daily Abuse Scan", max_stale_min: 60 * 30, severity: "high", kind: "security" },
-  { job: "cockpit-reactive-siem", label: "Reactive SIEM (2m)", max_stale_min: 15, severity: "critical", kind: "security" },
-  { job: "cockpit-watchdog", label: "Cockpit Watchdog (2m)", max_stale_min: 15, severity: "critical", kind: "security" },
+  { job: "abuse-scan", label: "Daily Abuse Scan", max_stale_min: 60 * 36, severity: "high", kind: "security" }, // 36h tolerance — daily cron may skip occasionally
+  // Reactive-SIEM is event-triggered (runs only when security events occur),
+  // NOT a timer. 24h silence = no incidents, which is GOOD. Widen threshold
+  // so the health check doesn't flag "stale" during quiet periods.
+  { job: "cockpit-reactive-siem", label: "Reactive SIEM (event-driven)", max_stale_min: 60 * 24 * 7, severity: "medium", kind: "security" },
+  // Cockpit-watchdog runs via GitHub Actions every 2 min but GH throttles
+  // frequent workflows to 5-15 min actual cadence. 30 min tolerance fits.
+  { job: "cockpit-watchdog", label: "Cockpit Watchdog (5-15m via GHA)", max_stale_min: 30, severity: "critical", kind: "security" },
   { job: "health-monitor", label: "Health Monitor (daily)", max_stale_min: 60 * 30, severity: "high", kind: "core" },
   { job: "refresh-tokens", label: "Token Refresh (weekly)", max_stale_min: 60 * 24 * 8, severity: "high", kind: "core" },
   { job: "cockpit-backup", label: "Cockpit Backup (daily)", max_stale_min: 60 * 30, severity: "high", kind: "maintenance" },
