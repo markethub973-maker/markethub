@@ -191,6 +191,10 @@ const PUBLIC_PATHS = [
   "/l/",                    // public Link in Bio pages
   "/portal/",               // public client portal pages
   "/promo",                 // public marketing landing page
+  "/features",              // marketing — feature catalog (Google-indexed)
+  "/guides",                // marketing — how-to articles (Google-indexed)
+  "/for/",                  // marketing — /for/<audience> use-case pages
+  "/vs/",                   // marketing — /vs/<competitor> comparison pages
   "/offer-ro",              // Romania-only DFY landing (€499) — shared in RO outreach
   "/offer-intl",            // International DFY landing (€1000) — shared in EU/UK/US outreach
   "/offer-de",              // Germany/AT/CH DFY landing (€1500)
