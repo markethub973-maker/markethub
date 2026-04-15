@@ -631,7 +631,9 @@ export default function Boardroom() {
               border: "1px solid rgba(245,158,11,0.25)",
               backdropFilter: "blur(12px)",
               boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-              minHeight: 120, // stable height during new session
+              minHeight: 140,
+              scrollBehavior: "smooth",
+              scrollbarWidth: "thin",
             }}
           >
             {/* Empty-state placeholder when a new session just started */}
@@ -722,8 +724,8 @@ export default function Boardroom() {
           <input
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder={recording ? "Ascult... vorbește în română" : "Pune o întrebare boardului sau apasă mic..."}
-            disabled={phase.asking || recording}
+            placeholder={recording ? "Ascult... vorbește în română" : (phase.asking ? "Board-ul dezbate — poți scrie următoarea întrebare..." : "Pune o întrebare boardului sau apasă mic...")}
+            disabled={recording}
             autoComplete="off"
             autoCorrect="off"
             autoCapitalize="off"
