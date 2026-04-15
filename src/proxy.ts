@@ -487,7 +487,9 @@ export async function proxy(request: NextRequest) {
   const isWebhook =
     pathname === "/api/stripe/webhook" ||
     pathname === "/api/apify/webhook" ||
-    pathname === "/api/webhooks/apify";
+    pathname === "/api/webhooks/apify" ||
+    pathname === "/api/telegram/webhook" ||           // Telegram HMAC'd via secret_token header
+    pathname === "/api/webhooks/resend-inbound";      // Resend inbound — HMAC via X-Resend-Signature
 
   const isAuthPath = !isWebhook && AUTH_PATHS.some((p) => pathname.startsWith(p));
   // AI-expensive endpoints — each call hits Anthropic API at ~$0.001-0.01.
