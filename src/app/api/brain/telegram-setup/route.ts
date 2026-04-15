@@ -9,6 +9,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { createServiceClient } from "@/lib/supabase/service";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +37,60 @@ export async function GET(req: NextRequest) {
       }),
     });
     return NextResponse.json({ action, tg_response: await r.json() });
+  }
+
+  if (action === "auto-setup") {
+    // Read the most recent chat id from DB (captured by the webhook when
+    // someone first messages the bot), then upsert it on Vercel env.
+    const svc = createServiceClient();
+    const { data } = await svc
+      .from("telegram_messages")
+      .select("chat_id,from_user,created_at")
+      .order("created_at", { ascending: false })
+      .limit(1);
+    const chat = (data ?? [])[0];
+    if (!chat) {
+      return NextResponse.json({
+        ok: false,
+        hint: `Nu am găsit niciun mesaj în DB. Trimite un salut botului @markethub_reports_bot, apoi rulează din nou.`,
+      });
+    }
+    // Upsert on Vercel env via API
+    const vercelToken = process.env.VERCEL_API_TOKEN;
+    const teamId = "team_rbNwqamitZzxEBwrd9UMDlxk";
+    const projectId = "prj_HHkmEIEiIRuoyCFT22KAobqzUwaH";
+    if (!vercelToken) {
+      return NextResponse.json({
+        ok: false,
+        captured_chat_id: chat.chat_id,
+        hint: "VERCEL_API_TOKEN lipsește din env. Pune manual TELEGRAM_ALLOWED_CHAT_ID = " + chat.chat_id,
+      });
+    }
+    const upsertRes = await fetch(
+      `https://api.vercel.com/v10/projects/${projectId}/env?teamId=${teamId}&upsert=true`,
+      {
+        method: "POST",
+        headers: { Authorization: `Bearer ${vercelToken}`, "Content-Type": "application/json" },
+        body: JSON.stringify([
+          {
+            key: "TELEGRAM_ALLOWED_CHAT_ID",
+            value: String(chat.chat_id),
+            type: "encrypted",
+            target: ["production", "preview", "development"],
+          },
+        ]),
+      },
+    );
+    const upsertJson = await upsertRes.json();
+    return NextResponse.json({
+      ok: upsertRes.ok,
+      captured_chat_id: chat.chat_id,
+      from_user: chat.from_user,
+      vercel_response: upsertJson,
+      next: upsertRes.ok
+        ? "Chat id setat. Urmează redeploy automat (sau next deploy) ca să-l citească runtime-ul."
+        : "Vercel API nu a acceptat. Set manual env var TELEGRAM_ALLOWED_CHAT_ID = " + chat.chat_id,
+    });
   }
 
   if (action === "get-chat-id") {

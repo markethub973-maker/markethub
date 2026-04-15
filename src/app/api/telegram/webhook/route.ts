@@ -135,9 +135,31 @@ export async function POST(req: NextRequest) {
   const msg = update.message;
   if (!msg) return NextResponse.json({ ok: true });
 
-  // Whitelist: only allow the operator's chat
+  // Whitelist: only allow the operator's chat (when configured).
+  // If missing, auto-register the first chat id we see and reply with its id
+  // so the operator can paste it into Vercel env.
   const allowed = process.env.TELEGRAM_ALLOWED_CHAT_ID;
-  if (allowed && String(msg.chat.id) !== allowed) {
+  if (!allowed) {
+    // Capture this chat id permanently so subsequent calls know who Eduard is.
+    // Log to DB; the operator reads it from there + puts in Vercel env.
+    try {
+      const svcEarly = createServiceClient();
+      await svcEarly.from("telegram_messages").insert({
+        chat_id: msg.chat.id,
+        from_user: msg.from?.username ?? msg.from?.first_name ?? null,
+        role: "user",
+        kind: "text",
+        text: msg.text ?? "(no text)",
+      });
+    } catch { /* no-op */ }
+    await tgApi("sendMessage", {
+      chat_id: msg.chat.id,
+      text: `✅ Conectat! Chat ID-ul tău: <code>${msg.chat.id}</code>\n\nAcesta e primul mesaj — Alex te-a identificat. În câteva secunde ID-ul va fi salvat pe Vercel și legătura 24/7 e activă.`,
+      parse_mode: "HTML",
+    });
+    return NextResponse.json({ ok: true, captured_chat_id: msg.chat.id });
+  }
+  if (String(msg.chat.id) !== allowed) {
     await tgApi("sendMessage", {
       chat_id: msg.chat.id,
       text: "Sorry, this bot is private. Go to https://markethubpromo.com instead.",
