@@ -7,7 +7,6 @@
  * works without a Supabase session — this subdomain is out-of-band.
  */
 
-import { headers } from "next/headers";
 import { createServiceClient } from "@/lib/supabase/service";
 import BrainActionList from "@/components/brain/BrainActionList";
 import BrainMetricTiles from "@/components/brain/BrainMetricTiles";
@@ -46,10 +45,10 @@ interface AdvisorResp {
 }
 
 async function fetchAdvisor(): Promise<AdvisorResp | null> {
-  const h = await headers();
-  const proto = h.get("x-forwarded-proto") ?? "https";
-  // Hit the real app host, not brain.* (which is middleware-blocked from /api/brain)
-  const url = "https://markethubpromo.com/api/brain/advisor";
+  // Hit the direct Vercel hostname, NOT markethubpromo.com — Cloudflare
+  // Bot Fight Mode returns 403 on server-to-server calls to the branded
+  // domain. Same workaround as our cron-auto-post.yml, cron-health-monitor.yml.
+  const url = "https://viralstat-dashboard.vercel.app/api/brain/advisor";
   const secret = process.env.BRAIN_CRON_SECRET;
   if (!secret) return null;
   try {
