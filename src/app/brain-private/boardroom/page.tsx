@@ -496,52 +496,26 @@ export default function Boardroom() {
         })}
       </div>
 
-      {/* Synthesis panel — floating modal, doesn't push layout.
-          Scrollable internal, closable so user can return to the table. */}
+      {/* When Alex synthesizes — small flash toast top-center that fades,
+          signaling "Alex decided — read on the left". The full text lives
+          in the left transcript panel, not blocking the table view. */}
       {phase.synthesis && (
         <div
-          className="fixed inset-0 z-40 flex items-end justify-center pointer-events-none"
-          style={{ padding: "0 16px 100px" }}
+          className="fixed z-40 pointer-events-none"
+          style={{ top: 76, left: "50%", transform: "translateX(-50%)", animation: "brainFadeIn 0.4s" }}
         >
           <div
-            className="relative w-full rounded-2xl shadow-2xl pointer-events-auto"
+            className="flex items-center gap-2 px-4 py-2 rounded-full shadow-xl"
             style={{
-              maxWidth: 720,
-              maxHeight: "55vh",
-              background: "linear-gradient(135deg, rgba(42,31,15,0.98) 0%, rgba(26,26,36,0.98) 100%)",
-              border: "1px solid rgba(245,158,11,0.4)",
-              boxShadow: "0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(245,158,11,0.15)",
-              backdropFilter: "blur(16px)",
-              animation: "brainFadeIn 0.4s ease-out",
-              display: "flex",
-              flexDirection: "column",
+              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              color: "black",
+              boxShadow: "0 8px 24px rgba(245,158,11,0.5)",
+              fontSize: 13,
+              fontWeight: 700,
             }}
           >
-            <div className="flex items-center gap-2 p-4 sticky top-0" style={{
-              borderBottom: "1px solid rgba(245,158,11,0.15)",
-              background: "linear-gradient(180deg, rgba(42,31,15,1), rgba(42,31,15,0.8))",
-              borderRadius: "16px 16px 0 0",
-            }}>
-              <span className="text-xl">👔</span>
-              <p className="text-sm font-bold flex-1">Alex te contactează · raport final</p>
-              <button
-                type="button"
-                onClick={() => setPhase((p) => ({ ...p, synthesis: null }))}
-                className="text-xs px-2 py-1 rounded-md"
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.06)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  color: "#bbb",
-                }}
-              >
-                ✕ Închide
-              </button>
-            </div>
-            <div className="overflow-y-auto p-5">
-              <p className="text-sm whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.6 }}>
-                {phase.synthesis}
-              </p>
-            </div>
+            <span>👔</span>
+            Alex te contactează — vezi raportul stânga
           </div>
         </div>
       )}
@@ -603,11 +577,11 @@ export default function Boardroom() {
         }
       `}</style>
 
-      {/* Transcript panel — left side, shows everyone who spoke so far */}
-      {phase.contributions.length > 0 && (
-        <div className="fixed left-4 top-24 w-72 p-3 rounded-xl hidden lg:block z-20 max-h-[65vh] overflow-y-auto"
+      {/* Transcript panel — left side, shows everyone who spoke + Alex's final recommendation */}
+      {(phase.contributions.length > 0 || phase.synthesis) && (
+        <div className="fixed left-4 top-24 w-72 p-3 rounded-xl hidden lg:block z-20 max-h-[75vh] overflow-y-auto"
           style={{
-            backgroundColor: "rgba(10,10,16,0.88)",
+            backgroundColor: "rgba(10,10,16,0.92)",
             border: "1px solid rgba(245,158,11,0.2)",
             backdropFilter: "blur(12px)",
           }}>
@@ -622,6 +596,20 @@ export default function Boardroom() {
                 <p style={{ color: "#ccc" }}>{c.text}</p>
               </div>
             ))}
+            {phase.synthesis && (
+              <div className="mt-4 pt-3 rounded-lg p-3" style={{
+                borderTop: "1px solid rgba(245,158,11,0.3)",
+                background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02))",
+                border: "1px solid rgba(245,158,11,0.3)",
+              }}>
+                <p className="font-bold text-xs mb-2 flex items-center gap-1" style={{ color: "#F59E0B" }}>
+                  👔 Alex · Recomandare finală
+                </p>
+                <p className="text-[11px] whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.5 }}>
+                  {phase.synthesis}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}
