@@ -34,7 +34,7 @@ const SEATS: Seat[] = [
   { id: "finance",    name: "Dara",   title: "CFO",                  icon: "💰", angle: 250, kind: "agent" },
 ];
 
-interface Contribution { agent_id: string; agent_name: string; text: string; }
+interface Contribution { agent_id: string; agent_name: string; text: string; sessionId?: string; }
 interface Phase { active: string | null; contributions: Contribution[]; synthesis: string | null; asking: boolean; }
 
 // Ambient board activities — rotate randomly to feel alive even when idle
@@ -140,7 +140,7 @@ export default function Boardroom() {
 
   const askWithText = async (q: string) => {
     setError(null);
-    setPhase({ active: "you", contributions: [], synthesis: null, asking: true });
+    setPhase((p) => ({ ...p, active: "you", asking: true, synthesis: null }));
     try {
       const res = await fetch("/api/brain/boardroom", {
         method: "POST",
@@ -190,7 +190,7 @@ export default function Boardroom() {
 
   const askAutoQuestion = async (q: string) => {
     setError(null);
-    setPhase({ active: "you", contributions: [], synthesis: null, asking: true });
+    setPhase((p) => ({ ...p, active: "you", asking: true, synthesis: null }));
     try {
       const res = await fetch("/api/brain/boardroom", {
         method: "POST",
@@ -200,9 +200,10 @@ export default function Boardroom() {
       const d = await res.json();
       if (!res.ok) throw new Error(d.error ?? "Eroare");
       const contribs: Contribution[] = d.contributions ?? [];
+      const sessionId = String(Date.now());
       contribs.forEach((c, i) => {
         const t = setTimeout(() => {
-          setPhase((p) => ({ ...p, active: c.agent_id, contributions: [...p.contributions, c] }));
+          setPhase((p) => ({ ...p, active: c.agent_id, contributions: [...p.contributions, { ...c, sessionId }] }));
         }, i * 2800);
         timersRef.current.push(t);
       });
@@ -276,8 +277,10 @@ export default function Boardroom() {
     const q = question.trim();
     if (!q) return;
     setError(null);
-    setQuestion(""); // clear input immediately on Enter
-    setPhase({ active: "you", contributions: [], synthesis: null, asking: true });
+    setQuestion("");
+    // KEEP previous contributions + synthesis visible. Only flip asking flag
+    // and active to "you". New contributions append as they come in.
+    setPhase((p) => ({ ...p, active: "you", asking: true, synthesis: null }));
     try {
       const res = await fetch("/api/brain/boardroom", {
         method: "POST",
@@ -614,11 +617,12 @@ export default function Boardroom() {
         </div>
       )}
 
-      {/* Horizontal transcript strip — closer to table, wider */}
-      {(phase.contributions.length > 0 || phase.synthesis) && (
+      {/* Horizontal transcript strip — ALWAYS rendered during/after a session
+          to keep layout stable (no jumping when new question starts) */}
+      {(phase.asking || phase.contributions.length > 0 || phase.synthesis) && (
         <div
           className="sticky z-30 mx-auto px-4"
-          style={{ bottom: 110, maxWidth: 1400, marginTop: -40 }}
+          style={{ bottom: 110, maxWidth: 1400, marginTop: -40, transition: "all 0.4s ease" }}
         >
           <div
             className="p-3 rounded-xl flex gap-3 overflow-x-auto"
@@ -627,8 +631,19 @@ export default function Boardroom() {
               border: "1px solid rgba(245,158,11,0.25)",
               backdropFilter: "blur(12px)",
               boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+              minHeight: 120, // stable height during new session
             }}
           >
+            {/* Empty-state placeholder when a new session just started */}
+            {phase.asking && phase.contributions.length === 0 && !phase.synthesis && (
+              <div className="flex items-center gap-3 px-4 flex-shrink-0" style={{ color: "#888" }}>
+                <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#F59E0B" }} />
+                <div>
+                  <p className="text-xs font-bold" style={{ color: "#F59E0B" }}>Board-ul dezbate...</p>
+                  <p className="text-[11px]">Directorii își pregătesc punctele de vedere</p>
+                </div>
+              </div>
+            )}
             {phase.synthesis && (
               <div
                 className="flex-shrink-0 p-3 rounded-lg"
