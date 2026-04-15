@@ -173,7 +173,9 @@ export default function Boardroom() {
     // then the discussion starts naturally — like entering a meeting
     // already in progress.
     const t = setTimeout(() => {
-      setQuestion(AUTO_KICKOFF_QUESTION);
+      // Do NOT populate the input — just dispatch the debate.
+      // The input stays empty so the operator can type a different question
+      // while the auto-session runs.
       void askAutoQuestion(AUTO_KICKOFF_QUESTION);
     }, 3500);
     timersRef.current.push(t);
