@@ -124,3 +124,4 @@ Target €1500-3000 în 2 săpt:
 7. Plată procesată → welcome email automat de la Alex → tu livrezi în 5-7 zile
 
 **Prima plată vineri-weekend**. Success.
+# Tiny bump to force redeploy for env var refresh 1776272804
