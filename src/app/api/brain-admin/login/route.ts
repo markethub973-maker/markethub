@@ -12,6 +12,25 @@ import crypto from "crypto";
 
 export const dynamic = "force-dynamic";
 
+// GET /api/brain-admin/login?token=<BRAIN_CRON_SECRET> → bypass form, set cookie, redirect to /.
+// Lets the operator click a direct link to the dashboard when the form is finicky.
+export async function GET(req: NextRequest) {
+  const token = req.nextUrl.searchParams.get("token");
+  if (!token || token !== process.env.BRAIN_CRON_SECRET) {
+    return NextResponse.json({ error: "bad token" }, { status: 401 });
+  }
+  const res = NextResponse.redirect("https://brain.markethubpromo.com/", { status: 302 });
+  res.cookies.set("brain_admin", "1", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 30,
+    domain: ".markethubpromo.com",
+  });
+  return res;
+}
+
 // Per-IP rate limiter (in-memory — fine for a single Vercel region,
 // good-enough protection from casual brute force). Upstash would be
 // better across regions but this endpoint sees almost no traffic.
