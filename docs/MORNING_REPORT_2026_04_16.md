@@ -88,8 +88,13 @@ Session ran from ~20:00 local (15 apr) to 00:20 (16 apr). Eduard was offline aft
 - 🟢 Sentry: 0 critical errors
 - 🟢 Stripe: 0 disputes/chargebacks/failed payments
 
-### Page audit (35 canonical marketing URLs)
-All 200 OK, all <200ms TTFB:
+### Page audit (58 URLs — full public surface)
+**58/58 returned 200 OK**, median 0.44s, slowest `/api/status` 0.909s (well under 3s threshold).
+
+Tested: 33 PUBLIC_PATHS routes + 18 feature pages + 9 guide pages + brain subdomain probes.
+No broken pages, no security leaks, no slow endpoints. Report: `docs/AUDIT_2026_04_16.md`.
+
+Sample URLs (all 200):
 - /offer-ro, /offer-intl, /offer-de, /offer-fr, /offer-it, /offer-es, /offer-pt ✅
 - /promo, /pricing, /help, /changelog, /status ✅
 - /features, /guides, /for, /vs (after SEO fix) ✅
