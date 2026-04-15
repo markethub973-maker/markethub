@@ -362,8 +362,8 @@ export default function Boardroom() {
         )}
       </header>
 
-      {/* Room arena — full width, compact height so nothing scrolls */}
-      <div className="relative mx-auto" style={{ width: "min(98vw, 1800px)", height: "min(30vh, 260px)", perspective: "1400px" }}>
+      {/* Room arena — compact height so ALL three grid rows + input fit below */}
+      <div className="relative mx-auto" style={{ width: "min(98vw, 1800px)", height: "min(26vh, 220px)", perspective: "1400px" }}>
         {/* Back wall with subtle wallpaper texture */}
         <div className="absolute inset-0" style={{
           background: "linear-gradient(180deg, rgba(30,25,20,0.6) 0%, transparent 40%), repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 12px)",
@@ -620,8 +620,8 @@ export default function Boardroom() {
 
       {/* Alex hero + 9 directors grid — fills the rest of the viewport */}
       <div
-        className="mx-auto px-2 mt-2"
-        style={{ maxWidth: "100%", marginBottom: 92 }}
+        className="mx-auto px-2 mt-1"
+        style={{ maxWidth: "100%", marginBottom: 80 }}
       >
         {/* Alex — full-width hero panel. Always visible, scrollable inside. */}
         {(() => {
@@ -629,13 +629,13 @@ export default function Boardroom() {
           const isActive = phase.active === "alex";
           return (
             <div
-              className="rounded-xl p-3 mb-2"
+              className="rounded-xl p-2 mb-2"
               style={{
                 background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
                 border: `1px solid ${isActive ? "rgba(245,158,11,0.65)" : "rgba(245,158,11,0.3)"}`,
                 boxShadow: isActive ? "0 0 20px rgba(245,158,11,0.2)" : "0 4px 12px rgba(0,0,0,0.3)",
-                minHeight: 80,
-                maxHeight: 110,
+                minHeight: 70,
+                maxHeight: 90,
                 display: "flex",
                 flexDirection: "column",
               }}
@@ -670,7 +670,7 @@ export default function Boardroom() {
           className="grid gap-2"
           style={{
             gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            gridAutoRows: "minmax(130px, 170px)",
+            gridAutoRows: "minmax(90px, 115px)",
           }}
         >
           {SEATS.filter((s) => s.kind === "agent").map((seat) => {
