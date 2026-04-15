@@ -362,8 +362,8 @@ export default function Boardroom() {
         )}
       </header>
 
-      {/* Room arena — compact height so ALL three grid rows + input fit below */}
-      <div className="relative mx-auto" style={{ width: "min(98vw, 1800px)", height: "min(26vh, 220px)", perspective: "1400px" }}>
+      {/* Room arena — leaves 300px clear on the right for Activity Live panel */}
+      <div className="relative" style={{ width: "min(calc(100vw - 320px), 1500px)", height: "min(26vh, 220px)", perspective: "1400px", marginLeft: 16 }}>
         {/* Back wall with subtle wallpaper texture */}
         <div className="absolute inset-0" style={{
           background: "linear-gradient(180deg, rgba(30,25,20,0.6) 0%, transparent 40%), repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 12px)",
@@ -786,8 +786,8 @@ export default function Boardroom() {
 
       {/* Transcript panel REMOVED — now lives in the horizontal strip below, see after the input */}
 
-      {/* Live activity feed — fixed right side */}
-      <div className="fixed right-4 top-24 w-64 p-3 rounded-xl hidden lg:block z-20"
+      {/* Live activity feed — fixed right side, wider */}
+      <div className="fixed right-3 top-16 w-80 p-3 rounded-xl hidden lg:block z-20"
         style={{
           backgroundColor: "rgba(10,10,16,0.8)",
           border: "1px solid rgba(16,185,129,0.2)",
