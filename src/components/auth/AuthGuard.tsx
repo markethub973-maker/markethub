@@ -27,8 +27,11 @@ function isPublicPath(pathname: string): boolean {
   // real offer routes and 404s everything else — but the browser still sees
   // the external pathname like `/ro`, which wouldn't match our internal
   // whitelist).
-  if (typeof window !== "undefined" && window.location.hostname === "get.markethubpromo.com") {
-    return true;
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "get.markethubpromo.com" || host === "brain.markethubpromo.com") {
+      return true;
+    }
   }
   if (PUBLIC_PATHS.includes(pathname)) return true;
   // Public slug routes
