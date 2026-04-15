@@ -76,6 +76,24 @@ export default function Boardroom() {
   ]);
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Delegate live feed — poll every 10s for proxy activity
+  const [delegateActive, setDelegateActive] = useState(false);
+  const [proxyApprovals, setProxyApprovals] = useState<Array<{ ts: string; question: string; synthesis: string; proxy_response: string }>>([]);
+  useEffect(() => {
+    const fetchFeed = async () => {
+      try {
+        const r = await fetch("/api/brain/delegate/feed");
+        if (!r.ok) { setDelegateActive(false); return; }
+        const d = await r.json();
+        setDelegateActive(Boolean(d.session));
+        setProxyApprovals(Array.isArray(d.approvals) ? d.approvals : []);
+      } catch { /* no-op */ }
+    };
+    void fetchFeed();
+    const iv = setInterval(fetchFeed, 10000);
+    return () => clearInterval(iv);
+  }, []);
   const [voiceOn, setVoiceOn] = useState(true);
   const [recording, setRecording] = useState(false);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -353,6 +371,12 @@ export default function Boardroom() {
             ? "Pregătesc ședința de dimineață..."
             : "Ai intrat în ședință"}
         </p>
+        {delegateActive && (
+          <div className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md font-bold"
+            style={{ backgroundColor: "rgba(139,92,246,0.2)", border: "1px solid rgba(139,92,246,0.5)", color: "#a78bfa" }}>
+            🛡️ PROXY ACTIV
+          </div>
+        )}
         {phase.asking && (
           <div className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md"
             style={{ backgroundColor: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", color: "#F59E0B" }}>
@@ -361,6 +385,32 @@ export default function Boardroom() {
           </div>
         )}
       </header>
+
+      {/* Proxy activity floating panel — shows when Delegate is active */}
+      {delegateActive && proxyApprovals.length > 0 && (
+        <div className="fixed left-3 top-16 w-80 p-3 rounded-xl hidden lg:block z-20 max-h-[70vh] overflow-y-auto"
+          style={{
+            backgroundColor: "rgba(20,15,30,0.92)",
+            border: "1px solid rgba(139,92,246,0.35)",
+            backdropFilter: "blur(12px)",
+          }}>
+          <p className="text-[10px] uppercase tracking-wider font-bold mb-2 flex items-center gap-1" style={{ color: "#a78bfa" }}>
+            🛡️ Proxy în numele tău
+          </p>
+          <p className="text-[9px] mb-3" style={{ color: "#666" }}>
+            Aici vezi ce a răspuns AI-ul tău delegate lui Alex cât tu lipsești
+          </p>
+          <div className="space-y-3">
+            {proxyApprovals.slice().reverse().slice(0, 6).map((a, i) => (
+              <div key={i} className="p-2 rounded-lg" style={{ backgroundColor: "rgba(139,92,246,0.08)", border: "1px solid rgba(139,92,246,0.2)" }}>
+                <p className="text-[9px]" style={{ color: "#888" }}>{(a.ts || "").slice(5, 16).replace("T", " ")}</p>
+                <p className="text-[11px] font-bold mt-1" style={{ color: "#a78bfa" }}>Răspuns proxy:</p>
+                <p className="text-[11px] whitespace-pre-wrap" style={{ color: "#ddd", lineHeight: 1.5 }}>{a.proxy_response}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Room arena — leaves 300px clear on the right for Activity Live panel */}
       <div className="relative" style={{ width: "min(calc(100vw - 320px), 1500px)", height: "min(26vh, 220px)", perspective: "1400px", marginLeft: 16 }}>
