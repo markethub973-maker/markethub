@@ -22,6 +22,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { generateText } from "@/lib/llm";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
+import { synthesizeSpeech } from "@/lib/tts";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -81,34 +82,25 @@ async function whisperTranscribe(audio: ArrayBuffer): Promise<string | null> {
   }
 }
 
-async function openaiTts(text: string): Promise<ArrayBuffer | null> {
-  const key = process.env.OPENAI_API_KEY;
-  if (!key) return null;
-  try {
-    const res = await fetch("https://api.openai.com/v1/audio/speech", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "tts-1",
-        voice: "onyx", // deeper, founder-appropriate
-        input: text.slice(0, 4000),
-        response_format: "opus",
-      }),
-    });
-    if (!res.ok) return null;
-    return await res.arrayBuffer();
-  } catch {
-    return null;
-  }
-}
-
-async function sendVoice(chatId: number, audio: ArrayBuffer): Promise<void> {
+async function sendVoiceOrAudio(
+  chatId: number,
+  audio: ArrayBuffer,
+  format: "opus" | "mp3",
+): Promise<void> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   if (!token) return;
   const fd = new FormData();
   fd.append("chat_id", String(chatId));
-  fd.append("voice", new Blob([audio], { type: "audio/ogg" }), "alex.ogg");
-  await fetch(`${TG_API}/bot${token}/sendVoice`, { method: "POST", body: fd });
+  if (format === "opus") {
+    fd.append("voice", new Blob([audio], { type: "audio/ogg" }), "alex.ogg");
+    await fetch(`${TG_API}/bot${token}/sendVoice`, { method: "POST", body: fd });
+  } else {
+    // ElevenLabs returns mp3 — Telegram Voice requires ogg/opus, so use sendAudio.
+    fd.append("audio", new Blob([audio], { type: "audio/mpeg" }), "alex.mp3");
+    fd.append("title", "Alex");
+    fd.append("performer", "MarketHub Pro");
+    await fetch(`${TG_API}/bot${token}/sendAudio`, { method: "POST", body: fd });
+  }
 }
 
 async function fetchBrainContext(): Promise<string> {
@@ -241,10 +233,10 @@ ${historyStr}`;
   // Send text reply
   await tgApi("sendMessage", { chat_id: chatId, text: reply });
 
-  // Send audio reply too
-  const audio = await openaiTts(reply);
-  if (audio) {
-    await sendVoice(chatId, audio);
+  // Send audio reply too (ElevenLabs if configured, else OpenAI fallback)
+  const tts = await synthesizeSpeech(reply);
+  if (tts) {
+    await sendVoiceOrAudio(chatId, tts.audio, tts.format);
   }
 
   // Log assistant turn
@@ -253,7 +245,7 @@ ${historyStr}`;
     role: "assistant",
     kind: "text",
     text: reply,
-    audio_reply_sent: Boolean(audio),
+    audio_reply_sent: Boolean(tts),
   });
 
   return NextResponse.json({ ok: true });
