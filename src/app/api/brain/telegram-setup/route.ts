@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
         url,
         secret_token: webhookSecret,
         allowed_updates: ["message"],
-        drop_pending_updates: true,
+        drop_pending_updates: false,
       }),
     });
     return NextResponse.json({ action, tg_response: await r.json() });
