@@ -13,7 +13,11 @@ export async function GET(req: NextRequest) {
   }
 
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/linkedin-post/callback`;
-  const scope = "openid profile email w_member_social";
+  // openid/profile/email: basic user info
+  // w_member_social: post to user's personal profile
+  // w_organization_social: post to company pages user manages (Community Management API)
+  // r_organization_admin: read page admin data + list managed pages
+  const scope = "openid profile email w_member_social w_organization_social r_organization_admin";
 
   const params = new URLSearchParams({
     response_type: "code",
