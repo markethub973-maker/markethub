@@ -166,6 +166,7 @@ const PUBLIC_PATHS = [
   "/api/webhooks",          // all webhook receivers do their own HMAC auth
   "/api/telegram",          // Telegram bot — verifies its own secret token header
   "/api/sentry-probe",      // Sentry health probe — cron-secret gated, not user-facing
+  "/api/brain/telegram-setup", // one-shot Telegram setup helper — cron-secret gated
   "/api/cron",              // cron routes verify CRON_SECRET themselves
   "/api/maint",             // maintenance agent routes verify CRON_SECRET themselves
   "/api/cockpit",           // cockpit routes self-authenticate (state/assistant via isAdminAuthorized cookie, watchdog/backup/daily-report/reactive-siem via Bearer CRON_SECRET)
@@ -347,7 +348,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/ask-agent") ||
       pathname.startsWith("/api/brain/boardroom") ||
       pathname.startsWith("/api/brain/tts") ||
-      pathname.startsWith("/api/brain/stt")
+      pathname.startsWith("/api/brain/stt") ||
+      pathname.startsWith("/api/brain/telegram-setup")
     ) {
       return NextResponse.next();
     }

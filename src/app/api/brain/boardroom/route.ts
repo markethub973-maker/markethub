@@ -91,12 +91,53 @@ export async function POST(req: NextRequest) {
 
   const synthesis = await generateText(synthesisSys, synthesisUser, { maxTokens: 600 });
 
+  // ── Alex "calls" Eduard on Telegram with text + voice ───────────────────
+  if (synthesis) {
+    void pushToTelegram(synthesis, body.question ?? "");
+  }
+
   return NextResponse.json({
     ok: true,
     question: body.question,
     contributions: valid,
     alex_synthesis: synthesis ?? "—",
   });
+}
+
+async function pushToTelegram(synthesis: string, question: string): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_ALLOWED_CHAT_ID;
+  const openaiKey = process.env.OPENAI_API_KEY;
+  if (!token || !chatId) return;
+  const TG = `https://api.telegram.org/bot${token}`;
+  const preview = synthesis.length > 500 ? synthesis.slice(0, 490) + "..." : synthesis;
+  const textMessage = `👔 *Alex te sună · decizie board*\n\n_Întrebare:_ ${question.slice(0, 200)}\n\n${preview}`;
+  try {
+    await fetch(`${TG}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: chatId, text: textMessage, parse_mode: "Markdown" }),
+    });
+  } catch {}
+  if (!openaiKey) return;
+  try {
+    const ttsRes = await fetch("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${openaiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "tts-1", voice: "onyx",
+        input: synthesis.slice(0, 4000),
+        response_format: "opus", speed: 1.05,
+      }),
+    });
+    if (!ttsRes.ok) return;
+    const audio = await ttsRes.arrayBuffer();
+    const fd = new FormData();
+    fd.append("chat_id", chatId);
+    fd.append("voice", new Blob([audio], { type: "audio/ogg" }), "alex.ogg");
+    fd.append("caption", "Alex · Recomandare board 👔");
+    await fetch(`${TG}/sendVoice`, { method: "POST", body: fd });
+  } catch {}
 }
 
 // Just reference so it's treated as used
