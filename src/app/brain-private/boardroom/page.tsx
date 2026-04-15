@@ -182,6 +182,7 @@ export default function Boardroom() {
     const q = question.trim();
     if (!q) return;
     setError(null);
+    setQuestion(""); // clear input immediately on Enter
     setPhase({ active: "you", contributions: [], synthesis: null, asking: true });
     try {
       const res = await fetch("/api/brain/boardroom", {
@@ -495,24 +496,53 @@ export default function Boardroom() {
         })}
       </div>
 
-      {/* Synthesis panel (bottom) */}
+      {/* Synthesis panel — floating modal, doesn't push layout.
+          Scrollable internal, closable so user can return to the table. */}
       {phase.synthesis && (
         <div
-          className="mx-auto p-5 rounded-2xl relative z-20 mt-4"
-          style={{
-            maxWidth: 720,
-            background: "linear-gradient(135deg, rgba(42,31,15,0.95) 0%, rgba(26,26,36,0.95) 100%)",
-            border: "1px solid rgba(245,158,11,0.4)",
-            boxShadow: "0 20px 60px rgba(245,158,11,0.2)",
-          }}
+          className="fixed inset-0 z-40 flex items-end justify-center pointer-events-none"
+          style={{ padding: "0 16px 100px" }}
         >
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-2xl">👔</span>
-            <p className="text-sm font-bold">Alex sintetizează pentru tine</p>
+          <div
+            className="relative w-full rounded-2xl shadow-2xl pointer-events-auto"
+            style={{
+              maxWidth: 720,
+              maxHeight: "55vh",
+              background: "linear-gradient(135deg, rgba(42,31,15,0.98) 0%, rgba(26,26,36,0.98) 100%)",
+              border: "1px solid rgba(245,158,11,0.4)",
+              boxShadow: "0 30px 80px rgba(0,0,0,0.6), 0 0 40px rgba(245,158,11,0.15)",
+              backdropFilter: "blur(16px)",
+              animation: "brainFadeIn 0.4s ease-out",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div className="flex items-center gap-2 p-4 sticky top-0" style={{
+              borderBottom: "1px solid rgba(245,158,11,0.15)",
+              background: "linear-gradient(180deg, rgba(42,31,15,1), rgba(42,31,15,0.8))",
+              borderRadius: "16px 16px 0 0",
+            }}>
+              <span className="text-xl">👔</span>
+              <p className="text-sm font-bold flex-1">Alex te contactează · raport final</p>
+              <button
+                type="button"
+                onClick={() => setPhase((p) => ({ ...p, synthesis: null }))}
+                className="text-xs px-2 py-1 rounded-md"
+                style={{
+                  backgroundColor: "rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  color: "#bbb",
+                }}
+              >
+                ✕ Închide
+              </button>
+            </div>
+            <div className="overflow-y-auto p-5">
+              <p className="text-sm whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.6 }}>
+                {phase.synthesis}
+              </p>
+            </div>
           </div>
-          <p className="text-sm whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.6 }}>
-            {phase.synthesis}
-          </p>
         </div>
       )}
 
