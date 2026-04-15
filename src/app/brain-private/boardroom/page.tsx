@@ -594,29 +594,8 @@ export default function Boardroom() {
         })}
       </div>
 
-      {/* When Alex synthesizes — small flash toast top-center that fades,
-          signaling "Alex decided — read on the left". The full text lives
-          in the left transcript panel, not blocking the table view. */}
-      {phase.synthesis && (
-        <div
-          className="fixed z-40 pointer-events-none"
-          style={{ top: 76, left: "50%", transform: "translateX(-50%)", animation: "brainFadeIn 0.4s" }}
-        >
-          <div
-            className="flex items-center gap-2 px-4 py-2 rounded-full shadow-xl"
-            style={{
-              background: "linear-gradient(135deg, #F59E0B, #D97706)",
-              color: "black",
-              boxShadow: "0 8px 24px rgba(245,158,11,0.5)",
-              fontSize: 13,
-              fontWeight: 700,
-            }}
-          >
-            <span>👔</span>
-            Alex te contactează — vezi raportul stânga
-          </div>
-        </div>
-      )}
+      {/* Alex synthesis notification — header status already announces it.
+          Removed the floating pill that covered the agents around the table. */}
 
       {/* Alex hero + 9 directors grid — flush to input */}
       <div
