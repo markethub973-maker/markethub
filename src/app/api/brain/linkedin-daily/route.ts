@@ -80,10 +80,27 @@ async function generateDailyPost(): Promise<{ text: string; pillar: Pillar } | n
   return { text: cleaned, pillar };
 }
 
+// Vercel Cron calls with GET + Authorization: Bearer ${CRON_SECRET}
+// n8n calls with POST + x-brain-cron-secret header
+// Both work — same logic.
+export async function GET(req: NextRequest) {
+  const bearer = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+  const cronOk = bearer && bearer === process.env.CRON_SECRET;
+  const brainOk = req.headers.get("x-brain-cron-secret") === process.env.BRAIN_CRON_SECRET;
+  if (!cronOk && !brainOk) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  return await runLinkedInDaily(req);
+}
+
 export async function POST(req: NextRequest) {
   if (req.headers.get("x-brain-cron-secret") !== process.env.BRAIN_CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  return await runLinkedInDaily(req);
+}
+
+async function runLinkedInDaily(req: NextRequest) {
   if (!OPERATOR_USER_ID) {
     return NextResponse.json({ error: "BRAIN_OPERATOR_USER_ID not set" }, { status: 500 });
   }
