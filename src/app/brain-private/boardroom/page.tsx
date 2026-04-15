@@ -54,10 +54,18 @@ const AMBIENT_FEED = [
   { agent: "sales",      msg: "Pregătesc ofertă customizată" },
 ];
 
+// Default kickoff question — autonomous debate topic based on what we built
+// last night. When the user opens the boardroom fresh, the team auto-starts
+// a working session about it; Alex synthesizes and "calls" the user at the end.
+const AUTO_KICKOFF_QUESTION = `Ieri seară am lansat împreună AI Marketing Accelerator (€499 RO / €1000 Global pe get.markethubpromo.com), am pregătit 20 domenii target, outreach engine e live, Alex poate trimite batch-uri cu dual-agent review. Suntem la 0 clienți, 0 MRR, target €3000 MRR în 60 zile.
+
+Care este PRIMUL lucru concret pe care trebuie să-l facem azi dimineață ca să închidem primul client în 72 de ore? Fiecare spuneți din unghiul vostru.`;
+
 export default function Boardroom() {
   const [question, setQuestion] = useState("");
   const [phase, setPhase] = useState<Phase>({ active: null, contributions: [], synthesis: null, asking: false });
   const [error, setError] = useState<string | null>(null);
+  const [autoStarted, setAutoStarted] = useState(false);
   const [ambientAgent, setAmbientAgent] = useState<string | null>(null);
   const [ambientMsg, setAmbientMsg] = useState<string>("");
   const [whisper, setWhisper] = useState<{ from: string; to: string } | null>(null);
@@ -69,6 +77,50 @@ export default function Boardroom() {
   const timersRef = useRef<NodeJS.Timeout[]>([]);
 
   useEffect(() => () => timersRef.current.forEach((t) => clearTimeout(t)), []);
+
+  // AUTONOMOUS SESSION — run once on page load. Board debates the kickoff
+  // question on its own, Alex delivers the call-to-operator at the end.
+  useEffect(() => {
+    if (autoStarted) return;
+    setAutoStarted(true);
+    // Small delay so user sees the calm room first (ambient activity),
+    // then the discussion starts naturally — like entering a meeting
+    // already in progress.
+    const t = setTimeout(() => {
+      setQuestion(AUTO_KICKOFF_QUESTION);
+      void askAutoQuestion(AUTO_KICKOFF_QUESTION);
+    }, 3500);
+    timersRef.current.push(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const askAutoQuestion = async (q: string) => {
+    setError(null);
+    setPhase({ active: "you", contributions: [], synthesis: null, asking: true });
+    try {
+      const res = await fetch("/api/brain/boardroom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error ?? "Eroare");
+      const contribs: Contribution[] = d.contributions ?? [];
+      contribs.forEach((c, i) => {
+        const t = setTimeout(() => {
+          setPhase((p) => ({ ...p, active: c.agent_id, contributions: [...p.contributions, c] }));
+        }, i * 2800);
+        timersRef.current.push(t);
+      });
+      const finalT = setTimeout(() => {
+        setPhase((p) => ({ ...p, active: "alex", synthesis: d.alex_synthesis, asking: false }));
+      }, contribs.length * 2800 + 600);
+      timersRef.current.push(finalT);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Eroare");
+      setPhase({ active: null, contributions: [], synthesis: null, asking: false });
+    }
+  };
 
   // Autonomous life: random agent "pulse" every 5-9 seconds — makes board feel alive
   useEffect(() => {
@@ -163,10 +215,10 @@ export default function Boardroom() {
     }
   };
 
-  // Oval geometry — cx, cy center, rx horizontal radius, ry vertical radius
-  const tableCx = 50; const tableCy = 50; const tableRx = 38; const tableRy = 32;
-  // Seats on a slightly larger oval so they appear around the table
-  const seatRx = 46; const seatRy = 42;
+  // Oval geometry — smaller table, tighter seats, perspective tilt applied below.
+  const tableCx = 50; const tableCy = 55; const tableRx = 28; const tableRy = 22;
+  // Seats hug the table closer
+  const seatRx = 34; const seatRy = 29;
 
   const seatPos = (angle: number) => ({
     left: `${tableCx + seatRx * Math.cos((angle * Math.PI) / 180)}%`,
@@ -190,42 +242,118 @@ export default function Boardroom() {
           style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", color: "#bbb" }}>
           <ArrowLeft className="w-3 h-3" /> Înapoi
         </Link>
-        <div>
+        <div className="flex-1">
           <p className="text-sm font-bold">🏛️ Boardroom Live · Ședință executivă</p>
           <p className="text-xs" style={{ color: "#888" }}>
-            Pune o întrebare · directorii dezbat · Alex sintetizează
+            {phase.asking
+              ? "Ședință în desfășurare · echipa dezbate..."
+              : phase.synthesis
+              ? "Alex a închis ședința · ai primit raportul"
+              : autoStarted
+              ? "Pregătesc ședința de dimineață..."
+              : "Ai intrat în ședință"}
           </p>
         </div>
+        {phase.asking && (
+          <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md"
+            style={{ backgroundColor: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", color: "#F59E0B" }}>
+            <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 1.5s infinite" }} />
+            LIVE
+          </div>
+        )}
       </header>
 
-      {/* Table + seats arena */}
-      <div className="relative mx-auto" style={{ width: "min(100vw, 1100px)", height: "min(70vh, 640px)" }}>
-        {/* Oval table */}
-        <div
-          className="absolute"
-          style={{
-            left: `${tableCx - tableRx}%`,
-            top: `${tableCy - tableRy}%`,
-            width: `${tableRx * 2}%`,
-            height: `${tableRy * 2}%`,
+      {/* Room arena — spot light + walls + tilted table */}
+      <div className="relative mx-auto" style={{ width: "min(100vw, 1100px)", height: "min(70vh, 600px)", perspective: "1400px" }}>
+        {/* Back wall with subtle wallpaper texture */}
+        <div className="absolute inset-0" style={{
+          background: "linear-gradient(180deg, rgba(30,25,20,0.6) 0%, transparent 40%), repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 12px)",
+          pointerEvents: "none",
+        }} />
+        {/* Wall screen projecting current topic */}
+        <div className="absolute" style={{
+          left: "32%", top: "4%", width: "36%", height: "18%",
+          background: "linear-gradient(180deg, #0D1117 0%, #161B22 100%)",
+          border: "3px solid #2a2a2a",
+          borderRadius: "6px",
+          boxShadow: "0 0 40px rgba(88,166,255,0.15), inset 0 0 30px rgba(88,166,255,0.08)",
+          padding: "10px 14px",
+          overflow: "hidden",
+          fontSize: "11px",
+          color: "#c9d1d9",
+          lineHeight: 1.4,
+        }}>
+          <div style={{ fontSize: "9px", color: "#F59E0B", fontWeight: 700, marginBottom: 4, letterSpacing: "0.15em" }}>
+            AGENDA · BOARD MEETING
+          </div>
+          <div style={{ fontSize: "10px", color: "#8b949e", maxHeight: "70%", overflow: "hidden" }}>
+            {phase.synthesis
+              ? "✓ Decizia luată · Alex pregătește raportul"
+              : phase.asking
+              ? "▸ În dezbatere: primul client în 72h"
+              : question || "Ședință · ofertă €499/€1000 lansată · target €3K MRR"}
+          </div>
+        </div>
+        {/* Wall mini indicator lights */}
+        <div className="absolute flex gap-2" style={{ left: "8%", top: "6%" }}>
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 2s infinite" }} />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 2.5s infinite" }} />
+          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#3B82F6", animation: "brainBreath 3s infinite" }} />
+        </div>
+
+        {/* Table group — tilted for 3/4 perspective */}
+        <div className="absolute inset-0" style={{ transform: "rotateX(15deg) translateY(20px)", transformStyle: "preserve-3d" }}>
+          {/* Soft spot light on table */}
+          <div className="absolute" style={{
+            left: `${tableCx - tableRx - 8}%`,
+            top: `${tableCy - tableRy - 8}%`,
+            width: `${(tableRx + 8) * 2}%`,
+            height: `${(tableRy + 8) * 2}%`,
             borderRadius: "50%",
-            background:
-              "radial-gradient(ellipse at 30% 30%, rgba(245,158,11,0.08), rgba(139,69,19,0.25) 60%, rgba(60,30,10,0.55) 100%)",
-            border: "1px solid rgba(245,158,11,0.25)",
-            boxShadow:
-              "inset 0 0 80px rgba(0,0,0,0.5), 0 20px 80px rgba(245,158,11,0.1), 0 0 0 2px rgba(255,255,255,0.03)",
-            backdropFilter: "blur(10px)",
-          }}
-        />
-        {/* Table label */}
-        <div
-          className="absolute text-center"
-          style={{
-            left: "50%", top: "50%", transform: "translate(-50%, -50%)",
-            color: "rgba(245,158,11,0.25)", fontSize: "1.1rem", fontWeight: 700, letterSpacing: "0.2em",
-          }}
-        >
-          MARKETHUB PRO
+            background: "radial-gradient(ellipse at center, rgba(245,158,11,0.18), transparent 60%)",
+            pointerEvents: "none",
+          }} />
+
+          {/* Oval table with realistic wood */}
+          <div
+            className="absolute"
+            style={{
+              left: `${tableCx - tableRx}%`,
+              top: `${tableCy - tableRy}%`,
+              width: `${tableRx * 2}%`,
+              height: `${tableRy * 2}%`,
+              borderRadius: "50%",
+              background: `
+                radial-gradient(ellipse at 30% 25%, rgba(245,158,11,0.12), transparent 55%),
+                repeating-linear-gradient(88deg, rgba(101,67,33,0.9) 0 2px, rgba(120,80,40,0.85) 2px 5px, rgba(85,55,25,0.88) 5px 9px),
+                linear-gradient(180deg, rgba(92,55,25,1), rgba(60,35,15,1))
+              `,
+              border: "1px solid rgba(139,90,43,0.6)",
+              boxShadow:
+                "inset 0 -10px 40px rgba(0,0,0,0.6), inset 0 4px 20px rgba(245,158,11,0.06), 0 30px 60px rgba(0,0,0,0.5), 0 0 0 3px rgba(50,30,15,0.8)",
+            }}
+          />
+          {/* Brass inlay */}
+          <div className="absolute" style={{
+            left: `${tableCx - tableRx + 3}%`,
+            top: `${tableCy - tableRy + 3}%`,
+            width: `${(tableRx - 3) * 2}%`,
+            height: `${(tableRy - 3) * 2}%`,
+            borderRadius: "50%",
+            border: "1px solid rgba(245,158,11,0.15)",
+            pointerEvents: "none",
+          }} />
+          {/* Table label */}
+          <div
+            className="absolute text-center"
+            style={{
+              left: "50%", top: "50%", transform: "translate(-50%, -50%)",
+              color: "rgba(245,215,160,0.18)", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.3em",
+              pointerEvents: "none",
+            }}
+          >
+            MARKETHUB PRO
+          </div>
         </div>
 
         {/* Whisper line between two agents */}
@@ -312,7 +440,26 @@ export default function Boardroom() {
                   <span className="absolute -top-1 -right-1 text-xs">👑</span>
                 )}
               </div>
-              <p className="text-xs font-bold text-center mt-1">{s.name}</p>
+              {/* Laptop in front of seat */}
+              <div
+                className="absolute mx-auto"
+                style={{
+                  width: 28, height: 18, top: 58, left: "50%", transform: "translateX(-50%)",
+                  background: "linear-gradient(180deg, #1a1a24 0%, #0a0a10 100%)",
+                  border: "1px solid rgba(120,120,140,0.35)",
+                  borderRadius: "2px",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
+              >
+                <div className="w-full h-full" style={{
+                  background: isActive || isAmbient
+                    ? "linear-gradient(180deg, rgba(88,166,255,0.55), rgba(88,166,255,0.15))"
+                    : "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))",
+                  borderRadius: "1px",
+                }} />
+              </div>
+              <p className="text-xs font-bold text-center" style={{ marginTop: 56 }}>{s.name}</p>
               <p className="text-[10px] text-center" style={{ color: "#888" }}>{s.title}</p>
 
               {/* Speech bubble */}
