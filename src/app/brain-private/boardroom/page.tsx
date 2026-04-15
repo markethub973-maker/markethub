@@ -361,8 +361,8 @@ export default function Boardroom() {
         )}
       </header>
 
-      {/* Room arena — smaller to leave room for the 2×5 agent grid below */}
-      <div className="relative mx-auto" style={{ width: "min(100vw, 900px)", height: "min(40vh, 340px)", perspective: "1400px" }}>
+      {/* Room arena — DOUBLE width so agents around the table are clearly separated */}
+      <div className="relative mx-auto" style={{ width: "min(98vw, 1600px)", height: "min(44vh, 380px)", perspective: "1400px" }}>
         {/* Back wall with subtle wallpaper texture */}
         <div className="absolute inset-0" style={{
           background: "linear-gradient(180deg, rgba(30,25,20,0.6) 0%, transparent 40%), repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 12px)",
