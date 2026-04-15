@@ -563,23 +563,37 @@ export default function Boardroom() {
               {/* Status dot — always on, breathing */}
               <span className="absolute bottom-2 right-0 w-2.5 h-2.5 rounded-full"
                 style={{
-                  backgroundColor: isActive ? "#F59E0B" : isAmbient ? "#10B981" : "#3B82F6",
-                  boxShadow: `0 0 8px ${isActive ? "#F59E0B" : isAmbient ? "#10B981" : "#3B82F6"}`,
+                  backgroundColor: isYou && delegateActive ? "#8B5CF6" : isActive ? "#F59E0B" : isAmbient ? "#10B981" : "#3B82F6",
+                  boxShadow: `0 0 8px ${isYou && delegateActive ? "#8B5CF6" : isActive ? "#F59E0B" : isAmbient ? "#10B981" : "#3B82F6"}`,
                   animation: "brainBreath 3s ease-in-out infinite",
                 }}
               />
-              {/* Avatar circle — real photo for Eduard, icon for rest */}
+              {/* Avatar circle — real photo for Eduard, icon for rest.
+                  Eduard's seat flips to PURPLE when Delegate Mode is active
+                  so the whole team sees at a glance he's represented by AI. */}
               <div
                 className="w-14 h-14 rounded-full flex items-center justify-center text-2xl relative overflow-hidden"
                 style={{
                   backgroundColor: isAlex
                     ? "rgba(245,158,11,0.25)"
+                    : isYou && delegateActive
+                    ? "rgba(139,92,246,0.28)"
                     : isYou
                     ? "rgba(59,130,246,0.25)"
                     : "rgba(255,255,255,0.06)",
-                  border: `2px solid ${isAlex ? "#F59E0B" : isYou ? "#3B82F6" : "rgba(255,255,255,0.12)"}`,
+                  border: `2px solid ${
+                    isAlex
+                      ? "#F59E0B"
+                      : isYou && delegateActive
+                      ? "#8B5CF6"
+                      : isYou
+                      ? "#3B82F6"
+                      : "rgba(255,255,255,0.12)"
+                  }`,
                   boxShadow: isActive
-                    ? `0 0 24px ${isAlex ? "rgba(245,158,11,0.6)" : "rgba(59,130,246,0.5)"}`
+                    ? `0 0 24px ${isAlex ? "rgba(245,158,11,0.6)" : isYou && delegateActive ? "rgba(139,92,246,0.6)" : "rgba(59,130,246,0.5)"}`
+                    : isYou && delegateActive
+                    ? "0 0 18px rgba(139,92,246,0.5)"
                     : "0 4px 12px rgba(0,0,0,0.4)",
                   transition: "all 0.3s ease",
                   backgroundImage: isYou ? "url(/avatars/eduard.jpg)" : undefined,
@@ -590,6 +604,20 @@ export default function Boardroom() {
                 {!isYou && s.icon}
                 {isAlex && (
                   <span className="absolute -top-1 -right-1 text-xs">👑</span>
+                )}
+                {isYou && delegateActive && (
+                  <span
+                    className="absolute -top-1 -right-1 text-xs flex items-center justify-center rounded-full"
+                    style={{
+                      backgroundColor: "#8B5CF6",
+                      width: 18, height: 18,
+                      boxShadow: "0 0 10px rgba(139,92,246,0.8)",
+                      animation: "brainBreath 1.5s infinite",
+                    }}
+                    title="Delegate Mode activ — AI te reprezintă"
+                  >
+                    🛡️
+                  </span>
                 )}
               </div>
               {/* Laptop in front of seat */}
