@@ -129,3 +129,4 @@ Wed Apr 15 20:28:03 EEST 2026
 # Redeploy trigger 1776275517 - TELEGRAM_ALLOWED_CHAT_ID env refresh
 # ElevenLabs env refresh 1776277853
 # Final ElevenLabs activation 1776278301
+# CRON_SECRET rotation 1776278588
