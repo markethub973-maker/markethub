@@ -286,10 +286,11 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone();
     const hasAuth = request.cookies.get("brain_admin")?.value === "1";
 
-    // Public: login page + login/logout API
+    // Public: login page + login/logout API — use rewrite so the internal
+    // page renders while the browser still sees /login on the subdomain.
     if (pathname === "/login" || pathname === "/brain-login") {
       url.pathname = "/brain-login";
-      return NextResponse.next({ request });
+      return NextResponse.rewrite(url);
     }
     if (pathname.startsWith("/api/brain-admin/")) {
       return NextResponse.next();
