@@ -173,6 +173,8 @@ const PUBLIC_PATHS = [
   "/api/maint",             // maintenance agent routes verify CRON_SECRET themselves
   "/api/cockpit",           // cockpit routes self-authenticate (state/assistant via isAdminAuthorized cookie, watchdog/backup/daily-report/reactive-siem via Bearer CRON_SECRET)
   "/api/brain",             // brain routes self-authenticate (advisor: cron secret OR admin session; goals/generate-product-page: admin session)
+  "/api/security/health-check", // Security agent heartbeat — Bearer CRON_SECRET gated
+  "/api/cost-monitor",      // Cost & resource monitor — Bearer CRON_SECRET gated
   "/api/calendar/approval", // token-gated client approval flow (approval_token)
   "/api/webhooks/whatsapp", // Meta WhatsApp delivery callbacks (verify_token gated)
   "/api/subscription/check-trial",
