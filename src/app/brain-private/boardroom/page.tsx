@@ -9,7 +9,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowLeft, Send, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, Send, Loader2, Sparkles, Volume2, VolumeX, Mic, MicOff } from "lucide-react";
 
 interface Seat {
   id: string;
@@ -75,6 +75,92 @@ export default function Boardroom() {
     "08:58 · Ethan a calculat conversion rate: 2.3%",
   ]);
   const timersRef = useRef<NodeJS.Timeout[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [voiceOn, setVoiceOn] = useState(true);
+  const [recording, setRecording] = useState(false);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+
+  // Auto-play Alex's synthesis as soon as it arrives
+  useEffect(() => {
+    if (!phase.synthesis || !voiceOn) return;
+    (async () => {
+      try {
+        const res = await fetch("/api/brain/tts", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: phase.synthesis, voice: "onyx" }),
+        });
+        if (!res.ok) return;
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        if (audioRef.current) audioRef.current.pause();
+        const audio = new Audio(url);
+        audioRef.current = audio;
+        audio.play().catch(() => { /* autoplay blocked */ });
+      } catch { /* no-op */ }
+    })();
+  }, [phase.synthesis, voiceOn]);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream);
+      chunksRef.current = [];
+      mr.ondataavailable = (e) => { if (e.data.size) chunksRef.current.push(e.data); };
+      mr.onstop = async () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        stream.getTracks().forEach((t) => t.stop());
+        const fd = new FormData();
+        fd.append("audio", blob, "voice.webm");
+        const res = await fetch("/api/brain/stt", { method: "POST", body: fd });
+        const d = await res.json();
+        if (d.text) {
+          setQuestion(d.text);
+          // auto-send
+          setTimeout(() => {
+            if (!phase.asking && d.text) {
+              setQuestion("");
+              void askWithText(d.text);
+            }
+          }, 100);
+        }
+      };
+      mr.start();
+      recorderRef.current = mr;
+      setRecording(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Mic error");
+    }
+  };
+  const stopRecording = () => {
+    recorderRef.current?.stop();
+    setRecording(false);
+  };
+
+  const askWithText = async (q: string) => {
+    setError(null);
+    setPhase({ active: "you", contributions: [], synthesis: null, asking: true });
+    try {
+      const res = await fetch("/api/brain/boardroom", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q }),
+      });
+      const d = await res.json();
+      if (!res.ok) throw new Error(d.error ?? "Eroare");
+      const contribs: Contribution[] = d.contributions ?? [];
+      contribs.forEach((c, i) => {
+        const t = setTimeout(() => setPhase((p) => ({ ...p, active: c.agent_id, contributions: [...p.contributions, c] })), i * 2800);
+        timersRef.current.push(t);
+      });
+      const finalT = setTimeout(() => setPhase((p) => ({ ...p, active: "alex", synthesis: d.alex_synthesis, asking: false })), contribs.length * 2800 + 600);
+      timersRef.current.push(finalT);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Eroare");
+      setPhase({ active: null, contributions: [], synthesis: null, asking: false });
+    }
+  };
 
   useEffect(() => () => timersRef.current.forEach((t) => clearTimeout(t)), []);
 
