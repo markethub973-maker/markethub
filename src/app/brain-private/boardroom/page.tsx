@@ -34,7 +34,7 @@ const SEATS: Seat[] = [
   { id: "finance",    name: "Dara",   title: "CFO",                  icon: "💰", angle: 250, kind: "agent" },
 ];
 
-interface Contribution { agent_id: string; agent_name: string; text: string; sessionId?: string; }
+interface Contribution { agent_id: string; agent_name: string; text: string; sessionId?: string; round?: 1 | 2; responds_to?: string | null; }
 interface Phase { active: string | null; contributions: Contribution[]; synthesis: string | null; asking: boolean; }
 
 // No fake ambient feed — removed. All displayed activity is real data from DB.
