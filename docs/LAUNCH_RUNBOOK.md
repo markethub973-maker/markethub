@@ -127,3 +127,4 @@ Target €1500-3000 în 2 săpt:
 # Tiny bump to force redeploy for env var refresh 1776272804
 Wed Apr 15 20:28:03 EEST 2026
 # Redeploy trigger 1776275517 - TELEGRAM_ALLOWED_CHAT_ID env refresh
+# ElevenLabs env refresh 1776277853
