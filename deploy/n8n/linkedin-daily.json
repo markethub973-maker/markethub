@@ -1,0 +1,47 @@
+{
+  "id": "linkedin-daily",
+  "name": "LinkedIn Daily Post (Alex autonomous)",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "0 9 * * 1,2,4,5" }
+          ]
+        }
+      },
+      "id": "ld111111-1111-1111-1111-111111111111",
+      "name": "Mon/Tue/Thu/Fri 09:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300],
+      "notes": "4x/week per LinkedIn 2026 best practice. Skip Wed + weekends (lower B2B reach)."
+    },
+    {
+      "parameters": {
+        "url": "https://markethubpromo.com/api/brain/linkedin-daily",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-brain-cron-secret", "value": "2fef0adf66e4db8ae73d513c501444e9cadd7d9f56877c4fc65e860b4f220046" }
+          ]
+        },
+        "sendBody": false,
+        "method": "POST",
+        "options": { "timeout": 60000 }
+      },
+      "id": "ld222222-2222-2222-2222-222222222222",
+      "name": "Publish LinkedIn post",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "Mon/Tue/Thu/Fri 09:00": {
+      "main": [[{ "node": "Publish LinkedIn post", "type": "main", "index": 0 }]]
+    }
+  },
+  "settings": { "executionOrder": "v1" }
+}
