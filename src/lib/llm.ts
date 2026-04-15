@@ -12,7 +12,9 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 
-const CLAUDE_MODEL = "claude-haiku-4-5-20251001";
+// Sonnet 4.6 = dramatically better strategic reasoning than Haiku, still ~5x
+// cheaper than Opus. Sweet-spot for Alex's boardroom synthesis.
+const CLAUDE_MODEL = "claude-sonnet-4-6";
 const OPENAI_MODEL = "gpt-5-nano";
 
 interface GenerateOpts {
