@@ -15,6 +15,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateText } from "@/lib/llm";
 import { ALEX_KNOWLEDGE_BRIEF, ALEX_AGENTS, agentById } from "@/lib/alex-knowledge";
+import {
+  getActiveDelegate,
+  generateProxyResponse,
+  logProxyDecision,
+  notifyTelegramDelegate,
+} from "@/lib/delegate-proxy";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -95,8 +101,22 @@ Language: Romanian, warm, partner-to-partner. 150-200 words. No bullet point lis
 
   const synthesis = await generateText(synthesisSys, synthesisUser, { maxTokens: 600 });
 
-  // ── Alex "calls" Eduard on Telegram with text + voice ───────────────────
+  // ── Delegate Mode — if Eduard is AFK, generate his proxy response ───────
+  let proxyResponse: string | null = null;
   if (synthesis) {
+    const session = await getActiveDelegate();
+    if (session) {
+      proxyResponse = await generateProxyResponse(session, synthesis, body.question ?? "");
+      if (proxyResponse) {
+        await logProxyDecision(session.id, body.question ?? "", synthesis, proxyResponse);
+        await notifyTelegramDelegate(proxyResponse, synthesis);
+      }
+    }
+  }
+
+  // ── Alex "calls" Eduard on Telegram with text + voice ───────────────────
+  if (synthesis && !proxyResponse) {
+    // Only direct Telegram if NOT in delegate mode (proxy already notified)
     void pushToTelegram(synthesis, body.question ?? "");
   }
 
@@ -105,6 +125,8 @@ Language: Romanian, warm, partner-to-partner. 150-200 words. No bullet point lis
     question: body.question,
     contributions: valid,
     alex_synthesis: synthesis ?? "—",
+    delegate_proxy_response: proxyResponse,
+    delegate_active: Boolean(proxyResponse),
   });
 }
 
