@@ -216,10 +216,10 @@ export default function Boardroom() {
     }
   };
 
-  // Oval geometry — smaller table, tighter seats, perspective tilt applied below.
-  const tableCx = 50; const tableCy = 55; const tableRx = 28; const tableRy = 22;
+  // Oval geometry — even smaller table for a cleaner room feel
+  const tableCx = 50; const tableCy = 52; const tableRx = 20; const tableRy = 16;
   // Seats hug the table closer
-  const seatRx = 34; const seatRy = 29;
+  const seatRx = 27; const seatRy = 23;
 
   const seatPos = (angle: number) => ({
     left: `${tableCx + seatRx * Math.cos((angle * Math.PI) / 180)}%`,
@@ -520,9 +520,60 @@ export default function Boardroom() {
         </div>
       )}
 
+      {/* Horizontal transcript strip — stuck above the input, full width */}
+      {(phase.contributions.length > 0 || phase.synthesis) && (
+        <div
+          className="sticky z-30 mt-4 mx-auto px-4"
+          style={{ bottom: 88, maxWidth: 1200 }}
+        >
+          <div
+            className="p-3 rounded-xl flex gap-3 overflow-x-auto"
+            style={{
+              backgroundColor: "rgba(10,10,16,0.94)",
+              border: "1px solid rgba(245,158,11,0.25)",
+              backdropFilter: "blur(12px)",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+            }}
+          >
+            {phase.synthesis && (
+              <div
+                className="flex-shrink-0 p-3 rounded-lg"
+                style={{
+                  width: 340,
+                  background: "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.04))",
+                  border: "1px solid rgba(245,158,11,0.45)",
+                }}
+              >
+                <p className="font-bold text-xs mb-1.5 flex items-center gap-1" style={{ color: "#F59E0B" }}>
+                  👔 Alex · Recomandare finală
+                </p>
+                <p className="text-[11px] whitespace-pre-wrap max-h-32 overflow-y-auto" style={{ color: "#eee", lineHeight: 1.5 }}>
+                  {phase.synthesis}
+                </p>
+              </div>
+            )}
+            {phase.contributions.map((c, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 p-2.5 rounded-lg"
+                style={{
+                  width: 220,
+                  backgroundColor: "rgba(26,26,36,0.9)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                }}
+              >
+                <p className="font-bold text-[11px] mb-1" style={{ color: "#F59E0B" }}>{c.agent_name}</p>
+                <p className="text-[10px] max-h-24 overflow-y-auto" style={{ color: "#ccc", lineHeight: 1.45 }}>{c.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Input (sticky bottom) */}
-      <div
-        className="sticky bottom-0 mt-6 p-4 z-30"
+      <form
+        onSubmit={(e) => { e.preventDefault(); if (!phase.asking) { ask(); } }}
+        className="sticky bottom-0 mt-4 p-4 z-30"
         style={{
           background: "linear-gradient(180deg, transparent, rgba(10,10,16,0.95))",
           borderTop: "1px solid rgba(255,255,255,0.06)",
@@ -532,7 +583,6 @@ export default function Boardroom() {
           <input
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !phase.asking) { ask(); } }}
             placeholder="Pune o întrebare boardului... (ex: Cum abordez primul client pe piața din Cluj?)"
             disabled={phase.asking}
             className="flex-1 rounded-lg px-4 py-3 text-sm"
@@ -541,7 +591,7 @@ export default function Boardroom() {
             }}
           />
           <button
-            type="button" onClick={ask} disabled={phase.asking || !question}
+            type="submit" disabled={phase.asking || !question}
             className="px-5 py-3 rounded-lg font-bold inline-flex items-center gap-2 disabled:opacity-50"
             style={{ backgroundColor: "#F59E0B", color: "black" }}
           >
@@ -549,7 +599,7 @@ export default function Boardroom() {
           </button>
         </div>
         {error && <p className="text-xs text-center mt-2" style={{ color: "#F87171" }}>{error}</p>}
-      </div>
+      </form>
 
       <style jsx global>{`
         @keyframes brainPulse {
@@ -577,42 +627,7 @@ export default function Boardroom() {
         }
       `}</style>
 
-      {/* Transcript panel — left side, shows everyone who spoke + Alex's final recommendation */}
-      {(phase.contributions.length > 0 || phase.synthesis) && (
-        <div className="fixed left-4 top-24 w-72 p-3 rounded-xl hidden lg:block z-20 max-h-[75vh] overflow-y-auto"
-          style={{
-            backgroundColor: "rgba(10,10,16,0.92)",
-            border: "1px solid rgba(245,158,11,0.2)",
-            backdropFilter: "blur(12px)",
-          }}>
-          <p className="text-[10px] uppercase tracking-wider font-bold mb-3 flex items-center gap-1" style={{ color: "#F59E0B" }}>
-            <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 2s infinite" }} />
-            Transcript ședință
-          </p>
-          <div className="space-y-2.5">
-            {phase.contributions.map((c, i) => (
-              <div key={i} className="text-[11px]" style={{ lineHeight: 1.5 }}>
-                <p className="font-bold" style={{ color: "#F59E0B" }}>{c.agent_name}</p>
-                <p style={{ color: "#ccc" }}>{c.text}</p>
-              </div>
-            ))}
-            {phase.synthesis && (
-              <div className="mt-4 pt-3 rounded-lg p-3" style={{
-                borderTop: "1px solid rgba(245,158,11,0.3)",
-                background: "linear-gradient(135deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02))",
-                border: "1px solid rgba(245,158,11,0.3)",
-              }}>
-                <p className="font-bold text-xs mb-2 flex items-center gap-1" style={{ color: "#F59E0B" }}>
-                  👔 Alex · Recomandare finală
-                </p>
-                <p className="text-[11px] whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.5 }}>
-                  {phase.synthesis}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Transcript panel REMOVED — now lives in the horizontal strip below, see after the input */}
 
       {/* Live activity feed — fixed right side */}
       <div className="fixed right-4 top-24 w-64 p-3 rounded-xl hidden lg:block z-20"
