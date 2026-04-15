@@ -112,6 +112,34 @@ export async function GET(req: NextRequest) {
     const from = headerOf(msg, "From") ?? "";
     const subject = headerOf(msg, "Subject") ?? "";
     const body = extractBody(msg).slice(0, 500);
+
+    // Reply detector — before classifying as ops incident, check if this is
+    // a prospect replying to one of Alex's outreach emails. If yes, mark the
+    // outreach row as REPLIED so the follow-up cron stops chasing them.
+    const cleanFrom = from.replace(/^.*<(.+)>.*$/, "$1").toLowerCase().trim();
+    if (cleanFrom && cleanFrom.includes("@") && !cleanFrom.includes("markethubpromo.com")) {
+      const { data: outreach } = await svc
+        .from("outreach_log")
+        .select("id,domain,email,subject")
+        .eq("email", cleanFrom)
+        .is("replied_at", null)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      if (outreach && outreach.length) {
+        const row = outreach[0];
+        await svc
+          .from("outreach_log")
+          .update({ replied_at: new Date().toISOString() })
+          .eq("id", row.id);
+        await notifyTelegram(
+          `✨ *REPLY · ${row.domain}*\n\nFrom: ${cleanFrom}\nSubject: ${subject.slice(0, 120)}\n\n${body.slice(0, 240)}\n\n👉 [Open pipeline](https://brain.markethubpromo.com/pipeline) · [Generate demo](https://brain.markethubpromo.com/demo)`,
+        );
+        await markAsRead(OPERATOR_EMAIL, id);
+        stats.processed = stats.processed; // (unchanged; counted above)
+        continue;
+      }
+    }
+
     const cls = classify(from, subject);
 
     if (cls.ignore) { stats.ignored++; continue; }
