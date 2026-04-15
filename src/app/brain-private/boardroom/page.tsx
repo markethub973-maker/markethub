@@ -623,41 +623,59 @@ export default function Boardroom() {
         className="mx-auto px-4 mt-4"
         style={{ maxWidth: "100%", marginBottom: 96 }}
       >
-        {/* Alex synthesis panel — capped height with internal scroll so it
-            never pushes the grid below the viewport */}
-        {phase.synthesis && (
-          <div
-            className="rounded-xl p-3 mb-3 flex gap-3"
-            style={{
-              background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
-              border: "1px solid rgba(245,158,11,0.45)",
-              boxShadow: "0 10px 30px rgba(245,158,11,0.1)",
-              maxHeight: 110,
-            }}
-          >
-            <p className="font-bold text-xs flex items-center gap-1 flex-shrink-0 whitespace-nowrap self-start" style={{ color: "#F59E0B", minWidth: 160 }}>
-              👔 Alex · Recomandare
-            </p>
-            <div className="overflow-y-auto flex-1" style={{ maxHeight: 90 }}>
-              <p className="text-xs whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.55 }}>
-                {phase.synthesis}
-              </p>
+        {/* Alex — full-width hero panel. Always visible, scrollable inside. */}
+        {(() => {
+          const alexSeat = SEATS.find((s) => s.id === "alex");
+          const isActive = phase.active === "alex";
+          return (
+            <div
+              className="rounded-xl p-4 mb-3"
+              style={{
+                background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
+                border: `1px solid ${isActive ? "rgba(245,158,11,0.65)" : "rgba(245,158,11,0.3)"}`,
+                boxShadow: isActive ? "0 0 30px rgba(245,158,11,0.25)" : "0 6px 20px rgba(0,0,0,0.3)",
+                minHeight: 110,
+                maxHeight: 170,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <div className="flex items-center gap-2 mb-2 flex-shrink-0">
+                <span className="text-xl">{alexSeat?.icon ?? "👔"}</span>
+                <div className="flex-1">
+                  <p className="font-bold text-sm flex items-center gap-2" style={{ color: "#F59E0B" }}>
+                    Alex · CEO
+                    {isActive && <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 1.5s infinite" }} />}
+                  </p>
+                  <p className="text-[10px]" style={{ color: "#b88a3a" }}>
+                    {phase.synthesis ? "Recomandare finală" : phase.asking ? "Ascultă echipa, pregătește sinteza..." : "Așteaptă întrebarea ta"}
+                  </p>
+                </div>
+              </div>
+              <div className="overflow-y-auto flex-1 text-sm" style={{ color: "#eee", lineHeight: 1.6 }}>
+                {phase.synthesis ? (
+                  <p className="whitespace-pre-wrap">{phase.synthesis}</p>
+                ) : (
+                  <p style={{ color: "#888", fontStyle: "italic" }}>
+                    — Alex va sintetiza toate punctele de vedere ale directorilor după ce termină dezbaterea.
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
-        {/* 2 rows × 5 columns = 10 cells, one per team member.
-            Fixed positions — agents never jump around. */}
+        {/* 9 directors — 3×3 grid, each scrollable internally */}
         <div
           className="grid gap-2"
           style={{
-            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-            gridAutoRows: "minmax(110px, 150px)",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gridAutoRows: "minmax(130px, 180px)",
           }}
         >
-          {SEATS.filter((s) => s.kind !== "you").map((seat) => {
+          {SEATS.filter((s) => s.kind === "agent").map((seat) => {
             const latest = [...phase.contributions].reverse().find((c) => c.agent_id === seat.id);
-            const isAlex = seat.kind === "alex";
+            const isAlex = false;
             const isActive = phase.active === seat.id;
             return (
               <div
