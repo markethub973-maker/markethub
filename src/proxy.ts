@@ -193,6 +193,11 @@ const PUBLIC_PATHS = [
   "/promo",                 // public marketing landing page
   "/offer-ro",              // Romania-only DFY landing (€499) — shared in RO outreach
   "/offer-intl",            // International DFY landing (€1000) — shared in EU/UK/US outreach
+  "/offer-de",              // Germany/AT/CH DFY landing (€1500)
+  "/offer-fr",              // France/BE/CA DFY landing (€1200)
+  "/offer-it",              // Italy DFY landing (€900)
+  "/offer-es",              // Spain + LATAM DFY landing (€900)
+  "/offer-pt",              // Portugal + BR DFY landing (€700)
   "/offer/thanks",          // post-payment confirmation (shared by both tiers)
   "/api/offer",             // one-time Stripe checkout for the DFY offer
   "/help",                  // public help / support page

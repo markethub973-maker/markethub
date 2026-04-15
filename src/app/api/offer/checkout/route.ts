@@ -11,11 +11,16 @@ import { getStripe } from "@/lib/stripe";
 export const dynamic = "force-dynamic";
 export const maxDuration = 15;
 
-type Tier = "ro" | "global";
+type Tier = "ro" | "global" | "de" | "fr" | "it" | "es" | "pt";
 
 const TIERS: Record<Tier, { label: string; amount: number; currency: "eur" }> = {
-  ro:     { label: "AI Marketing Accelerator — Romania (Founding Client)",  amount: 49900,  currency: "eur" },
-  global: { label: "AI Marketing Accelerator — Global (Founding Client)",   amount: 100000, currency: "eur" },
+  ro:     { label: "AI Marketing Accelerator — Romania (Founding Client)",        amount: 49900,  currency: "eur" },
+  global: { label: "AI Marketing Accelerator — Global (Founding Client)",         amount: 100000, currency: "eur" },
+  de:     { label: "AI Marketing Accelerator — Deutschland (Gründerpreis)",        amount: 150000, currency: "eur" },
+  fr:     { label: "AI Marketing Accelerator — France (Client Fondateur)",        amount: 120000, currency: "eur" },
+  it:     { label: "AI Marketing Accelerator — Italia (Cliente Fondatore)",       amount: 90000,  currency: "eur" },
+  es:     { label: "AI Marketing Accelerator — España (Cliente Fundador)",        amount: 90000,  currency: "eur" },
+  pt:     { label: "AI Marketing Accelerator — Portugal (Cliente Fundador)",      amount: 70000,  currency: "eur" },
 };
 
 export async function POST(req: NextRequest) {
