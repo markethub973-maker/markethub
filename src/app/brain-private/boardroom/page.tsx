@@ -465,26 +465,29 @@ export default function Boardroom() {
               <p className="text-xs font-bold text-center" style={{ marginTop: 56 }}>{s.name}</p>
               <p className="text-[10px] text-center" style={{ color: "#888" }}>{s.title}</p>
 
-              {/* Speech bubble */}
-              {contrib && (
+              {/* Speech bubble — SHOW ONLY when THIS agent is currently active
+                  (one bubble at a time, prevents overlap). Full transcript
+                  lives in the side panel. */}
+              {isActive && contrib && (
                 <div
-                  className="absolute text-xs p-2 rounded-lg shadow-xl"
+                  className="absolute text-xs p-2.5 rounded-lg shadow-2xl"
                   style={{
-                    backgroundColor: "rgba(26,26,36,0.95)",
-                    border: "1px solid rgba(245,158,11,0.3)",
-                    color: "#ddd",
-                    width: 240,
+                    backgroundColor: "rgba(26,26,36,0.98)",
+                    border: "1px solid rgba(245,158,11,0.5)",
+                    color: "#eee",
+                    width: 220,
                     left: s.angle > 90 && s.angle < 270 ? "auto" : "100%",
                     right: s.angle > 90 && s.angle < 270 ? "100%" : "auto",
-                    [s.angle > 90 && s.angle < 270 ? "marginRight" : "marginLeft"]: 12,
-                    top: "-20%",
-                    backdropFilter: "blur(10px)",
-                    lineHeight: 1.45,
+                    [s.angle > 90 && s.angle < 270 ? "marginRight" : "marginLeft"]: 14,
+                    top: "-40%",
+                    backdropFilter: "blur(12px)",
+                    lineHeight: 1.5,
                     animation: "brainFadeIn 0.3s ease-out",
+                    zIndex: 30,
                   }}
                 >
-                  <p className="font-bold" style={{ color: "#F59E0B" }}>{contrib.agent_name}</p>
-                  <p className="mt-1">{contrib.text.slice(0, 280)}{contrib.text.length > 280 ? "..." : ""}</p>
+                  <p className="font-bold text-[11px]" style={{ color: "#F59E0B" }}>{contrib.agent_name} vorbește</p>
+                  <p className="mt-1.5 text-[11px]">{contrib.text.slice(0, 180)}{contrib.text.length > 180 ? "..." : ""}</p>
                 </div>
               )}
             </div>
@@ -569,6 +572,29 @@ export default function Boardroom() {
           100% { opacity: 0; stroke-dashoffset: 40; }
         }
       `}</style>
+
+      {/* Transcript panel — left side, shows everyone who spoke so far */}
+      {phase.contributions.length > 0 && (
+        <div className="fixed left-4 top-24 w-72 p-3 rounded-xl hidden lg:block z-20 max-h-[65vh] overflow-y-auto"
+          style={{
+            backgroundColor: "rgba(10,10,16,0.88)",
+            border: "1px solid rgba(245,158,11,0.2)",
+            backdropFilter: "blur(12px)",
+          }}>
+          <p className="text-[10px] uppercase tracking-wider font-bold mb-3 flex items-center gap-1" style={{ color: "#F59E0B" }}>
+            <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 2s infinite" }} />
+            Transcript ședință
+          </p>
+          <div className="space-y-2.5">
+            {phase.contributions.map((c, i) => (
+              <div key={i} className="text-[11px]" style={{ lineHeight: 1.5 }}>
+                <p className="font-bold" style={{ color: "#F59E0B" }}>{c.agent_name}</p>
+                <p style={{ color: "#ccc" }}>{c.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Live activity feed — fixed right side */}
       <div className="fixed right-4 top-24 w-64 p-3 rounded-xl hidden lg:block z-20"
