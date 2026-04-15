@@ -26,6 +26,9 @@ export async function GET(req: NextRequest) {
   if (action === "register-webhook") {
     const webhookSecret = process.env.TELEGRAM_WEBHOOK_SECRET ?? "alex-webhook-2026";
     const url = "https://markethubpromo.com/api/telegram/webhook";
+    // Force-delete first so Telegram accepts a new secret (setWebhook with
+    // same URL but different secret silently returns "already set").
+    await fetch(`${TG}/deleteWebhook`, { method: "POST" });
     const r = await fetch(`${TG}/setWebhook`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -36,7 +39,7 @@ export async function GET(req: NextRequest) {
         drop_pending_updates: false,
       }),
     });
-    return NextResponse.json({ action, tg_response: await r.json() });
+    return NextResponse.json({ action, tg_response: await r.json(), secret_len: webhookSecret.length });
   }
 
   if (action === "auto-setup") {
