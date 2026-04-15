@@ -361,8 +361,8 @@ export default function Boardroom() {
         )}
       </header>
 
-      {/* Room arena — spot light + walls + tilted table */}
-      <div className="relative mx-auto" style={{ width: "min(100vw, 1100px)", height: "min(70vh, 600px)", perspective: "1400px" }}>
+      {/* Room arena — smaller to leave room for the 2×5 agent grid below */}
+      <div className="relative mx-auto" style={{ width: "min(100vw, 900px)", height: "min(40vh, 340px)", perspective: "1400px" }}>
         {/* Back wall with subtle wallpaper texture */}
         <div className="absolute inset-0" style={{
           background: "linear-gradient(180deg, rgba(30,25,20,0.6) 0%, transparent 40%), repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 12px)",
@@ -617,69 +617,79 @@ export default function Boardroom() {
         </div>
       )}
 
-      {/* Horizontal transcript strip — ALWAYS rendered during/after a session
-          to keep layout stable (no jumping when new question starts) */}
-      {(phase.asking || phase.contributions.length > 0 || phase.synthesis) && (
-        <div
-          className="sticky z-30 mx-auto px-4"
-          style={{ bottom: 110, maxWidth: 1400, marginTop: -40, transition: "all 0.4s ease" }}
-        >
+      {/* 2×5 fixed agent grid — each agent has a permanent cell.
+          Their latest contribution shows inside; empty state = "—" */}
+      <div
+        className="mx-auto px-4 mt-4"
+        style={{ maxWidth: "100%", marginBottom: 96 }}
+      >
+        {/* Alex synthesis panel — full width, above the grid */}
+        {phase.synthesis && (
           <div
-            className="p-3 rounded-xl flex gap-3 overflow-x-auto"
+            className="rounded-xl p-4 mb-3"
             style={{
-              backgroundColor: "rgba(10,10,16,0.94)",
-              border: "1px solid rgba(245,158,11,0.25)",
-              backdropFilter: "blur(12px)",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-              minHeight: 140,
-              scrollBehavior: "smooth",
-              scrollbarWidth: "thin",
+              background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
+              border: "1px solid rgba(245,158,11,0.45)",
+              boxShadow: "0 10px 30px rgba(245,158,11,0.1)",
             }}
           >
-            {/* Empty-state placeholder when a new session just started */}
-            {phase.asking && phase.contributions.length === 0 && !phase.synthesis && (
-              <div className="flex items-center gap-3 px-4 flex-shrink-0" style={{ color: "#888" }}>
-                <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#F59E0B" }} />
-                <div>
-                  <p className="text-xs font-bold" style={{ color: "#F59E0B" }}>Board-ul dezbate...</p>
-                  <p className="text-[11px]">Directorii își pregătesc punctele de vedere</p>
+            <p className="font-bold text-sm mb-2 flex items-center gap-2" style={{ color: "#F59E0B" }}>
+              👔 Alex · Recomandare finală pentru tine
+            </p>
+            <p className="text-sm whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.6 }}>
+              {phase.synthesis}
+            </p>
+          </div>
+        )}
+
+        {/* 2 rows × 5 columns = 10 cells, one per team member.
+            Fixed positions — agents never jump around. */}
+        <div
+          className="grid gap-2"
+          style={{
+            gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
+            gridAutoRows: "minmax(140px, auto)",
+          }}
+        >
+          {SEATS.filter((s) => s.kind !== "you").map((seat) => {
+            const latest = [...phase.contributions].reverse().find((c) => c.agent_id === seat.id);
+            const isAlex = seat.kind === "alex";
+            const isActive = phase.active === seat.id;
+            return (
+              <div
+                key={seat.id}
+                className="rounded-xl p-3 flex flex-col"
+                style={{
+                  backgroundColor: isAlex ? "rgba(245,158,11,0.08)" : "rgba(26,26,36,0.9)",
+                  border: `1px solid ${isActive ? "rgba(245,158,11,0.5)" : isAlex ? "rgba(245,158,11,0.25)" : "rgba(255,255,255,0.08)"}`,
+                  transition: "all 0.3s ease",
+                  boxShadow: isActive ? "0 0 20px rgba(245,158,11,0.2)" : undefined,
+                }}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">{seat.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-xs truncate">{seat.name}</p>
+                    <p className="text-[10px] truncate" style={{ color: "#888" }}>{seat.title}</p>
+                  </div>
+                  {isActive && (
+                    <span className="inline-block w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#10B981", animation: "brainBreath 1.5s infinite" }} />
+                  )}
+                </div>
+                <div className="flex-1 text-[11px] overflow-y-auto" style={{ color: "#ccc", lineHeight: 1.5 }}>
+                  {latest ? (
+                    <p className="whitespace-pre-wrap">{latest.text}</p>
+                  ) : phase.asking && isActive ? (
+                    <p style={{ color: "#F59E0B", fontStyle: "italic" }}>Gândește acum...</p>
+                  ) : (
+                    <p style={{ color: "#555", fontStyle: "italic" }}>—</p>
+                  )}
                 </div>
               </div>
-            )}
-            {phase.synthesis && (
-              <div
-                className="flex-shrink-0 p-3 rounded-lg"
-                style={{
-                  width: 340,
-                  background: "linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.04))",
-                  border: "1px solid rgba(245,158,11,0.45)",
-                }}
-              >
-                <p className="font-bold text-xs mb-1.5 flex items-center gap-1" style={{ color: "#F59E0B" }}>
-                  👔 Alex · Recomandare finală
-                </p>
-                <p className="text-[11px] whitespace-pre-wrap max-h-32 overflow-y-auto" style={{ color: "#eee", lineHeight: 1.5 }}>
-                  {phase.synthesis}
-                </p>
-              </div>
-            )}
-            {phase.contributions.map((c, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 p-2.5 rounded-lg"
-                style={{
-                  width: 220,
-                  backgroundColor: "rgba(26,26,36,0.9)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                }}
-              >
-                <p className="font-bold text-[11px] mb-1" style={{ color: "#F59E0B" }}>{c.agent_name}</p>
-                <p className="text-[10px] max-h-24 overflow-y-auto" style={{ color: "#ccc", lineHeight: 1.45 }}>{c.text}</p>
-              </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
-      )}
+      </div>
 
       {/* Input (sticky bottom) — pushed 1cm up from viewport edge */}
       <form
