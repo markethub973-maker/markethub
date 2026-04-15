@@ -667,10 +667,10 @@ export default function Boardroom() {
 
         {/* 9 directors — 3×3 grid, each scrollable internally */}
         <div
-          className="grid gap-2"
+          className="grid gap-3"
           style={{
             gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            gridAutoRows: "minmax(90px, 120px)",
+            gridAutoRows: "minmax(110px, 140px)",
           }}
         >
           {SEATS.filter((s) => s.kind === "agent").map((seat) => {
@@ -724,7 +724,7 @@ export default function Boardroom() {
           borderTop: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <div className="max-w-3xl mx-auto flex gap-2 items-center">
+        <div className="max-w-5xl mx-auto flex gap-2 items-center">
           <button
             type="button"
             onClick={() => setVoiceOn((v) => !v)}
@@ -763,7 +763,7 @@ export default function Boardroom() {
             autoCapitalize="off"
             spellCheck={false}
             name={`board-q-${Date.now()}`}
-            className="flex-1 rounded-lg px-4 py-3 text-sm"
+            className="flex-1 rounded-lg px-5 py-4 text-sm"
             style={{
               backgroundColor: "rgba(26,26,36,0.95)", border: "1px solid rgba(255,255,255,0.1)", color: "white", outline: "none",
             }}
