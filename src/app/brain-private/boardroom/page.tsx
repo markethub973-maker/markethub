@@ -164,11 +164,17 @@ export default function Boardroom() {
 
   useEffect(() => () => timersRef.current.forEach((t) => clearTimeout(t)), []);
 
+  // Defensive clear: every time phase.asking flips on, empty the input
+  useEffect(() => {
+    if (phase.asking) setQuestion("");
+  }, [phase.asking]);
+
   // AUTONOMOUS SESSION — run once on page load. Board debates the kickoff
   // question on its own, Alex delivers the call-to-operator at the end.
   useEffect(() => {
     if (autoStarted) return;
     setAutoStarted(true);
+    setQuestion(""); // force empty on mount, ignore any browser autofill
     // Small delay so user sees the calm room first (ambient activity),
     // then the discussion starts naturally — like entering a meeting
     // already in progress.
@@ -608,11 +614,11 @@ export default function Boardroom() {
         </div>
       )}
 
-      {/* Horizontal transcript strip — stuck above the input, full width */}
+      {/* Horizontal transcript strip — closer to table, wider */}
       {(phase.contributions.length > 0 || phase.synthesis) && (
         <div
-          className="sticky z-30 mt-4 mx-auto px-4"
-          style={{ bottom: 88, maxWidth: 1200 }}
+          className="sticky z-30 mx-auto px-4"
+          style={{ bottom: 110, maxWidth: 1400, marginTop: -40 }}
         >
           <div
             className="p-3 rounded-xl flex gap-3 overflow-x-auto"
@@ -658,11 +664,13 @@ export default function Boardroom() {
         </div>
       )}
 
-      {/* Input (sticky bottom) */}
+      {/* Input (sticky bottom) — pushed 1cm up from viewport edge */}
       <form
         onSubmit={(e) => { e.preventDefault(); if (!phase.asking) { ask(); } }}
-        className="sticky bottom-0 mt-4 p-4 z-30"
+        className="sticky mt-2 px-4 pt-4 z-30"
         style={{
+          bottom: 24,
+          paddingBottom: 16,
           background: "linear-gradient(180deg, transparent, rgba(10,10,16,0.95))",
           borderTop: "1px solid rgba(255,255,255,0.06)",
         }}
@@ -701,6 +709,11 @@ export default function Boardroom() {
             onChange={(e) => setQuestion(e.target.value)}
             placeholder={recording ? "Ascult... vorbește în română" : "Pune o întrebare boardului sau apasă mic..."}
             disabled={phase.asking || recording}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            name={`board-q-${Date.now()}`}
             className="flex-1 rounded-lg px-4 py-3 text-sm"
             style={{
               backgroundColor: "rgba(26,26,36,0.95)", border: "1px solid rgba(255,255,255,0.1)", color: "white", outline: "none",
