@@ -167,6 +167,8 @@ const PUBLIC_PATHS = [
   "/api/telegram",          // Telegram bot — verifies its own secret token header
   "/api/sentry-probe",      // Sentry health probe — cron-secret gated, not user-facing
   "/api/brain/telegram-setup", // one-shot Telegram setup helper — cron-secret gated
+  "/api/gmail/authorize",   // Gmail OAuth — redirects to Google, self-gated
+  "/api/gmail/callback",    // Gmail OAuth callback — verifies code from Google
   "/api/cron",              // cron routes verify CRON_SECRET themselves
   "/api/maint",             // maintenance agent routes verify CRON_SECRET themselves
   "/api/cockpit",           // cockpit routes self-authenticate (state/assistant via isAdminAuthorized cookie, watchdog/backup/daily-report/reactive-siem via Bearer CRON_SECRET)
