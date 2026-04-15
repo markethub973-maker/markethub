@@ -566,6 +566,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/cockpit/") ||
     pathname.startsWith("/api/maint/") ||
     pathname === "/api/security/health-check" ||
+    pathname === "/api/brain/linkedin-daily" ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
     pathname === "/api/admin-secret-login" ||
