@@ -621,7 +621,7 @@ export default function Boardroom() {
       {/* Alex hero + 9 directors grid — fills the rest of the viewport */}
       <div
         className="mx-auto px-2 mt-1"
-        style={{ maxWidth: "100%", marginBottom: 80 }}
+        style={{ maxWidth: "100%", marginBottom: 8 }}
       >
         {/* Alex — full-width hero panel. Always visible, scrollable inside. */}
         {(() => {
@@ -629,13 +629,13 @@ export default function Boardroom() {
           const isActive = phase.active === "alex";
           return (
             <div
-              className="rounded-xl p-2 mb-2"
+              className="rounded-xl p-3 mb-2"
               style={{
                 background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
                 border: `1px solid ${isActive ? "rgba(245,158,11,0.65)" : "rgba(245,158,11,0.3)"}`,
-                boxShadow: isActive ? "0 0 20px rgba(245,158,11,0.2)" : "0 4px 12px rgba(0,0,0,0.3)",
-                minHeight: 70,
-                maxHeight: 90,
+                boxShadow: isActive ? "0 0 24px rgba(245,158,11,0.25)" : "0 6px 16px rgba(0,0,0,0.3)",
+                minHeight: 140,
+                maxHeight: 180,
                 display: "flex",
                 flexDirection: "column",
               }}
@@ -713,13 +713,13 @@ export default function Boardroom() {
         </div>
       </div>
 
-      {/* Input (sticky bottom) — pushed 1cm up from viewport edge */}
+      {/* Input (sticky bottom) — hugs viewport bottom, just 8px padding */}
       <form
         onSubmit={(e) => { e.preventDefault(); if (!phase.asking) { ask(); } }}
-        className="sticky mt-2 px-4 pt-4 z-30"
+        className="sticky mt-1 px-4 pt-2 z-30"
         style={{
-          bottom: 24,
-          paddingBottom: 16,
+          bottom: 8,
+          paddingBottom: 8,
           background: "linear-gradient(180deg, transparent, rgba(10,10,16,0.95))",
           borderTop: "1px solid rgba(255,255,255,0.06)",
         }}
