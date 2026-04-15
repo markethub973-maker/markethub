@@ -419,9 +419,9 @@ export default function Boardroom() {
                   animation: "brainBreath 3s ease-in-out infinite",
                 }}
               />
-              {/* Avatar circle */}
+              {/* Avatar circle — real photo for Eduard, icon for rest */}
               <div
-                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl relative"
+                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl relative overflow-hidden"
                 style={{
                   backgroundColor: isAlex
                     ? "rgba(245,158,11,0.25)"
@@ -433,9 +433,12 @@ export default function Boardroom() {
                     ? `0 0 24px ${isAlex ? "rgba(245,158,11,0.6)" : "rgba(59,130,246,0.5)"}`
                     : "0 4px 12px rgba(0,0,0,0.4)",
                   transition: "all 0.3s ease",
+                  backgroundImage: isYou ? "url(/avatars/eduard.jpg)" : undefined,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center 20%",
                 }}
               >
-                {s.icon}
+                {!isYou && s.icon}
                 {isAlex && (
                   <span className="absolute -top-1 -right-1 text-xs">👑</span>
                 )}
