@@ -336,34 +336,34 @@ export default function Boardroom() {
         fontFamily: "system-ui, sans-serif",
       }}
     >
-      <header className="max-w-7xl mx-auto px-6 py-5 flex items-center gap-3 relative z-20">
-        <Link href="/" className="text-xs inline-flex items-center gap-1 px-2 py-1 rounded-md"
+      {/* Ultra-compact inline header — sits in a narrow strip so the rest
+          of the viewport is entirely for the board + grid + input */}
+      <header className="max-w-[1800px] mx-auto px-5 py-2 flex items-center gap-3 relative z-20" style={{ minHeight: 40 }}>
+        <Link href="/" className="text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded-md"
           style={{ backgroundColor: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.08)", color: "#bbb" }}>
           <ArrowLeft className="w-3 h-3" /> Înapoi
         </Link>
-        <div className="flex-1">
-          <p className="text-sm font-bold">🏛️ Boardroom Live · Ședință executivă</p>
-          <p className="text-xs" style={{ color: "#888" }}>
-            {phase.asking
-              ? "Ședință în desfășurare · echipa dezbate..."
-              : phase.synthesis
-              ? "Alex a închis ședința · ai primit raportul"
-              : autoStarted
-              ? "Pregătesc ședința de dimineață..."
-              : "Ai intrat în ședință"}
-          </p>
-        </div>
+        <p className="text-xs font-bold" style={{ color: "#F59E0B" }}>🏛️ Boardroom Live</p>
+        <p className="text-[11px] flex-1 truncate" style={{ color: "#888" }}>
+          {phase.asking
+            ? "Ședință în desfășurare · echipa dezbate..."
+            : phase.synthesis
+            ? "Alex a închis ședința · raportul e în panoul său"
+            : autoStarted
+            ? "Pregătesc ședința de dimineață..."
+            : "Ai intrat în ședință"}
+        </p>
         {phase.asking && (
-          <div className="flex items-center gap-2 text-xs px-3 py-1.5 rounded-md"
+          <div className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md"
             style={{ backgroundColor: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.3)", color: "#F59E0B" }}>
-            <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 1.5s infinite" }} />
+            <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 1.5s infinite" }} />
             LIVE
           </div>
         )}
       </header>
 
-      {/* Room arena — DOUBLE width so agents around the table are clearly separated */}
-      <div className="relative mx-auto" style={{ width: "min(98vw, 1600px)", height: "min(44vh, 380px)", perspective: "1400px" }}>
+      {/* Room arena — full width, compact height so nothing scrolls */}
+      <div className="relative mx-auto" style={{ width: "min(98vw, 1800px)", height: "min(30vh, 260px)", perspective: "1400px" }}>
         {/* Back wall with subtle wallpaper texture */}
         <div className="absolute inset-0" style={{
           background: "linear-gradient(180deg, rgba(30,25,20,0.6) 0%, transparent 40%), repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 12px)",
@@ -618,11 +618,10 @@ export default function Boardroom() {
         </div>
       )}
 
-      {/* 2×5 fixed agent grid — each agent has a permanent cell.
-          Their latest contribution shows inside; empty state = "—" */}
+      {/* Alex hero + 9 directors grid — fills the rest of the viewport */}
       <div
-        className="mx-auto px-4 mt-4"
-        style={{ maxWidth: "100%", marginBottom: 96 }}
+        className="mx-auto px-4 mt-2"
+        style={{ maxWidth: "100%", marginBottom: 92 }}
       >
         {/* Alex — full-width hero panel. Always visible, scrollable inside. */}
         {(() => {
@@ -630,13 +629,13 @@ export default function Boardroom() {
           const isActive = phase.active === "alex";
           return (
             <div
-              className="rounded-xl p-4 mb-3"
+              className="rounded-xl p-3 mb-2"
               style={{
                 background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
                 border: `1px solid ${isActive ? "rgba(245,158,11,0.65)" : "rgba(245,158,11,0.3)"}`,
-                boxShadow: isActive ? "0 0 30px rgba(245,158,11,0.25)" : "0 6px 20px rgba(0,0,0,0.3)",
-                minHeight: 110,
-                maxHeight: 170,
+                boxShadow: isActive ? "0 0 20px rgba(245,158,11,0.2)" : "0 4px 12px rgba(0,0,0,0.3)",
+                minHeight: 80,
+                maxHeight: 110,
                 display: "flex",
                 flexDirection: "column",
               }}
@@ -671,7 +670,7 @@ export default function Boardroom() {
           className="grid gap-2"
           style={{
             gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            gridAutoRows: "minmax(130px, 180px)",
+            gridAutoRows: "minmax(90px, 120px)",
           }}
         >
           {SEATS.filter((s) => s.kind === "agent").map((seat) => {
