@@ -623,22 +623,26 @@ export default function Boardroom() {
         className="mx-auto px-4 mt-4"
         style={{ maxWidth: "100%", marginBottom: 96 }}
       >
-        {/* Alex synthesis panel — full width, above the grid */}
+        {/* Alex synthesis panel — capped height with internal scroll so it
+            never pushes the grid below the viewport */}
         {phase.synthesis && (
           <div
-            className="rounded-xl p-4 mb-3"
+            className="rounded-xl p-3 mb-3 flex gap-3"
             style={{
               background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
               border: "1px solid rgba(245,158,11,0.45)",
               boxShadow: "0 10px 30px rgba(245,158,11,0.1)",
+              maxHeight: 110,
             }}
           >
-            <p className="font-bold text-sm mb-2 flex items-center gap-2" style={{ color: "#F59E0B" }}>
-              👔 Alex · Recomandare finală pentru tine
+            <p className="font-bold text-xs flex items-center gap-1 flex-shrink-0 whitespace-nowrap self-start" style={{ color: "#F59E0B", minWidth: 160 }}>
+              👔 Alex · Recomandare
             </p>
-            <p className="text-sm whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.6 }}>
-              {phase.synthesis}
-            </p>
+            <div className="overflow-y-auto flex-1" style={{ maxHeight: 90 }}>
+              <p className="text-xs whitespace-pre-wrap" style={{ color: "#eee", lineHeight: 1.55 }}>
+                {phase.synthesis}
+              </p>
+            </div>
           </div>
         )}
 
@@ -648,7 +652,7 @@ export default function Boardroom() {
           className="grid gap-2"
           style={{
             gridTemplateColumns: "repeat(5, minmax(0, 1fr))",
-            gridAutoRows: "minmax(140px, auto)",
+            gridAutoRows: "minmax(110px, 150px)",
           }}
         >
           {SEATS.filter((s) => s.kind !== "you").map((seat) => {
