@@ -665,12 +665,40 @@ export default function Boardroom() {
           borderTop: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        <div className="max-w-3xl mx-auto flex gap-2">
+        <div className="max-w-3xl mx-auto flex gap-2 items-center">
+          <button
+            type="button"
+            onClick={() => setVoiceOn((v) => !v)}
+            title={voiceOn ? "Voce Alex: ON (click pt mute)" : "Voce Alex: OFF (click pt pornire)"}
+            className="w-11 h-11 rounded-lg inline-flex items-center justify-center flex-shrink-0"
+            style={{
+              backgroundColor: voiceOn ? "rgba(245,158,11,0.15)" : "rgba(255,255,255,0.05)",
+              border: `1px solid ${voiceOn ? "rgba(245,158,11,0.35)" : "rgba(255,255,255,0.1)"}`,
+              color: voiceOn ? "#F59E0B" : "#888",
+            }}
+          >
+            {voiceOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={recording ? stopRecording : startRecording}
+            disabled={phase.asking}
+            title={recording ? "Oprește înregistrarea" : "Vorbește cu boardul (apasă pentru microfon)"}
+            className="w-11 h-11 rounded-lg inline-flex items-center justify-center flex-shrink-0 disabled:opacity-40"
+            style={{
+              backgroundColor: recording ? "#EF4444" : "rgba(255,255,255,0.05)",
+              border: `1px solid ${recording ? "#EF4444" : "rgba(255,255,255,0.1)"}`,
+              color: recording ? "white" : "#ccc",
+              animation: recording ? "brainBreath 1.3s infinite" : undefined,
+            }}
+          >
+            {recording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          </button>
           <input
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Pune o întrebare boardului... (ex: Cum abordez primul client pe piața din Cluj?)"
-            disabled={phase.asking}
+            placeholder={recording ? "Ascult... vorbește în română" : "Pune o întrebare boardului sau apasă mic..."}
+            disabled={phase.asking || recording}
             className="flex-1 rounded-lg px-4 py-3 text-sm"
             style={{
               backgroundColor: "rgba(26,26,36,0.95)", border: "1px solid rgba(255,255,255,0.1)", color: "white", outline: "none",
@@ -681,7 +709,7 @@ export default function Boardroom() {
             className="px-5 py-3 rounded-lg font-bold inline-flex items-center gap-2 disabled:opacity-50"
             style={{ backgroundColor: "#F59E0B", color: "black" }}
           >
-            {phase.asking ? <><Loader2 className="w-4 h-4 animate-spin" /> Dezbat...</> : <><Sparkles className="w-4 h-4" /> Întreabă boardul</>}
+            {phase.asking ? <><Loader2 className="w-4 h-4 animate-spin" /> Dezbat...</> : <><Sparkles className="w-4 h-4" /> Întreabă</>}
           </button>
         </div>
         {error && <p className="text-xs text-center mt-2" style={{ color: "#F87171" }}>{error}</p>}
