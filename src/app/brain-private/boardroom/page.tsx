@@ -620,7 +620,7 @@ export default function Boardroom() {
 
       {/* Alex hero + 9 directors grid — fills the rest of the viewport */}
       <div
-        className="mx-auto px-4 mt-2"
+        className="mx-auto px-2 mt-2"
         style={{ maxWidth: "100%", marginBottom: 92 }}
       >
         {/* Alex — full-width hero panel. Always visible, scrollable inside. */}
@@ -667,10 +667,10 @@ export default function Boardroom() {
 
         {/* 9 directors — 3×3 grid, each scrollable internally */}
         <div
-          className="grid gap-3"
+          className="grid gap-2"
           style={{
             gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            gridAutoRows: "minmax(110px, 140px)",
+            gridAutoRows: "minmax(130px, 170px)",
           }}
         >
           {SEATS.filter((s) => s.kind === "agent").map((seat) => {
