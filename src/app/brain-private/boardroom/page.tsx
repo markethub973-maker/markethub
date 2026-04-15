@@ -63,7 +63,27 @@ Care este PRIMUL lucru concret pe care trebuie să-l facem azi dimineață ca s�
 
 export default function Boardroom() {
   const [question, setQuestion] = useState("");
-  const [phase, setPhase] = useState<Phase>({ active: null, contributions: [], synthesis: null, asking: false });
+  const [phase, setPhase] = useState<Phase>(() => {
+    if (typeof window === "undefined") return { active: null, contributions: [], synthesis: null, asking: false };
+    try {
+      const saved = localStorage.getItem("boardroom_state_v1");
+      if (saved) {
+        const parsed = JSON.parse(saved) as Phase;
+        // Clear asking flag — any in-flight request is gone after refresh
+        return { ...parsed, asking: false, active: null };
+      }
+    } catch { /* ignore */ }
+    return { active: null, contributions: [], synthesis: null, asking: false };
+  });
+
+  // Persist phase whenever it changes (except while asking)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const toSave: Phase = { ...phase, asking: false, active: null };
+      localStorage.setItem("boardroom_state_v1", JSON.stringify(toSave));
+    } catch { /* ignore */ }
+  }, [phase.contributions, phase.synthesis]);
   const [error, setError] = useState<string | null>(null);
   const [autoStarted, setAutoStarted] = useState(false);
   const [ambientAgent, setAmbientAgent] = useState<string | null>(null);
