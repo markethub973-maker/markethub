@@ -25,8 +25,10 @@ export default function ThemeSwitcher() {
   useEffect(() => {
     if (typeof window === "undefined") return;
     const p = window.location.pathname;
-    const isMarketingSubdomain = window.location.hostname === "get.markethubpromo.com";
-    if (isMarketingSubdomain || p.startsWith("/offer") || p === "/promo" || p === "/pricing" || p === "/") {
+    const host = window.location.hostname;
+    const isMarketingSubdomain = host === "get.markethubpromo.com";
+    const isBrainSubdomain = host === "brain.markethubpromo.com";
+    if (isMarketingSubdomain || isBrainSubdomain || p.startsWith("/offer") || p === "/promo" || p === "/pricing" || p === "/") {
       setHide(true);
     }
   }, []);

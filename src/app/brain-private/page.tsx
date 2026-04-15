@@ -109,23 +109,40 @@ export default async function BrainCommandCenter() {
     <div
       className="min-h-screen"
       style={{
-        backgroundColor: "#0F0F14",
+        background: `
+          radial-gradient(800px 400px at 15% 0%, rgba(245,158,11,0.12), transparent 55%),
+          radial-gradient(600px 350px at 85% 15%, rgba(168,85,247,0.08), transparent 50%),
+          radial-gradient(500px 300px at 50% 100%, rgba(59,130,246,0.06), transparent 60%),
+          linear-gradient(180deg, #0A0A10 0%, #0F0F18 100%)
+        `,
         color: "white",
         fontFamily: "system-ui, -apple-system, sans-serif",
+        minHeight: "100vh",
       }}
     >
-      <header className="max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      <header className="max-w-7xl mx-auto px-8 py-7 flex items-center justify-between">
+        <div className="flex items-center gap-4">
           <div
-            className="w-9 h-9 rounded-lg flex items-center justify-center font-bold"
-            style={{ backgroundColor: "#F59E0B", color: "black" }}
+            className="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg relative"
+            style={{
+              background: "linear-gradient(135deg, #F59E0B, #D97706)",
+              color: "black",
+              boxShadow: "0 6px 24px rgba(245,158,11,0.35), inset 0 1px 0 rgba(255,255,255,0.3)",
+            }}
           >
             A
+            <div
+              className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full"
+              style={{ backgroundColor: "#10B981", border: "2px solid #0A0A10" }}
+              title="Alex is online"
+            />
           </div>
           <div>
-            <p className="text-sm font-semibold">Alex · Brain Command Center</p>
-            <p className="text-xs" style={{ color: "#888" }}>
-              {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+            <p className="text-base font-bold tracking-tight">Alex · Brain Command Center</p>
+            <p className="text-xs flex items-center gap-2" style={{ color: "#999" }}>
+              <span>{now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</span>
+              <span style={{ color: "#444" }}>·</span>
+              <span style={{ color: "#10B981" }}>● Online</span>
             </p>
           </div>
         </div>
@@ -144,15 +161,24 @@ export default async function BrainCommandCenter() {
         </form>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 pb-12 space-y-6">
-        {/* Focus banner */}
+      <main className="max-w-7xl mx-auto px-8 pb-14 space-y-6">
+        {/* Focus banner — executive briefing card */}
         <section
-          className="rounded-2xl p-6"
+          className="rounded-3xl p-8 relative overflow-hidden"
           style={{
-            background: "linear-gradient(135deg, #1A1A24 0%, #2A1F0F 100%)",
-            border: "1px solid rgba(245,158,11,0.2)",
+            background: "linear-gradient(135deg, rgba(26,26,36,0.95) 0%, rgba(42,31,15,0.95) 100%)",
+            border: "1px solid rgba(245,158,11,0.25)",
+            boxShadow: "0 20px 60px -12px rgba(245,158,11,0.15), inset 0 1px 0 rgba(255,255,255,0.05)",
+            backdropFilter: "blur(10px)",
           }}
         >
+          <div
+            className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20"
+            style={{
+              background: "radial-gradient(circle, rgba(245,158,11,0.4) 0%, transparent 70%)",
+              transform: "translate(30%, -30%)",
+            }}
+          />
           <p className="text-xs uppercase tracking-wider font-bold mb-2" style={{ color: "#F59E0B" }}>
             Today's focus
           </p>
