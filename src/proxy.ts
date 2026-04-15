@@ -332,6 +332,11 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/brain-private/office";
       return NextResponse.rewrite(url);
     }
+    // Boardroom Live — oval table with all 9 directors debating
+    if (pathname === "/boardroom" || pathname === "/brain-private/boardroom") {
+      url.pathname = "/brain-private/boardroom";
+      return NextResponse.rewrite(url);
+    }
     // Brain APIs the dashboard uses — allow through on this subdomain.
     if (
       pathname.startsWith("/api/brain/outreach-batch") ||
@@ -339,7 +344,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/mine-leads") ||
       pathname.startsWith("/api/brain/mark-replied") ||
       pathname.startsWith("/api/brain/forecast") ||
-      pathname.startsWith("/api/brain/ask-agent")
+      pathname.startsWith("/api/brain/ask-agent") ||
+      pathname.startsWith("/api/brain/boardroom")
     ) {
       return NextResponse.next();
     }
