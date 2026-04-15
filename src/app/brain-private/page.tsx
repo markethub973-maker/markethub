@@ -10,6 +10,7 @@
 import { createServiceClient } from "@/lib/supabase/service";
 import BrainActionList from "@/components/brain/BrainActionList";
 import BrainMetricTiles from "@/components/brain/BrainMetricTiles";
+import DelegateButton from "@/components/brain/DelegateButton";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -146,19 +147,22 @@ export default async function BrainCommandCenter() {
             </p>
           </div>
         </div>
-        <form action="/api/brain-admin/logout" method="POST">
-          <button
-            type="submit"
-            className="text-xs px-3 py-1 rounded-md"
-            style={{
-              backgroundColor: "rgba(255,255,255,0.06)",
-              color: "#bbb",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
-            Sign out
-          </button>
-        </form>
+        <div className="flex items-center gap-2">
+          <DelegateButton />
+          <form action="/api/brain-admin/logout" method="POST">
+            <button
+              type="submit"
+              className="text-xs px-3 py-1 rounded-md"
+              style={{
+                backgroundColor: "rgba(255,255,255,0.06)",
+                color: "#bbb",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              Sign out
+            </button>
+          </form>
+        </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-8 pb-14 space-y-6">
