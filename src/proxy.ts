@@ -372,7 +372,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/morning-debate") ||    // autonomous morning briefing
       pathname.startsWith("/api/brain/linkedin-daily") ||    // autonomous LinkedIn post
       pathname.startsWith("/api/brain/goals") ||             // goals CRUD
-      pathname.startsWith("/api/brain/advisor")              // state advisor
+      pathname.startsWith("/api/brain/advisor") ||           // state advisor
+      pathname.startsWith("/api/brain/reverse-audit")        // Reverse Strategy vertical audit (mandatory before outreach)
     ) {
       return NextResponse.next();
     }
@@ -583,6 +584,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/morning-debate" ||
     pathname === "/api/brain/outreach-batch" ||
     pathname === "/api/brain/mine-leads" ||
+    pathname === "/api/brain/reverse-audit" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
