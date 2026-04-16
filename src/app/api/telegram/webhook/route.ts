@@ -116,6 +116,70 @@ async function fetchBrainContext(): Promise<string> {
   }
 }
 
+/**
+ * Pull REAL live data from DB so Alex can answer factual questions without
+ * asking Eduard for CSV/export. Every Telegram conversation starts with this
+ * context so Alex knows the actual state of prospects, strategies, activity.
+ */
+async function fetchLiveDbContext(): Promise<string> {
+  try {
+    const svc = createServiceClient();
+
+    // Top 5 highest-fit prospects not yet contacted
+    const { data: topProspects } = await svc
+      .from("brain_global_prospects")
+      .select("domain, business_name, country_code, email, detected_needs, fit_score")
+      .eq("outreach_status", "prospect")
+      .order("fit_score", { ascending: false, nullsFirst: false })
+      .limit(5);
+
+    // Recent outreach state
+    const { data: outreachStats } = await svc
+      .from("outreach_log")
+      .select("status", { count: "exact", head: false })
+      .limit(100);
+
+    const sentCount = (outreachStats ?? []).filter((r) => r.status === "sent").length;
+    const repliedCount = (outreachStats ?? []).filter((r) => r.status === "replied").length;
+
+    // Active strategies
+    const { data: activeStrategies } = await svc
+      .from("brain_strategy_stack")
+      .select("rank, name, current_status, kpi_current")
+      .in("current_status", ["active", "planned"])
+      .order("rank")
+      .limit(5);
+
+    const { count: totalProspects } = await svc
+      .from("brain_global_prospects")
+      .select("id", { count: "exact", head: true });
+
+    const { count: countriesCount } = await svc
+      .from("brain_target_countries")
+      .select("id", { count: "exact", head: true });
+
+    return `
+LIVE DB STATE (queried right now — use these facts, don't ask Eduard for data):
+
+📊 PROSPECTS:
+- Total în vector DB: ${totalProspects ?? 0} prospecți across ${countriesCount ?? 0} țări
+- Top 5 neconversați:
+${(topProspects ?? []).map((p) => `  · ${p.country_code ?? "?"} | ${p.business_name ?? "?"} (${p.domain}) | ${p.email ?? "no email"} | fit ${p.fit_score ?? "-"}/100`).join("\n")}
+
+📧 OUTREACH:
+- Trimise: ${sentCount}
+- Răspunsuri: ${repliedCount} (${sentCount > 0 ? Math.round((repliedCount / sentCount) * 100) : 0}% rate)
+
+🎯 STRATEGII ACTIVE/PLANIFICATE:
+${(activeStrategies ?? []).map((s) => `  · #${s.rank} ${s.name} — ${s.current_status}`).join("\n")}
+
+If Eduard asks "pentru care prospect trimitem outreach?", pick from top 5 above and propose — don't ask for list.
+If Eduard asks "cum stăm?", answer with these real numbers, not generic.`;
+  } catch {
+    return "(DB context unavailable — answer from general knowledge)";
+  }
+}
+
 export async function POST(req: NextRequest) {
   // Verify secret token from Telegram header
   const expected = process.env.TELEGRAM_WEBHOOK_SECRET;
@@ -204,7 +268,7 @@ export async function POST(req: NextRequest) {
     .map((h) => `${h.role}: ${h.text ?? h.voice_transcript ?? ""}`)
     .join("\n");
 
-  const brainCtx = await fetchBrainContext();
+  const [brainCtx, liveDbCtx] = await Promise.all([fetchBrainContext(), fetchLiveDbContext()]);
 
   const sys = `${ALEX_KNOWLEDGE_BRIEF}
 
@@ -223,6 +287,8 @@ Rules:
 
 Brain state snapshot:
 ${brainCtx}
+
+${liveDbCtx}
 
 Recent chat history:
 ${historyStr}`;
