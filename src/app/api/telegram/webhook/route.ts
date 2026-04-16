@@ -264,9 +264,9 @@ export async function POST(req: NextRequest) {
       await svc.from("brain_agent_activity").insert({
         agent_id: "alex",
         agent_name: "Eduard (via Telegram)",
-        activity: "ping_claude",
-        description: `[normal] ${messageForClaude.slice(0, 500)}`,
-        result: { picked_up: false, urgency: "normal", from: "eduard_telegram", chat_id: chatId },
+        activity: "completed",
+        description: `[PING_CLAUDE][normal] ${messageForClaude.slice(0, 500)}`,
+        result: { kind: "ping_claude", picked_up: false, urgency: "normal", from: "eduard_telegram", chat_id: chatId },
       });
       await tgApi("sendMessage", {
         chat_id: chatId,
