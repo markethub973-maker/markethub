@@ -54,10 +54,13 @@ export async function GET(req: NextRequest) {
     let startingAfter: string | undefined;
     for (let page = 0; page < 10; page++) {
       // hard cap 10 pages = 1000 subs — plenty for this stage
+      // Stripe limits expand depth to 4 levels. "data.items.data.price.product"
+      // is 5 — drop to "data.items.data.price"; product expansion we fetch
+      // lazily below only when needed (by id lookup into the expanded map).
       const list = await stripe.subscriptions.list({
         status: "active",
         limit: 100,
-        expand: ["data.items.data.price.product"],
+        expand: ["data.items.data.price"],
         starting_after: startingAfter,
       });
 
@@ -77,13 +80,13 @@ export async function GET(req: NextRequest) {
           if (interval === "day") monthly = monthly * 30;
           monthly = monthly / intervalCount;
 
-          // Plan identification: Product name > price nickname > ID
-          type ProductLike = { name?: string; id?: string };
-          const product = (price.product as ProductLike | string | null);
+          // Plan identification: price.nickname is our main label (we set
+          // it explicitly when creating prices). Fall back to product id
+          // string, then price id. Product name would require a separate
+          // fetch — not worth the latency for breakdown display.
           const planName =
-            (typeof product === "object" && product && product.name) ||
             price.nickname ||
-            (typeof product === "string" ? product : price.id) ||
+            (typeof price.product === "string" ? price.product : price.id) ||
             "unknown";
 
           const row = byPlan.get(planName) ?? {

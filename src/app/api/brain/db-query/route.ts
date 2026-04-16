@@ -195,7 +195,11 @@ export async function POST(req: NextRequest) {
   });
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // Gate the help/usage info too — leaking the exact whitelist to anonymous
+  // clients gives attackers a free list of tables to probe. Authoritative
+  // users who need the schema already know the secret.
+  if (!authOk(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   return NextResponse.json({
     ok: true,
     usage: "POST with JSON body",
