@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateText } from "@/lib/llm";
 import { ALEX_KNOWLEDGE_BRIEF, ALEX_AGENTS, agentById } from "@/lib/alex-knowledge";
+import { synthesizeSpeech } from "@/lib/tts";
 import {
   getActiveDelegate,
   generateProxyResponse,
@@ -181,7 +182,6 @@ Language: Romanian, warm, partner-to-partner. 150-200 words. No bullet point lis
 async function pushToTelegram(synthesis: string, question: string): Promise<void> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_ALLOWED_CHAT_ID;
-  const openaiKey = process.env.OPENAI_API_KEY;
   if (!token || !chatId) return;
   const TG = `https://api.telegram.org/bot${token}`;
   const preview = synthesis.length > 500 ? synthesis.slice(0, 490) + "..." : synthesis;
@@ -193,24 +193,24 @@ async function pushToTelegram(synthesis: string, question: string): Promise<void
       body: JSON.stringify({ chat_id: chatId, text: textMessage, parse_mode: "Markdown" }),
     });
   } catch {}
-  if (!openaiKey) return;
+  // Use unified TTS (ElevenLabs Daniel if configured, OpenAI fallback).
+  // Previously hard-coded OpenAI "onyx" which has English-accented Romanian.
   try {
-    const ttsRes = await fetch("https://api.openai.com/v1/audio/speech", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${openaiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "tts-1", voice: "onyx",
-        input: synthesis.slice(0, 4000),
-        response_format: "opus", speed: 1.05,
-      }),
-    });
-    if (!ttsRes.ok) return;
-    const audio = await ttsRes.arrayBuffer();
+    const tts = await synthesizeSpeech(synthesis);
+    if (!tts) return;
     const fd = new FormData();
     fd.append("chat_id", chatId);
-    fd.append("voice", new Blob([audio], { type: "audio/ogg" }), "alex.ogg");
-    fd.append("caption", "Alex · Recomandare board 👔");
-    await fetch(`${TG}/sendVoice`, { method: "POST", body: fd });
+    if (tts.format === "opus") {
+      fd.append("voice", new Blob([tts.audio], { type: "audio/ogg" }), "alex.ogg");
+      fd.append("caption", "Alex · Recomandare board 👔");
+      await fetch(`${TG}/sendVoice`, { method: "POST", body: fd });
+    } else {
+      // ElevenLabs mp3 — use sendAudio
+      fd.append("audio", new Blob([tts.audio], { type: "audio/mpeg" }), "alex.mp3");
+      fd.append("title", "Alex · Recomandare board");
+      fd.append("performer", "MarketHub Pro");
+      await fetch(`${TG}/sendAudio`, { method: "POST", body: fd });
+    }
   } catch {}
 }
 
