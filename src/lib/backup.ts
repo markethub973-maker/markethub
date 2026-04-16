@@ -107,6 +107,56 @@ export const BACKUP_TABLES = [
   "maintenance_findings",
   "cron_logs",
   "health_checks",
+  // Brain / AI team (added 2026-04-16 — were missing; major data loss risk)
+  "brain_knowledge_base",
+  "brain_agent_activity",
+  "brain_global_prospects",
+  "brain_demand_signals",
+  "brain_supply_producers",
+  "brain_arbitrage_matches",
+  "brain_intermediary_patterns",
+  "brain_platform_capabilities",
+  "brain_strategy_stack",
+  "brain_delegation_map",
+  "brain_venture_pipeline",
+  "brain_target_countries",
+  "brain_client_needs",
+  // Outreach + leads (revenue-adjacent — losing this = losing months of work)
+  "outreach_log",
+  "research_leads",
+  // AI generations (expensive to regenerate)
+  "ai_image_generations",
+  "ai_video_generations",
+  // User config
+  "user_brand_voice",
+  // Communication
+  "telegram_messages",
+  // Incidents audit trail
+  "ops_incidents",
 ] as const;
 
 export type BackupTableName = typeof BACKUP_TABLES[number];
+
+/**
+ * Tables in the HOURLY incremental tier. Must have a `created_at` column —
+ * incremental pulls rows WHERE created_at > last_backup_at.
+ */
+export const INCREMENTAL_TABLES = [
+  "brain_agent_activity",
+  "cron_logs",
+  "security_events",
+  "maintenance_findings",
+  "outreach_log",
+  "research_leads",
+  "telegram_messages",
+  "ops_incidents",
+  "ai_image_generations",
+  "ai_video_generations",
+] as const;
+
+/**
+ * Storage buckets mirrored in the WEEKLY COMPLETE backup. Each object's
+ * bytes are base64-appended to the encrypted blob. Watch the 50 MB bucket
+ * ceiling — split per-bucket if total exceeds.
+ */
+export const STORAGE_BUCKETS_TO_BACKUP = ["public-assets", "assets"] as const;
