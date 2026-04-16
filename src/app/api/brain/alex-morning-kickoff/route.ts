@@ -27,14 +27,42 @@ interface KickoffState {
   auto_learned_rules_count: number;
   top_intermediary_score: number;
   recent_dev_events: string[];
+  paying_users_count: number;
+  dormant_memory_triggers: string[]; // names of memory files whose activation thresholds were just crossed
 }
+
+/**
+ * Dormant memories with numeric activation thresholds. When a threshold is
+ * crossed, the corresponding memory file name is surfaced to Alex in the
+ * kickoff payload so he can open it + re-read the playbook instead of
+ * us forgetting the link between "metric X reached" and "plan Y".
+ */
+const DORMANT_MEMORY_TRIGGERS: Array<{
+  metric: keyof Pick<KickoffState, "paying_users_count" | "auto_learned_rules_count" | "new_prospects_untouched">;
+  threshold: number;
+  memory: string;
+  reason: string;
+}> = [
+  {
+    metric: "paying_users_count",
+    threshold: 5,
+    memory: "pending_pricing_experiments_free_annual.md",
+    reason: "≥5 paying → time to A/B test Free Forever + annual billing",
+  },
+  {
+    metric: "paying_users_count",
+    threshold: 50,
+    memory: "pending_fivetran_integration_50_clients.md",
+    reason: "≥50 paying → evaluate Fivetran custom connector for Agency-tier clients",
+  },
+];
 
 async function buildState(): Promise<KickoffState> {
   const svc = createServiceClient();
   const now = Date.now();
   const y = new Date(now - 24 * 3600_000).toISOString();
 
-  const [prospects, tbd, replied, incidents, learnings, top, devEvents] = await Promise.all([
+  const [prospects, tbd, replied, incidents, learnings, top, devEvents, payingUsers] = await Promise.all([
     svc
       .from("brain_global_prospects")
       .select("id", { count: "exact", head: true })
@@ -69,9 +97,19 @@ async function buildState(): Promise<KickoffState> {
       .gte("created_at", y)
       .order("created_at", { ascending: false })
       .limit(5),
+    // Paying users count — real source would be Stripe (see /api/brain/stripe-mrr),
+    // but advisor.state (cached) gives a good-enough proxy without adding
+    // latency to the morning-kickoff critical path. Falls back to 0 on error.
+    fetch("https://markethubpromo.com/api/brain/advisor?state_only=1", {
+      headers: { "x-brain-cron-secret": process.env.BRAIN_CRON_SECRET ?? "" },
+      signal: AbortSignal.timeout(5000),
+    })
+      .then((r) => r.json())
+      .then((d) => ({ count: (d.state?.paying_users as number | undefined) ?? 0 }))
+      .catch(() => ({ count: 0 })),
   ]);
 
-  return {
+  const state: KickoffState = {
     new_prospects_untouched: prospects.count ?? 0,
     outreach_queued_tbd: tbd.count ?? 0,
     outreach_replied_yesterday: replied.count ?? 0,
@@ -81,7 +119,21 @@ async function buildState(): Promise<KickoffState> {
     recent_dev_events: (devEvents.data ?? []).map(
       (r) => `${(r.created_at as string).slice(11, 16)} — ${r.description}`,
     ),
+    paying_users_count: payingUsers.count ?? 0,
+    dormant_memory_triggers: [],
   };
+
+  // Check dormant memory thresholds — surface triggers whose threshold is now met
+  for (const trigger of DORMANT_MEMORY_TRIGGERS) {
+    const currentValue = state[trigger.metric] as number;
+    if (currentValue >= trigger.threshold) {
+      state.dormant_memory_triggers.push(
+        `${trigger.memory} (${trigger.metric}=${currentValue} ≥${trigger.threshold}): ${trigger.reason}`,
+      );
+    }
+  }
+
+  return state;
 }
 
 function authOk(req: NextRequest): boolean {
