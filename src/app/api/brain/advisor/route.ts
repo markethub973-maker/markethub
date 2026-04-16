@@ -98,9 +98,14 @@ interface BrainState {
 async function readState(userId: string): Promise<BrainState> {
   const service = createServiceClient();
 
-  // Run all reads in parallel
+  // Run all reads in parallel. NOTE: profiles.trial_ends_at doesn't exist —
+  // the column was referenced historically but never added. Selecting it
+  // was making the whole profiles query fail silently, zeroing out
+  // total_users + paying_users + mrr_usd for every advisor call, which in
+  // turn made morning-debate + boardroom think we had 0 paying clients.
+  // Removing it un-breaks the aggregate stats. 2026-04-16.
   const [profiles, posts, leads, images, brandVoice] = await Promise.all([
-    service.from("profiles").select("plan,subscription_plan,trial_ends_at,created_at"),
+    service.from("profiles").select("plan,subscription_plan,created_at"),
     service
       .from("scheduled_posts")
       .select("status,created_at,scheduled_for")
@@ -116,19 +121,27 @@ async function readState(userId: string): Promise<BrainState> {
   const profs = profiles.data ?? [];
   const paying = profs.filter((p) => {
     const plan = (p.plan ?? p.subscription_plan ?? "") as string;
-    return ["pro", "studio", "agency", "business", "enterprise", "creator"].includes(plan);
+    return ["pro", "studio", "agency", "business", "enterprise", "creator", "starter", "lite"].includes(plan);
   });
+  // Trial users: profiles.trial_ends_at doesn't exist in this schema, so
+  // we can't compute real trial cohort. Proxy: free users signed up
+  // in the last 14 days — the typical trial window.
   const trials = profs.filter((p) => {
-    const t = p.trial_ends_at ? new Date(p.trial_ends_at).getTime() : 0;
-    return t > now;
+    const plan = (p.plan ?? p.subscription_plan ?? "") as string;
+    if (plan && plan !== "free" && plan !== "free_test") return false;
+    if (!p.created_at) return false;
+    const ageDays = (now - new Date(p.created_at).getTime()) / day;
+    return ageDays >= 0 && ageDays <= 14;
   });
   const signups7 = profs.filter(
     (p) => p.created_at && now - new Date(p.created_at).getTime() < 7 * day,
   );
 
-  // Plan pricing snapshot — quick MRR estimate
+  // Plan pricing snapshot — quick MRR estimate. Include starter + lite
+  // which show up in real profiles data (test accounts or early bands).
   const PLAN_PRICE: Record<string, number> = {
-    creator: 24, pro: 49, studio: 99, business: 99, agency: 249, enterprise: 249,
+    lite: 19, starter: 29, creator: 24, pro: 49, studio: 99,
+    business: 99, agency: 249, enterprise: 249,
   };
   const mrr = paying.reduce((s, p) => {
     const plan = (p.plan ?? p.subscription_plan ?? "") as string;
