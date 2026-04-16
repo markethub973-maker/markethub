@@ -22,6 +22,7 @@ import { generateText } from "@/lib/llm";
 import { synthesizeSpeech } from "@/lib/tts";
 import { generateVideo } from "@/lib/aiVideo";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
+import { ROMANIAN_TTS_PROMPT_RULES } from "@/lib/romanian-tts-rules";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
 
 export const dynamic = "force-dynamic";
@@ -109,35 +110,23 @@ export async function POST(req: NextRequest) {
   const businessName = body.prospect_name || existing?.business_name || domain;
 
   // Step 2: Claude writes 30-sec personalized script
+  // RO TTS phonetic rules live in `lib/romanian-tts-rules.ts` so every agent
+  // / endpoint generates speakable Romanian — single source of truth.
+  const ttsRulesBlock = lang === "ro" ? `\n\n${ROMANIAN_TTS_PROMPT_RULES}\n` : "";
   const scriptSys = `${ALEX_KNOWLEDGE_BRIEF}
 
 ---
 
-You are Alex, founder of MarketHub Pro. Write a personalized 30-SECOND spoken pitch for a prospect.
+You are Eduard Bostan, founder of MarketHub Pro. Write a personalized 30-SECOND spoken pitch for a prospect.
 
 Rules:
 - Exactly 60-75 words (≈30 seconds at normal pace).
 - Start with ONE specific observation about their business (use the site snippet).
-- ONE clear value proposition — our AI platform = 10x their content output for SMB clients.
+- ONE clear value proposition — our platform multiplies their content output for small-business clients.
 - ONE ask: would they want a free 5-caption + 3-image demo?
 - Warm human founder tone. No corporate buzzwords.
-- Sign off: "— Alex"
-- Language: ${lang === "ro" ? "Romanian" : "English"}.
-- CRITICAL for ${lang}: use ONLY natural, clean ${lang === "ro" ? "Romanian" : "English"} words. NO mixed-language terms (avoid "content", "dashboard", "AI", "SMB" in Romanian text — use "conținut", "platformă", "inteligență artificială", "firme mici"). Azure TTS struggles on unfamiliar foreign words.
-- Spell numbers out (e.g., "zece ori" not "10x", "douăzeci" not "20").
-- PUNCTUATION for TTS: only ONE question mark at the END of the actual question. Do NOT end sentences with "?" when the final clause is a subordinate/consequence (e.g., "ca să vezi..."). Put a period there and finish the question earlier. Example WRONG: "Vrei demo, ca să vezi cum arată?" → TTS reads rising intonation on "arată?". Example RIGHT: "Vrei un demo? Ca să vezi cum arată în practică." Split into question + declarative follow-up.
-- Each sentence should be 8-15 words max so TTS intonation stays natural.
-- AZURE TTS RO QUIRKS — AVOID these word endings (Emil doubles the final 'i'):
-  · 2nd person singular verbs ending in "-ezi" (gestionezi, lucrezi, folosești) — replace with noun constructs or "ai" form. Ex: "firmele pe care le ai" NOT "firmele pe care le gestionezi".
-  · verbs ending in "-izi" (analizi, organizezi) — replace with periphrase
-  · adjectives ending in "-ii" (mulții, clienții — use "mulți clienți")
-  · Always prefer: "ai", "vezi", "primești", "ajutăm" (2p sg forms ending in other letters)
-- AZURE TTS RO CONTRACTIONS — AVOID hyphenated contractions (Emil pronounces them oddly):
-  · "v-ar" → use "ați" form: "V-ar interesa?" → "Ați vrea?"
-  · "m-ar" → "Mi-ar plăcea" → "Aș vrea"
-  · "ne-ar" → "Ne-ar ajuta" → "Ne ajută"
-  · "ți-ar" → "Ți-ar conveni?" → "Vă convine?"
-  · General rule: prefer auxiliary forms over contractions. "Ai" "ați" "aș" "ar" with full verb is safer.
+- Sign off: "— Eduard." (period included; the SSML wrapper drops tone on the final D for natural calling-out intonation).
+- Language: ${lang === "ro" ? "Romanian" : "English"}.${ttsRulesBlock}
 
 Output ONLY the script text, no markdown, no quotes.`;
 

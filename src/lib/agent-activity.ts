@@ -22,7 +22,8 @@ export type AgentId =
   | "copywriter"   // Iris — Copy
   | "strategist"   // Leo — Strategy
   | "finance"      // Dara — Finance
-  | "legal";       // Theo — Legal
+  | "legal"        // Theo — Legal
+  | "dev";         // Claude (dev/CLI session) — code changes, ops, files
 
 const AGENT_NAMES: Record<AgentId, string> = {
   alex: "Alex",
@@ -36,6 +37,7 @@ const AGENT_NAMES: Record<AgentId, string> = {
   strategist: "Leo",
   finance: "Dara",
   legal: "Theo",
+  dev: "Claude (dev)",
 };
 
 export interface ActivityHandle {

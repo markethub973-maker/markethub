@@ -9,7 +9,14 @@
  * Priority for non-Romanian text:
  *   1. ElevenLabs (native for EN, good for DE/FR/ES/IT)
  *   2. OpenAI fallback
+ *
+ * Romanian text passes through `sanitizeRomanianForTts` BEFORE every provider
+ * (Azure, ElevenLabs, OpenAI) so word substitutions stay consistent. Azure
+ * additionally gets `wrapRomanianSsml` which adds IPA phoneme overrides +
+ * sign-off prosody. See `lib/romanian-tts-rules.ts` for the rule set.
  */
+
+import { sanitizeRomanianForTts, wrapRomanianSsml } from "./romanian-tts-rules";
 
 export type TtsResult = {
   audio: ArrayBuffer;
@@ -61,7 +68,9 @@ async function azureTts(text: string, agent: AgentId = "alex"): Promise<TtsResul
   if (!key) return null;
 
   const voice = AGENT_VOICE_MAP[agent].azure;
-  const ssml = `<speak version='1.0' xml:lang='ro-RO'><voice name='${voice}'>${text.slice(0, 4000).replace(/[<>&]/g, (c) => c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;")}</voice></speak>`;
+  // sanitizeRomanianForTts already applied by `synthesizeSpeech` caller —
+  // wrapRomanianSsml only adds IPA phoneme overrides + sign-off prosody.
+  const ssml = wrapRomanianSsml(text, voice);
 
   try {
     const res = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
@@ -149,16 +158,18 @@ export async function synthesizeSpeech(
   opts: { agent_id?: AgentId } = {},
 ): Promise<TtsResult | null> {
   const agent = opts.agent_id ?? "alex";
+  const ro = isRomanian(text);
+  // Apply Romanian sanitizer once for ALL providers so any fallback path
+  // (Azure → ElevenLabs → OpenAI) reads the same cleaned-up text.
+  const cleaned = ro ? sanitizeRomanianForTts(text) : text;
 
-  // Romanian content → prefer Azure (native RO pronunciation)
-  if (isRomanian(text)) {
-    const azure = await azureTts(text, agent);
+  if (ro) {
+    const azure = await azureTts(cleaned, agent);
     if (azure) return azure;
   }
 
-  // Non-RO or Azure unavailable → ElevenLabs (but pick voice by agent)
-  const eleven = await elevenLabsTts(text);
+  const eleven = await elevenLabsTts(cleaned);
   if (eleven) return eleven;
 
-  return await openaiTts(text);
+  return await openaiTts(cleaned);
 }
