@@ -96,7 +96,9 @@ export async function GET(req: NextRequest) {
     error?: string;
   }> = [];
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://markethubpromo.com";
+  // Internal self-call: use direct Vercel URL (bypasses Cloudflare, which
+  // sometimes challenges Vercel-to-Vercel calls as bot traffic → 403).
+  const baseUrl = "https://viralstat-dashboard.vercel.app";
 
   for (const p of toProcess) {
     const displayName = p.business_name ?? p.domain;
