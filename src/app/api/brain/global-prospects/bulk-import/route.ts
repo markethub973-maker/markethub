@@ -26,6 +26,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { embedBatch } from "@/lib/embed";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
+import { extractViaOctivas } from "@/lib/octivas";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -46,12 +47,39 @@ interface Extracted {
   description: string | null;
   body_snippet: string | null;
   business_name: string | null;
+  source: "octivas" | "regex";
+  credits_used?: number;
 }
 
-// Regex-based homepage extraction — no cheerio dependency. Good enough
-// for title + meta description + first 600 chars of visible text, which
-// is all the embedding needs.
+// Primary: Octivas Web Extraction API (LLM-ready markdown + clean metadata,
+// 1000 free credits/month). Fallback: direct fetch + regex (free, unlimited,
+// lower quality). The fallback is what keeps the pipeline working when
+// Octivas key isn't set or credits run out.
 async function fetchHomepage(domain: string, language = "en"): Promise<Extracted> {
+  // Try Octivas first if configured
+  const octivas = await extractViaOctivas(`https://${domain}`, {
+    formats: ["markdown"],
+    only_main_content: true,
+    timeout_ms: 18_000,
+  });
+  if (octivas && (octivas.markdown || octivas.title)) {
+    const bizName =
+      octivas.title?.split(/\s+[-|—]\s+/)[0]?.trim() ?? domain;
+    return {
+      title: octivas.title,
+      description: octivas.description,
+      body_snippet: (octivas.markdown ?? "").replace(/\s+/g, " ").trim().slice(0, 600),
+      business_name: bizName,
+      source: "octivas",
+      credits_used: octivas.credits_used,
+    };
+  }
+
+  // Fallback: direct fetch + regex
+  return fetchHomepageRegex(domain, language);
+}
+
+async function fetchHomepageRegex(domain: string, language = "en"): Promise<Extracted> {
   const urls = [`https://${domain}`, `https://www.${domain}`];
   for (const url of urls) {
     try {
@@ -86,12 +114,12 @@ async function fetchHomepage(domain: string, language = "en"): Promise<Extracted
       // Business name heuristic: take first part of title before " - " / " | " / " — "
       const bizName = title?.split(/\s+[-|—]\s+/)[0]?.trim() ?? null;
 
-      return { title, description, body_snippet: bodyText, business_name: bizName };
+      return { title, description, body_snippet: bodyText, business_name: bizName, source: "regex" };
     } catch {
       /* try next variant */
     }
   }
-  return { title: null, description: null, body_snippet: null, business_name: null };
+  return { title: null, description: null, body_snippet: null, business_name: null, source: "regex" };
 }
 
 export async function POST(req: NextRequest) {
@@ -186,13 +214,18 @@ export async function POST(req: NextRequest) {
     inserted.push(r.domain);
   }
 
+  // Tally extraction source (Octivas vs regex) + credits consumed
+  const octivasCount = results.filter((r) => r.extracted.source === "octivas").length;
+  const regexCount = results.filter((r) => r.extracted.source === "regex").length;
+  const creditsUsed = results.reduce((s, r) => s + (r.extracted.credits_used ?? 0), 0);
+
   if (inserted.length === 0 && failed.length > 0) {
     await failActivity(activity, `Nora: bulk-import 0/${domains.length} reuşit — toate homepage-urile au eşuat`);
   } else {
     await completeActivity(
       activity,
-      `Nora: bulk-import ${inserted.length}/${domains.length} embedded şi salvaţi cu vector`,
-      { inserted: inserted.length, failed: failed.length },
+      `Nora: bulk-import ${inserted.length}/${domains.length} — octivas=${octivasCount} regex=${regexCount} credits=${creditsUsed}`,
+      { inserted: inserted.length, failed: failed.length, octivas_count: octivasCount, regex_count: regexCount, credits_used: creditsUsed },
     );
   }
 
@@ -202,5 +235,10 @@ export async function POST(req: NextRequest) {
     inserted: inserted.length,
     inserted_domains: inserted,
     failed,
+    extraction: {
+      via_octivas: octivasCount,
+      via_regex: regexCount,
+      octivas_credits_used: creditsUsed,
+    },
   });
 }
