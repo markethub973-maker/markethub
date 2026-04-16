@@ -35,6 +35,57 @@ const SEATS: Seat[] = [
 ];
 
 interface Contribution { agent_id: string; agent_name: string; text: string; sessionId?: string; round?: 1 | 2; responds_to?: string | null; }
+
+// ProxyDrawer — collapsed floating pill bottom-left + expand-on-click drawer.
+// Replaces the fixed full-height panel that was covering the oval table.
+function ProxyDrawer({ approvals }: { approvals: Array<{ ts: string; question: string; synthesis: string; proxy_response: string }> }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      {/* Always-visible compact pill (bottom-left, above everything). Click → drawer. */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="fixed bottom-3 left-3 z-30 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[10px] font-bold shadow-lg"
+        style={{
+          backgroundColor: "rgba(20,15,30,0.95)",
+          border: "1px solid rgba(139,92,246,0.55)",
+          color: "#a78bfa",
+          backdropFilter: "blur(8px)",
+        }}
+        title={open ? "Închide proxy log" : "Deschide proxy log"}
+      >
+        🛡️ Proxy · {approvals.length}
+        <span style={{ opacity: 0.5 }}>{open ? "▼" : "▲"}</span>
+      </button>
+      {open && (
+        <div
+          className="fixed bottom-14 left-3 w-72 max-h-[60vh] overflow-y-auto p-3 rounded-xl z-30"
+          style={{
+            backgroundColor: "rgba(20,15,30,0.97)",
+            border: "1px solid rgba(139,92,246,0.35)",
+            backdropFilter: "blur(14px)",
+          }}
+        >
+          <p className="text-[10px] uppercase tracking-wider font-bold mb-2" style={{ color: "#a78bfa" }}>
+            🛡️ Proxy în numele tău
+          </p>
+          <p className="text-[9px] mb-3" style={{ color: "#666" }}>
+            Ce a răspuns AI-ul tău delegate lui Alex cât tu lipsești
+          </p>
+          <div className="space-y-2">
+            {approvals.slice().reverse().slice(0, 6).map((a, i) => (
+              <div key={i} className="p-2 rounded-lg" style={{ backgroundColor: "rgba(139,92,246,0.08)", border: "1px solid rgba(139,92,246,0.2)" }}>
+                <p className="text-[9px]" style={{ color: "#888" }}>{(a.ts || "").slice(5, 16).replace("T", " ")}</p>
+                <p className="text-[11px] whitespace-pre-wrap mt-1" style={{ color: "#ddd", lineHeight: 1.4 }}>{a.proxy_response}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 interface Phase { active: string | null; contributions: Contribution[]; synthesis: string | null; asking: boolean; }
 
 // No fake ambient feed — removed. All displayed activity is real data from DB.
@@ -338,29 +389,10 @@ export default function Boardroom() {
       </header>
 
       {/* Proxy activity floating panel — shows when Delegate is active */}
+      {/* Proxy activity — collapsed floating pill by default (doesn't cover table).
+          Click to expand into a right-side drawer with history. */}
       {delegateActive && proxyApprovals.length > 0 && (
-        <div className="fixed left-3 top-16 w-80 p-3 rounded-xl hidden lg:block z-20 max-h-[70vh] overflow-y-auto"
-          style={{
-            backgroundColor: "rgba(20,15,30,0.92)",
-            border: "1px solid rgba(139,92,246,0.35)",
-            backdropFilter: "blur(12px)",
-          }}>
-          <p className="text-[10px] uppercase tracking-wider font-bold mb-2 flex items-center gap-1" style={{ color: "#a78bfa" }}>
-            🛡️ Proxy în numele tău
-          </p>
-          <p className="text-[9px] mb-3" style={{ color: "#666" }}>
-            Aici vezi ce a răspuns AI-ul tău delegate lui Alex cât tu lipsești
-          </p>
-          <div className="space-y-3">
-            {proxyApprovals.slice().reverse().slice(0, 6).map((a, i) => (
-              <div key={i} className="p-2 rounded-lg" style={{ backgroundColor: "rgba(139,92,246,0.08)", border: "1px solid rgba(139,92,246,0.2)" }}>
-                <p className="text-[9px]" style={{ color: "#888" }}>{(a.ts || "").slice(5, 16).replace("T", " ")}</p>
-                <p className="text-[11px] font-bold mt-1" style={{ color: "#a78bfa" }}>Răspuns proxy:</p>
-                <p className="text-[11px] whitespace-pre-wrap" style={{ color: "#ddd", lineHeight: 1.5 }}>{a.proxy_response}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <ProxyDrawer approvals={proxyApprovals} />
       )}
 
       {/* Room arena — leaves 300px clear on the right for Activity Live panel */}
