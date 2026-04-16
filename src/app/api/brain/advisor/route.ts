@@ -119,9 +119,13 @@ async function readState(userId: string): Promise<BrainState> {
   const day = 24 * 60 * 60 * 1000;
 
   const profs = profiles.data ?? [];
+  // Real pricing bands (USD, validated 2026-04-16 by Eduard):
+  //   Creator $24 · Pro $49 · Studio $99 · Agency $249. Starter = 14d trial.
+  //   starter/lite/business/enterprise appear in DB as legacy / custom tiers
+  //   — counted as paying with conservative pricing estimates.
   const paying = profs.filter((p) => {
-    const plan = (p.plan ?? p.subscription_plan ?? "") as string;
-    return ["pro", "studio", "agency", "business", "enterprise", "creator", "starter", "lite"].includes(plan);
+    const plan = (p.plan ?? p.subscription_plan ?? "").toLowerCase();
+    return ["creator", "pro", "studio", "agency", "starter", "lite", "business", "enterprise"].includes(plan);
   });
   // Trial users: profiles.trial_ends_at doesn't exist in this schema, so
   // we can't compute real trial cohort. Proxy: free users signed up
@@ -137,11 +141,17 @@ async function readState(userId: string): Promise<BrainState> {
     (p) => p.created_at && now - new Date(p.created_at).getTime() < 7 * day,
   );
 
-  // Plan pricing snapshot — quick MRR estimate. Include starter + lite
-  // which show up in real profiles data (test accounts or early bands).
+  // Real prices (USD) from /pricing page, validated 2026-04-16 by Eduard:
+  //   Creator $24 · Pro $49 · Studio $99 · Agency $249 · Starter = 14-day
+  //   trial (free first, converts to Creator after). lite/business/
+  //   enterprise are legacy / custom — conservative estimates kept for MRR
+  //   calc until they're cleaned up in profiles.
+  // Stripe account is in RON; these USD amounts are charged then converted
+  // on payout (Stripe handles FX automatically, ~1-2% conversion fee).
   const PLAN_PRICE: Record<string, number> = {
-    lite: 19, starter: 29, creator: 24, pro: 49, studio: 99,
-    business: 99, agency: 249, enterprise: 249,
+    starter: 0, // trial band, no MRR contribution
+    creator: 24, pro: 49, studio: 99, agency: 249,
+    lite: 19, business: 99, enterprise: 249,
   };
   const mrr = paying.reduce((s, p) => {
     const plan = (p.plan ?? p.subscription_plan ?? "") as string;
