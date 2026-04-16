@@ -391,7 +391,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/venture-pipeline") ||   // Venture pipeline CRUD
       pathname.startsWith("/api/brain/global-prospects") ||   // Global prospects scan + semantic search
       pathname.startsWith("/api/brain/demand-scanner") ||     // Marketplace demand signal scanner
-      pathname.startsWith("/api/brain/alex-loom")             // AlexLoom — personalized video pitch
+      pathname.startsWith("/api/brain/alex-loom") ||          // AlexLoom — personalized video pitch
+      pathname.startsWith("/api/brain/platform-inventory")    // Platform capabilities registry
     ) {
       return NextResponse.next();
     }
@@ -613,6 +614,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith("/api/brain/global-prospects/") ||
     pathname === "/api/brain/demand-scanner" ||
     pathname === "/api/brain/alex-loom" ||
+    pathname === "/api/brain/platform-inventory" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
