@@ -395,7 +395,9 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/platform-inventory") || // Platform capabilities registry
       pathname.startsWith("/api/brain/dev-pulse") ||          // Claude → Alex one-way pulse
       pathname.startsWith("/api/brain/ping-claude") ||        // Alex/agents/Telegram → Claude inbox
-      pathname.startsWith("/api/brain/alex-loom/avatar-poll") // Avatar async result poller
+      pathname.startsWith("/api/brain/alex-loom/avatar-poll") || // Avatar async result poller
+      pathname.startsWith("/api/brain/learn-from-incident") || // Auto-learning from ops_incidents
+      pathname.startsWith("/api/brain/auto-pattern-update") // Auto-adjust intermediary scores
     ) {
       return NextResponse.next();
     }
@@ -622,6 +624,8 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/platform-inventory" ||
     pathname === "/api/brain/dev-pulse" ||
     pathname === "/api/brain/ping-claude" ||
+    pathname === "/api/brain/learn-from-incident" ||
+    pathname === "/api/brain/auto-pattern-update" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
