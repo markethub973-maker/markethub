@@ -14,7 +14,9 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
-  if (req.cookies.get("brain_admin")?.value !== "1") {
+  const cookieOk = req.cookies.get("brain_admin")?.value === "1";
+  const cronOk = req.headers.get("x-brain-cron-secret") === process.env.BRAIN_CRON_SECRET;
+  if (!cookieOk && !cronOk) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const body = (await req.json().catch(() => ({}))) as {
