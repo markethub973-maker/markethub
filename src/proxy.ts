@@ -373,7 +373,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/linkedin-daily") ||    // autonomous LinkedIn post
       pathname.startsWith("/api/brain/goals") ||             // goals CRUD
       pathname.startsWith("/api/brain/advisor") ||           // state advisor
-      pathname.startsWith("/api/brain/reverse-audit")        // Reverse Strategy vertical audit (mandatory before outreach)
+      pathname.startsWith("/api/brain/reverse-audit") ||     // Reverse Strategy vertical audit (mandatory before outreach)
+      pathname.startsWith("/api/brain/find-intermediaries")  // Reverse search: end customer → intermediaries
     ) {
       return NextResponse.next();
     }
@@ -585,6 +586,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/outreach-batch" ||
     pathname === "/api/brain/mine-leads" ||
     pathname === "/api/brain/reverse-audit" ||
+    pathname === "/api/brain/find-intermediaries" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||

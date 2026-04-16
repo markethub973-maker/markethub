@@ -191,6 +191,8 @@ export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as {
     leads?: LeadInput[];
     dry_run?: boolean;
+    intermediary_type?: string; // REQUIRED — enables Reverse Strategy gate
+    force?: boolean;            // override gate (use sparingly, logged)
   };
   const leads = (body.leads ?? []).slice(0, 25); // cap per batch
   if (!leads.length) {
@@ -204,6 +206,60 @@ export async function POST(req: NextRequest) {
   const results: Array<Record<string, unknown>> = [];
 
   const svc = createServiceClient();
+
+  // ── REVERSE STRATEGY GATE — mandatory check before outreach ──────────────
+  // Per Alex Knowledge Brief rule 7a: never launch outreach to a vertical
+  // without verified fit score ≥ 7. Prevents us from burning prospects with
+  // mismatched pitches.
+  if (body.intermediary_type && !body.force) {
+    const { data: pattern } = await svc
+      .from("brain_intermediary_patterns")
+      .select("intermediary_type, our_product_match_score, notes")
+      .ilike("intermediary_type", `%${body.intermediary_type}%`)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!pattern) {
+      return NextResponse.json(
+        {
+          error: "Reverse Strategy gate: no audit found for this intermediary_type",
+          action_required: `POST /api/brain/reverse-audit with {"intermediary_type":"${body.intermediary_type}"} first`,
+          hint: "Pass force=true to override (logged in cron_logs).",
+        },
+        { status: 409 },
+      );
+    }
+    if ((pattern.our_product_match_score ?? 0) < 7) {
+      return NextResponse.json(
+        {
+          error: `Reverse Strategy gate: score ${pattern.our_product_match_score}/10 is below threshold 7`,
+          intermediary_type: pattern.intermediary_type,
+          recommendation: (pattern.our_product_match_score ?? 0) < 5 ? "park" : "iterate_offer",
+          notes: pattern.notes,
+          hint: "Iterate offer or pick a different vertical with score ≥ 7. Pass force=true to override (logged).",
+        },
+        { status: 409 },
+      );
+    }
+    // Log approved gate passage
+    await svc.from("cron_logs").insert({
+      job: "outreach-gate-passed",
+      result: {
+        intermediary_type: body.intermediary_type,
+        score: pattern.our_product_match_score,
+        lead_count: leads.length,
+      },
+    });
+  } else if (body.force) {
+    await svc.from("cron_logs").insert({
+      job: "outreach-gate-forced",
+      result: {
+        intermediary_type: body.intermediary_type ?? "not_specified",
+        lead_count: leads.length,
+        risk: "gate_bypassed",
+      },
+    });
+  }
 
   // Sofia (sales) pulses LIVE in boardroom while outreach batch runs
   const isDryRun = Boolean(body.dry_run);
