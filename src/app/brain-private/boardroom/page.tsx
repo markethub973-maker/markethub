@@ -21,17 +21,19 @@ interface Seat {
 }
 
 const SEATS: Seat[] = [
-  { id: "alex",       name: "Alex",   title: "CEO",                  icon: "👔", angle: 270, kind: "alex" },   // head
-  { id: "cmo",        name: "Vera",   title: "Dir. Marketing",       icon: "🎯", angle: 305, kind: "agent" },
-  { id: "content",    name: "Marcus", title: "Dir. Conținut",        icon: "✍️", angle: 340, kind: "agent" },
-  { id: "sales",      name: "Sofia",  title: "Dir. Vânzări",         icon: "🤝", angle: 15,  kind: "agent" },
-  { id: "analyst",    name: "Ethan",  title: "Analist Growth",       icon: "📊", angle: 50,  kind: "agent" },
-  { id: "researcher", name: "Nora",   title: "Cercetător",           icon: "🔍", angle: 85,  kind: "agent" },
-  { id: "you",        name: "Eduard", title: "Founder (tu)",         icon: "🧑‍💼", angle: 120, kind: "you" },   // opposite of Alex
-  { id: "competitive",name: "Kai",    title: "Competitive",          icon: "⚔️", angle: 155, kind: "agent" },
-  { id: "copywriter", name: "Iris",   title: "Copywriter",           icon: "🎨", angle: 190, kind: "agent" },
-  { id: "strategist", name: "Leo",    title: "Strategist",           icon: "🧠", angle: 220, kind: "agent" },
-  { id: "finance",    name: "Dara",   title: "CFO",                  icon: "💰", angle: 250, kind: "agent" },
+  // 12 seats now — Alex head + 10 specialists + Eduard. Evenly distributed.
+  { id: "alex",       name: "Alex",   title: "CEO",                  icon: "👔", angle: 270, kind: "alex" },
+  { id: "cmo",        name: "Vera",   title: "Dir. Marketing",       icon: "🎯", angle: 300, kind: "agent" },
+  { id: "content",    name: "Marcus", title: "Dir. Conținut",        icon: "✍️", angle: 330, kind: "agent" },
+  { id: "sales",      name: "Sofia",  title: "Dir. Vânzări",         icon: "🤝", angle: 0,   kind: "agent" },
+  { id: "analyst",    name: "Ethan",  title: "Analist Growth",       icon: "📊", angle: 30,  kind: "agent" },
+  { id: "researcher", name: "Nora",   title: "Cercetător",           icon: "🔍", angle: 60,  kind: "agent" },
+  { id: "legal",      name: "Theo",   title: "Chief Legal",          icon: "⚖️", angle: 90,  kind: "agent" },
+  { id: "you",        name: "Eduard", title: "Founder (tu)",         icon: "🧑‍💼", angle: 120, kind: "you" },
+  { id: "competitive",name: "Kai",    title: "Competitive",          icon: "⚔️", angle: 150, kind: "agent" },
+  { id: "copywriter", name: "Iris",   title: "Copywriter",           icon: "🎨", angle: 180, kind: "agent" },
+  { id: "strategist", name: "Leo",    title: "Strategist",           icon: "🧠", angle: 210, kind: "agent" },
+  { id: "finance",    name: "Dara",   title: "CFO",                  icon: "💰", angle: 240, kind: "agent" },
 ];
 
 interface Contribution { agent_id: string; agent_name: string; text: string; sessionId?: string; round?: 1 | 2; responds_to?: string | null; }

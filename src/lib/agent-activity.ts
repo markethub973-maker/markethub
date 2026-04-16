@@ -21,7 +21,8 @@ export type AgentId =
   | "competitive"  // Kai — Competitive
   | "copywriter"   // Iris — Copy
   | "strategist"   // Leo — Strategy
-  | "finance";     // Dara — Finance
+  | "finance"      // Dara — Finance
+  | "legal";       // Theo — Legal
 
 const AGENT_NAMES: Record<AgentId, string> = {
   alex: "Alex",
@@ -34,6 +35,7 @@ const AGENT_NAMES: Record<AgentId, string> = {
   copywriter: "Iris",
   strategist: "Leo",
   finance: "Dara",
+  legal: "Theo",
 };
 
 export interface ActivityHandle {

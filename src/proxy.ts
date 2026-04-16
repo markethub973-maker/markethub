@@ -383,7 +383,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/knowledge") ||         // Knowledge base UI feeder
       pathname.startsWith("/api/brain/cross-sell") ||        // Cross-sell signals endpoint
       pathname.startsWith("/api/brain/turbo-scout") ||       // TURBO daily self-improvement scout
-      pathname.startsWith("/api/brain/fundraising-analysis") // Deep fundraising research + plan
+      pathname.startsWith("/api/brain/fundraising-analysis") ||// Deep fundraising research + plan
+      pathname.startsWith("/api/brain/legal-check")           // Theo legal compliance review
     ) {
       return NextResponse.next();
     }
@@ -597,6 +598,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/reverse-audit" ||
     pathname === "/api/brain/find-intermediaries" ||
     pathname === "/api/brain/fundraising-analysis" ||
+    pathname === "/api/brain/legal-check" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||

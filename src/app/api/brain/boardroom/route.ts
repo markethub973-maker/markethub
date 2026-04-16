@@ -46,6 +46,7 @@ function pickRelevantAgents(question: string): string[] {
   if (/lead|cercetare|domeniu|research|firmă|companie/.test(q)) picks.push("researcher");
   if (/strateg|long-term|pariu|categorie nouă|viitor/.test(q)) picks.push("strategist");
   if (/preț|price|bani|revenue|burn|runway|economics/.test(q)) picks.push("finance");
+  if (/legal|gdpr|lege|contract|risc|compliance|sancțiuni|tos|drept|penaliz|jurid/i.test(q)) picks.push("legal");
 
   // Default 4-agent board: CMO, Sales, Copy, Strategist
   if (picks.length === 0) return ["cmo", "sales", "copywriter", "strategist"];
