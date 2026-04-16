@@ -17,6 +17,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
+import { tagClientNeeds } from "@/lib/client-needs-tagger";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -113,6 +114,19 @@ export async function POST(req: NextRequest) {
       });
       if (leads.length >= limit) break;
     }
+    // Populate cross-sell graph — tag each lead with its detected needs.
+    // Basic tagging (vertical + category detected from title/category). Full
+    // snippet-based tagging happens later in outreach-batch enrichment.
+    await Promise.all(
+      leads.map((l) =>
+        tagClientNeeds({
+          domain: l.domain,
+          business_name: l.title,
+          vertical: l.category || String(queryDesc),
+          extra_needs: [l.category || "unknown"].filter(Boolean),
+        }),
+      ),
+    );
     await completeActivity(activity, `Nora: ${leads.length} domenii identificate pentru "${queryDesc}"`, { count: leads.length, query: String(queryDesc) });
     return NextResponse.json({ ok: true, actor, count: leads.length, leads });
   } catch (e) {

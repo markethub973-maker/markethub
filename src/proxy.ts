@@ -353,6 +353,11 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/brain-private/boardroom";
       return NextResponse.rewrite(url);
     }
+    // Knowledge base — strategic brain dashboard (frameworks, patterns, cross-sell)
+    if (pathname === "/knowledge" || pathname === "/brain-private/knowledge") {
+      url.pathname = "/brain-private/knowledge";
+      return NextResponse.rewrite(url);
+    }
     // Brain APIs the dashboard uses — allow through on this subdomain.
     if (
       pathname.startsWith("/api/brain/outreach-batch") ||
@@ -374,7 +379,9 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/goals") ||             // goals CRUD
       pathname.startsWith("/api/brain/advisor") ||           // state advisor
       pathname.startsWith("/api/brain/reverse-audit") ||     // Reverse Strategy vertical audit (mandatory before outreach)
-      pathname.startsWith("/api/brain/find-intermediaries")  // Reverse search: end customer → intermediaries
+      pathname.startsWith("/api/brain/find-intermediaries") ||// Reverse search: end customer → intermediaries
+      pathname.startsWith("/api/brain/knowledge") ||         // Knowledge base UI feeder
+      pathname.startsWith("/api/brain/cross-sell")           // Cross-sell signals endpoint
     ) {
       return NextResponse.next();
     }

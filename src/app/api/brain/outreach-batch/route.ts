@@ -19,6 +19,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { generateJsonReviewed } from "@/lib/llm";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
+import { tagClientNeeds } from "@/lib/client-needs-tagger";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -291,6 +292,13 @@ export async function POST(req: NextRequest) {
       results.push({ domain: lead.domain, status: "no_email" });
       continue;
     }
+    // Populate cross-sell graph with real snippet-based tags (more accurate
+    // than mine-leads' basic vertical tag). This runs regardless of dry_run.
+    void tagClientNeeds({
+      domain: lead.domain,
+      intermediary_type: body.intermediary_type ?? null,
+      snippet: enriched.snippet,
+    });
     const msg = await composeMessage(anthropic, enriched);
     if (!msg) {
       results.push({ domain: lead.domain, status: "compose_failed", email: enriched.email });
