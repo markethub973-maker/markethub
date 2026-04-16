@@ -1,12 +1,14 @@
 /**
- * Unified TTS layer for Alex's voice.
+ * Unified TTS layer for Alex's voice + per-agent voices (11 agents).
  *
- * Priority:
- *   1. ElevenLabs (native RO pronunciation, multilingual v2) — if ELEVENLABS_API_KEY set
- *   2. OpenAI tts-1 (fallback; English-accented RO)
+ * Priority for Romanian text:
+ *   1. Azure Speech (native RO, Emil male / Alina female) — if AZURE_SPEECH_KEY set
+ *   2. ElevenLabs multilingual v2 — if ELEVENLABS_API_KEY set
+ *   3. OpenAI tts-1 (last fallback; English-accented RO)
  *
- * Returns both the bytes and the MIME/container info so callers can pick
- * the right Telegram method (sendVoice for opus, sendAudio for mp3).
+ * Priority for non-Romanian text:
+ *   1. ElevenLabs (native for EN, good for DE/FR/ES/IT)
+ *   2. OpenAI fallback
  */
 
 export type TtsResult = {
@@ -14,11 +16,71 @@ export type TtsResult = {
   mime: string;
   /** "opus" → Telegram sendVoice; "mp3" → Telegram sendAudio */
   format: "opus" | "mp3";
+  voice_used?: string;
+  provider?: "azure" | "elevenlabs" | "openai";
 };
 
-// ElevenLabs voice IDs — deep male founder vibe
+export type AgentId = "alex" | "cmo" | "sales" | "content" | "analyst" | "researcher" | "competitive" | "copywriter" | "strategist" | "finance" | "legal";
+
+/**
+ * Which voice each of the 11 agents uses. Female agents → Alina.
+ * Male agents → Emil.
+ */
+const AGENT_VOICE_MAP: Record<AgentId, { azure: string; eleven: string; gender: "male" | "female" }> = {
+  alex:        { azure: "ro-RO-EmilNeural",  eleven: "onwK4e9ZLuTAKqWW03F9", gender: "male" },   // CEO
+  content:     { azure: "ro-RO-EmilNeural",  eleven: "onwK4e9ZLuTAKqWW03F9", gender: "male" },   // Marcus
+  analyst:     { azure: "ro-RO-EmilNeural",  eleven: "onwK4e9ZLuTAKqWW03F9", gender: "male" },   // Ethan
+  competitive: { azure: "ro-RO-EmilNeural",  eleven: "onwK4e9ZLuTAKqWW03F9", gender: "male" },   // Kai
+  strategist:  { azure: "ro-RO-EmilNeural",  eleven: "onwK4e9ZLuTAKqWW03F9", gender: "male" },   // Leo
+  legal:       { azure: "ro-RO-EmilNeural",  eleven: "onwK4e9ZLuTAKqWW03F9", gender: "male" },   // Theo
+  cmo:         { azure: "ro-RO-AlinaNeural", eleven: "21m00Tcm4TlvDq8ikWAM", gender: "female" }, // Vera
+  sales:       { azure: "ro-RO-AlinaNeural", eleven: "21m00Tcm4TlvDq8ikWAM", gender: "female" }, // Sofia
+  researcher:  { azure: "ro-RO-AlinaNeural", eleven: "21m00Tcm4TlvDq8ikWAM", gender: "female" }, // Nora
+  copywriter:  { azure: "ro-RO-AlinaNeural", eleven: "21m00Tcm4TlvDq8ikWAM", gender: "female" }, // Iris
+  finance:     { azure: "ro-RO-AlinaNeural", eleven: "21m00Tcm4TlvDq8ikWAM", gender: "female" }, // Dara
+};
+
+// ElevenLabs voice IDs — deep male founder vibe (fallback for non-RO)
 const ELEVEN_VOICE_ID = process.env.ELEVENLABS_VOICE_ID ?? "pNInz6obpgDQGcFmaJgB"; // "Adam"
 const ELEVEN_MODEL = "eleven_multilingual_v2";
+
+/**
+ * Heuristic: detect if text is Romanian (uses RO-specific characters or common words).
+ */
+function isRomanian(text: string): boolean {
+  // RO-specific diacritics
+  if (/[ăâîșț]/i.test(text)) return true;
+  // Common RO words (higher confidence if multiple)
+  const roWords = (text.match(/\b(și|sunt|este|pentru|clientul|nostru|facem|acum|dacă|ce|de|la|dar|după|am|vom|foarte|bun|bine)\b/gi) ?? []).length;
+  return roWords >= 2;
+}
+
+async function azureTts(text: string, agent: AgentId = "alex"): Promise<TtsResult | null> {
+  const key = process.env.AZURE_SPEECH_KEY;
+  const region = process.env.AZURE_SPEECH_REGION ?? "westeurope";
+  if (!key) return null;
+
+  const voice = AGENT_VOICE_MAP[agent].azure;
+  const ssml = `<speak version='1.0' xml:lang='ro-RO'><voice name='${voice}'>${text.slice(0, 4000).replace(/[<>&]/g, (c) => c === "<" ? "&lt;" : c === ">" ? "&gt;" : "&amp;")}</voice></speak>`;
+
+  try {
+    const res = await fetch(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+      method: "POST",
+      headers: {
+        "Ocp-Apim-Subscription-Key": key,
+        "Content-Type": "application/ssml+xml",
+        "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3",
+        "User-Agent": "MarketHubPro/1.0",
+      },
+      body: ssml,
+    });
+    if (!res.ok) return null;
+    const audio = await res.arrayBuffer();
+    return { audio, mime: "audio/mpeg", format: "mp3", voice_used: voice, provider: "azure" };
+  } catch {
+    return null;
+  }
+}
 
 async function elevenLabsTts(text: string): Promise<TtsResult | null> {
   const key = process.env.ELEVENLABS_API_KEY;
@@ -76,10 +138,27 @@ async function openaiTts(text: string, voice = "onyx"): Promise<TtsResult | null
 }
 
 /**
- * Synthesize speech from text. Uses ElevenLabs if configured, else OpenAI.
+ * Synthesize speech from text with agent-aware voice selection.
+ * Priority:
+ *   - Romanian text → Azure (Emil/Alina native RO) if AZURE_SPEECH_KEY set
+ *   - Other languages or Azure missing → ElevenLabs
+ *   - Fallback → OpenAI
  */
-export async function synthesizeSpeech(text: string): Promise<TtsResult | null> {
+export async function synthesizeSpeech(
+  text: string,
+  opts: { agent_id?: AgentId } = {},
+): Promise<TtsResult | null> {
+  const agent = opts.agent_id ?? "alex";
+
+  // Romanian content → prefer Azure (native RO pronunciation)
+  if (isRomanian(text)) {
+    const azure = await azureTts(text, agent);
+    if (azure) return azure;
+  }
+
+  // Non-RO or Azure unavailable → ElevenLabs (but pick voice by agent)
   const eleven = await elevenLabsTts(text);
   if (eleven) return eleven;
+
   return await openaiTts(text);
 }
