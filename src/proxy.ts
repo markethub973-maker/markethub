@@ -399,7 +399,10 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/learn-from-incident") || // Auto-learning from ops_incidents
       pathname.startsWith("/api/brain/auto-pattern-update") || // Auto-adjust intermediary scores
       pathname.startsWith("/api/brain/alex-morning-kickoff") || // Daily first-task autonomy
-      pathname.startsWith("/api/brain/alex-loom-batch") // Sofia's daily AlexLoom batch
+      pathname.startsWith("/api/brain/alex-loom-batch") || // Sofia's daily AlexLoom batch
+      pathname.startsWith("/api/brain/global-prospects/bulk-import") || // Apify-free bulk prospect ingest
+      pathname.startsWith("/api/brain/demand-seeds") || // Seed brain_demand_signals
+      pathname.startsWith("/api/brain/embed-client") // Client profile embedding
     ) {
       return NextResponse.next();
     }
@@ -630,6 +633,9 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/auto-pattern-update" ||
     pathname === "/api/brain/alex-morning-kickoff" ||
     pathname === "/api/brain/alex-loom-batch" ||
+    pathname === "/api/brain/global-prospects/bulk-import" ||
+    pathname === "/api/brain/demand-seeds" ||
+    pathname === "/api/brain/embed-client" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
