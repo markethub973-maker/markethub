@@ -124,7 +124,7 @@ Return 5-8 ventures, sorted by confidence_score descending. Be concrete and real
   try {
     // Use generateText + manual JSON extraction for robustness.
     const { generateText } = await import("@/lib/llm");
-    rawText = await generateText(sys, user, { maxTokens: 4000 });
+    rawText = await generateText(sys, user, { maxTokens: 8000 });
     if (rawText) {
       // Try to extract JSON from markdown-wrapped or plain response
       const jsonMatch = rawText.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) ?? rawText.match(/(\{[\s\S]*\})/);

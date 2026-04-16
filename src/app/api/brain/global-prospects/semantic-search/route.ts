@@ -78,19 +78,37 @@ export async function POST(req: NextRequest) {
     return dot / (Math.sqrt(na) * Math.sqrt(nb) + 1e-8);
   };
 
+  // pgvector returns embedding as string "[0.1,0.2,...]" via PostgREST — parse to numbers
+  const parseEmbedding = (e: unknown): number[] | null => {
+    if (Array.isArray(e)) return e as number[];
+    if (typeof e === "string") {
+      try {
+        const parsed = JSON.parse(e);
+        return Array.isArray(parsed) ? parsed : null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  };
+
   const scored = rows
-    .filter((r) => Array.isArray(r.embedding))
-    .map((r) => ({
-      domain: r.domain,
-      business_name: r.business_name,
-      country_code: r.country_code,
-      vertical: r.vertical,
-      email: r.email,
-      phone: r.phone,
-      snippet: (r.snippet ?? "").slice(0, 200),
-      detected_needs: r.detected_needs,
-      similarity: cosine(queryEmbedding, r.embedding as number[]),
-    }))
+    .map((r) => {
+      const emb = parseEmbedding(r.embedding);
+      if (!emb) return null;
+      return {
+        domain: r.domain,
+        business_name: r.business_name,
+        country_code: r.country_code,
+        vertical: r.vertical,
+        email: r.email,
+        phone: r.phone,
+        snippet: (r.snippet ?? "").slice(0, 200),
+        detected_needs: r.detected_needs,
+        similarity: cosine(queryEmbedding, emb),
+      };
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null)
     .sort((a, b) => b.similarity - a.similarity)
     .slice(0, maxResults);
 
