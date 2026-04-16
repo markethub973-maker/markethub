@@ -140,22 +140,12 @@ Write the 30-second script now.`;
     return NextResponse.json({ error: "voice synthesis failed (ElevenLabs/OpenAI)" }, { status: 502 });
   }
 
-  // Step 4: Fal.ai image-to-video animation from screenshot (if available)
-  let videoUrl: string | null = null;
-  if (screenshotUrl) {
-    const operatorUserId = process.env.BRAIN_OPERATOR_USER_ID ?? "56c46d7f-0662-4547-9038-ba9cf13c45c1";
-    const videoRes = await generateVideo({
-      userId: operatorUserId,
-      mode: "image-to-video",
-      source_image_url: screenshotUrl,
-      prompt: `Subtle zoom-in + gentle camera pan on the website screenshot. Professional, clean motion. 5 seconds.`,
-      duration_sec: 5,
-      aspect_ratio: "16:9",
-      source_context: "alex-loom",
-      source_ref: domain,
-    });
-    if (videoRes.ok && videoRes.video_url) videoUrl = videoRes.video_url;
-  }
+  // Step 4 REMOVED: Fal.ai Seedance image-to-video corrupts screenshots with
+  // fake Thai/Arabic-like glyphs where text was (generative model treats text
+  // as visual patterns, not letters). Static screenshot + audio delivers
+  // cleaner prospect experience. Will revisit with Tavus/HeyGen (€0.15/video
+  // lip-sync) or ffmpeg Ken Burns (self-hosted) when budget allows.
+  const videoUrl: string | null = null;
 
   // Step 5: Upload voice audio to R2 (Supabase Storage fallback if R2 fails)
   // For MVP: save as base64 in DB result, frontend/email can inline it or host.
@@ -202,11 +192,12 @@ Write the 30-second script now.`;
     manifest,
     preview: {
       script,
-      video_url: videoUrl,
-      screenshot_url: screenshotUrl,
+      screenshot_url: screenshotUrl, // STATIC — clean, text legible
       voice_ready: true,
       voice_bytes: voiceSize,
+      voice_provider: voice.provider ?? "unknown",
+      delivery_format: "screenshot + voice + script (no animated video — prevents fake glyph corruption)",
     },
-    next_action: "Eduard reviews via Telegram → approves → Alex emails prospect with video+voice URLs",
+    next_action: "Eduard reviews via Telegram → approves → Alex emails prospect with screenshot embedded + voice audio attached + personalized script",
   });
 }
