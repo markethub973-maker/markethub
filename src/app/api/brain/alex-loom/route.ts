@@ -125,6 +125,11 @@ Rules:
 - Spell numbers out (e.g., "zece ori" not "10x", "douăzeci" not "20").
 - PUNCTUATION for TTS: only ONE question mark at the END of the actual question. Do NOT end sentences with "?" when the final clause is a subordinate/consequence (e.g., "ca să vezi..."). Put a period there and finish the question earlier. Example WRONG: "Vrei demo, ca să vezi cum arată?" → TTS reads rising intonation on "arată?". Example RIGHT: "Vrei un demo? Ca să vezi cum arată în practică." Split into question + declarative follow-up.
 - Each sentence should be 8-15 words max so TTS intonation stays natural.
+- AZURE TTS RO QUIRKS — AVOID these word endings (Emil doubles the final 'i'):
+  · 2nd person singular verbs ending in "-ezi" (gestionezi, lucrezi, folosești) — replace with noun constructs or "ai" form. Ex: "firmele pe care le ai" NOT "firmele pe care le gestionezi".
+  · verbs ending in "-izi" (analizi, organizezi) — replace with periphrase
+  · adjectives ending in "-ii" (mulții, clienții — use "mulți clienți")
+  · Always prefer: "ai", "vezi", "primești", "ajutăm" (2p sg forms ending in other letters)
 
 Output ONLY the script text, no markdown, no quotes.`;
 
@@ -142,9 +147,11 @@ Write the 30-second script now.`;
     return NextResponse.json({ error: "script generation failed" }, { status: 502 });
   }
 
-  // Step 3 (parallel): Screenshot + Voice synthesis
-  const [screenshotUrl, voice] = await Promise.all([
+  // Step 3 (parallel): Screenshots (prospect + MarketHub Pro promo) + Voice synthesis
+  // Dual-utility video per Eduard rule: prospect sees their site AND our brand.
+  const [screenshotUrl, screenshotMhpUrl, voice] = await Promise.all([
     screenshotWebsite(body.prospect_url),
+    screenshotWebsite("https://markethubpromo.com/promo"),
     synthesizeSpeech(script),
   ]);
 
@@ -182,8 +189,10 @@ Write the 30-second script now.`;
         },
         body: JSON.stringify({
           screenshot_url: screenshotUrl,
+          screenshot_url_2: screenshotMhpUrl, // MarketHub Pro showcase — dual utility
           audio_url: audioPublicUrl,
-          text_overlay: `Demo pentru ${businessName}`,
+          text_overlay: `Pentru ${businessName}`,
+          text_overlay_2: `MarketHub Pro · platforma ta AI`,
         }),
         signal: AbortSignal.timeout(180_000),
       });
