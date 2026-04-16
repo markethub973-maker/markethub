@@ -123,6 +123,8 @@ Rules:
 - Language: ${lang === "ro" ? "Romanian" : "English"}.
 - CRITICAL for ${lang}: use ONLY natural, clean ${lang === "ro" ? "Romanian" : "English"} words. NO mixed-language terms (avoid "content", "dashboard", "AI", "SMB" in Romanian text — use "conținut", "platformă", "inteligență artificială", "firme mici"). Azure TTS struggles on unfamiliar foreign words.
 - Spell numbers out (e.g., "zece ori" not "10x", "douăzeci" not "20").
+- PUNCTUATION for TTS: only ONE question mark at the END of the actual question. Do NOT end sentences with "?" when the final clause is a subordinate/consequence (e.g., "ca să vezi..."). Put a period there and finish the question earlier. Example WRONG: "Vrei demo, ca să vezi cum arată?" → TTS reads rising intonation on "arată?". Example RIGHT: "Vrei un demo? Ca să vezi cum arată în practică." Split into question + declarative follow-up.
+- Each sentence should be 8-15 words max so TTS intonation stays natural.
 
 Output ONLY the script text, no markdown, no quotes.`;
 
