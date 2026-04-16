@@ -43,6 +43,8 @@ function buildCsp(nonce: string): string {
 const ALLOWED_ORIGINS = [
   "https://markethubpromo.com",
   "https://www.markethubpromo.com",
+  "https://brain.markethubpromo.com",
+  "https://get.markethubpromo.com",
   // Allow localhost in development
   ...(process.env.NODE_ENV === "development"
     ? ["http://localhost:3000", "http://localhost:3001"]
