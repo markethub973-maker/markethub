@@ -98,6 +98,23 @@ export async function GET(req: NextRequest) {
     });
   } catch { /* delegate_decisions table may not exist yet */ }
 
+  // 4b. Agent activity events (brain_agent_activity) — powers live pulse
+  try {
+    const { data: acts } = await svc
+      .from("brain_agent_activity")
+      .select("agent_id,agent_name,activity,description,created_at")
+      .gte("created_at", new Date(Date.now() - 6 * 3600_000).toISOString())
+      .order("created_at", { ascending: false })
+      .limit(10);
+    (acts ?? []).forEach((r) => {
+      const icon = r.activity === "started" ? "🔴" : r.activity === "failed" ? "❌" : "✅";
+      events.push({
+        t: new Date(r.created_at as string),
+        line: `${fmtTime(r.created_at as string)} · ${icon} ${String(r.description ?? "").slice(0, 100)}`,
+      });
+    });
+  } catch { /* no-op */ }
+
   // 5. Telegram messages (last 6h — just conversation metadata, not content)
   try {
     const { data: tg } = await svc
@@ -120,10 +137,35 @@ export async function GET(req: NextRequest) {
   events.sort((a, b) => b.t.getTime() - a.t.getTime());
   const lines = events.slice(0, 8).map((e) => e.line);
 
+  // Active agents — anyone with a "started" event in last 5 min without a
+  // later "completed" or "failed" event. This drives the live pulse in the
+  // Boardroom UI (matching seat gets highlighted in real time).
+  const active_agents: string[] = [];
+  try {
+    const fiveMinAgo = new Date(Date.now() - 5 * 60_000).toISOString();
+    const { data: recent } = await svc
+      .from("brain_agent_activity")
+      .select("agent_id,activity,created_at")
+      .gte("created_at", fiveMinAgo)
+      .order("created_at", { ascending: false })
+      .limit(30);
+    const byAgent: Record<string, string> = {};
+    (recent ?? []).forEach((r) => {
+      // The most recent event per agent wins (list is desc)
+      if (!(r.agent_id as string in byAgent)) {
+        byAgent[r.agent_id as string] = r.activity as string;
+      }
+    });
+    for (const [id, act] of Object.entries(byAgent)) {
+      if (act === "started") active_agents.push(id);
+    }
+  } catch { /* no-op */ }
+
   return NextResponse.json({
     ok: true,
     events: lines,
     count: lines.length,
+    active_agents,
     note: lines.length === 0 ? "No activity in the last 24h" : undefined,
   });
 }

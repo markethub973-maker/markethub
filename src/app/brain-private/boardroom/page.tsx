@@ -64,10 +64,13 @@ export default function Boardroom() {
     } catch { /* ignore */ }
   }, [phase.contributions, phase.synthesis]);
   const [error, setError] = useState<string | null>(null);
-  const [ambientAgent] = useState<string | null>(null); // kept for compatibility, never set
-  const [ambientMsg] = useState<string>(""); // kept for compatibility, never set
+  // ambientAgent is now REAL — populated from /api/brain/activity active_agents
+  // (which agent is currently executing a backend job right now). No fake data.
+  const [ambientAgent, setAmbientAgent] = useState<string | null>(null);
+  const [ambientMsg, setAmbientMsg] = useState<string>(""); // latest real activity line for the active agent
   const [whisper] = useState<{ from: string; to: string } | null>(null); // kept for compatibility, never set
   const [liveFeed, setLiveFeed] = useState<string[]>([]);
+  const [activeAgents, setActiveAgents] = useState<string[]>([]);
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -214,8 +217,9 @@ export default function Boardroom() {
   };
 
   // Real activity feed — pulls actual events from DB (outreach sent/replied,
-  // critical ops incidents, delegate decisions, boardroom sessions). Updates
-  // every 20s. No synthetic data.
+  // critical ops incidents, delegate decisions, agent backend jobs running
+  // RIGHT NOW). Updates every 3s when someone might be active (fast feedback),
+  // every 20s otherwise. No synthetic data.
   useEffect(() => {
     const fetchActivity = async () => {
       try {
@@ -224,11 +228,19 @@ export default function Boardroom() {
         const d = await r.json();
         if (Array.isArray(d.events)) {
           setLiveFeed(d.events.slice(0, 6));
+          // Latest event line for display next to the active seat
+          if (d.events[0]) setAmbientMsg(String(d.events[0]));
+        }
+        if (Array.isArray(d.active_agents)) {
+          setActiveAgents(d.active_agents as string[]);
+          // Pulse the first active agent's seat in real time
+          setAmbientAgent(d.active_agents[0] ?? null);
         }
       } catch { /* no-op */ }
     };
     void fetchActivity();
-    const iv = setInterval(fetchActivity, 20000);
+    // Fast poll (3s) for live pulse responsiveness — lightweight query
+    const iv = setInterval(fetchActivity, 3000);
     return () => clearInterval(iv);
   }, []);
 
@@ -467,7 +479,10 @@ export default function Boardroom() {
         {SEATS.map((s) => {
           const pos = seatPos(s.angle);
           const isActive = phase.active === s.id;
-          const isAmbient = ambientAgent === s.id && !phase.asking;
+          // Real backend-job pulse: seat glows when an actual task is running
+          // for this agent (e.g., Nora scanning Google Maps right now).
+          const isBackendActive = activeAgents.includes(s.id);
+          const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
           const contrib = activeContribs.get(s.id);
           const isAlex = s.kind === "alex";
           const isYou = s.kind === "you";

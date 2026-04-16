@@ -16,6 +16,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -68,9 +69,17 @@ export async function POST(req: NextRequest) {
     input?: Record<string, unknown>;
     limit?: number;
   };
-  const actor = body.actor ?? "apify/google-maps-scraper";
-  const input = body.input ?? { searchString: "dental clinic Bucharest", maxCrawledPlacesPerSearch: 20 };
+  const actor = body.actor ?? "compass/crawler-google-places";
+  const input = body.input ?? { searchStringsArray: ["dental clinic Bucharest"], maxCrawledPlacesPerSearch: 20 };
   const limit = Math.min(body.limit ?? 50, 100);
+
+  // Extract query for the activity description
+  const queryDesc =
+    (Array.isArray((input as Record<string, unknown>).searchStringsArray) && ((input as Record<string, string[]>).searchStringsArray[0])) ||
+    ((input as Record<string, string>).searchString) ||
+    actor;
+
+  const activity = await startActivity("researcher", `Nora scanează: ${queryDesc}`);
 
   // Run actor synchronously and stream the dataset
   try {
@@ -84,6 +93,7 @@ export async function POST(req: NextRequest) {
       },
     );
     if (!runRes.ok) {
+      await failActivity(activity, `Apify ${runRes.status}`, `Apify ${runRes.status}`);
       return NextResponse.json({ error: `Apify ${runRes.status}` }, { status: 502 });
     }
     const items = (await runRes.json()) as ApifyItem[];
@@ -103,8 +113,10 @@ export async function POST(req: NextRequest) {
       });
       if (leads.length >= limit) break;
     }
+    await completeActivity(activity, `Nora: ${leads.length} domenii identificate pentru "${queryDesc}"`, { count: leads.length, query: String(queryDesc) });
     return NextResponse.json({ ok: true, actor, count: leads.length, leads });
   } catch (e) {
+    await failActivity(activity, `Apify run failed`, e instanceof Error ? e.message : String(e));
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Apify run failed" },
       { status: 502 },
