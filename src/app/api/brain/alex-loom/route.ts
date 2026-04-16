@@ -143,8 +143,9 @@ Write the 30-second script now.`;
   // Step 4: Fal.ai image-to-video animation from screenshot (if available)
   let videoUrl: string | null = null;
   if (screenshotUrl) {
+    const operatorUserId = process.env.BRAIN_OPERATOR_USER_ID ?? "56c46d7f-0662-4547-9038-ba9cf13c45c1";
     const videoRes = await generateVideo({
-      userId: "brain-alex-loom",
+      userId: operatorUserId,
       mode: "image-to-video",
       source_image_url: screenshotUrl,
       prompt: `Subtle zoom-in + gentle camera pan on the website screenshot. Professional, clean motion. 5 seconds.`,
