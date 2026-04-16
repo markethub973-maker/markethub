@@ -149,12 +149,46 @@ Write the 30-second script now.`;
     return NextResponse.json({ error: "voice synthesis failed (ElevenLabs/OpenAI)" }, { status: 502 });
   }
 
-  // Step 4 REMOVED: Fal.ai Seedance image-to-video corrupts screenshots with
-  // fake Thai/Arabic-like glyphs where text was (generative model treats text
-  // as visual patterns, not letters). Static screenshot + audio delivers
-  // cleaner prospect experience. Will revisit with Tavus/HeyGen (€0.15/video
-  // lip-sync) or ffmpeg Ken Burns (self-hosted) when budget allows.
-  const videoUrl: string | null = null;
+  // Step 4: Contabo render worker (ffmpeg Ken Burns + text overlay + audio).
+  // Text stays legible (pixels only pan/zoom, not AI regenerated like Fal Seedance).
+  // €0 marginal cost (Contabo VPS paid 6 months upfront).
+  let videoUrl: string | null = null;
+  const renderBase = process.env.RENDER_BASE_URL;
+  const renderSecret = process.env.RENDER_SECRET;
+  // Upload voice audio to Supabase Storage so render worker can fetch it
+  let audioPublicUrl: string | null = null;
+  try {
+    const audioFileName = `alex-loom/${domain}-${Date.now()}.mp3`;
+    const { data: upload } = await svc.storage
+      .from("public-assets")
+      .upload(audioFileName, voice.audio, { contentType: voice.mime, upsert: true });
+    if (upload) {
+      const { data: urlData } = svc.storage.from("public-assets").getPublicUrl(audioFileName);
+      audioPublicUrl = urlData.publicUrl;
+    }
+  } catch { /* audio hosting failed, skip video */ }
+
+  if (renderBase && renderSecret && screenshotUrl && audioPublicUrl) {
+    try {
+      const renderRes = await fetch(`${renderBase}/render`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${renderSecret}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          screenshot_url: screenshotUrl,
+          audio_url: audioPublicUrl,
+          text_overlay: `Demo pentru ${businessName}`,
+        }),
+        signal: AbortSignal.timeout(180_000),
+      });
+      if (renderRes.ok) {
+        const j = (await renderRes.json()) as { ok: boolean; video_url?: string };
+        if (j.ok && j.video_url) videoUrl = j.video_url;
+      }
+    } catch { /* render fail — fallback to static */ }
+  }
 
   // Step 5: Upload voice audio to R2 (Supabase Storage fallback if R2 fails)
   // For MVP: save as base64 in DB result, frontend/email can inline it or host.
