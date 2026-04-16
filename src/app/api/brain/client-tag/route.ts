@@ -113,7 +113,13 @@ async function processOne(svc: ReturnType<typeof createServiceClient>, userId: s
     svc.from("scheduled_posts").select("status,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
   ]);
   const profile = profileRes.data as ProfileRow | null;
-  if (!profile) return { ok: false, user_id: userId, error: "profile not found" };
+  if (!profile) {
+    return {
+      ok: false,
+      user_id: userId,
+      error: `profile not found (db error: ${profileRes.error?.message ?? "no error"})`,
+    };
+  }
   const brand = brandRes.data as BrandRow | null;
   const posts = (postsRes.data ?? []) as PostRow[];
 
