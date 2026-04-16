@@ -19,6 +19,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { Redis } from "@upstash/redis";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 
@@ -28,28 +29,54 @@ export const maxDuration = 30;
 const HAIKU = "claude-haiku-4-5-20251001";
 
 /**
- * Module-level cache. Keyed by operatorId; 5-min TTL on full advisor
- * result, 2-min TTL on state-only. Without this, every consumer of
- * advisor (ask-agent context, morning-debate, health probe, Telegram
- * webhook) pays the full ~10-15s Anthropic latency on each call, which
- * cascaded into dropped Telegram messages earlier today.
+ * Two-tier cache: Upstash Redis (shared across serverless instances, survives
+ * cold starts) + in-memory Map (fallback when Redis is unreachable, keeps the
+ * function hot instance fast). Redis is the primary — the Map mirror exists
+ * only so a sudden Redis outage doesn't instantly flip every advisor call
+ * to full LLM latency.
+ *
+ * Before this upgrade, the cache was module-only so each new serverless
+ * instance paid the full Anthropic latency at least once. With Redis, the
+ * first hit across the whole fleet pays, everyone else hits warm cache.
  */
-type CacheEntry = { data: unknown; expiresAt: number };
-const cache = new Map<string, CacheEntry>();
-const FULL_TTL_MS = 5 * 60_000;
-const STATE_ONLY_TTL_MS = 2 * 60_000;
+const FULL_TTL_SEC = 5 * 60;
+const STATE_ONLY_TTL_SEC = 2 * 60;
 const ANTHROPIC_TIMEOUT_MS = 18_000;
 
-function cacheGet(key: string): unknown | null {
-  const e = cache.get(key);
+type CacheEntry = { data: unknown; expiresAt: number };
+const memCache = new Map<string, CacheEntry>();
+
+function getRedis(): Redis | null {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!url || !token) return null;
+  return new Redis({ url, token });
+}
+
+async function cacheGet(key: string): Promise<unknown | null> {
+  // Redis first (shared across instances)
+  try {
+    const r = getRedis();
+    if (r) {
+      const hit = await r.get(`advisor:${key}`);
+      if (hit) return hit;
+    }
+  } catch { /* fall through to memory */ }
+  const e = memCache.get(key);
   if (!e || e.expiresAt < Date.now()) {
-    if (e) cache.delete(key);
+    if (e) memCache.delete(key);
     return null;
   }
   return e.data;
 }
-function cacheSet(key: string, data: unknown, ttlMs: number) {
-  cache.set(key, { data, expiresAt: Date.now() + ttlMs });
+
+async function cacheSet(key: string, data: unknown, ttlSec: number) {
+  // Set in Redis (don't await failure — best effort) + in memory (always)
+  try {
+    const r = getRedis();
+    if (r) await r.set(`advisor:${key}`, data, { ex: ttlSec });
+  } catch { /* best effort */ }
+  memCache.set(key, { data, expiresAt: Date.now() + ttlSec * 1000 });
 }
 
 interface BrainState {
@@ -183,7 +210,7 @@ export async function GET(req: NextRequest) {
   const cacheKey = `${operatorId}:${stateOnly ? "state" : "full"}`;
 
   if (!force) {
-    const hit = cacheGet(cacheKey);
+    const hit = await cacheGet(cacheKey);
     if (hit) {
       return NextResponse.json({ ...(hit as object), cache: "hit" });
     }
@@ -207,7 +234,7 @@ export async function GET(req: NextRequest) {
       state,
       mode: "state_only",
     };
-    cacheSet(cacheKey, payload, STATE_ONLY_TTL_MS);
+    await cacheSet(cacheKey, payload, STATE_ONLY_TTL_SEC);
     return NextResponse.json({ ...payload, cache: "miss" });
   }
 
@@ -301,7 +328,7 @@ Rules:
         recommendations: [],
         mode: "state_only_llm_junk",
       };
-      cacheSet(cacheKey, payload, STATE_ONLY_TTL_MS);
+      await cacheSet(cacheKey, payload, STATE_ONLY_TTL_SEC);
       return NextResponse.json({ ...payload, cache: "miss" });
     }
     const parsed = JSON.parse(m[0]) as {
@@ -324,7 +351,7 @@ Rules:
       recommendations: (parsed.recommendations ?? []).slice(0, 5),
       mode: "full",
     };
-    cacheSet(cacheKey, payload, FULL_TTL_MS);
+    await cacheSet(cacheKey, payload, FULL_TTL_SEC);
     return NextResponse.json({ ...payload, cache: "miss" });
   } catch (e) {
     // AbortError (timeout) or network error → give callers the state anyway
@@ -338,7 +365,7 @@ Rules:
       mode: "state_only_llm_error",
       llm_error: errMsg,
     };
-    cacheSet(cacheKey, payload, STATE_ONLY_TTL_MS);
+    await cacheSet(cacheKey, payload, STATE_ONLY_TTL_SEC);
     return NextResponse.json({ ...payload, cache: "miss" });
   }
 }
