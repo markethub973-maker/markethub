@@ -27,6 +27,31 @@ export const maxDuration = 30;
 
 const HAIKU = "claude-haiku-4-5-20251001";
 
+/**
+ * Module-level cache. Keyed by operatorId; 5-min TTL on full advisor
+ * result, 2-min TTL on state-only. Without this, every consumer of
+ * advisor (ask-agent context, morning-debate, health probe, Telegram
+ * webhook) pays the full ~10-15s Anthropic latency on each call, which
+ * cascaded into dropped Telegram messages earlier today.
+ */
+type CacheEntry = { data: unknown; expiresAt: number };
+const cache = new Map<string, CacheEntry>();
+const FULL_TTL_MS = 5 * 60_000;
+const STATE_ONLY_TTL_MS = 2 * 60_000;
+const ANTHROPIC_TIMEOUT_MS = 18_000;
+
+function cacheGet(key: string): unknown | null {
+  const e = cache.get(key);
+  if (!e || e.expiresAt < Date.now()) {
+    if (e) cache.delete(key);
+    return null;
+  }
+  return e.data;
+}
+function cacheSet(key: string, data: unknown, ttlMs: number) {
+  cache.set(key, { data, expiresAt: Date.now() + ttlMs });
+}
+
 interface BrainState {
   total_users: number;
   paying_users: number;
@@ -152,13 +177,39 @@ export async function GET(req: NextRequest) {
     operatorId = user.id;
   }
 
+  // Fast paths (before any heavy work) — honor ?state_only=1 and cache.
+  const stateOnly = req.nextUrl.searchParams.get("state_only") === "1";
+  const force = req.nextUrl.searchParams.get("force") === "1";
+  const cacheKey = `${operatorId}:${stateOnly ? "state" : "full"}`;
+
+  if (!force) {
+    const hit = cacheGet(cacheKey);
+    if (hit) {
+      return NextResponse.json({ ...(hit as object), cache: "hit" });
+    }
+  }
+
   const apiKey = process.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY_APP;
-  if (!apiKey) {
+  if (!stateOnly && !apiKey) {
     return NextResponse.json({ error: "AI not configured" }, { status: 500 });
   }
 
   const service = createServiceClient();
   const state = await readState(operatorId);
+
+  // state_only path — skip the LLM entirely. Used by the Telegram webhook
+  // (after the 4s timeout hardening) and by health probes that just want
+  // to verify the endpoint is up + DB reads work.
+  if (stateOnly) {
+    const payload = {
+      ok: true,
+      generated_at: new Date().toISOString(),
+      state,
+      mode: "state_only",
+    };
+    cacheSet(cacheKey, payload, STATE_ONLY_TTL_MS);
+    return NextResponse.json({ ...payload, cache: "miss" });
+  }
 
   // Load optional goals — ignore if column/row missing
   let goals: Record<string, unknown> | null = null;
@@ -209,24 +260,50 @@ Rules:
 - No more than 1 recommendation per tool.
 - Be DIRECT. No fluff.`;
 
+  // Hard timeout on the Anthropic call. If it doesn't come back in time,
+  // degrade gracefully: return state with no recommendations rather than
+  // a 5xx — callers (Telegram webhook, boardroom, ask-agent) can proceed.
   try {
-    const anthropic = new Anthropic({ apiKey });
-    const r = await anthropic.messages.create({
-      model: HAIKU,
-      max_tokens: 1500,
-      system,
-      messages: [
+    const anthropic = new Anthropic({ apiKey: apiKey! });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ANTHROPIC_TIMEOUT_MS);
+    let text = "";
+    try {
+      const r = await anthropic.messages.create(
         {
-          role: "user",
-          content: `Platform state (snapshot):\n${JSON.stringify(state, null, 2)}${
-            goals ? `\n\nBusiness goals (operator-set, use as strategic compass):\n${JSON.stringify(goals, null, 2)}` : ""
-          }`,
+          model: HAIKU,
+          max_tokens: 1500,
+          system,
+          messages: [
+            {
+              role: "user",
+              content: `Platform state (snapshot):\n${JSON.stringify(state, null, 2)}${
+                goals ? `\n\nBusiness goals (operator-set, use as strategic compass):\n${JSON.stringify(goals, null, 2)}` : ""
+              }`,
+            },
+          ],
         },
-      ],
-    });
-    const text = r.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("");
+        { signal: controller.signal },
+      );
+      text = r.content.filter((b) => b.type === "text").map((b) => (b as { text: string }).text).join("");
+    } finally {
+      clearTimeout(timer);
+    }
+
     const m = text.match(/\{[\s\S]*\}/);
-    if (!m) throw new Error("No JSON in response");
+    if (!m) {
+      // LLM returned junk — still give callers the state
+      const payload = {
+        ok: true,
+        generated_at: new Date().toISOString(),
+        state,
+        summary_headline: "",
+        recommendations: [],
+        mode: "state_only_llm_junk",
+      };
+      cacheSet(cacheKey, payload, STATE_ONLY_TTL_MS);
+      return NextResponse.json({ ...payload, cache: "miss" });
+    }
     const parsed = JSON.parse(m[0]) as {
       recommendations?: Array<{
         action: string;
@@ -239,14 +316,29 @@ Rules:
       }>;
       summary_headline?: string;
     };
-    return NextResponse.json({
+    const payload = {
       ok: true,
       generated_at: new Date().toISOString(),
       state,
       summary_headline: parsed.summary_headline ?? "",
       recommendations: (parsed.recommendations ?? []).slice(0, 5),
-    });
+      mode: "full",
+    };
+    cacheSet(cacheKey, payload, FULL_TTL_MS);
+    return NextResponse.json({ ...payload, cache: "miss" });
   } catch (e) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : "Failed", state }, { status: 500 });
+    // AbortError (timeout) or network error → give callers the state anyway
+    const errMsg = e instanceof Error ? e.message : "Failed";
+    const payload = {
+      ok: true,
+      generated_at: new Date().toISOString(),
+      state,
+      summary_headline: "",
+      recommendations: [],
+      mode: "state_only_llm_error",
+      llm_error: errMsg,
+    };
+    cacheSet(cacheKey, payload, STATE_ONLY_TTL_MS);
+    return NextResponse.json({ ...payload, cache: "miss" });
   }
 }
