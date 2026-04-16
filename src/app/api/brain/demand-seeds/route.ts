@@ -202,17 +202,17 @@ export async function POST(req: NextRequest) {
 
   const rows = toInsert.map((s, i) => ({
     // Source CHECK constraint accepts google_shopping/ebay/google_trends.
-    // Use google_trends for hand-picked seeds until the constraint is
-    // widened (future DDL). Notes prefixed [SEED] so we can query them back.
+    // demand_signal_type also has a CHECK constraint with a narrow list —
+    // skip it (nullable) to avoid the constraint collision; move the seed
+    // classification into notes prefix so the information survives.
     source: "google_trends",
     product_name: s.product_name,
     category: s.category,
     country_code: s.country_code,
-    demand_signal_type: s.demand_signal_type,
     detected_price_range: s.detected_price_range,
     confidence_score: s.confidence_score,
     embedding: embeddings[i],
-    notes: `[SEED] ${s.notes}`,
+    notes: `[SEED][${s.demand_signal_type}] ${s.notes}`,
   }));
 
   const { error, count } = await svc
