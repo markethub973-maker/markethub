@@ -121,6 +121,8 @@ Rules:
 - Warm human founder tone. No corporate buzzwords.
 - Sign off: "— Alex"
 - Language: ${lang === "ro" ? "Romanian" : "English"}.
+- CRITICAL for ${lang}: use ONLY natural, clean ${lang === "ro" ? "Romanian" : "English"} words. NO mixed-language terms (avoid "content", "dashboard", "AI", "SMB" in Romanian text — use "conținut", "platformă", "inteligență artificială", "firme mici"). Azure TTS struggles on unfamiliar foreign words.
+- Spell numbers out (e.g., "zece ori" not "10x", "douăzeci" not "20").
 
 Output ONLY the script text, no markdown, no quotes.`;
 

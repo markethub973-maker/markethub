@@ -69,7 +69,7 @@ async function azureTts(text: string, agent: AgentId = "alex"): Promise<TtsResul
       headers: {
         "Ocp-Apim-Subscription-Key": key,
         "Content-Type": "application/ssml+xml",
-        "X-Microsoft-OutputFormat": "audio-24khz-48kbitrate-mono-mp3",
+        "X-Microsoft-OutputFormat": "audio-48khz-192kbitrate-mono-mp3",
         "User-Agent": "MarketHubPro/1.0",
       },
       body: ssml,
