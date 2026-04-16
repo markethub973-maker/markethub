@@ -122,6 +122,7 @@ export default function Boardroom() {
   const [whisper] = useState<{ from: string; to: string } | null>(null); // kept for compatibility, never set
   const [liveFeed, setLiveFeed] = useState<string[]>([]);
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
+  const [debugInfo, setDebugInfo] = useState<string>("init");
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -275,19 +276,24 @@ export default function Boardroom() {
     const fetchActivity = async () => {
       try {
         const r = await fetch("/api/brain/activity");
-        if (!r.ok) return;
+        setDebugInfo(`HTTP ${r.status} · poll ${new Date().toLocaleTimeString()}`);
+        if (!r.ok) {
+          setDebugInfo(`ERR ${r.status} · ${new Date().toLocaleTimeString()}`);
+          return;
+        }
         const d = await r.json();
         if (Array.isArray(d.events)) {
           setLiveFeed(d.events.slice(0, 6));
-          // Latest event line for display next to the active seat
           if (d.events[0]) setAmbientMsg(String(d.events[0]));
         }
         if (Array.isArray(d.active_agents)) {
           setActiveAgents(d.active_agents as string[]);
-          // Pulse the first active agent's seat in real time
           setAmbientAgent(d.active_agents[0] ?? null);
         }
-      } catch { /* no-op */ }
+        setDebugInfo(`OK · active=[${(d.active_agents ?? []).join(",") || "none"}] · events=${(d.events ?? []).length} · ${new Date().toLocaleTimeString().slice(-5)}`);
+      } catch (e) {
+        setDebugInfo(`EXCEPTION ${e instanceof Error ? e.message : "?"}`);
+      }
     };
     void fetchActivity();
     // Fast poll (3s) for live pulse responsiveness — lightweight query
@@ -868,6 +874,20 @@ export default function Boardroom() {
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* Debug indicator — bottom-right, shows real-time state of agent polling.
+          Lets Eduard visually verify the pulse system is actually working. */}
+      <div
+        className="fixed bottom-2 right-2 text-[9px] font-mono px-2 py-1 rounded z-40"
+        style={{
+          backgroundColor: "rgba(0,0,0,0.6)",
+          color: debugInfo.startsWith("OK") ? "#6ee7b7" : debugInfo.startsWith("ERR") || debugInfo.startsWith("EXCEPTION") ? "#fca5a5" : "#d1d5db",
+          border: "1px solid rgba(255,255,255,0.1)",
+          pointerEvents: "none",
+        }}
+      >
+        🔌 {debugInfo}
       </div>
     </div>
   );
