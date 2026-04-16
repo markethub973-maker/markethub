@@ -174,8 +174,8 @@ export async function POST(req: NextRequest) {
         country_code: body.country_code ?? null,
         snippet: [r.extracted.description, r.extracted.body_snippet].filter(Boolean).join(" · ").slice(0, 1500),
         embedding: emb,
-        last_scanned_at: new Date().toISOString(),
-        source: body.tag ? `bulk-import:${body.tag}` : "bulk-import",
+        scanned_at: new Date().toISOString(),
+        outreach_status: "prospect",
       },
       { onConflict: "domain" },
     );

@@ -56,15 +56,15 @@ export async function GET(req: NextRequest) {
 
   const svc = createServiceClient();
 
-  // Pick top N candidate prospects: scanned, uncontacted, high vertical fit.
-  // We score by: vertical matches a pattern with score >= min_score, domain
-  // hasn't appeared in outreach_log yet, has a snippet (so script can be
-  // personalized).
+  // Pick top N candidate prospects: scanned, status=prospect (uncontacted),
+  // has snippet. Real column names on brain_global_prospects are
+  // `scanned_at` (not last_scanned_at) + `outreach_status` (state machine:
+  // prospect → contacted → replied → won/lost).
   const { data: prospectData } = await svc
     .from("brain_global_prospects")
-    .select("id, domain, business_name, vertical, snippet, country_code, last_contacted_at, last_scanned_at")
-    .not("last_scanned_at", "is", null)
-    .is("last_contacted_at", null)
+    .select("id, domain, business_name, vertical, snippet, country_code, outreach_status, scanned_at")
+    .not("scanned_at", "is", null)
+    .eq("outreach_status", "prospect")
     .not("snippet", "is", null)
     .limit(50);
 
@@ -129,10 +129,11 @@ export async function GET(req: NextRequest) {
         avatar_request_id: rid,
       });
 
-      // Record that we pitched this prospect — prevents re-triggering tomorrow
+      // Record that we pitched this prospect — prevents re-triggering tomorrow.
+      // Use the outreach_status state machine: prospect → contacted.
       await svc
         .from("brain_global_prospects")
-        .update({ last_contacted_at: new Date().toISOString() })
+        .update({ outreach_status: "contacted" })
         .eq("id", p.id);
     } catch (e) {
       triggered.push({
