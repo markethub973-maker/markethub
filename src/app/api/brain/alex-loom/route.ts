@@ -132,6 +132,12 @@ Rules:
   · verbs ending in "-izi" (analizi, organizezi) — replace with periphrase
   · adjectives ending in "-ii" (mulții, clienții — use "mulți clienți")
   · Always prefer: "ai", "vezi", "primești", "ajutăm" (2p sg forms ending in other letters)
+- AZURE TTS RO CONTRACTIONS — AVOID hyphenated contractions (Emil pronounces them oddly):
+  · "v-ar" → use "ați" form: "V-ar interesa?" → "Ați vrea?"
+  · "m-ar" → "Mi-ar plăcea" → "Aș vrea"
+  · "ne-ar" → "Ne-ar ajuta" → "Ne ajută"
+  · "ți-ar" → "Ți-ar conveni?" → "Vă convine?"
+  · General rule: prefer auxiliary forms over contractions. "Ai" "ați" "aș" "ar" with full verb is safer.
 
 Output ONLY the script text, no markdown, no quotes.`;
 
