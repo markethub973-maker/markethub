@@ -120,13 +120,30 @@ Return 5-8 ventures, sorted by confidence_score descending. Be concrete and real
     : `Run planet-wide scan. Surface highest-impact opportunities for our capability stack (AI + marketing + mediation).`;
 
   let result: VentureScoutResult | null = null;
+  let rawText: string | null = null;
   try {
-    result = await generateJson<VentureScoutResult>(sys, user, { maxTokens: 4000 });
+    // Use generateText + manual JSON extraction for robustness.
+    const { generateText } = await import("@/lib/llm");
+    rawText = await generateText(sys, user, { maxTokens: 4000 });
+    if (rawText) {
+      // Try to extract JSON from markdown-wrapped or plain response
+      const jsonMatch = rawText.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/) ?? rawText.match(/(\{[\s\S]*\})/);
+      const jsonStr = jsonMatch ? jsonMatch[1] : rawText;
+      try {
+        result = JSON.parse(jsonStr) as VentureScoutResult;
+      } catch {
+        result = null;
+      }
+    }
   } catch { /* fall through */ }
 
   if (!result || !Array.isArray(result.ventures)) {
-    await completeActivity(activity, "Leo: venture scout empty");
-    return NextResponse.json({ error: "venture scout failed" }, { status: 502 });
+    await completeActivity(activity, "Leo: venture scout empty", { raw_len: rawText?.length ?? 0 });
+    return NextResponse.json({
+      error: "venture scout failed",
+      raw_response_preview: rawText?.slice(0, 500) ?? null,
+      note: "Claude returned non-parseable response. Check raw_response_preview.",
+    }, { status: 502 });
   }
 
   // Filter by min_score if specified
