@@ -397,7 +397,9 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/ping-claude") ||        // Alex/agents/Telegram → Claude inbox
       pathname.startsWith("/api/brain/alex-loom/avatar-poll") || // Avatar async result poller
       pathname.startsWith("/api/brain/learn-from-incident") || // Auto-learning from ops_incidents
-      pathname.startsWith("/api/brain/auto-pattern-update") // Auto-adjust intermediary scores
+      pathname.startsWith("/api/brain/auto-pattern-update") || // Auto-adjust intermediary scores
+      pathname.startsWith("/api/brain/alex-morning-kickoff") || // Daily first-task autonomy
+      pathname.startsWith("/api/brain/alex-loom-batch") // Sofia's daily AlexLoom batch
     ) {
       return NextResponse.next();
     }
@@ -626,6 +628,8 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/ping-claude" ||
     pathname === "/api/brain/learn-from-incident" ||
     pathname === "/api/brain/auto-pattern-update" ||
+    pathname === "/api/brain/alex-morning-kickoff" ||
+    pathname === "/api/brain/alex-loom-batch" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
