@@ -365,7 +365,14 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/delegate") ||
       pathname.startsWith("/api/brain/tts") ||
       pathname.startsWith("/api/brain/stt") ||
-      pathname.startsWith("/api/brain/telegram-setup")
+      pathname.startsWith("/api/brain/telegram-setup") ||
+      pathname.startsWith("/api/brain/activity") ||          // live agent activity feed
+      pathname.startsWith("/api/brain/voice-sample") ||      // voice previews
+      pathname.startsWith("/api/brain/gmail-analyze") ||     // gmail deep scan
+      pathname.startsWith("/api/brain/morning-debate") ||    // autonomous morning briefing
+      pathname.startsWith("/api/brain/linkedin-daily") ||    // autonomous LinkedIn post
+      pathname.startsWith("/api/brain/goals") ||             // goals CRUD
+      pathname.startsWith("/api/brain/advisor")              // state advisor
     ) {
       return NextResponse.next();
     }
