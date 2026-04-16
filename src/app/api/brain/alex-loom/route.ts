@@ -23,6 +23,7 @@ import { synthesizeSpeech } from "@/lib/tts";
 import { generateVideo } from "@/lib/aiVideo";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
 import { ROMANIAN_TTS_PROMPT_RULES } from "@/lib/romanian-tts-rules";
+import { generateEduardAvatarVideo } from "@/lib/eduardAvatar";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
 
 export const dynamic = "force-dynamic";
@@ -120,7 +121,8 @@ export async function POST(req: NextRequest) {
 You are Eduard Bostan, founder of MarketHub Pro. Write a personalized 30-SECOND spoken pitch for a prospect.
 
 Rules:
-- Exactly 60-75 words (≈30 seconds at normal pace).
+- Exactly 50-58 words (≈25 seconds at normal pace — HARD limit because the
+  OmniHuman avatar talker only accepts audio ≤30s).
 - Start with ONE specific observation about their business (use the site snippet).
 - ONE clear value proposition — our platform multiplies their content output for small-business clients.
 - ONE ask: would they want a free 5-caption + 3-image demo?
@@ -174,13 +176,17 @@ Write the 30-second script now.`;
     return NextResponse.json({ error: "voice synthesis failed (ElevenLabs/OpenAI)" }, { status: 502 });
   }
 
-  // Step 4: Contabo render worker (ffmpeg Ken Burns + text overlay + audio).
-  // Text stays legible (pixels only pan/zoom, not AI regenerated like Fal Seedance).
-  // €0 marginal cost (Contabo VPS paid 6 months upfront).
+  // Step 4: Generate Eduard avatar video — real face talking the personalized
+  // pitch with lip sync (validated 2026-04-16; replaces Contabo Ken Burns
+  // because Eduard wanted a real avatar visible, not a static screenshot pan).
+  // Pipeline: Flux Kontext Max (scene context, identity preserved) →
+  // ByteDance OmniHuman (talking head). See `lib/eduardAvatar.ts` + memory
+  // `avatar_pipeline_validated.md` for rationale and forbidden alternatives.
   let videoUrl: string | null = null;
-  const renderBase = process.env.RENDER_BASE_URL;
-  const renderSecret = process.env.RENDER_SECRET;
-  // Upload voice audio to Supabase Storage so render worker can fetch it
+  let avatarSceneUrl: string | null = null;
+  let avatarCost = 0;
+
+  // Upload audio to Supabase public-assets so OmniHuman can fetch it
   let audioPublicUrl: string | null = null;
   try {
     const audioFileName = `alex-loom/${domain}-${Date.now()}.mp3`;
@@ -191,36 +197,26 @@ Write the 30-second script now.`;
       const { data: urlData } = svc.storage.from("public-assets").getPublicUrl(audioFileName);
       audioPublicUrl = urlData.publicUrl;
     }
-  } catch { /* audio hosting failed, skip video */ }
+  } catch { /* audio hosting failed, skip avatar */ }
 
-  if (renderBase && renderSecret && screenshotUrl && audioPublicUrl) {
-    try {
-      // For tech-savvy prospects: single screenshot only + amber watermark text
-      // (MarketHub brand visible but platform NOT shown to prevent cloning).
-      // For non-tech: dual screenshot sequential — full educational reveal.
-      const renderPayload: Record<string, unknown> = {
-        screenshot_url: screenshotUrl,
-        audio_url: audioPublicUrl,
-        text_overlay: showPlatform ? `Pentru ${businessName}` : `Pentru ${businessName} · MarketHub Pro`,
-      };
-      if (showPlatform && screenshotMhpUrl) {
-        renderPayload.screenshot_url_2 = screenshotMhpUrl;
-        renderPayload.text_overlay_2 = "MarketHub Pro · platforma ta AI";
-      }
-      const renderRes = await fetch(`${renderBase}/render`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${renderSecret}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(renderPayload),
-        signal: AbortSignal.timeout(180_000),
-      });
-      if (renderRes.ok) {
-        const j = (await renderRes.json()) as { ok: boolean; video_url?: string };
-        if (j.ok && j.video_url) videoUrl = j.video_url;
-      }
-    } catch { /* render fail — fallback to static */ }
+  if (audioPublicUrl) {
+    // Scene prompt: tech-savvy prospects get a clean private-office context;
+    // non-tech see Eduard at the MarketHub Pro desk (platform brand visible
+    // through context, not by exposing UI screenshots).
+    const scenePrompt = showPlatform
+      ? `Sitting at a modern minimalist wooden desk with a closed laptop, soft warm natural window light from the left, slightly blurred contemporary office background with subtle bookshelves, a small green plant in foreground. Friendly genuine expression looking directly at camera, headshot composition, sharp focus on face, beige and warm tones, professional founder portrait.`
+      : `Sitting at a clean modern minimalist desk, soft warm natural window light, slightly blurred contemporary office background, friendly confident expression looking directly at camera, headshot composition, sharp focus on face, professional founder portrait.`;
+
+    const avatar = await generateEduardAvatarVideo({
+      audio_url: audioPublicUrl,
+      scene_prompt: scenePrompt,
+      aspect_ratio: "16:9",
+    });
+    if (avatar.ok && avatar.video_url) {
+      videoUrl = avatar.video_url;
+      avatarSceneUrl = avatar.scene_image_url ?? null;
+      avatarCost = avatar.cost_usd;
+    }
   }
 
   // Step 5: Upload voice audio to R2 (Supabase Storage fallback if R2 fails)
@@ -242,6 +238,8 @@ Write the 30-second script now.`;
     voice_bytes: voiceSize,
     screenshot_url: screenshotUrl,
     video_url: videoUrl,
+    avatar_scene_url: avatarSceneUrl,
+    avatar_cost_usd: avatarCost,
     generated_at: new Date().toISOString(),
   };
 
@@ -268,12 +266,19 @@ Write the 30-second script now.`;
     manifest,
     preview: {
       script,
-      screenshot_url: screenshotUrl, // STATIC — clean, text legible
+      screenshot_url: screenshotUrl,
       voice_ready: true,
       voice_bytes: voiceSize,
       voice_provider: voice.provider ?? "unknown",
-      delivery_format: "screenshot + voice + script (no animated video — prevents fake glyph corruption)",
+      avatar_video_url: videoUrl,
+      avatar_scene_url: avatarSceneUrl,
+      avatar_cost_usd: avatarCost,
+      delivery_format: videoUrl
+        ? "Eduard avatar video (Kontext + OmniHuman) + script"
+        : "screenshot + voice + script (avatar generation skipped or failed)",
     },
-    next_action: "Eduard reviews via Telegram → approves → Alex emails prospect with screenshot embedded + voice audio attached + personalized script",
+    next_action: videoUrl
+      ? "Eduard reviews avatar via Telegram → approves → Alex emails prospect with avatar video embedded + personalized script"
+      : "Eduard reviews via Telegram → approves → Alex emails prospect with screenshot + voice audio attached + personalized script",
   });
 }
