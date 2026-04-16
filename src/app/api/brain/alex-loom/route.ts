@@ -83,6 +83,8 @@ export async function POST(req: NextRequest) {
     prospect_email?: string;
     context?: string;
     language?: "ro" | "en";
+    show_platform?: boolean; // explicit override
+    prospect_type?: "tech_savvy" | "non_tech"; // determines default
   };
 
   if (!body.prospect_url) {
@@ -147,13 +149,30 @@ Write the 30-second script now.`;
     return NextResponse.json({ error: "script generation failed" }, { status: 502 });
   }
 
-  // Step 3 (parallel): Screenshots (prospect + MarketHub Pro promo) + Voice synthesis
-  // Dual-utility video per Eduard rule: prospect sees their site AND our brand.
-  const [screenshotUrl, screenshotMhpUrl, voice] = await Promise.all([
+  // STRATEGIC: classify prospect for IP-protection decision (Eduard rule).
+  // Tech-savvy prospects (digital agencies, SaaS, marketing freelancers) could
+  // reverse-engineer our platform if shown — risk losing moat in <1 month.
+  // For them: SINGLE screenshot + brand watermark only. No platform reveal.
+  // For non-tech (dental, restaurants, lawyers): full dual-utility video OK.
+  const techSavvyVerticals = /agency|agentie|agenție|saas|consult|freelanc|marketing|digital|seo|developer|dezvolt|tech|software/i;
+  const isTechSavvy =
+    body.prospect_type === "tech_savvy" ||
+    (body.prospect_type !== "non_tech" && (
+      techSavvyVerticals.test(existing?.vertical ?? "") ||
+      techSavvyVerticals.test(body.context ?? "") ||
+      techSavvyVerticals.test(businessName)
+    ));
+  const showPlatform = body.show_platform ?? !isTechSavvy;
+
+  // Step 3 (parallel): Screenshots + Voice synthesis
+  // Tech-savvy → only their site. Non-tech → both sites (educational dual utility).
+  const screenshotPromises: Promise<string | null>[] = [
     screenshotWebsite(body.prospect_url),
-    screenshotWebsite("https://markethubpromo.com/promo"),
-    synthesizeSpeech(script),
-  ]);
+  ];
+  if (showPlatform) screenshotPromises.push(screenshotWebsite("https://markethubpromo.com/promo"));
+  const [screenshotUrl, ...rest] = await Promise.all([...screenshotPromises, synthesizeSpeech(script)]);
+  const screenshotMhpUrl = showPlatform ? (rest[0] as string | null) : null;
+  const voice = (showPlatform ? rest[1] : rest[0]) as Awaited<ReturnType<typeof synthesizeSpeech>>;
 
   if (!voice) {
     await failActivity(activity, "Voice synthesis failed");
@@ -181,19 +200,25 @@ Write the 30-second script now.`;
 
   if (renderBase && renderSecret && screenshotUrl && audioPublicUrl) {
     try {
+      // For tech-savvy prospects: single screenshot only + amber watermark text
+      // (MarketHub brand visible but platform NOT shown to prevent cloning).
+      // For non-tech: dual screenshot sequential — full educational reveal.
+      const renderPayload: Record<string, unknown> = {
+        screenshot_url: screenshotUrl,
+        audio_url: audioPublicUrl,
+        text_overlay: showPlatform ? `Pentru ${businessName}` : `Pentru ${businessName} · MarketHub Pro`,
+      };
+      if (showPlatform && screenshotMhpUrl) {
+        renderPayload.screenshot_url_2 = screenshotMhpUrl;
+        renderPayload.text_overlay_2 = "MarketHub Pro · platforma ta AI";
+      }
       const renderRes = await fetch(`${renderBase}/render`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${renderSecret}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          screenshot_url: screenshotUrl,
-          screenshot_url_2: screenshotMhpUrl, // MarketHub Pro showcase — dual utility
-          audio_url: audioPublicUrl,
-          text_overlay: `Pentru ${businessName}`,
-          text_overlay_2: `MarketHub Pro · platforma ta AI`,
-        }),
+        body: JSON.stringify(renderPayload),
         signal: AbortSignal.timeout(180_000),
       });
       if (renderRes.ok) {
