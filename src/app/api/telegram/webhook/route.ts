@@ -104,9 +104,15 @@ async function sendVoiceOrAudio(
 }
 
 async function fetchBrainContext(): Promise<string> {
+  // HARD timeout of 4s — brain/advisor has been observed taking >15s which
+  // pushed the whole webhook past Telegram's 60s read limit, causing dropped
+  // messages (see ops_incidents 2026-04-16 14:52 "Read timeout expired").
+  // Graceful fallback: skip advisor context entirely if slow. Alex still has
+  // the live DB context, which is the more actionable data anyway.
   try {
     const res = await fetch("https://markethubpromo.com/api/brain/advisor", {
       headers: { "x-brain-cron-secret": process.env.BRAIN_CRON_SECRET ?? "" },
+      signal: AbortSignal.timeout(4000),
     });
     if (!res.ok) return "";
     const d = (await res.json()) as { state?: Record<string, unknown>; summary_headline?: string };
