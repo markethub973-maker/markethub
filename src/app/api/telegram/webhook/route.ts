@@ -169,11 +169,39 @@ async function fetchLiveDbContext(): Promise<string> {
       .from("brain_target_countries")
       .select("id", { count: "exact", head: true });
 
+    // Per-country + per-city prospect breakdown so "câți NY / DE / Cluj?"
+    // has an immediate DB-backed answer without a round-trip to Eduard.
+    const { data: allForBreakdown } = await svc
+      .from("brain_global_prospects")
+      .select("country_code, vertical, snippet, email")
+      .limit(500);
+    const rowsAll = allForBreakdown ?? [];
+    const byCountry: Record<string, number> = {};
+    let nyMatches = 0;
+    let laMatches = 0;
+    let emailCount = 0;
+    for (const r of rowsAll) {
+      const cc = (r.country_code as string | null) ?? "(none)";
+      byCountry[cc] = (byCountry[cc] ?? 0) + 1;
+      if (r.email) emailCount += 1;
+      const s = ((r.snippet as string | null) ?? "").toLowerCase();
+      if (s.includes("new york") || s.includes("manhattan") || s.includes("brooklyn") || s.includes("nyc")) nyMatches += 1;
+      if (s.includes("los angeles") || s.includes("santa monica") || s.includes("hollywood")) laMatches += 1;
+    }
+    const countryLine = Object.entries(byCountry)
+      .sort(([, a], [, b]) => b - a)
+      .map(([c, n]) => `${c}=${n}`)
+      .join(", ");
+
     return `
-LIVE DB STATE (queried right now — use these facts, don't ask Eduard for data):
+LIVE DB STATE (queried right now — use these facts, NEVER estimate "5-15" style ranges):
 
 📊 PROSPECTS:
-- Total în vector DB: ${totalProspects ?? 0} prospecți across ${countriesCount ?? 0} țări
+- Total: ${totalProspects ?? 0} în ${countriesCount ?? 0} țări target
+- Per țară: ${countryLine}
+- New York (snippet match): ${nyMatches}
+- Los Angeles (snippet match): ${laMatches}
+- Cu email valid: ${emailCount}/${rowsAll.length}
 - Top 5 neconversați:
 ${(topProspects ?? []).map((p) => `  · ${p.country_code ?? "?"} | ${p.business_name ?? "?"} (${p.domain}) | ${p.email ?? "no email"} | fit ${p.fit_score ?? "-"}/100`).join("\n")}
 
@@ -184,8 +212,14 @@ ${(topProspects ?? []).map((p) => `  · ${p.country_code ?? "?"} | ${p.business_
 🎯 STRATEGII ACTIVE/PLANIFICATE:
 ${(activeStrategies ?? []).map((s) => `  · #${s.rank} ${s.name} — ${s.current_status}`).join("\n")}
 
-If Eduard asks "pentru care prospect trimitem outreach?", pick from top 5 above and propose — don't ask for list.
-If Eduard asks "cum stăm?", answer with these real numbers, not generic.`;
+🛠 TOOLS TO QUOTE (do NOT estimate — use one of these):
+  1) /api/brain/prospect-breakdown?city=<CSV>
+  2) POST /api/brain/db-query (parametric filter, 25 whitelisted tables).
+     Example for "DE cu vertical marketing":
+       {"table":"brain_global_prospects","filters":[{"column":"country_code","op":"eq","value":"DE"},{"column":"vertical","op":"ilike","value":"marketing"}],"count_only":true}
+     Ops: eq/neq/gt/gte/lt/lte/ilike/in/not_null/is_null/contains.
+
+If Eduard asks "câți X", answer the exact count from the breakdown above OR cite db-query. NEVER say "estimare" or "revin în 5 minute" — the number is already reachable.`;
   } catch {
     return "(DB context unavailable — answer from general knowledge)";
   }
