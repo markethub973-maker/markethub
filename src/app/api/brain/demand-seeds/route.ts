@@ -42,7 +42,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "growing_niche",
     detected_price_range: "EUR 15-80 avg order",
     notes: "Organic food, biodegradable litter, eco toys — steady 15-20% YoY growth in EU pet market",
-    confidence_score: 0.85,
+    confidence_score: 85,
   },
   {
     product_name: "Home gym equipment (compact apartments)",
@@ -51,7 +51,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "post_pandemic_steady",
     detected_price_range: "EUR 50-400",
     notes: "Adjustable dumbbells, resistance bands, folding benches — sustained demand in RO cities post-2021",
-    confidence_score: 0.75,
+    confidence_score: 75,
   },
   {
     product_name: "Organic produce boxes (weekly subscription)",
@@ -60,7 +60,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "premium_urban",
     detected_price_range: "EUR 25-60/box",
     notes: "Bucharest, Cluj, Timișoara — rising urban middle class willing to pay premium for farm-direct",
-    confidence_score: 0.70,
+    confidence_score: 70,
   },
   {
     product_name: "Handmade cosmetics (bar soap, balms)",
@@ -69,7 +69,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "handmade_premium",
     detected_price_range: "EUR 8-25",
     notes: "Small-batch artisan brands — Instagram-driven, low logistics overhead, high margin",
-    confidence_score: 0.80,
+    confidence_score: 80,
   },
   {
     product_name: "Small-batch specialty coffee",
@@ -78,7 +78,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "third_wave_coffee",
     detected_price_range: "EUR 14-35/bag",
     notes: "Specialty roasters in Bucharest/Cluj — subscription model works, average cart EUR 28",
-    confidence_score: 0.75,
+    confidence_score: 75,
   },
   {
     product_name: "Tech accessories (phone cases, chargers, cables)",
@@ -87,7 +87,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "commodity_high_volume",
     detected_price_range: "EUR 5-30",
     notes: "High-volume low-margin — works at scale with eMAG / GOMAG stores, good for arbitrage import",
-    confidence_score: 0.85,
+    confidence_score: 85,
   },
   {
     product_name: "Outdoor / hiking gear",
@@ -96,7 +96,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "seasonal_peak_spring",
     detected_price_range: "EUR 30-250",
     notes: "Backpacks, tents, trail shoes — peak March-October, Carpathians tourism wave",
-    confidence_score: 0.70,
+    confidence_score: 70,
   },
   {
     product_name: "Kids educational toys (STEM)",
@@ -105,7 +105,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "gift_driven",
     detected_price_range: "EUR 20-80",
     notes: "Montessori-style wooden toys, coding kits, science experiments — gift-peak Dec + June",
-    confidence_score: 0.65,
+    confidence_score: 65,
   },
   {
     product_name: "Vintage / restored furniture",
@@ -114,7 +114,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "niche_premium",
     detected_price_range: "EUR 150-1200",
     notes: "Restored mid-century pieces — low volume but high margin, Instagram + Olx dominant",
-    confidence_score: 0.55,
+    confidence_score: 55,
   },
   {
     product_name: "Home office setup (desk accessories, ergonomic)",
@@ -123,7 +123,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "wfh_structural",
     detected_price_range: "EUR 20-300",
     notes: "Standing desks, monitor arms, ergonomic chairs — durable post-2020 demand shift",
-    confidence_score: 0.75,
+    confidence_score: 75,
   },
   {
     product_name: "Wellness / self-care (candles, aromatherapy)",
@@ -132,7 +132,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "stress_response",
     detected_price_range: "EUR 12-50",
     notes: "Soy candles, essential oils — Instagram-driven gift segment",
-    confidence_score: 0.65,
+    confidence_score: 65,
   },
   {
     product_name: "Traditional Romanian craft goods (ie, tole pictate)",
@@ -141,7 +141,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "diaspora_gift",
     detected_price_range: "EUR 40-300",
     notes: "Romanian diaspora in Italy/UK/DE buying authentic crafts — cross-border micro-export potential",
-    confidence_score: 0.60,
+    confidence_score: 60,
   },
   {
     product_name: "Pet training / enrichment products",
@@ -150,7 +150,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "growing_niche",
     detected_price_range: "EUR 15-60",
     notes: "Puzzle feeders, training clickers, calming aids — sub-segment of pet market with higher margin",
-    confidence_score: 0.70,
+    confidence_score: 70,
   },
   {
     product_name: "Electric scooters / e-bikes (urban commute)",
@@ -159,7 +159,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "urban_mobility_shift",
     detected_price_range: "EUR 300-2500",
     notes: "Bucharest, Cluj urban commuters — regulatory tailwind (bike lanes + subsidies)",
-    confidence_score: 0.65,
+    confidence_score: 65,
   },
   {
     product_name: "Home coffee equipment (grinders, espresso)",
@@ -168,7 +168,7 @@ const SEEDS: Seed[] = [
     demand_signal_type: "enthusiast_segment",
     detected_price_range: "EUR 80-1500",
     notes: "Home baristas post-pandemic — complements small-batch coffee subscription",
-    confidence_score: 0.60,
+    confidence_score: 60,
   },
 ];
 
