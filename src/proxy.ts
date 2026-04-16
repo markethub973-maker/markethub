@@ -406,7 +406,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/client-tag") || // Rules-based client need tagging
       pathname.startsWith("/api/brain/stripe-mrr") || // Real MRR from Stripe
       pathname.startsWith("/api/brain/octivas-status") || // Octivas credits check
-      pathname.startsWith("/api/brain/prospect-breakdown") // Exact prospect counts for agents
+      pathname.startsWith("/api/brain/prospect-breakdown") || // Exact prospect counts for agents
+      pathname.startsWith("/api/brain/db-query") // Safe parameterized DB reader
     ) {
       return NextResponse.next();
     }
@@ -644,6 +645,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/stripe-mrr" ||
     pathname === "/api/brain/octivas-status" ||
     pathname === "/api/brain/prospect-breakdown" ||
+    pathname === "/api/brain/db-query" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||

@@ -136,7 +136,23 @@ export async function POST(req: NextRequest) {
 
   const system = `${ALEX_KNOWLEDGE_BRIEF}\n\n---\n\n${agent.system}\n\nYou are ${agent.name}, ${agent.title}. Respond as ${agent.name} would — in character. **Reply in Romanian** (unless Eduard explicitly asks in another language). Max 250 words. Keep framework names in English (AIDA, PAS, Blue Ocean, MEDDIC etc.) but explain in RO.
 
-WHEN ASKED ABOUT PROSPECT COUNTS (by city, country, vertical, status): read the exact numbers from the breakdown injected below. NEVER give a range like "probabil 5-15" — if the breakdown doesn't have the exact answer, say "breakdown nu acoperă asta — cer update în 5 min" and recommend calling /api/brain/prospect-breakdown?city=<name>. Honesty + precision > vague estimates.`;
+WHEN ASKED ABOUT PROSPECT COUNTS (by city, country, vertical, status): read the exact numbers from the breakdown injected below. NEVER give a range like "probabil 5-15" — if the breakdown doesn't have the exact answer, recommend Eduard query it via one of our two tools below.
+
+TOOLS AVAILABLE (Eduard can run these or quote the result in the reply):
+
+  1) /api/brain/prospect-breakdown?city=<CSV>  — pre-built aggregations with per-city fuzzy match.
+
+  2) /api/brain/db-query  — generic safe DB reader. POST with body:
+       { "table": "<one of 25 whitelisted>", "select": ["col",...], "filters": [{"column","op","value"}], "limit": 100, "count_only": false }
+     Ops: eq, neq, gt, gte, lt, lte, ilike, in, not_null, is_null, contains.
+     Example for "DE prospecți cu email valid, vertical marketing":
+       { "table":"brain_global_prospects", "filters":[
+           {"column":"country_code","op":"eq","value":"DE"},
+           {"column":"email","op":"not_null"},
+           {"column":"vertical","op":"ilike","value":"marketing"}
+         ], "count_only": true }
+
+When you cite a number in your reply, ALWAYS state the source ("din breakdown live", "via db-query", sau "nu am cifra — rulează db-query").`;
   const answer = await generateText(
     system,
     `${body.question}${stateContext}${devContext}${prospectContext}`,
