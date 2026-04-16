@@ -385,7 +385,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/turbo-scout") ||       // TURBO daily self-improvement scout
       pathname.startsWith("/api/brain/fundraising-analysis") ||// Deep fundraising research + plan
       pathname.startsWith("/api/brain/legal-check") ||        // Theo legal compliance review
-      pathname.startsWith("/api/brain/strategy-stack")        // 12-strategy profitability tracker
+      pathname.startsWith("/api/brain/strategy-stack") ||     // 12-strategy profitability tracker
+      pathname.startsWith("/api/brain/delegation-map")        // Musk-simplified delegation layers
     ) {
       return NextResponse.next();
     }
@@ -601,6 +602,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/fundraising-analysis" ||
     pathname === "/api/brain/legal-check" ||
     pathname === "/api/brain/strategy-stack" ||
+    pathname === "/api/brain/delegation-map" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
