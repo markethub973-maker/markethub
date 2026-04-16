@@ -197,11 +197,21 @@ Write the 30-second script now.`;
     }
   } catch { /* audio hosting failed, skip avatar */ }
 
+  // Track explicit failure reasons so the manifest + response don't lie
+  // about what happened (previously showed "audio upload failed" even when
+  // the actual cause was fal balance exhaustion).
+  let avatarFailureReason: string | null = null;
+  let avatarBalanceExhausted = false;
   if (audioPublicUrl) {
     const submit = await submitEduardAvatarJob({ audio_url: audioPublicUrl });
     if (submit.ok && submit.request_id) {
       avatarRequestId = submit.request_id;
+    } else {
+      avatarFailureReason = submit.error ?? "unknown submit failure";
+      avatarBalanceExhausted = Boolean(submit.balance_exhausted);
     }
+  } else {
+    avatarFailureReason = "audio upload to Supabase failed";
   }
 
   // Step 5: Upload voice audio to R2 (Supabase Storage fallback if R2 fails)
@@ -226,7 +236,13 @@ Write the 30-second script now.`;
     screenshot_url: screenshotUrl,
     video_url: null,
     avatar_request_id: avatarRequestId,
-    avatar_status: avatarRequestId ? "queued" : "skipped",
+    avatar_status: avatarRequestId
+      ? "queued"
+      : avatarBalanceExhausted
+        ? "skipped_balance_exhausted"
+        : "skipped",
+    avatar_failure_reason: avatarFailureReason,
+    avatar_balance_exhausted: avatarBalanceExhausted,
     generated_at: new Date().toISOString(),
   };
 
@@ -259,10 +275,16 @@ Write the 30-second script now.`;
       voice_bytes: voiceSize,
       voice_provider: voice.provider ?? "unknown",
       avatar_request_id: avatarRequestId,
-      avatar_status: avatarRequestId ? "queued — Telegram push when ready" : "skipped",
+      avatar_status: avatarRequestId
+        ? "queued — Telegram push when ready"
+        : avatarBalanceExhausted
+          ? "skipped — fal.ai balance exhausted; top up at fal.ai/dashboard/billing"
+          : `skipped — ${avatarFailureReason ?? "unknown"}`,
       delivery_format: avatarRequestId
         ? "Eduard avatar video queued (OmniHuman); auto-pushed to Telegram on completion"
-        : "screenshot + voice + script (avatar skipped — audio upload failed)",
+        : avatarBalanceExhausted
+          ? "screenshot + voice + script (avatar blocked by fal balance — top-up required)"
+          : "screenshot + voice + script (avatar skipped)",
     },
     next_action: avatarRequestId
       ? "Cron /api/brain/alex-loom/avatar-poll picks up the queued job and pushes finished video to Telegram. Eduard reviews → approves → Alex emails prospect."

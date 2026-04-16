@@ -115,7 +115,13 @@ async function falWait(model: string, requestId: string, timeoutMs = 240_000): P
 export async function submitEduardAvatarJob(input: {
   audio_url: string;
   reference_image_url?: string;
-}): Promise<{ ok: boolean; request_id?: string; image_url?: string; error?: string }> {
+}): Promise<{
+  ok: boolean;
+  request_id?: string;
+  image_url?: string;
+  error?: string;
+  balance_exhausted?: boolean;
+}> {
   if (!process.env.FAL_API_KEY) return { ok: false, error: "FAL_API_KEY not set" };
   if (!input.audio_url) return { ok: false, error: "audio_url required" };
   const imageUrl = input.reference_image_url ?? REF_PHOTO_URL;
@@ -126,7 +132,18 @@ export async function submitEduardAvatarJob(input: {
     });
     return { ok: true, request_id: requestId, image_url: imageUrl };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+    const msg = e instanceof Error ? e.message : String(e);
+    // Detect the fal.ai "balance exhausted" lock explicitly so callers
+    // (alex-loom, alex-loom-batch) can surface it to Eduard's Telegram
+    // instead of silently marking avatar as "skipped". Seen 2026-04-16
+    // when the free credit ran out — no new jobs accepted + old jobs
+    // stuck IN_QUEUE indefinitely until top-up.
+    const balanceExhausted = /exhausted balance|user is locked|top up your balance/i.test(msg);
+    return {
+      ok: false,
+      error: msg,
+      balance_exhausted: balanceExhausted,
+    };
   }
 }
 
