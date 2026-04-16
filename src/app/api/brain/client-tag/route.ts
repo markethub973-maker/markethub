@@ -33,7 +33,6 @@ interface ProfileRow {
   id: string;
   plan: string | null;
   subscription_plan: string | null;
-  trial_ends_at: string | null;
   created_at: string;
 }
 interface BrandRow {
@@ -66,13 +65,10 @@ function computeTags(profile: ProfileRow, brand: BrandRow | null, posts: PostRow
   if (ageDays < 7) tags.push("new_signup");
   if (ageDays > 60 && !isPaid) tags.push("long_free_user");
 
-  // Trial signals
-  if (profile.trial_ends_at) {
-    const trialEnds = new Date(profile.trial_ends_at).getTime();
-    const daysToTrialEnd = (trialEnds - now) / DAY_MS;
-    if (daysToTrialEnd > 0 && daysToTrialEnd < 7) tags.push("trial_ending_soon");
-    if (daysToTrialEnd < 0 && !isPaid) tags.push("trial_expired_no_upgrade");
-  }
+  // Trial signals — column trial_ends_at doesn't exist on profiles; trial
+  // info is tracked elsewhere (stripe_subscription_id + Stripe data). For
+  // now, infer trial risk from plan:free + age_days 1-14 only.
+  if (!isPaid && ageDays > 1 && ageDays < 14) tags.push("early_free_no_trial_convert");
 
   // Setup signals
   if (!brand?.tone) tags.push("needs_brand_voice");
@@ -108,7 +104,7 @@ async function processOne(svc: ReturnType<typeof createServiceClient>, userId: s
   error?: string;
 }> {
   const [profileRes, brandRes, postsRes] = await Promise.all([
-    svc.from("profiles").select("id,plan,subscription_plan,trial_ends_at,created_at").eq("id", userId).maybeSingle(),
+    svc.from("profiles").select("id,plan,subscription_plan,created_at").eq("id", userId).maybeSingle(),
     svc.from("user_brand_voice").select("tone,strategy,goals").eq("user_id", userId).maybeSingle(),
     svc.from("scheduled_posts").select("status,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(50),
   ]);
