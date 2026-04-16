@@ -92,12 +92,12 @@ async function processIncident(incident: IncidentRow): Promise<{
 }> {
   const svc = createServiceClient();
 
-  // Skip if we already learned from this incident
+  // Skip if we already learned from this incident (tag-based, since we
+  // piggyback on the "case_study" category constraint).
   const { data: existing } = await svc
     .from("brain_knowledge_base")
     .select("id")
-    .eq("category", "auto_learned")
-    .contains("tags", [`incident:${incident.id}`])
+    .contains("tags", ["auto_learned", `incident:${incident.id}`])
     .maybeSingle();
   if (existing) return { ok: true, incident_id: incident.id, kb_id: existing.id as string };
 
@@ -107,7 +107,11 @@ async function processIncident(incident: IncidentRow): Promise<{
   const { data: inserted, error } = await svc
     .from("brain_knowledge_base")
     .insert({
-      category: "auto_learned",
+      // brain_knowledge_base_category_check limits category to
+      // framework | case_study | intermediary_type. "case_study" is the
+      // closest fit for an incident-derived lesson; the auto_learned
+      // distinction lives in the tags array instead.
+      category: "case_study",
       name: `Auto-rule: ${learning.rule.slice(0, 80)}`,
       summary: learning.context,
       content: {
@@ -189,7 +193,7 @@ export async function GET(req: NextRequest) {
   const { data } = await svc
     .from("brain_knowledge_base")
     .select("id, created_at, name, summary, content, tags, confidence")
-    .eq("category", "auto_learned")
+    .contains("tags", ["auto_learned"])
     .gte("created_at", since)
     .order("created_at", { ascending: false })
     .limit(50);
