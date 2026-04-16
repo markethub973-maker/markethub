@@ -612,6 +612,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/venture-scout" ||
     pathname === "/api/brain/venture-pipeline" ||
     pathname.startsWith("/api/brain/global-prospects/") ||
+    pathname === "/api/brain/ask-agent" ||
     pathname === "/api/brain/demand-scanner" ||
     pathname === "/api/brain/alex-loom" ||
     pathname === "/api/brain/platform-inventory" ||
