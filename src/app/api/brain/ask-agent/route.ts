@@ -39,6 +39,63 @@ async function recentDevPulse(): Promise<string> {
   }
 }
 
+/**
+ * Pull exact prospect breakdown. Before this, agents guessed "5-15 NY
+ * prospects" because they had no DB query capability. Now every agent
+ * answer starts with authoritative counts, no more estimates.
+ */
+async function prospectBreakdown(): Promise<string> {
+  try {
+    const svc = createServiceClient();
+    const { data } = await svc
+      .from("brain_global_prospects")
+      .select("country_code, vertical, outreach_status, snippet")
+      .limit(500);
+    const rows = data ?? [];
+    if (rows.length === 0) return "";
+
+    const byCountry: Record<string, number> = {};
+    const byVertical: Record<string, number> = {};
+    const byStatus: Record<string, number> = {};
+    let nyMatches = 0;
+    let laMatches = 0;
+    for (const r of rows) {
+      const cc = (r.country_code as string | null) ?? "(none)";
+      byCountry[cc] = (byCountry[cc] ?? 0) + 1;
+      const v = (r.vertical as string | null) ?? "(none)";
+      byVertical[v] = (byVertical[v] ?? 0) + 1;
+      const st = (r.outreach_status as string | null) ?? "(none)";
+      byStatus[st] = (byStatus[st] ?? 0) + 1;
+      const s = ((r.snippet as string | null) ?? "").toLowerCase();
+      if (
+        s.includes("new york") || s.includes("manhattan") ||
+        s.includes("brooklyn") || s.includes("nyc") || s.includes(", ny ")
+      ) nyMatches += 1;
+      if (
+        s.includes("los angeles") || s.includes("santa monica") ||
+        s.includes("hollywood") || s.includes(", ca ")
+      ) laMatches += 1;
+    }
+    const countryLine = Object.entries(byCountry)
+      .sort(([, a], [, b]) => b - a)
+      .map(([c, n]) => `${c}=${n}`)
+      .join(", ");
+    const statusLine = Object.entries(byStatus)
+      .sort(([, a], [, b]) => b - a)
+      .map(([s, n]) => `${s}=${n}`)
+      .join(", ");
+    return `\n\nExact prospect breakdown (from brain_global_prospects, authoritative — cite these numbers verbatim, NEVER estimate ranges like "5-15"):
+  total = ${rows.length}
+  by country: ${countryLine}
+  by outreach_status: ${statusLine}
+  New York (snippet match): ${nyMatches}
+  Los Angeles (snippet match): ${laMatches}
+  If asked about other cities, call GET /api/brain/prospect-breakdown?city=<name> for exact numbers.\n`;
+  } catch {
+    return "";
+  }
+}
+
 export async function POST(req: NextRequest) {
   const cookieOk = req.cookies.get("brain_admin")?.value === "1";
   const cronOk = req.headers.get("x-brain-cron-secret") === process.env.BRAIN_CRON_SECRET;
@@ -69,10 +126,21 @@ export async function POST(req: NextRequest) {
     } catch { /* no-op */ }
   }
 
-  // Always inject dev pulse — keeps agents in sync with Claude CLI work
-  const devContext = await recentDevPulse();
+  // Always inject dev pulse + prospect breakdown — keeps agents in sync with
+  // Claude CLI work AND armed with authoritative DB counts (no more
+  // "estimare 5-15 prospecți NY" guesses when the real answer is 9).
+  const [devContext, prospectContext] = await Promise.all([
+    recentDevPulse(),
+    prospectBreakdown(),
+  ]);
 
-  const system = `${ALEX_KNOWLEDGE_BRIEF}\n\n---\n\n${agent.system}\n\nYou are ${agent.name}, ${agent.title}. Respond as ${agent.name} would — in character. **Reply in Romanian** (unless Eduard explicitly asks in another language). Max 250 words. Keep framework names in English (AIDA, PAS, Blue Ocean, MEDDIC etc.) but explain in RO.`;
-  const answer = await generateText(system, `${body.question}${stateContext}${devContext}`, { maxTokens: 700 });
+  const system = `${ALEX_KNOWLEDGE_BRIEF}\n\n---\n\n${agent.system}\n\nYou are ${agent.name}, ${agent.title}. Respond as ${agent.name} would — in character. **Reply in Romanian** (unless Eduard explicitly asks in another language). Max 250 words. Keep framework names in English (AIDA, PAS, Blue Ocean, MEDDIC etc.) but explain in RO.
+
+WHEN ASKED ABOUT PROSPECT COUNTS (by city, country, vertical, status): read the exact numbers from the breakdown injected below. NEVER give a range like "probabil 5-15" — if the breakdown doesn't have the exact answer, say "breakdown nu acoperă asta — cer update în 5 min" and recommend calling /api/brain/prospect-breakdown?city=<name>. Honesty + precision > vague estimates.`;
+  const answer = await generateText(
+    system,
+    `${body.question}${stateContext}${devContext}${prospectContext}`,
+    { maxTokens: 700 },
+  );
   return NextResponse.json({ ok: true, agent: { id: agent.id, name: agent.name }, answer: answer ?? "—" });
 }
