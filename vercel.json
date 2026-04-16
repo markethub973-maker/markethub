@@ -67,6 +67,10 @@
     {
       "path": "/api/brain/morning-debate",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/brain/turbo-scout",
+      "schedule": "45 6 * * *"
     }
   ]
 }

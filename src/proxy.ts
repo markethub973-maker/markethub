@@ -381,7 +381,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/reverse-audit") ||     // Reverse Strategy vertical audit (mandatory before outreach)
       pathname.startsWith("/api/brain/find-intermediaries") ||// Reverse search: end customer → intermediaries
       pathname.startsWith("/api/brain/knowledge") ||         // Knowledge base UI feeder
-      pathname.startsWith("/api/brain/cross-sell")           // Cross-sell signals endpoint
+      pathname.startsWith("/api/brain/cross-sell") ||        // Cross-sell signals endpoint
+      pathname.startsWith("/api/brain/turbo-scout")          // TURBO daily self-improvement scout
     ) {
       return NextResponse.next();
     }
