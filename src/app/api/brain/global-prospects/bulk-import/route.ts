@@ -56,19 +56,31 @@ interface Extracted {
 // lower quality). The fallback is what keeps the pipeline working when
 // Octivas key isn't set or credits run out.
 async function fetchHomepage(domain: string, language = "en"): Promise<Extracted> {
-  // Try Octivas first if configured
+  // Try Octivas first if configured. Request both markdown AND summary —
+  // summary is LLM-generated and 10x more useful for AlexLoom script
+  // context than raw markdown ("LiveCOM is a digital marketing agency
+  // with 15 years of experience..." vs 600 chars of nav / cookie banner).
   const octivas = await extractViaOctivas(`https://${domain}`, {
-    formats: ["markdown"],
+    formats: ["markdown", "summary"],
     only_main_content: true,
     timeout_ms: 18_000,
   });
-  if (octivas && (octivas.markdown || octivas.title)) {
+  if (octivas && (octivas.summary || octivas.markdown || octivas.title)) {
     const bizName =
       octivas.title?.split(/\s+[-|—]\s+/)[0]?.trim() ?? domain;
+    // Prefer summary; fall back to markdown cleaned of SVG/img data URIs
+    const cleanMd = octivas.markdown
+      ? octivas.markdown
+          .replace(/!\[[^\]]*\]\(data:[^)]*\)/g, "")
+          .replace(/!\[[^\]]*\]\([^)]*\)/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+      : "";
+    const snippet = (octivas.summary ?? cleanMd).slice(0, 800);
     return {
       title: octivas.title,
       description: octivas.description,
-      body_snippet: (octivas.markdown ?? "").replace(/\s+/g, " ").trim().slice(0, 600),
+      body_snippet: snippet,
       business_name: bizName,
       source: "octivas",
       credits_used: octivas.credits_used,

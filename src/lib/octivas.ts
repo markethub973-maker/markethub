@@ -22,6 +22,7 @@ export interface OctivasExtract {
   title: string | null;
   description: string | null;
   markdown: string | null;
+  summary: string | null;
   url: string;
   credits_used: number;
   status_code: number;
@@ -64,6 +65,7 @@ export async function extractViaOctivas(
       success?: boolean;
       url?: string;
       markdown?: string | null;
+      summary?: string | null;
       metadata?: {
         title?: string;
         description?: string;
@@ -77,6 +79,7 @@ export async function extractViaOctivas(
       title: data.metadata?.title ?? null,
       description: data.metadata?.description ?? null,
       markdown: data.markdown ?? null,
+      summary: data.summary ?? null,
       url: data.url ?? url,
       credits_used: data.metadata?.credits_used ?? 0,
       status_code: data.metadata?.status_code ?? 200,
