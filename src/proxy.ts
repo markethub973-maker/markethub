@@ -402,7 +402,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/alex-loom-batch") || // Sofia's daily AlexLoom batch
       pathname.startsWith("/api/brain/global-prospects/bulk-import") || // Apify-free bulk prospect ingest
       pathname.startsWith("/api/brain/demand-seeds") || // Seed brain_demand_signals
-      pathname.startsWith("/api/brain/embed-client") // Client profile embedding
+      pathname.startsWith("/api/brain/embed-client") || // Client profile embedding
+      pathname.startsWith("/api/brain/client-tag") // Rules-based client need tagging
     ) {
       return NextResponse.next();
     }
@@ -636,6 +637,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/global-prospects/bulk-import" ||
     pathname === "/api/brain/demand-seeds" ||
     pathname === "/api/brain/embed-client" ||
+    pathname === "/api/brain/client-tag" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
