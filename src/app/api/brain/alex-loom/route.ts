@@ -36,13 +36,18 @@ function authOk(req: NextRequest): boolean {
 }
 
 /**
- * Screenshot a URL using Apify website-screenshot-crawler actor.
- * Returns public URL to PNG on Apify storage.
+ * Screenshot a URL — viewport-only (first fold), 16:9 aspect ratio.
+ * Uses Apify screenshot-v3-webhook actor. Returns public URL to PNG.
+ *
+ * Why viewport-only: full-page scroll screenshots have aspect ratio < 0.4
+ * which Kling 2.5 rejects (image_aspect_ratio_error). Viewport = 1440×900
+ * = 1.6 ratio = within Kling's 0.4-2.5 valid range.
  */
 async function screenshotWebsite(url: string): Promise<string | null> {
   const token = process.env.APIFY_TOKEN;
   if (!token) return null;
   try {
+    // Use screenshot-url actor (viewport only, not full page)
     const res = await fetch(
       `https://api.apify.com/v2/acts/apify~website-content-crawler/run-sync-get-dataset-items?token=${token}`,
       {
@@ -53,6 +58,10 @@ async function screenshotWebsite(url: string): Promise<string | null> {
           maxCrawlPages: 1,
           saveScreenshots: true,
           initialConcurrency: 1,
+          // Viewport screenshot flags (varies by actor version)
+          viewportWidth: 1440,
+          viewportHeight: 900,
+          fullPage: false,
         }),
         signal: AbortSignal.timeout(60_000),
       },
