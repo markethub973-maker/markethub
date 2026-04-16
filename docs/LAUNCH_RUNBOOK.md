@@ -132,3 +132,4 @@ Wed Apr 15 20:28:03 EEST 2026
 # CRON_SECRET rotation 1776278588
 # Daniel voice activation 1776279803
 # LinkedIn OAuth activation 1776280808
+# Azure Speech activation 1776329309
