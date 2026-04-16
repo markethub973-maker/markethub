@@ -35,7 +35,10 @@ interface TelegramUpdate {
     from?: { id: number; username?: string; first_name?: string };
     chat: { id: number };
     text?: string;
+    caption?: string;
     voice?: { file_id: string; duration: number };
+    photo?: Array<{ file_id: string; file_size?: number; width?: number; height?: number }>;
+    document?: { file_id: string; file_name?: string; mime_type?: string; file_size?: number };
   };
 }
 
@@ -243,6 +246,74 @@ export async function POST(req: NextRequest) {
       const transcript = await whisperTranscribe(audio);
       if (transcript) userText = transcript;
     }
+  }
+
+  // Photo / image document — auto-save to Supabase public-assets/avatars/
+  // and log for Claude's inbox. Covers both msg.photo (compressed image
+  // sent as photo) and msg.document (original-quality image sent as file).
+  // Before this, photos were silently dropped by the webhook — 2026-04-16
+  // incident: user sent avatar photo, it vanished because Telegram cleared
+  // the update after HTTP 200 while we processed nothing.
+  const imageFileId =
+    (msg.photo && msg.photo.length > 0 && msg.photo[msg.photo.length - 1].file_id) ||
+    (msg.document && (msg.document.mime_type ?? "").startsWith("image/") && msg.document.file_id) ||
+    null;
+  if (imageFileId) {
+    const imgBuf = await downloadTelegramFile(imageFileId);
+    if (!imgBuf) {
+      await tgApi("sendMessage", {
+        chat_id: chatId,
+        text: "⚠️ Poza primită dar download Telegram a eșuat. Reîncearcă.",
+      });
+      return NextResponse.json({ ok: true });
+    }
+    const extGuess =
+      (msg.document?.mime_type === "image/png" && "png") ||
+      (msg.document?.mime_type === "image/webp" && "webp") ||
+      "jpg";
+    const filename = `avatars/eduard_${Date.now()}.${extGuess}`;
+    const svcLocal = createServiceClient();
+    const { error: upErr } = await svcLocal.storage
+      .from("public-assets")
+      .upload(filename, new Uint8Array(imgBuf), {
+        contentType: msg.document?.mime_type ?? "image/jpeg",
+        upsert: false,
+      });
+
+    if (upErr) {
+      await tgApi("sendMessage", {
+        chat_id: chatId,
+        text: `⚠️ Upload Supabase a eșuat: ${upErr.message.slice(0, 200)}`,
+      });
+      return NextResponse.json({ ok: true });
+    }
+
+    const { data: urlData } = svcLocal.storage.from("public-assets").getPublicUrl(filename);
+    const publicUrl = urlData.publicUrl;
+
+    // Drop into Claude's ping inbox so the next CLI session picks it up
+    await svcLocal.from("brain_agent_activity").insert({
+      agent_id: "alex",
+      agent_name: "Eduard (via Telegram)",
+      activity: "ping_claude",
+      description: `[high] Poză încărcată de Eduard via Telegram (caption: "${(msg.caption ?? "").slice(0, 200)}"). URL: ${publicUrl}`,
+      result: {
+        picked_up: false,
+        urgency: "high",
+        from: "eduard_telegram",
+        chat_id: chatId,
+        kind: "photo_upload",
+        supabase_url: publicUrl,
+        caption: msg.caption ?? null,
+        file_size: msg.photo?.[msg.photo.length - 1]?.file_size ?? msg.document?.file_size ?? 0,
+      },
+    });
+
+    await tgApi("sendMessage", {
+      chat_id: chatId,
+      text: `✅ Poză salvată permanent:\n${publicUrl}\n\nClaude o găsește în inbox la următoarea sesiune CLI. Pentru avatar pipeline, această poză e acum referință disponibilă.`,
+    });
+    return NextResponse.json({ ok: true, saved: publicUrl });
   }
 
   if (!userText) {
