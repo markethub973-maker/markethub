@@ -393,7 +393,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/demand-scanner") ||     // Marketplace demand signal scanner
       pathname.startsWith("/api/brain/alex-loom") ||          // AlexLoom — personalized video pitch
       pathname.startsWith("/api/brain/platform-inventory") || // Platform capabilities registry
-      pathname.startsWith("/api/brain/dev-pulse")             // Claude CLI ↔ Alex sync channel
+      pathname.startsWith("/api/brain/dev-pulse") ||          // Claude CLI ↔ Alex sync channel
+      pathname.startsWith("/api/brain/alex-loom/avatar-poll") // Avatar async result poller
     ) {
       return NextResponse.next();
     }
@@ -616,6 +617,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/ask-agent" ||
     pathname === "/api/brain/demand-scanner" ||
     pathname === "/api/brain/alex-loom" ||
+    pathname === "/api/brain/alex-loom/avatar-poll" ||
     pathname === "/api/brain/platform-inventory" ||
     pathname === "/api/brain/dev-pulse" ||
     pathname.startsWith("/api/cost-monitor/") ||

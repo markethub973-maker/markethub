@@ -107,6 +107,56 @@ async function falWait(model: string, requestId: string, timeoutMs = 240_000): P
 }
 
 /**
+ * Async submit — returns immediately with the OmniHuman request_id.
+ * The video isn't ready yet; call `getEduardAvatarVideo(requestId)` to
+ * poll status / fetch the URL when COMPLETED. Use this from request
+ * handlers that must finish under proxy timeouts (~100s Cloudflare).
+ */
+export async function submitEduardAvatarJob(input: {
+  audio_url: string;
+  reference_image_url?: string;
+}): Promise<{ ok: boolean; request_id?: string; image_url?: string; error?: string }> {
+  if (!process.env.FAL_API_KEY) return { ok: false, error: "FAL_API_KEY not set" };
+  if (!input.audio_url) return { ok: false, error: "audio_url required" };
+  const imageUrl = input.reference_image_url ?? REF_PHOTO_URL;
+  try {
+    const requestId = await falSubmit("fal-ai/bytedance/omnihuman", {
+      image_url: imageUrl,
+      audio_url: input.audio_url,
+    });
+    return { ok: true, request_id: requestId, image_url: imageUrl };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+/**
+ * Poll status / fetch result of a previously submitted OmniHuman job.
+ * Status one of: IN_QUEUE | IN_PROGRESS | COMPLETED | FAILED | ERROR.
+ */
+export async function getEduardAvatarJob(
+  requestId: string,
+): Promise<{ status: string; video_url?: string; error?: string }> {
+  if (!process.env.FAL_API_KEY) return { status: "ERROR", error: "FAL_API_KEY not set" };
+  try {
+    const stat = await fetch(
+      `${FAL_BASE}/fal-ai/bytedance/requests/${requestId}/status`,
+      { headers: { Authorization: `Key ${process.env.FAL_API_KEY}` } },
+    );
+    const sj = (await stat.json()) as { status: string };
+    if (sj.status !== "COMPLETED") return { status: sj.status };
+    const res = await fetch(
+      `${FAL_BASE}/fal-ai/bytedance/requests/${requestId}`,
+      { headers: { Authorization: `Key ${process.env.FAL_API_KEY}` } },
+    );
+    const j = (await res.json()) as { video?: { url: string } };
+    return { status: "COMPLETED", video_url: j.video?.url };
+  } catch (e) {
+    return { status: "ERROR", error: e instanceof Error ? e.message : String(e) };
+  }
+}
+
+/**
  * Generate a talking-head video of Eduard speaking the provided audio,
  * optionally placing him in a custom scene (desk, office, etc.).
  */

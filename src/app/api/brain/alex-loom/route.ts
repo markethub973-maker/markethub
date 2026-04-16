@@ -23,7 +23,7 @@ import { synthesizeSpeech } from "@/lib/tts";
 import { generateVideo } from "@/lib/aiVideo";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
 import { ROMANIAN_TTS_PROMPT_RULES } from "@/lib/romanian-tts-rules";
-import { generateEduardAvatarVideo } from "@/lib/eduardAvatar";
+import { submitEduardAvatarJob } from "@/lib/eduardAvatar";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
 
 export const dynamic = "force-dynamic";
@@ -176,17 +176,15 @@ Write the 30-second script now.`;
     return NextResponse.json({ error: "voice synthesis failed (ElevenLabs/OpenAI)" }, { status: 502 });
   }
 
-  // Step 4: Generate Eduard avatar video — real face talking the personalized
-  // pitch with lip sync (validated 2026-04-16; replaces Contabo Ken Burns
-  // because Eduard wanted a real avatar visible, not a static screenshot pan).
-  // Pipeline: Flux Kontext Max (scene context, identity preserved) →
-  // ByteDance OmniHuman (talking head). See `lib/eduardAvatar.ts` + memory
-  // `avatar_pipeline_validated.md` for rationale and forbidden alternatives.
-  let videoUrl: string | null = null;
-  let avatarSceneUrl: string | null = null;
-  let avatarCost = 0;
-
-  // Upload audio to Supabase public-assets so OmniHuman can fetch it
+  // Step 4: Submit Eduard avatar job to OmniHuman queue.
+  //
+  // ASYNC PATTERN: we only SUBMIT here (returns in ~1s with request_id) and
+  // store the request_id on the manifest. A separate cron
+  // (/api/brain/alex-loom/avatar-poll) checks pending jobs every minute
+  // and pushes the finished video to Telegram when ready. This keeps the
+  // alex-loom HTTP response under the Cloudflare ~100s timeout — generating
+  // synchronously would 524 because OmniHuman needs ~2 min queue + run.
+  let avatarRequestId: string | null = null;
   let audioPublicUrl: string | null = null;
   try {
     const audioFileName = `alex-loom/${domain}-${Date.now()}.mp3`;
@@ -200,19 +198,9 @@ Write the 30-second script now.`;
   } catch { /* audio hosting failed, skip avatar */ }
 
   if (audioPublicUrl) {
-    // Use the pre-generated desk-scene reference photo (default in
-    // generateEduardAvatarVideo). Skipping the per-request Kontext step
-    // saves ~30s + $0.05 and keeps total request time under the
-    // Cloudflare 524 timeout (~125s observed). Scene quality is fixed
-    // but consistent for every prospect — the personalization happens
-    // in the script + voice, which is what actually matters.
-    const avatar = await generateEduardAvatarVideo({
-      audio_url: audioPublicUrl,
-    });
-    if (avatar.ok && avatar.video_url) {
-      videoUrl = avatar.video_url;
-      avatarSceneUrl = avatar.scene_image_url ?? null;
-      avatarCost = avatar.cost_usd;
+    const submit = await submitEduardAvatarJob({ audio_url: audioPublicUrl });
+    if (submit.ok && submit.request_id) {
+      avatarRequestId = submit.request_id;
     }
   }
 
@@ -221,7 +209,8 @@ Write the 30-second script now.`;
   // Proper solution: R2 upload — deferred to production hardening
   const voiceSize = voice.audio.byteLength;
 
-  // Step 6: Persist manifest in new brain_alex_loom_outputs table (if exists) or log
+  // Step 6: Persist manifest. Avatar URL is null for now; the avatar-poll
+  // cron will fill it in when OmniHuman finishes and notify Telegram.
   const manifest = {
     prospect_url: body.prospect_url,
     prospect_name: businessName,
@@ -233,10 +222,11 @@ Write the 30-second script now.`;
     voice_mime: voice.mime,
     voice_format: voice.format,
     voice_bytes: voiceSize,
+    voice_url: audioPublicUrl,
     screenshot_url: screenshotUrl,
-    video_url: videoUrl,
-    avatar_scene_url: avatarSceneUrl,
-    avatar_cost_usd: avatarCost,
+    video_url: null,
+    avatar_request_id: avatarRequestId,
+    avatar_status: avatarRequestId ? "queued" : "skipped",
     generated_at: new Date().toISOString(),
   };
 
@@ -254,8 +244,8 @@ Write the 30-second script now.`;
 
   await completeActivity(
     activity,
-    `Marcus: AlexLoom gata · ${businessName} · video ${videoUrl ? "OK" : "SKIP (no screenshot)"} · voice ${(voiceSize / 1024).toFixed(0)}KB`,
-    { domain, video_ok: Boolean(videoUrl), voice_bytes: voiceSize },
+    `Marcus: AlexLoom gata · ${businessName} · avatar ${avatarRequestId ? "queued (Telegram push when ready)" : "skipped"} · voice ${(voiceSize / 1024).toFixed(0)}KB`,
+    { domain, avatar_queued: Boolean(avatarRequestId), avatar_request_id: avatarRequestId, voice_bytes: voiceSize },
   );
 
   return NextResponse.json({
@@ -265,17 +255,17 @@ Write the 30-second script now.`;
       script,
       screenshot_url: screenshotUrl,
       voice_ready: true,
+      voice_url: audioPublicUrl,
       voice_bytes: voiceSize,
       voice_provider: voice.provider ?? "unknown",
-      avatar_video_url: videoUrl,
-      avatar_scene_url: avatarSceneUrl,
-      avatar_cost_usd: avatarCost,
-      delivery_format: videoUrl
-        ? "Eduard avatar video (Kontext + OmniHuman) + script"
-        : "screenshot + voice + script (avatar generation skipped or failed)",
+      avatar_request_id: avatarRequestId,
+      avatar_status: avatarRequestId ? "queued — Telegram push when ready" : "skipped",
+      delivery_format: avatarRequestId
+        ? "Eduard avatar video queued (OmniHuman); auto-pushed to Telegram on completion"
+        : "screenshot + voice + script (avatar skipped — audio upload failed)",
     },
-    next_action: videoUrl
-      ? "Eduard reviews avatar via Telegram → approves → Alex emails prospect with avatar video embedded + personalized script"
+    next_action: avatarRequestId
+      ? "Cron /api/brain/alex-loom/avatar-poll picks up the queued job and pushes finished video to Telegram. Eduard reviews → approves → Alex emails prospect."
       : "Eduard reviews via Telegram → approves → Alex emails prospect with screenshot + voice audio attached + personalized script",
   });
 }
