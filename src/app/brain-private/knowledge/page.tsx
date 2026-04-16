@@ -9,9 +9,25 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Target, Users, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, BookOpen, Target, Users, Sparkles, Loader2, Rocket } from "lucide-react";
 
-type Tab = "frameworks" | "patterns" | "clients" | "crosssell";
+type Tab = "frameworks" | "patterns" | "clients" | "crosssell" | "strategies";
+
+interface Strategy {
+  id: string;
+  rank: number;
+  name: string;
+  tier: string;
+  control_retained_pct: number;
+  timeline: string;
+  upside: string;
+  current_status: string;
+  progress_notes: string | null;
+  kpi_target: string | null;
+  kpi_current: string | null;
+  next_milestone: string | null;
+  owner_agent: string | null;
+}
 
 interface KnowledgeEntry {
   id: string;
@@ -57,21 +73,24 @@ export default function KnowledgePage() {
   const [patterns, setPatterns] = useState<Pattern[]>([]);
   const [clients, setClients] = useState<ClientNeed[]>([]);
   const [crosssell, setCrosssell] = useState<{ clusters: CrossSellCluster[]; high_overlap_pairs: CrossSellPair[]; total_clients: number } | null>(null);
+  const [strategies, setStrategies] = useState<Strategy[]>([]);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
-        const [kbRes, patRes, cliRes, csRes] = await Promise.all([
+        const [kbRes, patRes, cliRes, csRes, stRes] = await Promise.all([
           fetch("/api/brain/knowledge?category=framework").then((r) => r.ok ? r.json() : { entries: [] }),
           fetch("/api/brain/knowledge?category=patterns").then((r) => r.ok ? r.json() : { entries: [] }),
           fetch("/api/brain/knowledge?category=clients").then((r) => r.ok ? r.json() : { entries: [] }),
           fetch("/api/brain/cross-sell").then((r) => r.ok ? r.json() : null),
+          fetch("/api/brain/strategy-stack").then((r) => r.ok ? r.json() : { strategies: [] }),
         ]);
         setFrameworks(kbRes.entries ?? []);
         setPatterns(patRes.entries ?? []);
         setClients(cliRes.entries ?? []);
         setCrosssell(csRes);
+        setStrategies(stRes.strategies ?? []);
       } finally {
         setLoading(false);
       }
@@ -80,6 +99,7 @@ export default function KnowledgePage() {
   }, []);
 
   const tabs: Array<{ id: Tab; label: string; icon: React.ComponentType<{ className?: string }>; count: number }> = [
+    { id: "strategies", label: "Strategy Stack", icon: Rocket, count: strategies.length },
     { id: "frameworks", label: "Frameworks", icon: BookOpen, count: frameworks.length },
     { id: "patterns", label: "Intermediary Patterns", icon: Target, count: patterns.length },
     { id: "clients", label: "Client Needs Graph", icon: Users, count: clients.length },
@@ -126,6 +146,54 @@ export default function KnowledgePage() {
         {loading && (
           <div className="flex items-center gap-2 p-6 justify-center" style={{ color: "#888" }}>
             <Loader2 className="w-4 h-4 animate-spin" /> Încarcă...
+          </div>
+        )}
+
+        {!loading && tab === "strategies" && (
+          <div className="space-y-3">
+            {strategies.length === 0 && <EmptyState text="Niciun strategy încă. Rulează seed." />}
+            {["foundation","acceleration","amplification","avoided"].map((tierKey) => {
+              const rows = strategies.filter((s) => s.tier === tierKey);
+              if (!rows.length) return null;
+              const tierLabel = tierKey === "foundation" ? "🏛 Fundație (M0-M6)"
+                : tierKey === "acceleration" ? "⚡ Accelerare (M6-M12)"
+                : tierKey === "amplification" ? "🚀 Amplificare (M12+)"
+                : "❌ De evitat";
+              return (
+                <div key={tierKey} className="space-y-2">
+                  <p className="text-[10px] uppercase tracking-wider mt-2 mb-1" style={{ color: "#888" }}>{tierLabel}</p>
+                  {rows.map((s) => {
+                    const statusColor = s.current_status === "active" ? "#10B981"
+                      : s.current_status === "planned" ? "#F59E0B"
+                      : s.current_status === "monitoring" ? "#60A5FA"
+                      : s.current_status === "abandoned" ? "#EF4444"
+                      : "#666";
+                    return (
+                      <div key={s.id} className="p-3 rounded-xl" style={{ backgroundColor: "rgba(255,255,255,0.03)", border: `1px solid ${statusColor}30` }}>
+                        <div className="flex items-start justify-between gap-3 mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-mono opacity-50">#{s.rank}</span>
+                            <h3 className="text-sm font-bold">{s.name}</h3>
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: statusColor + "30", color: statusColor }}>{s.current_status}</span>
+                            <span className="text-[10px]" style={{ color: "#888" }}>{s.control_retained_pct}% control</span>
+                          </div>
+                        </div>
+                        <p className="text-[10px] mb-1" style={{ color: "#aaa" }}>{s.timeline} · {s.upside}</p>
+                        {s.progress_notes && <p className="text-[11px] mt-1 italic" style={{ color: "#ccc" }}>{s.progress_notes}</p>}
+                        <div className="flex flex-wrap gap-3 mt-2 text-[10px]" style={{ color: "#888" }}>
+                          {s.kpi_target && <span>🎯 target: <span style={{ color: "#ccc" }}>{s.kpi_target}</span></span>}
+                          {s.kpi_current && <span>📊 current: <span style={{ color: "#ccc" }}>{s.kpi_current}</span></span>}
+                          {s.next_milestone && <span>⏭ next: <span style={{ color: "#ccc" }}>{s.next_milestone}</span></span>}
+                          {s.owner_agent && <span>👤 owner: <span style={{ color: "#ccc" }}>{s.owner_agent}</span></span>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         )}
 
