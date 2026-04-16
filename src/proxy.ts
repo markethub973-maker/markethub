@@ -388,7 +388,8 @@ export async function proxy(request: NextRequest) {
       pathname.startsWith("/api/brain/strategy-stack") ||     // 12-strategy profitability tracker
       pathname.startsWith("/api/brain/delegation-map") ||     // Musk-simplified delegation layers
       pathname.startsWith("/api/brain/venture-scout") ||      // Planet-scale venture scout
-      pathname.startsWith("/api/brain/venture-pipeline")      // Venture pipeline CRUD
+      pathname.startsWith("/api/brain/venture-pipeline") ||   // Venture pipeline CRUD
+      pathname.startsWith("/api/brain/global-prospects")      // Global prospects scan + semantic search
     ) {
       return NextResponse.next();
     }
@@ -607,6 +608,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/delegation-map" ||
     pathname === "/api/brain/venture-scout" ||
     pathname === "/api/brain/venture-pipeline" ||
+    pathname.startsWith("/api/brain/global-prospects/") ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
