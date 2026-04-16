@@ -253,6 +253,34 @@ export async function POST(req: NextRequest) {
 
   const svc = createServiceClient();
 
+  // Route messages prefixed with @claude or /claude to the Claude (dev)
+  // inbox instead of Alex. They wait there until the next CLI session
+  // picks them up via /api/brain/ping-claude. Acknowledged immediately so
+  // Eduard knows it landed.
+  const claudePrefixMatch = userText.match(/^[@/]claude\b\s*[:,]?\s*([\s\S]*)$/i);
+  if (claudePrefixMatch) {
+    const messageForClaude = (claudePrefixMatch[1] || userText).trim();
+    try {
+      await svc.from("brain_agent_activity").insert({
+        agent_id: "alex",
+        agent_name: "Eduard (via Telegram)",
+        activity: "ping_claude",
+        description: `[normal] ${messageForClaude.slice(0, 500)}`,
+        result: { picked_up: false, urgency: "normal", from: "eduard_telegram", chat_id: chatId },
+      });
+      await tgApi("sendMessage", {
+        chat_id: chatId,
+        text: "📬 Mesaj salvat în inbox-ul Claude. Va răspunde la următoarea sesiune CLI.",
+      });
+    } catch (e) {
+      await tgApi("sendMessage", {
+        chat_id: chatId,
+        text: `Eroare la salvare în inbox: ${e instanceof Error ? e.message : "unknown"}`,
+      });
+    }
+    return NextResponse.json({ ok: true, routed_to: "claude_inbox" });
+  }
+
   // Log user turn
   await svc.from("telegram_messages").insert({
     chat_id: chatId,
