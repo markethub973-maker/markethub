@@ -18,6 +18,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { generateJsonReviewed } from "@/lib/llm";
+import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -204,6 +205,15 @@ export async function POST(req: NextRequest) {
 
   const svc = createServiceClient();
 
+  // Sofia (sales) pulses LIVE in boardroom while outreach batch runs
+  const isDryRun = Boolean(body.dry_run);
+  const activity = await startActivity(
+    "sales",
+    isDryRun
+      ? `Sofia pregătește ${leads.length} drafturi outreach (dry-run)`
+      : `Sofia trimite ${leads.length} outreach-uri personalizate`,
+  );
+
   for (const lead of leads) {
     // Anti-spam cadence check — skip if domain was hit 3+ times in last 30d or explicitly blocked
     const { data: cadence } = await svc
@@ -276,10 +286,20 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  const sentCount = results.filter((r) => r.status === "sent").length;
+  const draftedCount = results.filter((r) => r.status === "drafted" || r.status === "dry_run").length;
+  await completeActivity(
+    activity,
+    isDryRun
+      ? `Sofia: ${draftedCount || results.length} drafturi pregătite pentru review`
+      : `Sofia: ${sentCount}/${results.length} outreach-uri trimise`,
+    { count: results.length, sent: sentCount, dry_run: isDryRun },
+  );
+
   return NextResponse.json({
     ok: true,
     count: results.length,
-    sent: results.filter((r) => r.status === "sent").length,
+    sent: sentCount,
     results,
   });
 }

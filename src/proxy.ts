@@ -574,6 +574,8 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/security/health-check" ||
     pathname === "/api/brain/linkedin-daily" ||
     pathname === "/api/brain/morning-debate" ||
+    pathname === "/api/brain/outreach-batch" ||
+    pathname === "/api/brain/mine-leads" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname === "/api/admin-auth" ||
