@@ -132,14 +132,13 @@ export async function POST(req: NextRequest) {
       .update({ our_product_match_score: after })
       .eq("id", matched.id);
 
-    // Audit log
+    // Audit log with first-class activity="auto_score" (post 2026-04-16 DDL).
     await svc.from("brain_agent_activity").insert({
       agent_id: "analyst",
       agent_name: "Ethan",
-      activity: "completed",
-      description: `[AUTO_SCORE] ${matched.intermediary_type}: ${before} → ${after} — ${reason}`,
+      activity: "auto_score",
+      description: `${matched.intermediary_type}: ${before} → ${after} — ${reason}`,
       result: {
-        kind: "auto_score_change",
         pattern_id: matched.id,
         vertical_from_prospects: vertical,
         stats,
@@ -173,7 +172,7 @@ export async function GET(req: NextRequest) {
   const { data } = await svc
     .from("brain_agent_activity")
     .select("created_at, description, result")
-    .like("description", "[AUTO_SCORE]%")
+    .eq("activity", "auto_score")
     .gte("created_at", since)
     .order("created_at", { ascending: false })
     .limit(50);

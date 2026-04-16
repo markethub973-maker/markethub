@@ -53,20 +53,17 @@ export async function POST(req: NextRequest) {
 
   const svc = createServiceClient();
   try {
-    // The brain_agent_activity table has a CHECK constraint allowing only
-    // started/completed/failed for `activity`. We piggyback on "completed"
-    // and signal the ping intent via a [PING_CLAUDE] prefix on description
-    // + result.kind="ping_claude". Avoids DDL while reusing the table.
+    // activity="ping_claude" is a first-class value after the 2026-04-16
+    // DDL migration widened brain_agent_activity_activity_check.
     const { data, error } = await svc
       .from("brain_agent_activity")
       .insert({
         agent_id: from === "eduard_telegram" ? "alex" : from, // valid AgentId required
         agent_name: from === "eduard_telegram" ? "Eduard (via Telegram)" : from,
-        activity: "completed",
-        description: `[PING_CLAUDE][${urgency}] ${body.message.slice(0, 500)}`,
+        activity: "ping_claude",
+        description: `[${urgency}] ${body.message.slice(0, 500)}`,
         result: {
           ...(body.context ?? {}),
-          kind: "ping_claude",
           picked_up: false,
           urgency,
           from,
@@ -91,8 +88,7 @@ export async function GET(req: NextRequest) {
   const { data, error } = await svc
     .from("brain_agent_activity")
     .select("id, created_at, agent_id, agent_name, description, result")
-    .eq("activity", "completed")
-    .like("description", "[PING_CLAUDE]%")
+    .eq("activity", "ping_claude")
     .gte("created_at", since)
     .order("created_at", { ascending: true })
     .limit(50);
@@ -123,7 +119,7 @@ export async function GET(req: NextRequest) {
       at: r.created_at,
       from: (r.result as Record<string, unknown>)?.from ?? r.agent_name,
       urgency: (r.result as Record<string, unknown>)?.urgency ?? "normal",
-      message: r.description.replace(/^\[PING_CLAUDE\]\[(low|normal|high)\]\s*/, ""),
+      message: r.description.replace(/^\[(low|normal|high)\]\s*/, ""),
       context: r.result,
     })),
   });

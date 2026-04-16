@@ -165,14 +165,13 @@ Decide the day's first action.`;
     return NextResponse.json({ error: "Malformed JSON from LLM", raw: m[0] }, { status: 502 });
   }
 
-  // Log the kickoff to brain_agent_activity
+  // Log the kickoff with first-class activity="kickoff" (post 2026-04-16 DDL).
   await svc.from("brain_agent_activity").insert({
     agent_id: parsed.first_action.owner_agent ?? "alex",
     agent_name: "Alex (kickoff)",
-    activity: "started",
-    description: `[KICKOFF] ${parsed.first_action.what.slice(0, 300)}`,
+    activity: "kickoff",
+    description: parsed.first_action.what.slice(0, 300),
     result: {
-      kind: "morning_kickoff",
       ...parsed.first_action,
       state,
       date: new Date().toISOString().slice(0, 10),
