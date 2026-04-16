@@ -200,17 +200,14 @@ Write the 30-second script now.`;
   } catch { /* audio hosting failed, skip avatar */ }
 
   if (audioPublicUrl) {
-    // Scene prompt: tech-savvy prospects get a clean private-office context;
-    // non-tech see Eduard at the MarketHub Pro desk (platform brand visible
-    // through context, not by exposing UI screenshots).
-    const scenePrompt = showPlatform
-      ? `Sitting at a modern minimalist wooden desk with a closed laptop, soft warm natural window light from the left, slightly blurred contemporary office background with subtle bookshelves, a small green plant in foreground. Friendly genuine expression looking directly at camera, headshot composition, sharp focus on face, beige and warm tones, professional founder portrait.`
-      : `Sitting at a clean modern minimalist desk, soft warm natural window light, slightly blurred contemporary office background, friendly confident expression looking directly at camera, headshot composition, sharp focus on face, professional founder portrait.`;
-
+    // Use the pre-generated desk-scene reference photo (default in
+    // generateEduardAvatarVideo). Skipping the per-request Kontext step
+    // saves ~30s + $0.05 and keeps total request time under the
+    // Cloudflare 524 timeout (~125s observed). Scene quality is fixed
+    // but consistent for every prospect — the personalization happens
+    // in the script + voice, which is what actually matters.
     const avatar = await generateEduardAvatarVideo({
       audio_url: audioPublicUrl,
-      scene_prompt: scenePrompt,
-      aspect_ratio: "16:9",
     });
     if (avatar.ok && avatar.video_url) {
       videoUrl = avatar.video_url;

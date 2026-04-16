@@ -26,9 +26,21 @@
  *   - Hedra Character-2/3 → 404 on fal as of 2026-04-16.
  */
 
-const REF_PHOTO_URL =
-  process.env.EDUARD_AVATAR_URL ??
+/**
+ * Default avatar reference. The "at desk" variant is a Kontext-edited version
+ * of the original Eduard photo that adds desk + bookshelves + warm lighting
+ * while preserving the face exactly. Pre-generated once and stored in
+ * Supabase so request-path avatar generation only needs OmniHuman (~2 min)
+ * and stays under the Cloudflare 524 timeout.
+ *
+ * Override via EDUARD_AVATAR_URL env var if a different baseline is needed,
+ * or pass `reference_image_url` per call.
+ */
+const REF_PHOTO_DESK_URL =
+  "https://kashohhwsxyhyhhppvik.supabase.co/storage/v1/object/public/public-assets/avatars/eduard_avatar_at_desk_v1.png";
+const REF_PHOTO_NEUTRAL_URL =
   "https://kashohhwsxyhyhhppvik.supabase.co/storage/v1/object/public/public-assets/avatars/eduard_avatar_v1.png";
+const REF_PHOTO_URL = process.env.EDUARD_AVATAR_URL ?? REF_PHOTO_DESK_URL;
 
 export interface EduardAvatarInput {
   /** Public URL to a ≤30s audio file (mp3/wav). Required. */
