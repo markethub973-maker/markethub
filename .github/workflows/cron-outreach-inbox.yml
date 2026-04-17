@@ -1,0 +1,16 @@
+name: Outreach Inbox Scanner
+on:
+  schedule:
+    - cron: "*/5 * * * *"  # every 5 minutes
+  workflow_dispatch: {}
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Scan Gmail for prospect replies
+        run: |
+          curl -sf -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "https://markethubpromo.com/api/cron/outreach-inbox" \
+            --max-time 50 || true
