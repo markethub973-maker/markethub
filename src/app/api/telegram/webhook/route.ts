@@ -373,25 +373,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    // Try Contabo daemon first
+    // Fire-and-forget to Contabo daemon — bridge processes async
+    // and sends answer directly to Telegram (no waiting here)
     try {
       const contaboRes = await fetch("https://n8n.markethubpromo.com/claude-bridge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: messageForClaude, secret: "mhp-claude-bridge-2026" }),
-        signal: AbortSignal.timeout(115000),
+        body: JSON.stringify({
+          question: messageForClaude,
+          secret: "mhp-claude-bridge-2026",
+          chat_id: String(chatId),
+        }),
+        signal: AbortSignal.timeout(8000),
       });
       if (contaboRes.ok) {
-        const data = (await contaboRes.json()) as { answer?: string };
-        const answer = data.answer || "No response from Claude daemon.";
-        // Send answer in chunks (Telegram 4096 char limit)
-        for (let i = 0; i < answer.length; i += 4000) {
-          await tgApi("sendMessage", {
-            chat_id: chatId,
-            text: answer.slice(i, i + 4000),
-          });
-        }
-        return NextResponse.json({ ok: true, routed_to: "claude_daemon" });
+        await tgApi("sendMessage", {
+          chat_id: chatId,
+          text: "🔄 Procesez... răspund în 30-60 secunde.",
+        });
+        return NextResponse.json({ ok: true, routed_to: "claude_daemon_async" });
       }
     } catch {
       // Daemon unreachable — fall back to inbox
