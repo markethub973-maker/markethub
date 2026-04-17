@@ -298,7 +298,7 @@ export default function AdminPage() {
           return (
             <div key={group}>
               <p className="text-xs font-bold uppercase tracking-wider mb-2 px-1 text-glass-muted">{group}</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {panels.map((panel) => {
                   const Icon = panel.icon;
                   return (

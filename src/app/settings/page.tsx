@@ -415,7 +415,7 @@ export default function SettingsPage() {
                 </div>
               ) : budget ? (
                 <div className="space-y-5">
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {[
                       { label: "Plan Budget", value: `$${budget.budget_usd}`, sub: `${budget.plan_name} / mo`, red: false },
                       { label: "Extra Credits", value: budget.extra_credits_usd > 0 ? `+$${budget.extra_credits_usd}` : "$0", sub: budget.extra_credits_usd > 0 ? "purchased" : "none yet", red: false, green: budget.extra_credits_usd > 0 },

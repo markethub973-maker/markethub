@@ -507,7 +507,7 @@ export default function LeadsPage() {
 
         {/* Stats */}
         {!tablesMissing && leads.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <GlassCard padding="p-4" rounded="rounded-xl">
               <p className="text-2xl font-bold" style={{ color: AMBER }}>{leads.length}</p>
               <p className="text-xs mt-0.5 text-glass-secondary">Total leads</p>

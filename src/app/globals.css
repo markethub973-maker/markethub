@@ -666,3 +666,19 @@ select.input-glass {
   background-position: right 12px center;
   padding-right: 36px;
 }
+
+/* ── Mobile responsive ─────────────────── */
+
+@media (max-width: 768px) {
+  .sidebar-glass {
+    position: fixed;
+    left: -280px;
+    z-index: 100;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100vh;
+    width: 260px;
+  }
+  .sidebar-glass.sidebar-open {
+    left: 0;
+  }
+}

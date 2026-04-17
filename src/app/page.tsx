@@ -169,7 +169,7 @@ export default function DashboardPage() {
         )}
 
         {/* Stats Row — computed from YouTube trending data */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard
             title="Views (Trending)"
             value={ytVideos.length > 0 ? formatNumber(ytTotalViews) : "—"}
@@ -201,7 +201,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Platform Cards — real data */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {platformCards.map((p) => (
             <GlassCard key={p.platform} padding="p-4" rounded="rounded-xl">
               <div className="flex items-center justify-between mb-3">

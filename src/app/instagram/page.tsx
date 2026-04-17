@@ -258,7 +258,7 @@ export default function InstagramPage() {
               </div>
             </GlassCard>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
               {[
                 { label: "Followers", value: fmt(profile.followers_count), icon: <Users className="w-4 h-4 text-pink-400" /> },
                 { label: "Following", value: fmt(profile.follows_count), icon: <UserCheck className="w-4 h-4 text-purple-400" /> },
