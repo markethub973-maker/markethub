@@ -88,21 +88,66 @@ export async function GET(req: NextRequest) {
 
   const svc = createServiceClient();
   const now = new Date();
-  const todayStr = now.toISOString().slice(0, 10);
-  const nowTime = now.toTimeString().slice(0, 5);
 
+  // Use UTC consistently for comparison — posts store date+time in user's
+  // local timezone. We fetch all "potentially due" posts (today or earlier)
+  // and then filter per-user timezone below.
+  const utcDate = now.toISOString().slice(0, 10);
+  const utcTime = now.toISOString().slice(11, 16); // HH:MM UTC
+
+  // Fetch posts that are due or overdue (using UTC as baseline).
+  // We fetch a wider window and filter per-timezone below for accuracy.
   const { data: duePosts, error } = await svc
     .from("scheduled_posts")
-    .select("id, user_id, title, caption, platform, status, date, time, image_url, client, hashtags, first_comment")
+    .select("id, user_id, title, caption, platform, status, date, time, image_url, client, hashtags, first_comment, timezone")
     .eq("status", "scheduled")
-    .or(`date.lt.${todayStr},and(date.eq.${todayStr},time.lte.${nowTime})`);
+    .or(`date.lt.${utcDate},and(date.eq.${utcDate},time.lte.${utcTime}),date.eq.${utcDate}`);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   if (!duePosts || duePosts.length === 0) {
     return NextResponse.json({ processed: 0, message: "No due posts" });
   }
 
-  const userIds = [...new Set(duePosts.map((p: ScheduledPostRow) => p.user_id))];
+  // Filter by timezone: convert each post's date+time from its timezone to UTC
+  // and check if it's due now. Posts without timezone default to UTC.
+  const actuallyDue = duePosts.filter((post) => {
+    const tz = (post as Record<string, unknown>).timezone as string | null;
+    const postDate = post.date as string; // YYYY-MM-DD
+    const postTime = (post.time as string) || "00:00"; // HH:MM
+    try {
+      // Create a date in the post's timezone
+      const postLocalStr = `${postDate}T${postTime}:00`;
+      if (tz) {
+        // Convert the post's local time to UTC and compare with now
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: tz,
+          year: "numeric", month: "2-digit", day: "2-digit",
+          hour: "2-digit", minute: "2-digit", hour12: false,
+        });
+        // Get current time in the post's timezone
+        const nowInTz = formatter.format(now);
+        // Parse "MM/DD/YYYY, HH:MM" format
+        const match = nowInTz.match(/(\d{2})\/(\d{2})\/(\d{4}),?\s*(\d{2}):(\d{2})/);
+        if (match) {
+          const nowTzStr = `${match[3]}-${match[1]}-${match[2]}T${match[4]}:${match[5]}:00`;
+          return postLocalStr <= nowTzStr;
+        }
+      }
+      // No timezone — compare as UTC (legacy behavior)
+      const postUtc = `${postDate}T${postTime}:00`;
+      const nowUtc = now.toISOString().slice(0, 19);
+      return postUtc <= nowUtc;
+    } catch {
+      // Invalid timezone — fall back to UTC comparison
+      return `${postDate}T${postTime}:00` <= now.toISOString().slice(0, 19);
+    }
+  }) as ScheduledPostRow[];
+
+  if (actuallyDue.length === 0) {
+    return NextResponse.json({ processed: 0, message: "No due posts (after timezone filter)" });
+  }
+
+  const userIds = [...new Set(actuallyDue.map((p: ScheduledPostRow) => p.user_id))];
   const { data: profiles } = await svc
     .from("profiles")
     .select("id, email, name, full_name, instagram_access_token, instagram_user_id, linkedin_access_token, fb_page_id, fb_page_access_token")
@@ -135,7 +180,7 @@ export async function GET(req: NextRequest) {
   let reminded = 0;
   let failed = 0;
 
-  for (const post of duePosts as ScheduledPostRow[]) {
+  for (const post of actuallyDue) {
     const profile = profileMap.get(post.user_id);
     const platform = post.platform?.toLowerCase() ?? "";
     let result: PublishResult = { ok: false, error: "Platform not supported" };
@@ -219,7 +264,7 @@ export async function GET(req: NextRequest) {
   await svc.from("cron_logs").upsert({
     job: "auto-post",
     ran_at: new Date().toISOString(),
-    result: { total: duePosts.length, published, failed, reminded },
+    result: { total: actuallyDue.length, published, failed, reminded },
   });
 
   return NextResponse.json({

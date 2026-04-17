@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
   let query = supabase
     .from("scheduled_posts")
-    .select("id, title, caption, platform, status, date, time, client, hashtags, image_url, first_comment, created_at, updated_at")
+    .select("id, title, caption, platform, status, date, time, client, hashtags, image_url, first_comment, timezone, created_at, updated_at")
     .eq("user_id", auth.userId)
     .order("date", { ascending: true })
     .order("time", { ascending: true });
@@ -41,9 +41,9 @@ export async function POST(req: NextRequest) {
   const user = { id: auth.userId }; const supabase = await createClient();
 
   const body = await req.json().catch(() => ({}));
-  const { title, caption, platform, status, date, time, client, hashtags, image_url, first_comment } = body as {
+  const { title, caption, platform, status, date, time, client, hashtags, image_url, first_comment, timezone } = body as {
     title: string; caption?: string; platform: string; status: string;
-    date: string; time?: string; client?: string; hashtags?: string; image_url?: string; first_comment?: string;
+    date: string; time?: string; client?: string; hashtags?: string; image_url?: string; first_comment?: string; timezone?: string;
   };
 
   if (!title?.trim()) return NextResponse.json({ error: "Title is required" }, { status: 400 });
@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
       hashtags: hashtags?.trim() || "",
       image_url: image_url?.trim() || null,
       first_comment: first_comment?.trim() || null,
+      timezone: timezone || null,
     })
     .select()
     .single();
