@@ -375,7 +375,7 @@ export async function POST(req: NextRequest) {
 
     // Try Contabo daemon first
     try {
-      const contaboRes = await fetch("http://207.180.235.143:7777", {
+      const contaboRes = await fetch("https://n8n.markethubpromo.com/claude-bridge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: messageForClaude, secret: "mhp-claude-bridge-2026" }),
