@@ -83,8 +83,15 @@ export default function ThemeCustomizer() {
             animation: "slideUpIn 0.2s ease-out",
           }}
         >
-          <GlassCard padding="p-5">
-            <h3 className="text-glass-primary font-semibold text-sm mb-4">
+          <div style={{
+            background: "rgba(13,11,30,0.95)",
+            backdropFilter: "blur(24px)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            borderRadius: 16,
+            padding: 20,
+            boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
+          }}>
+            <h3 style={{ color: "rgba(255,255,255,0.9)", fontWeight: 600, fontSize: 14, marginBottom: 16 }}>
               Theme Customizer
             </h3>
 
@@ -139,15 +146,15 @@ export default function ThemeCustomizer() {
                     onChange={(e) => handleColorChange(f.key, e.target.value)}
                     className="w-7 h-7 rounded-lg cursor-pointer border-none bg-transparent flex-shrink-0"
                   />
-                  <span className="w-20 text-glass-secondary">{f.label}</span>
-                  <span className="text-glass-muted font-mono text-[10px]">{theme[f.key]}</span>
+                  <span style={{ width: 80, color: "rgba(255,255,255,0.65)" }}>{f.label}</span>
+                  <span style={{ color: "rgba(255,255,255,0.3)", fontFamily: "monospace", fontSize: 10 }}>{theme[f.key]}</span>
                 </label>
               ))}
             </div>
 
             {/* Blob colors */}
             <div className="mt-3 pt-3 border-t border-white/5">
-              <p className="text-[9px] text-glass-muted uppercase tracking-wider mb-2">Ambient Blobs</p>
+              <p style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>Ambient Blobs</p>
               <div className="space-y-2">
                 {([
                   { key: "blob1" as const, label: "Blob 1" },
@@ -166,16 +173,16 @@ export default function ThemeCustomizer() {
                       }}
                       className="w-7 h-7 rounded-lg cursor-pointer border-none bg-transparent flex-shrink-0"
                     />
-                    <span className="text-glass-secondary">{f.label}</span>
+                    <span style={{ color: "rgba(255,255,255,0.65)" }}>{f.label}</span>
                   </label>
                 ))}
               </div>
             </div>
 
-            <div className="mt-3 pt-3 border-t border-white/5 text-glass-muted text-[10px]">
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.08)", fontSize: 10, color: "rgba(255,255,255,0.3)" }}>
               Active: {theme.name}
             </div>
-          </GlassCard>
+          </div>
         </div>
       )}
 
