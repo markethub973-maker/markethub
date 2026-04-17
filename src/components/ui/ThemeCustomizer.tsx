@@ -160,8 +160,33 @@ export default function ThemeCustomizer() {
               ))}
             </div>
 
+            {/* Text colors */}
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <p style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>Text Colors</p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <label style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12 }}>
+                  <input
+                    type="color"
+                    value={theme.textSidebar?.startsWith("#") ? theme.textSidebar : "#FFF8F0"}
+                    onChange={(e) => handleColorChange("textSidebar", e.target.value)}
+                    style={{ width: 28, height: 28, borderRadius: 8, cursor: "pointer", border: "none", background: "transparent", flexShrink: 0 }}
+                  />
+                  <span style={{ color: "rgba(255,255,255,0.65)" }}>Sidebar text</span>
+                </label>
+                <label style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12 }}>
+                  <input
+                    type="color"
+                    value={theme.textWorkspace?.startsWith("#") ? theme.textWorkspace : "#2D2620"}
+                    onChange={(e) => handleColorChange("textWorkspace", e.target.value)}
+                    style={{ width: 28, height: 28, borderRadius: 8, cursor: "pointer", border: "none", background: "transparent", flexShrink: 0 }}
+                  />
+                  <span style={{ color: "rgba(255,255,255,0.65)" }}>Workspace text</span>
+                </label>
+              </div>
+            </div>
+
             {/* Blob colors */}
-            <div className="mt-3 pt-3 border-t border-white/5">
+            <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
               <p style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>Ambient Blobs</p>
               <div className="space-y-2">
                 {([

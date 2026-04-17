@@ -8,14 +8,16 @@
 
 export type ThemeConfig = {
   name: string;
-  bg1: string;        // darkest bg
-  bg2: string;        // mid bg
-  bg3: string;        // lightest bg
-  accent: string;     // primary accent color
-  accentGlow: string; // rgba version for shadows/glows
-  blob1: string;      // top-left ambient glow
-  blob2: string;      // bottom-right ambient glow
-  blob3: string;      // center ambient glow
+  bg1: string;            // darkest bg
+  bg2: string;            // mid bg
+  bg3: string;            // lightest bg
+  accent: string;         // primary accent color
+  accentGlow: string;     // rgba version for shadows/glows
+  blob1: string;          // top-left ambient glow
+  blob2: string;          // bottom-right ambient glow
+  blob3: string;          // center ambient glow
+  textSidebar: string;    // sidebar text color
+  textWorkspace: string;  // main workspace text color
 };
 
 /**
@@ -28,14 +30,16 @@ export const THEMES: ThemeConfig[] = [
   // ── DEFAULT: existing MarketHub Pro brand colors (light cream + amber) ──
   {
     name: "MarketHub Pro",
-    bg1: "#FFFCF7",          // existing --color-bg (cream)
-    bg2: "#F5E8D2",          // existing warm tint
-    bg3: "#FFF8F0",          // existing light cream
-    accent: "#F59E0B",       // existing --color-primary (amber)
+    bg1: "#FFFCF7",
+    bg2: "#F5E8D2",
+    bg3: "#FFF8F0",
+    accent: "#F59E0B",
     accentGlow: "rgba(245,158,11,0.15)",
-    blob1: "rgba(245,158,11,0.08)",   // warm amber glow
-    blob2: "rgba(236,128,84,0.06)",   // accent coral glow
-    blob3: "rgba(16,185,129,0.05)",   // subtle green balance
+    blob1: "rgba(245,158,11,0.08)",
+    blob2: "rgba(236,128,84,0.06)",
+    blob3: "rgba(16,185,129,0.05)",
+    textSidebar: "#FFF8F0",
+    textWorkspace: "#2D2620",
   },
   // ── Dark alternates (optional — user picks via ThemeCustomizer) ──
   {
@@ -48,6 +52,8 @@ export const THEMES: ThemeConfig[] = [
     blob1: "rgba(168,85,247,0.2)",
     blob2: "rgba(245,158,11,0.18)",
     blob3: "rgba(16,185,129,0.1)",
+    textSidebar: "#FFF8F0",
+    textWorkspace: "rgba(255,255,255,0.85)",
   },
   {
     name: "Ocean Blue",
@@ -59,6 +65,8 @@ export const THEMES: ThemeConfig[] = [
     blob1: "rgba(59,130,246,0.2)",
     blob2: "rgba(99,102,241,0.15)",
     blob3: "rgba(16,185,129,0.1)",
+    textSidebar: "#E2E8F0",
+    textWorkspace: "rgba(255,255,255,0.85)",
   },
   {
     name: "Rose Gold",
@@ -70,6 +78,8 @@ export const THEMES: ThemeConfig[] = [
     blob1: "rgba(244,63,94,0.2)",
     blob2: "rgba(251,113,133,0.15)",
     blob3: "rgba(245,158,11,0.1)",
+    textSidebar: "#FDE8EC",
+    textWorkspace: "rgba(255,255,255,0.85)",
   },
   {
     name: "Emerald",
@@ -81,6 +91,8 @@ export const THEMES: ThemeConfig[] = [
     blob1: "rgba(16,185,129,0.2)",
     blob2: "rgba(5,150,105,0.15)",
     blob3: "rgba(99,102,241,0.1)",
+    textSidebar: "#D1FAE5",
+    textWorkspace: "rgba(255,255,255,0.85)",
   },
 ];
 
@@ -100,6 +112,8 @@ export function applyThemeToDOM(theme: ThemeConfig): void {
   root.style.setProperty("--blob1", theme.blob1);
   root.style.setProperty("--blob2", theme.blob2);
   root.style.setProperty("--blob3", theme.blob3);
+  root.style.setProperty("--text-sidebar", theme.textSidebar);
+  root.style.setProperty("--text-workspace", theme.textWorkspace);
 
   // Detect if theme is "light" (Arctic White) to flip text colors
   const isLight = isLightTheme(theme);
