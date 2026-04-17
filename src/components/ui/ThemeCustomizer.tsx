@@ -36,17 +36,16 @@ export default function ThemeCustomizer() {
     setTheme(t);
   };
 
-  const handleAccentChange = (hex: string) => {
-    // Build a custom theme based on current, with new accent
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    setTheme({
-      ...theme,
-      name: "Custom",
-      accent: hex,
-      accentGlow: `rgba(${r},${g},${b},0.2)`,
-    });
+  const handleColorChange = (field: keyof ThemeConfig, hex: string) => {
+    const update: Partial<ThemeConfig> = { name: "Custom", [field]: hex };
+    // Auto-derive accentGlow when accent changes
+    if (field === "accent") {
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      update.accentGlow = `rgba(${r},${g},${b},0.2)`;
+    }
+    setTheme({ ...theme, ...update });
   };
 
   return (
@@ -125,23 +124,55 @@ export default function ThemeCustomizer() {
               ))}
             </div>
 
-            {/* Custom accent picker */}
-            <div className="space-y-3">
-              <label className="flex items-center gap-3 text-glass-secondary text-xs">
-                <span className="w-20">Accent</span>
-                <input
-                  type="color"
-                  value={theme.accent}
-                  onChange={(e) => handleAccentChange(e.target.value)}
-                  className="w-8 h-8 rounded-lg cursor-pointer border-none bg-transparent"
-                />
-                <span className="text-glass-muted font-mono text-xs">
-                  {theme.accent}
-                </span>
-              </label>
+            {/* Color pickers — all customizable */}
+            <div className="space-y-2.5">
+              {([
+                { key: "accent" as const, label: "Accent", hint: "Buttons, CTAs" },
+                { key: "bg1" as const, label: "Background", hint: "Page gradient start" },
+                { key: "bg2" as const, label: "Mid tone", hint: "Page gradient center" },
+                { key: "bg3" as const, label: "Light bg", hint: "Page gradient end" },
+              ] as const).map((f) => (
+                <label key={f.key} className="flex items-center gap-3 text-xs">
+                  <input
+                    type="color"
+                    value={theme[f.key]}
+                    onChange={(e) => handleColorChange(f.key, e.target.value)}
+                    className="w-7 h-7 rounded-lg cursor-pointer border-none bg-transparent flex-shrink-0"
+                  />
+                  <span className="w-20 text-glass-secondary">{f.label}</span>
+                  <span className="text-glass-muted font-mono text-[10px]">{theme[f.key]}</span>
+                </label>
+              ))}
             </div>
 
-            <div className="mt-4 pt-3 border-t border-white/5 text-glass-muted text-[10px]">
+            {/* Blob colors */}
+            <div className="mt-3 pt-3 border-t border-white/5">
+              <p className="text-[9px] text-glass-muted uppercase tracking-wider mb-2">Ambient Blobs</p>
+              <div className="space-y-2">
+                {([
+                  { key: "blob1" as const, label: "Blob 1" },
+                  { key: "blob2" as const, label: "Blob 2" },
+                  { key: "blob3" as const, label: "Blob 3" },
+                ] as const).map((f) => (
+                  <label key={f.key} className="flex items-center gap-3 text-xs">
+                    <input
+                      type="color"
+                      value={theme.accent}
+                      onChange={(e) => {
+                        const r = parseInt(e.target.value.slice(1, 3), 16);
+                        const g = parseInt(e.target.value.slice(3, 5), 16);
+                        const b = parseInt(e.target.value.slice(5, 7), 16);
+                        handleColorChange(f.key, `rgba(${r},${g},${b},0.15)`);
+                      }}
+                      className="w-7 h-7 rounded-lg cursor-pointer border-none bg-transparent flex-shrink-0"
+                    />
+                    <span className="text-glass-secondary">{f.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-3 pt-3 border-t border-white/5 text-glass-muted text-[10px]">
               Active: {theme.name}
             </div>
           </GlassCard>
