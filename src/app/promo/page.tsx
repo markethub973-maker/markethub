@@ -7,6 +7,7 @@ import {
   Megaphone, PenTool, BookOpen, BarChart, MessageSquare,
 } from "lucide-react";
 import GlassCard from "@/components/ui/GlassCard";
+import DashboardPreviewMockup from "@/components/ui/DashboardPreviewMockup";
 import FaqItem from "./FaqItem";
 
 export const metadata: Metadata = {
@@ -513,6 +514,42 @@ export default function PromoPage() {
               <Play className="w-4 h-4" />
               Browse all features
             </Link>
+          </div>
+
+          {/* Dashboard preview */}
+          <div style={{ marginTop: 48, position: "relative" }}>
+            {/* Glow under mockup */}
+            <div style={{
+              position: "absolute", bottom: -40, left: "50%",
+              transform: "translateX(-50%)",
+              width: "70%", height: 80,
+              background: "radial-gradient(ellipse, rgba(245,158,11,0.25) 0%, transparent 70%)",
+              filter: "blur(20px)", pointerEvents: "none",
+            }} />
+
+            {/* Browser chrome frame */}
+            <div style={{
+              background: "rgba(255,255,255,0.06)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: 16, overflow: "hidden",
+              boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+            }}>
+              {/* Browser top bar with 3 dots */}
+              <div style={{
+                height: 36, background: "rgba(0,0,0,0.3)",
+                display: "flex", alignItems: "center", gap: 6, padding: "0 12px",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+              }}>
+                <div style={{ width:10, height:10, borderRadius:"50%", background:"rgba(239,68,68,0.5)" }} />
+                <div style={{ width:10, height:10, borderRadius:"50%", background:"rgba(245,158,11,0.5)" }} />
+                <div style={{ width:10, height:10, borderRadius:"50%", background:"rgba(16,185,129,0.5)" }} />
+                <div style={{ flex:1, margin:"0 8px", background:"rgba(255,255,255,0.05)", borderRadius:4, height:18, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <span style={{ fontSize:9, color:"rgba(255,255,255,0.3)" }}>markethubpromo.com/dashboard</span>
+                </div>
+              </div>
+              <DashboardPreviewMockup />
+            </div>
           </div>
 
           {/* Trust stats */}
