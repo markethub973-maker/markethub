@@ -6,7 +6,7 @@ import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 import { logSecurityEvent } from "@/lib/siem";
 import { checkPasswordBreach } from "@/lib/hibp";
 
-const VALID_PLANS = ["free_test", "lite", "pro", "business", "enterprise"];
+const VALID_PLANS = ["free_forever", "free_test", "lite", "pro", "business", "enterprise"];
 
 // ── Email normalization (Gmail dot-trick + plus-aliasing) ─────────────────────
 function normalizeEmail(email: string): string {
@@ -60,8 +60,8 @@ export async function POST(req: NextRequest) {
   const registrationIp = getClientIp(req);
   const normalizedEmail = normalizeEmail(email);
 
-  // ── Anti-abuse check (only for free_test registrations) ──────────────────
-  if (selectedPlan === "free_test") {
+  // ── Anti-abuse check (only for free registrations) ──────────────────
+  if (selectedPlan === "free_test" || selectedPlan === "free_forever") {
     const svc = createServiceClient();
 
     // Check if same normalized email already has a free account
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       .from("profiles")
       .select("id, email, subscription_plan")
       .eq("normalized_email", normalizedEmail)
-      .in("subscription_plan", ["free_test"]);
+      .in("subscription_plan", ["free_test", "free_forever"]);
 
     if (emailDupes && emailDupes.length > 0) {
       return NextResponse.json(
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
         .from("profiles")
         .select("id")
         .eq("registration_ip", registrationIp)
-        .in("subscription_plan", ["free_test"]);
+        .in("subscription_plan", ["free_test", "free_forever"]);
 
       if (ipDupes && ipDupes.length >= 2) {
         // Flag but don't hard-block — admin reviews
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
         .from("profiles")
         .select("id, email")
         .eq("device_fingerprint", device_fingerprint)
-        .in("subscription_plan", ["free_test"]);
+        .in("subscription_plan", ["free_test", "free_forever"]);
 
       if (fpDupes && fpDupes.length > 0) {
         return NextResponse.json(
@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
       .update({
         subscription_plan: selectedPlan,
         subscription_status: "active",
-        trial_expires_at: selectedPlan === "free_test" ? trialExpiresAt : null,
+        trial_expires_at: selectedPlan === "free_test" ? trialExpiresAt : null, // free_forever = null (no expiry)
         registration_ip: registrationIp,
         normalized_email: normalizedEmail,
         device_fingerprint: device_fingerprint || null,
@@ -158,12 +158,12 @@ export async function POST(req: NextRequest) {
       .eq("id", data.user.id);
 
     // If IP has 2+ free accounts already, auto-flag this new account
-    if (selectedPlan === "free_test" && registrationIp !== "unknown") {
+    if ((selectedPlan === "free_test" || selectedPlan === "free_forever") && registrationIp !== "unknown") {
       const { data: ipCheck } = await svc
         .from("profiles")
         .select("id")
         .eq("registration_ip", registrationIp)
-        .in("subscription_plan", ["free_test"]);
+        .in("subscription_plan", ["free_test", "free_forever"]);
 
       if (ipCheck && ipCheck.length >= 3) {
         try {

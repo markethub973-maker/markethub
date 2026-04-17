@@ -20,7 +20,7 @@
  * gate user requests — premium_actions_per_month is the source of truth.
  */
 
-export type PlanId = "free_test" | "lite" | "pro" | "business" | "enterprise";
+export type PlanId = "free_forever" | "free_test" | "lite" | "pro" | "business" | "enterprise";
 
 export interface PlanConfig {
   id: PlanId;
@@ -48,6 +48,31 @@ export interface PlanConfig {
 }
 
 export const PLANS: Record<PlanId, PlanConfig> = {
+  free_forever: {
+    id: "free_forever",
+    name: "Free",
+    price: 0,
+    premium_actions_per_month: 0,
+    premium_action_model: "claude-haiku-4-5-20251001",
+    ai_budget_usd: 0.5,
+    ai_credits: 500,
+    tracked_channels: 1,
+    instagram_accounts: 1,
+    tiktok_accounts: 0,
+    competitor_brands: 1,
+    ai_captions_month: 10,
+    team_members: 0,
+    client_accounts: 0,
+    pdf_reports_month: 0,
+    history_days: 7,
+    has_calendar: false,
+    has_tiktok: false,
+    has_api_access: false,
+    has_white_label: false,
+    has_priority_support: false,
+    sla_uptime: null,
+  },
+
   free_test: {
     id: "free_test",
     name: "Starter",

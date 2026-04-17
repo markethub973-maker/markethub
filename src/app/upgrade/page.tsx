@@ -5,7 +5,7 @@ import Header from "@/components/layout/Header";
 import { Check, X, Zap, Settings } from "lucide-react";
 import Link from "next/link";
 
-const FREE_PLANS = [null, "free_test", "expired"];
+const FREE_PLANS = [null, "free_forever", "free_test", "expired"];
 
 const plans = [
   {

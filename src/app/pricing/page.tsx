@@ -6,9 +6,30 @@ import Link from "next/link";
 import GlassCard from "@/components/ui/GlassCard";
 import GlassButton from "@/components/ui/GlassButton";
 
-const FREE_PLANS = ["free_test", "expired"];
+const FREE_PLANS = ["free_forever", "free_test", "expired"];
 
 const plans = [
+  {
+    id: "free_forever",
+    name: "Free Forever",
+    duration: "",
+    price: "$0",
+    priceNum: 0,
+    premiumActions: "0",
+    description: "No credit card required",
+    cta: "Start Free",
+    popular: false,
+    features: [
+      "10 AI captions / month",
+      "3 AI images / month",
+      "1 brand voice",
+      "1 social account",
+      "YouTube analytics",
+      "Basic dashboard",
+      "1 competitor brand",
+    ],
+    missing: ["Content calendar", "Scheduling", "Lead Finder & CRM", "API access", "Premium AI Actions"],
+  },
   {
     id: "free_test",
     name: "Starter",
@@ -146,6 +167,10 @@ export default function PricingPage() {
   }, []);
 
   const handleCta = async (planId: string) => {
+    if (planId === "free_forever") {
+      window.location.href = "/register?plan=free_forever";
+      return;
+    }
     if (planId === "free_test") {
       window.location.href = "/register";
       return;
@@ -479,8 +504,9 @@ export default function PricingPage() {
                     <div className="flex items-center gap-1 mt-1">
                       <Zap className="w-3.5 h-3.5" style={{ color: "#818cf8" }} />
                       <span className="text-xs font-semibold" style={{ color: "#a5b4fc" }}>
-                        {plan.premiumActions} Premium AI Actions
-                        {plan.id === "free_test" ? " (trial)" : "/month"}
+                        {plan.id === "free_forever"
+                          ? "Basic AI only"
+                          : `${plan.premiumActions} Premium AI Actions${plan.id === "free_test" ? " (trial)" : "/month"}`}
                       </span>
                     </div>
                   </div>
@@ -562,6 +588,7 @@ export default function PricingPage() {
                       Feature
                     </th>
                     {[
+                      { label: "Free", sub: "Forever", color: "#6B7280" },
                       { label: "Starter", sub: "14 days", color: "rgba(255,255,255,0.5)" },
                       { label: "Creator", sub: "$24/mo", color: "#f59e0b" },
                       { label: "Pro", sub: "$49/mo", color: "#a78bfa" },
@@ -589,22 +616,22 @@ export default function PricingPage() {
                       rows: [
                         {
                           label: "Premium Actions / month",
-                          values: ["5", "20", "50", "200", "1,000"],
+                          values: ["\u2014", "5", "20", "50", "200", "1,000"],
                         },
                         {
                           label: "Basic AI (captions, drafts)",
-                          values: ["Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited"],
+                          values: ["10/mo", "Unlimited", "Unlimited", "Unlimited", "Unlimited", "Unlimited"],
                         },
-                        { label: "Lead Scoring", values: [true, true, true, true, true] },
+                        { label: "Lead Scoring", values: [false, true, true, true, true, true] },
                         {
                           label: "Outreach Personalization",
-                          values: [true, true, true, true, true],
+                          values: [false, true, true, true, true, true],
                         },
                         {
                           label: "Full Campaign Generator",
-                          values: [true, true, true, true, true],
+                          values: [false, true, true, true, true, true],
                         },
-                        { label: "APEX Marketing Advisor", values: [true, true, true, true, true] },
+                        { label: "APEX Marketing Advisor", values: [false, true, true, true, true, true] },
                       ],
                     },
                     {
@@ -612,66 +639,66 @@ export default function PricingPage() {
                       rows: [
                         {
                           label: "Social accounts",
-                          values: ["1", "2", "5", "10", "Unlimited"],
+                          values: ["1", "1", "2", "5", "10", "Unlimited"],
                         },
-                        { label: "YouTube analytics", values: [true, true, true, true, true] },
-                        { label: "Instagram analytics", values: [false, true, true, true, true] },
-                        { label: "TikTok analytics", values: [false, true, true, true, true] },
+                        { label: "YouTube analytics", values: [true, true, true, true, true, true] },
+                        { label: "Instagram analytics", values: [false, false, true, true, true, true] },
+                        { label: "TikTok analytics", values: [false, false, true, true, true, true] },
                       ],
                     },
                     {
                       category: "Content Tools",
                       rows: [
-                        { label: "Content calendar", values: [false, true, true, true, true] },
-                        { label: "Ads library", values: [false, true, true, true, true] },
-                        { label: "Hashtag manager", values: [false, true, true, true, true] },
-                        { label: "Link in Bio pages", values: [false, true, true, true, true] },
-                        { label: "Campaigns", values: [false, true, true, true, true] },
-                        { label: "Email reports", values: [false, true, true, true, true] },
-                        { label: "Marketing agent", values: [false, true, true, true, true] },
-                        { label: "Monthly Report AI", values: [false, true, true, true, true] },
+                        { label: "Content calendar", values: [false, false, true, true, true, true] },
+                        { label: "Ads library", values: [false, false, true, true, true, true] },
+                        { label: "Hashtag manager", values: [false, false, true, true, true, true] },
+                        { label: "Link in Bio pages", values: [false, false, true, true, true, true] },
+                        { label: "Campaigns", values: [false, false, true, true, true, true] },
+                        { label: "Email reports", values: [false, false, true, true, true, true] },
+                        { label: "Marketing agent", values: [false, false, true, true, true, true] },
+                        { label: "Monthly Report AI", values: [false, false, true, true, true, true] },
                       ],
                     },
                     {
                       category: "Research & AI",
                       rows: [
-                        { label: "AI Hub agents", values: [false, false, true, true, true] },
-                        { label: "Lead Finder", values: [false, false, true, true, true] },
-                        { label: "Leads CRM", values: [false, false, true, true, true] },
+                        { label: "AI Hub agents", values: [false, false, false, true, true, true] },
+                        { label: "Lead Finder", values: [false, false, false, true, true, true] },
+                        { label: "Leads CRM", values: [false, false, false, true, true, true] },
                         {
                           label: "Competitor brands",
-                          values: ["1", "8", "20", "25", "50"],
+                          values: ["1", "1", "8", "20", "25", "50"],
                         },
                         {
                           label: "Tracked channels",
-                          values: ["2", "12", "30", "100", "Unlimited"],
+                          values: ["1", "2", "12", "30", "100", "Unlimited"],
                         },
                       ],
                     },
                     {
                       category: "Team & Clients",
                       rows: [
-                        { label: "Team members", values: ["1", "1", "3", "2", "5"] },
-                        { label: "Client accounts", values: ["1", "2", "5", "10", "20"] },
+                        { label: "Team members", values: ["\u2014", "1", "1", "3", "2", "5"] },
+                        { label: "Client accounts", values: ["\u2014", "1", "2", "5", "10", "20"] },
                         {
                           label: "Multi-account clients",
-                          values: [false, true, true, true, true],
+                          values: [false, false, true, true, true, true],
                         },
                       ],
                     },
                     {
                       category: "Advanced",
                       rows: [
-                        { label: "API access", values: [false, false, false, true, true] },
-                        { label: "White label", values: [false, false, false, false, true] },
-                        { label: "Priority support", values: [false, false, true, true, true] },
+                        { label: "API access", values: [false, false, false, false, true, true] },
+                        { label: "White label", values: [false, false, false, false, false, true] },
+                        { label: "Priority support", values: [false, false, false, true, true, true] },
                         {
                           label: "Data history",
-                          values: ["7 days", "90 days", "1 year", "1 year", "2 years"],
+                          values: ["7 days", "7 days", "90 days", "1 year", "1 year", "2 years"],
                         },
                         {
                           label: "SLA uptime",
-                          values: ["\u2014", "\u2014", "\u2014", "99.5%", "99.9%"],
+                          values: ["\u2014", "\u2014", "\u2014", "\u2014", "99.5%", "99.9%"],
                         },
                       ],
                     },
@@ -684,7 +711,7 @@ export default function PricingPage() {
                           borderTop: "1px solid rgba(255,255,255,0.06)",
                         }}
                       >
-                        <td colSpan={6} className="px-5 py-2">
+                        <td colSpan={7} className="px-5 py-2">
                           <span
                             className="text-xs font-bold uppercase tracking-wider"
                             style={{ color: "#f59e0b" }}

@@ -490,7 +490,7 @@ export default function PromoPage() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
             <Link
-              href="/register"
+              href="/register?plan=free_forever"
               className="flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold transition-all hover:opacity-90"
               style={{
                 background: `linear-gradient(135deg, ${D.accent}, ${D.accentDark})`,
@@ -956,7 +956,7 @@ export default function PromoPage() {
             Free trial includes 5 Premium AI Actions, Research Hub, Lead Database and all analytics. No credit card required.
           </p>
           <Link
-            href="/register"
+            href="/register?plan=free_forever"
             className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-lg font-bold transition-all hover:opacity-90"
             style={{
               background: `linear-gradient(135deg, ${D.accent}, ${D.accentDark})`,
