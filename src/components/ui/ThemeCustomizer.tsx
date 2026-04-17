@@ -31,7 +31,7 @@ export default function ThemeCustomizer() {
   };
 
   return (
-    <div className="fixed top-4 right-32 z-50">
+    <div className="fixed top-4 right-56 z-50">
       {/* Toggle button */}
       <button
         onClick={() => setOpen((v) => !v)}

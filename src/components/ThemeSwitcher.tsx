@@ -107,7 +107,7 @@ export default function ThemeSwitcher() {
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="fixed top-3 right-16 w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+      className="fixed top-3 right-44 w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
       style={{
         zIndex: 9998,
         background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`,
