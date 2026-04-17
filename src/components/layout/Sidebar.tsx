@@ -12,6 +12,7 @@ import {
   UserCheck, FileText, Linkedin, UserPlus, Clock, Gift, Calculator, Palette, Key, Send,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useTheme } from "@/context/ThemeContext";
 import {
   canAccessRoute, getRouteGate, PLAN_LABELS, PLAN_COLORS, PLAN_PRICES,
   PLAN_ORDER, plansWithAccess, type PlanId,
@@ -162,7 +163,7 @@ function UpgradeModal({
       >
         <button type="button" onClick={onClose} aria-label="Close"
           className="absolute top-4 right-4 p-1 rounded-lg"
-          style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}>
+          style={{ color: sidebarTextMuted }}>
           <X size={16} />
         </button>
 
@@ -174,15 +175,15 @@ function UpgradeModal({
           </div>
         </div>
 
-        <h3 className="text-lg font-bold text-center mb-1" style={{ color: "var(--text-sidebar, var(--color-surface-dark-text))" }}>
+        <h3 className="text-lg font-bold text-center mb-1" style={{ color: sidebarTextColor }}>
           {gate.label}
         </h3>
-        <p className="text-sm text-center mb-1" style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}>
+        <p className="text-sm text-center mb-1" style={{ color: sidebarTextMuted }}>
           {gate.description}
         </p>
 
         {/* Current plan badge */}
-        <p className="text-xs text-center mb-4" style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-dim)) 40%, transparent)" }}>
+        <p className="text-xs text-center mb-4" style={{ color: sidebarTextDim }}>
           Your current plan:{" "}
           <span className="font-bold" style={{ color: PLAN_COLORS[userPlan as PlanId] ?? "var(--color-primary)" }}>
             {PLAN_LABELS[userPlan as PlanId] ?? userPlan}
@@ -201,8 +202,8 @@ function UpgradeModal({
                 <span className="text-sm font-semibold flex-1" style={{ color }}>
                   {PLAN_LABELS[p]}
                 </span>
-                <span className="text-xs font-bold" style={{ color: "var(--text-sidebar, var(--color-surface-dark-text))" }}>
-                  ${price}<span className="font-normal text-xs" style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}>/mo</span>
+                <span className="text-xs font-bold" style={{ color: sidebarTextColor }}>
+                  ${price}<span className="font-normal text-xs" style={{ color: sidebarTextMuted }}>/mo</span>
                 </span>
               </div>
             );
@@ -219,7 +220,7 @@ function UpgradeModal({
         </Link>
         <button type="button" onClick={onClose}
           className="mt-2 w-full py-2 text-xs"
-          style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-dim)) 40%, transparent)" }}>
+          style={{ color: sidebarTextDim }}>
           Maybe later
         </button>
       </div>
@@ -231,6 +232,10 @@ function UpgradeModal({
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme } = useTheme();
+  const sidebarTextColor = theme.textSidebar || "#FFF8F0";
+  const sidebarTextMuted = `color-mix(in srgb, ${sidebarTextColor} 60%, transparent)`;
+  const sidebarTextDim = `color-mix(in srgb, ${sidebarTextColor} 40%, transparent)`;
   const [profile, setProfile] = useState<Profile | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
     new Set(["YouTube Analytics"])
@@ -322,11 +327,11 @@ export default function Sidebar() {
             style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}>
             <Zap className="w-4 h-4 text-white" />
           </div>
-          <span className="font-bold text-lg tracking-tight flex-1" style={{ color: "var(--text-sidebar, var(--color-surface-dark-text))" }}>MarketHub Pro</span>
+          <span className="font-bold text-lg tracking-tight flex-1" style={{ color: sidebarTextColor }}>MarketHub Pro</span>
           <button
             type="button"
             className="md:hidden p-1 rounded-lg"
-            style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}
+            style={{ color: sidebarTextMuted }}
             onClick={() => setMobileOpen(false)}
             aria-label="Close menu"
           >
@@ -356,7 +361,7 @@ export default function Sidebar() {
                   } : allLocked ? {
                     color: "#4A3F35",
                   } : {
-                    color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)",
+                    color: sidebarTextMuted,
                   }}
                   onMouseEnter={e => {
                     if (!hasActiveItem) e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.04)";
@@ -418,17 +423,17 @@ export default function Sidebar() {
                             backgroundColor: "rgba(245,158,11,0.2)",
                             color: "var(--color-primary)",
                           } : {
-                            color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)",
+                            color: sidebarTextMuted,
                           }}
                           onMouseEnter={e => {
                             if (!active) {
-                              e.currentTarget.style.color = "var(--text-sidebar, var(--color-surface-dark-text))";
+                              e.currentTarget.style.color = sidebarTextColor;
                               e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
                             }
                           }}
                           onMouseLeave={e => {
                             if (!active) {
-                              e.currentTarget.style.color = "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)";
+                              e.currentTarget.style.color = sidebarTextMuted;
                               e.currentTarget.style.removeProperty("background-color");
                             }
                           }}
@@ -455,9 +460,9 @@ export default function Sidebar() {
                 backgroundColor: "rgba(245,158,11,0.15)",
                 color: "var(--color-primary)",
                 border: "1px solid rgba(245,158,11,0.3)",
-              } : { color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}
-              onMouseEnter={e => { e.currentTarget.style.color = "var(--text-sidebar, var(--color-surface-dark-text))"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-              onMouseLeave={e => { e.currentTarget.style.color = "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)"; e.currentTarget.style.removeProperty("background-color"); }}
+              } : { color: sidebarTextMuted }}
+              onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
             >
               <Shield className="w-4 h-4" />
               Admin
@@ -467,9 +472,9 @@ export default function Sidebar() {
           <Link
             href="/integrations"
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-            style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}
-            onMouseEnter={e => { e.currentTarget.style.color = "var(--text-sidebar, var(--color-surface-dark-text))"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)"; e.currentTarget.style.removeProperty("background-color"); }}
+            style={{ color: sidebarTextMuted }}
+            onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
           >
             <Puzzle className="w-4 h-4" />
             Integrations
@@ -478,9 +483,9 @@ export default function Sidebar() {
           <Link
             href="/settings"
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-            style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}
-            onMouseEnter={e => { e.currentTarget.style.color = "var(--text-sidebar, var(--color-surface-dark-text))"; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)"; e.currentTarget.style.removeProperty("background-color"); }}
+            style={{ color: sidebarTextMuted }}
+            onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
           >
             <Settings className="w-4 h-4" />
             Settings
@@ -497,7 +502,7 @@ export default function Sidebar() {
               </div>
               <Link href="/dashboard/billing"
                 className="mt-2 block w-full py-1.5 rounded-md text-xs font-medium text-center"
-                style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}>
+                style={{ color: sidebarTextMuted }}>
                 Plan & Billing
               </Link>
               <Link href="/upgrade"
@@ -512,9 +517,9 @@ export default function Sidebar() {
             type="button"
             onClick={handleLogout}
             className="mt-2 flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium w-full transition-all"
-            style={{ color: "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)" }}
+            style={{ color: sidebarTextMuted }}
             onMouseEnter={e => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.backgroundColor = "rgba(239,68,68,0.08)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = "color-mix(in srgb, var(--text-sidebar, var(--color-surface-dark-text-muted)) 60%, transparent)"; e.currentTarget.style.removeProperty("background-color"); }}
+            onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
           >
             <LogOut className="w-4 h-4" />
             Logout
