@@ -343,11 +343,74 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    await tgApi("sendMessage", {
-      chat_id: chatId,
-      text: `✅ Poză salvată permanent:\n${publicUrl}\n\nClaude o găsește în inbox la următoarea sesiune CLI. Pentru avatar pipeline, această poză e acum referință disponibilă.`,
-    });
+    // Forward to Contabo Claude daemon with image URL
+    const photoCaption = msg.caption || "Eduard a trimis o poză pe Telegram";
+    try {
+      await fetch("https://n8n.markethubpromo.com/claude-bridge", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: `Eduard a trimis o poză/fișier pe Telegram.\nURL: ${publicUrl}\nCaption: ${photoCaption}\n\nDescrie ce vezi și întreabă-l ce vrea să facă cu ea.`,
+          secret: "mhp-claude-bridge-2026",
+          chat_id: String(chatId),
+        }),
+        signal: AbortSignal.timeout(8000),
+      });
+      await tgApi("sendMessage", {
+        chat_id: chatId,
+        text: `✅ Poză salvată: ${publicUrl}\n🔄 Claude procesează...`,
+      });
+    } catch {
+      await tgApi("sendMessage", {
+        chat_id: chatId,
+        text: `✅ Poză salvată permanent:\n${publicUrl}\n\n⚠️ Claude daemon offline — o procesează la următoarea sesiune.`,
+      });
+    }
     return NextResponse.json({ ok: true, saved: publicUrl });
+  }
+
+  // Non-image document (PDF, ZIP, etc.) — save to Supabase + forward to Claude
+  if (!imageFileId && msg.document && msg.document.file_id) {
+    const docName = msg.document.file_name || `file_${Date.now()}`;
+    const docCaption = msg.caption || `Fișier trimis: ${docName}`;
+    try {
+      const docBuf = await downloadTelegramFile(msg.document.file_id);
+      if (docBuf) {
+        const svcDoc = createServiceClient();
+        const docPath = `telegram-files/${Date.now()}_${docName}`;
+        await svcDoc.storage.from("public-assets").upload(docPath, new Uint8Array(docBuf), {
+          contentType: msg.document.mime_type || "application/octet-stream",
+          upsert: false,
+        });
+        const { data: docUrl } = svcDoc.storage.from("public-assets").getPublicUrl(docPath);
+
+        // Forward to Contabo
+        try {
+          await fetch("https://n8n.markethubpromo.com/claude-bridge", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              question: `Eduard a trimis un fișier pe Telegram.\nNume: ${docName}\nTip: ${msg.document.mime_type || "necunoscut"}\nURL: ${docUrl.publicUrl}\nCaption: ${docCaption}\n\nConfirmă primirea și întreabă ce vrea să facă cu el.`,
+              secret: "mhp-claude-bridge-2026",
+              chat_id: String(chatId),
+            }),
+            signal: AbortSignal.timeout(8000),
+          });
+          await tgApi("sendMessage", {
+            chat_id: chatId,
+            text: `✅ Fișier salvat: ${docName}\n🔄 Claude procesează...`,
+          });
+        } catch {
+          await tgApi("sendMessage", {
+            chat_id: chatId,
+            text: `✅ Fișier salvat: ${docUrl.publicUrl}\n⚠️ Claude daemon offline.`,
+          });
+        }
+      }
+    } catch {
+      await tgApi("sendMessage", { chat_id: chatId, text: "⚠️ Nu am putut descărca fișierul." });
+    }
+    return NextResponse.json({ ok: true });
   }
 
   if (!userText) {
