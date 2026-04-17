@@ -123,6 +123,7 @@ export const BACKUP_TABLES = [
   "brain_client_needs",
   // Outreach + leads (revenue-adjacent — losing this = losing months of work)
   "outreach_log",
+  "outreach_reply_log",
   "research_leads",
   // AI generations (expensive to regenerate)
   "ai_image_generations",
