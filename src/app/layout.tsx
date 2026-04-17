@@ -187,8 +187,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <LiquidGlassThemeProvider>
           <ThemeProvider>
             <AuthGuard>{children}</AuthGuard>
-            {/* Legacy theme switcher (data-theme attribute for old CSS vars) */}
-            <ThemeSwitcher />
+            {/* Legacy ThemeSwitcher removed — replaced by ThemeCustomizer (top-right, combined) */}
             {/* M9 Sprint 1 — floating AI consultant (bottom-left) */}
             <AskConsultant />
             {/* GDPR cookie consent banner — gates analytics loading */}

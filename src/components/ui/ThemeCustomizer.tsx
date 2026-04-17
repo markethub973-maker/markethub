@@ -31,7 +31,7 @@ export default function ThemeCustomizer() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed top-4 right-32 z-50">
       {/* Toggle button */}
       <button
         onClick={() => setOpen((v) => !v)}
@@ -60,7 +60,7 @@ export default function ThemeCustomizer() {
       {/* Panel */}
       {open && (
         <div
-          className="absolute bottom-16 right-0 w-72"
+          className="absolute top-14 right-0 w-72"
           style={{
             animation: "slideUpIn 0.2s ease-out",
           }}
