@@ -204,6 +204,14 @@ export async function GET(req: NextRequest) {
 
   const sentDomains = new Set((sentRows ?? []).map((r) => r.domain));
 
+  // 2b. Get blocked domains (NOT_TARGET — software/IT/hosting, never contact)
+  const { data: blockedRows } = await svc
+    .from("brain_global_prospects")
+    .select("domain")
+    .eq("outreach_status", "blocked_not_target");
+
+  const blockedDomains = new Set((blockedRows ?? []).map((r) => r.domain));
+
   // 3. Filter to unsent entries, extract domain from manifest
   const unsent: Array<{
     domain: string;
@@ -221,6 +229,7 @@ export async function GET(req: NextRequest) {
     // Deduplicate: only take first (latest) entry per domain
     if (unsent.some((u) => u.domain === domain)) continue;
     if (sentDomains.has(domain)) continue;
+    if (blockedDomains.has(domain)) continue; // NOT_TARGET — never contact
 
     const script = (manifest.script as string) ?? null;
     if (!script) continue;

@@ -187,9 +187,17 @@ export async function POST(req: NextRequest) {
   // 1. Look up prospect in brain_global_prospects
   const { data: prospect } = await svc
     .from("brain_global_prospects")
-    .select("domain, business_name, email, country_code, vertical, snippet")
+    .select("domain, business_name, email, country_code, vertical, snippet, outreach_status")
     .eq("domain", domain)
     .maybeSingle();
+
+  // Block sending to non-target prospects (software/IT/hosting)
+  if (prospect?.outreach_status === "blocked_not_target") {
+    return NextResponse.json(
+      { error: `Domain "${domain}" is blocked (not a marketing agency). Cannot send outreach.` },
+      { status: 403 },
+    );
+  }
 
   // 2. Find latest AlexLoom output in brain_knowledge_base
   const { data: kbEntries } = await svc
