@@ -7,6 +7,7 @@ import { Zap, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import GlassCard from "@/components/ui/GlassCard";
 import GlassButton from "@/components/ui/GlassButton";
+import GlassInput from "@/components/ui/GlassInput";
 import AmbientBlobs from "@/components/ui/AmbientBlobs";
 
 export default function LoginPage() {
@@ -60,36 +61,34 @@ export default function LoginPage() {
           <form onSubmit={handleLogin} className="space-y-4">
             {/* Email */}
             <div>
-              <label className="text-xs font-semibold mb-1.5 block text-glass-secondary">
-                Email
-              </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-glass-muted" />
-                <input
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-glass-muted z-10" />
+                <GlassInput
+                  label="Email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
                   required
-                  className="input-glass w-full pl-10 pr-4 py-3 text-sm rounded-lg"
+                  validate={(v) => !v.includes("@") ? "Enter a valid email" : null}
+                  className="w-full pl-10 pr-4 py-3 text-sm rounded-lg"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label className="text-xs font-semibold mb-1.5 block text-glass-secondary">
-                Password
-              </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-glass-muted" />
-                <input
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-glass-muted z-10" />
+                <GlassInput
+                  label="Password"
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
                   required
-                  className="input-glass w-full pl-10 pr-10 py-3 text-sm rounded-lg"
+                  validate={(v) => v.length < 6 ? "Min 6 characters" : null}
+                  className="w-full pl-10 pr-10 py-3 text-sm rounded-lg"
                 />
                 <button
                   type="button"

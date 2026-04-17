@@ -11,6 +11,7 @@ import AiUsageWidget from "@/components/settings/AiUsageWidget";
 import WebhooksPanel from "@/components/settings/WebhooksPanel";
 import GlassCard from "@/components/ui/GlassCard";
 import GlassButton from "@/components/ui/GlassButton";
+import GlassInput from "@/components/ui/GlassInput";
 import { createClient } from "@/lib/supabase/client";
 import {
   Zap, User, Plug, CreditCard, CheckCircle, XCircle,
@@ -325,16 +326,25 @@ export default function SettingsPage() {
             <GlassCard padding="p-6" rounded="rounded-xl">
               <h2 className="text-lg font-bold mb-5 text-glass-primary">Profile Information</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                {[
-                  { label: "Name",  value: profile?.name || "Not set" },
-                  { label: "Email", value: profile?.email || "—" },
-                  { label: "Plan",  value: profile?.plan || "Free" },
-                ].map(({ label, value }) => (
-                  <div key={label} className="rounded-lg p-4" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
-                    <p className="text-xs font-medium mb-1" style={{ color: "#78614E" }}>{label}</p>
-                    <p className="font-semibold" style={{ color: "var(--color-text)" }}>{value}</p>
-                  </div>
-                ))}
+                <GlassInput
+                  label="Name"
+                  value={profile?.name || ""}
+                  onChange={(e) => setProfile(prev => prev ? { ...prev, name: e.target.value } : prev)}
+                  placeholder="Your name"
+                  validate={(v) => v.trim().length === 0 ? "Name is required" : null}
+                />
+                <GlassInput
+                  label="Email"
+                  type="email"
+                  value={profile?.email || ""}
+                  onChange={(e) => setProfile(prev => prev ? { ...prev, email: e.target.value } : prev)}
+                  placeholder="email@example.com"
+                  validate={(v) => !v.includes("@") ? "Enter a valid email" : null}
+                />
+                <div className="rounded-lg p-4" style={{ backgroundColor: "rgba(245,215,160,0.12)" }}>
+                  <p className="text-xs font-medium mb-1" style={{ color: "#78614E" }}>Plan</p>
+                  <p className="font-semibold" style={{ color: "var(--color-text)" }}>{profile?.plan || "Free"}</p>
+                </div>
               </div>
             </GlassCard>
             <GlassCard padding="p-6" rounded="rounded-xl">
