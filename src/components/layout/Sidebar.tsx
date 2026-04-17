@@ -309,9 +309,8 @@ export default function Sidebar() {
       )}
 
       <aside
-        className={`fixed left-0 top-0 h-screen w-64 flex flex-col z-40 transition-transform duration-300
+        className={`fixed left-0 top-0 h-screen w-64 flex flex-col z-40 transition-transform duration-300 sidebar-glass
           ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
-        style={{ backgroundColor: "var(--color-surface-dark)" }}
       >
         {/* Logo */}
         <div

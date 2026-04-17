@@ -7,6 +7,8 @@ import AskConsultant from "@/components/ui/AskConsultant";
 import CookieConsent from "@/components/ui/CookieConsent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
+import { ThemeProvider as LiquidGlassThemeProvider } from "@/context/ThemeContext";
+import ThemeCustomizer from "@/components/ui/ThemeCustomizer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -142,6 +144,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className={inter.className}>
+        {/* Liquid Glass SVG Filter — referenced by .liquidGlass-effect via url(#glass-distortion) */}
+        <svg style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }} aria-hidden="true">
+          <defs>
+            <filter id="glass-distortion" x="-20%" y="-20%" width="140%" height="140%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.012 0.012" numOctaves={2} seed={42} result="noise" />
+              <feGaussianBlur in="noise" stdDeviation={2} result="blurred" />
+              <feComponentTransfer in="blurred" result="mapped">
+                <feFuncR type="gamma" amplitude={1} exponent={8} offset={0.48} />
+                <feFuncG type="gamma" amplitude={1} exponent={8} offset={0.48} />
+              </feComponentTransfer>
+              <feDisplacementMap in="SourceGraphic" in2="mapped" scale={16} xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+          </defs>
+        </svg>
         {/* Microsoft Clarity — loads after page interactive AND only if the
            user has accepted analytics cookies (window.__mkh_consent === "all").
            See CookieConsent component. Listens for the "mkh:consent-accepted"
@@ -166,18 +182,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             })();
           `}
         </Script>
-        <ThemeProvider>
-          <AuthGuard>{children}</AuthGuard>
-          {/* Floating theme switcher — top-right, visible on every page,
-              portal-rendered so it escapes any sidebar/overflow context. */}
-          <ThemeSwitcher />
-          {/* M9 Sprint 1 — floating AI consultant (bottom-left).
-              The bottom-right "Help" widget (chat / tour / report issue) is
-              rendered inside AuthGuard as OnboardingWidget. */}
-          <AskConsultant />
-          {/* GDPR cookie consent banner — gates analytics loading */}
-          <CookieConsent />
-        </ThemeProvider>
+        <LiquidGlassThemeProvider>
+          <ThemeProvider>
+            <AuthGuard>{children}</AuthGuard>
+            {/* Legacy theme switcher (data-theme attribute for old CSS vars) */}
+            <ThemeSwitcher />
+            {/* M9 Sprint 1 — floating AI consultant (bottom-left) */}
+            <AskConsultant />
+            {/* GDPR cookie consent banner — gates analytics loading */}
+            <CookieConsent />
+          </ThemeProvider>
+          {/* Liquid Glass theme customizer — bottom-right floating palette button */}
+          <ThemeCustomizer />
+        </LiquidGlassThemeProvider>
       </body>
     </html>
   );

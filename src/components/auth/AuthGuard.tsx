@@ -6,6 +6,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
 import TrialWarningBanner from "@/components/TrialWarningBanner";
+import AmbientBlobs from "@/components/ui/AmbientBlobs";
 import { createClient } from "@/lib/supabase/client";
 
 const PUBLIC_PATHS = [
@@ -85,22 +86,24 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   // Admin dashboard: sidebar + main layout
   if (pathname.startsWith("/dashboard/admin")) {
     return (
-      <>
+      <div className="app-bg">
+        <AmbientBlobs />
         <Sidebar />
-        <main className="md:ml-64 min-h-screen">
+        <main className="md:ml-64 min-h-screen relative z-10">
           <ModuleBoundary name="Admin Dashboard">
             {children}
           </ModuleBoundary>
         </main>
-      </>
+      </div>
     );
   }
 
   // Regular dashboard: sidebar + main layout
   return (
-    <>
+    <div className="app-bg">
+      <AmbientBlobs />
       <Sidebar />
-      <main className="md:ml-64 min-h-screen flex flex-col">
+      <main className="md:ml-64 min-h-screen flex flex-col relative z-10">
         <TrialWarningBanner />
         <div className="flex-1">
           <ModuleBoundary name="Page">
@@ -109,6 +112,6 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
         </div>
       </main>
       <OnboardingWidget />
-    </>
+    </div>
   );
 }
