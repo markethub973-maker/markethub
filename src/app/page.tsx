@@ -1,7 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import OnboardingChecklist from "@/components/ui/OnboardingChecklist";
+import EmptyState from "@/components/ui/EmptyState";
+import SkeletonCard from "@/components/ui/SkeletonCard";
 import WhatsNewModal from "@/components/ui/WhatsNewModal";
 import ProfitStatsCard from "@/components/ui/ProfitStatsCard";
 import StatCard from "@/components/ui/StatCard";
@@ -30,6 +33,7 @@ const FbIcon = () => (
 );
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [igData, setIgData] = useState<any>(null);
   const [igError, setIgError] = useState<string | null>(null);
   const [fbData, setFbData] = useState<any>(null);
@@ -38,6 +42,7 @@ export default function DashboardPage() {
   const [premiumActionsUsed, setPremiumActionsUsed] = useState(0);
   const [sortCol, setSortCol] = useState<"views" | "likes" | "er" | "publishedAt">("views");
   const [sortDir, setSortDir] = useState<"desc" | "asc">("desc");
+  const [dashLoading, setDashLoading] = useState(true);
 
   const toggleSort = (col: "views" | "likes" | "er" | "publishedAt") => {
     if (sortCol === col) setSortDir(d => d === "desc" ? "asc" : "desc");
@@ -78,7 +83,8 @@ export default function DashboardPage() {
     fetch("/api/youtube/trending?region=RO&max=12")
       .then(r => r.json())
       .then(d => { if (Array.isArray(d)) setYtVideos(d); })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setDashLoading(false));
 
     fetch("/api/profile/stats")
       .then(r => r.json())
@@ -141,6 +147,27 @@ export default function DashboardPage() {
         <WhatsNewModal />
         <OnboardingChecklist />
         <ProfitStatsCard actionsCount={premiumActionsUsed} />
+
+        {/* Skeleton loading */}
+        {dashLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} height="h-28" lines={2} />
+            ))}
+          </div>
+        )}
+
+        {/* Empty state — no YouTube data after load */}
+        {!dashLoading && ytVideos.length === 0 && !igData && !fbData && (
+          <EmptyState
+            icon="▶"
+            title="No channels connected"
+            description="Connect your YouTube, Instagram, or Facebook account to see real-time analytics and trending data."
+            ctaLabel="Connect accounts"
+            onCta={() => router.push("/settings?tab=integrations")}
+          />
+        )}
+
         {/* Stats Row — computed from YouTube trending data */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard

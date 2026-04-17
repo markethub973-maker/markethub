@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import GlassCard from "@/components/ui/GlassCard";
 import GlassButton from "@/components/ui/GlassButton";
+import EmptyState from "@/components/ui/EmptyState";
+import SkeletonCard from "@/components/ui/SkeletonCard";
 import {
   Phone, Globe, Star, MapPin, Instagram, Facebook, Play,
   Search, Trash2, Download, RefreshCw, Loader2, AlertCircle,
@@ -151,6 +154,7 @@ function hostnameOf(u: string | null | undefined): string {
 }
 
 export default function LeadsPage() {
+  const router = useRouter();
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -624,22 +628,30 @@ export default function LeadsPage() {
 
         {/* Leads list */}
         {loading && (
-          <div className="flex justify-center py-10">
-            <Loader2 className="w-5 h-5 animate-spin" style={{ color: AMBER }} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} height="h-28" lines={2} />
+            ))}
           </div>
         )}
 
-        {!loading && !tablesMissing && filtered.length === 0 && (
+        {!loading && !tablesMissing && filtered.length === 0 && leads.length === 0 && (
+          <EmptyState
+            icon="◎"
+            title="No leads saved yet"
+            description="Start the Marketing Agent or run a Research Hub search — leads are saved automatically via webhook."
+            ctaLabel="Go to Research Hub"
+            onCta={() => router.push("/research")}
+            secondaryLabel="Import CSV"
+            onSecondary={() => csvInputRef.current?.click()}
+          />
+        )}
+
+        {!loading && !tablesMissing && filtered.length === 0 && leads.length > 0 && (
           <GlassCard padding="p-10" className="text-center">
             <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(196,170,138,0.4)" }} />
-            <p className="font-semibold text-glass-secondary">
-              {leads.length === 0 ? "No leads saved yet" : "No results for the selected filters"}
-            </p>
-            <p className="text-sm mt-1 text-glass-muted">
-              {leads.length === 0
-                ? "Start the Marketing Agent → leads are saved automatically via webhook"
-                : "Change the filter or search for a different term"}
-            </p>
+            <p className="font-semibold text-glass-secondary">No results for the selected filters</p>
+            <p className="text-sm mt-1 text-glass-muted">Change the filter or search for a different term</p>
           </GlassCard>
         )}
 

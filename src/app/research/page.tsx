@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Header from "@/components/layout/Header";
 import GlassCard from "@/components/ui/GlassCard";
 import GlassButton from "@/components/ui/GlassButton";
+import EmptyState from "@/components/ui/EmptyState";
+import SkeletonCard from "@/components/ui/SkeletonCard";
 import {
   Search, Instagram, Facebook, Globe, Loader2,
   ExternalLink, ThumbsUp, MessageCircle, Share2,
@@ -665,7 +667,7 @@ export default function ResearchPage() {
             </GlassButton>
           </div>
 
-          <p className="text-xs" style={{ color: "#C4AA8A" }}>
+          <p className="text-xs text-glass-muted">
             {tab === "website" && "Extract content, pricing and structure from any competitor site. 15–60s."}
             {tab === "youtube" && "Scrape YouTube channel: videos, views, likes, comments."}
             {tab === "reddit" && "Find real discussions, feedback and opinions on any topic."}
@@ -673,7 +675,7 @@ export default function ResearchPage() {
             {(tab === "google" || tab === "instagram" || tab === "tiktok" || tab === "facebook") && "Powered by Apify — public data. 15–45s."}
             {localMarket?.actors.some(a => a.id === tab) && `${localMarket!.flag} ${localMarket!.actors.find(a => a.id === tab)?.description}`}
           </p>
-        </div>
+        </GlassCard>
 
         {/* Error */}
         {error && (
@@ -699,11 +701,10 @@ export default function ResearchPage() {
 
         {/* Loading */}
         {loading && (
-          <div className="rounded-2xl p-12 flex flex-col items-center gap-3" style={card}>
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: tabColor }} />
-            <p className="text-sm font-semibold" style={{ color: "#78614E" }}>
-              Apify is processing the request…
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} height="h-28" lines={2} />
+            ))}
           </div>
         )}
 
@@ -780,15 +781,15 @@ export default function ResearchPage() {
           return (
           <div className="space-y-3">
             {results.channelInfo && (
-              <div className="rounded-xl p-4 flex items-center gap-3" style={{ ...card, borderColor: `${YT}30` }}>
+              <GlassCard padding="p-4" rounded="rounded-xl" className="flex items-center gap-3">
                 <Play className="w-8 h-8" style={{ color: YT }} />
                 <div>
-                  <p className="font-bold" style={{ color: "var(--color-text)" }}>{results.channelInfo.name}</p>
+                  <p className="font-bold text-glass-primary">{results.channelInfo.name}</p>
                   {results.channelInfo.subscribers > 0 && (
                     <p className="text-xs font-semibold" style={{ color: YT }}>{fmtNum(results.channelInfo.subscribers)} subscribers</p>
                   )}
                 </div>
-              </div>
+              </GlassCard>
             )}
 
             <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -1588,16 +1589,16 @@ export default function ResearchPage() {
 
         {/* Empty state */}
         {!loading && !results && !error && (
-          <div className="rounded-2xl p-10 text-center" style={card}>
-            <Search className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(196,170,138,0.4)" }} />
-            <p className="font-semibold" style={{ color: "#78614E" }}>
-              {localMarket ? `${localMarket.flag} ${8 + localMarket.actors.length} data sources available` : "8 data sources available"}
-            </p>
-            <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>
-              Google · YouTube · Website · Instagram · TikTok · Facebook · Reddit · Reviews
-              {localMarket && ` · ${localMarket.actors.map(a => a.label).join(" · ")}`}
-            </p>
-          </div>
+          <EmptyState
+            icon="✦"
+            title={localMarket ? `${localMarket.flag} ${8 + localMarket.actors.length} data sources available` : "8 data sources available"}
+            description={`Search across Google · YouTube · Website · Instagram · TikTok · Facebook · Reddit · Reviews${localMarket ? ` · ${localMarket.actors.map(a => a.label).join(" · ")}` : ""}`}
+            ctaLabel="Start searching"
+            onCta={() => {
+              const input = document.querySelector<HTMLInputElement>("input[placeholder]");
+              input?.focus();
+            }}
+          />
         )}
 
       </div>

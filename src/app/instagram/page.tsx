@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import ExportButtons from "@/components/ui/ExportButtons";
 import GlassCard from "@/components/ui/GlassCard";
 import GlassButton from "@/components/ui/GlassButton";
+import EmptyState from "@/components/ui/EmptyState";
+import SkeletonCard from "@/components/ui/SkeletonCard";
 import {
   Instagram, Users, Heart, MessageCircle, Image, ExternalLink,
   RefreshCw, TrendingUp, UserCheck, BarChart2, Plus, Star, Zap
@@ -61,6 +64,7 @@ function timeAgo(ts: string): string {
 const COLORS = ["#E1306C", "#8B5CF6", "var(--color-primary)", "#10B981"];
 
 export default function InstagramPage() {
+  const router = useRouter();
   const [accounts, setAccounts] = useState<IGAccount[]>([]);
   const [activeTab, setActiveTab] = useState<string>(""); // instagram_id or "compare"
   const [profile, setProfile] = useState<InstagramProfile | null>(null);
@@ -165,18 +169,13 @@ export default function InstagramPage() {
 
         {/* No accounts */}
         {noAccounts && (
-          <GlassCard padding="p-12" className="text-center">
-            <Instagram className="w-16 h-16 text-pink-500/30 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-glass-primary mb-2">No Instagram accounts connected</h2>
-            <p className="text-glass-secondary mb-6">Connect your accounts to see real analytics.</p>
-            <Link
-              href="/settings?tab=integrations"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-semibold hover:opacity-90 transition-all"
-            >
-              <Plus className="w-4 h-4" />
-              Connect Instagram
-            </Link>
-          </GlassCard>
+          <EmptyState
+            icon="◈"
+            title="No Instagram accounts connected"
+            description="Connect your Instagram Business account to see real-time analytics, engagement data, and recent posts."
+            ctaLabel="Connect Instagram"
+            onCta={() => router.push("/settings?tab=integrations")}
+          />
         )}
 
         {/* Account tabs */}
@@ -223,11 +222,10 @@ export default function InstagramPage() {
 
         {/* Loading */}
         {loading && (
-          <div className="flex items-center justify-center py-24">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-gray-400">Loading data...</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <SkeletonCard key={i} height="h-28" lines={2} />
+            ))}
           </div>
         )}
 
