@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Header from "@/components/layout/Header";
 import { Plus, Trash2, Edit3, Send, Loader2, Mail, Check, X, Users } from "lucide-react";
+import { toast } from "@/lib/toast";
 
 interface Campaign { id: string; name: string; subject: string; body_html: string; recipients: string[]; status: string; sent_count: number; notes: string; created_at: string; sent_at: string | null; }
 
@@ -51,7 +52,7 @@ export default function EmailCampaignsPage() {
   };
 
   const send = async (camp: Campaign) => {
-    if (!camp.recipients?.length) { alert("Add recipients before sending"); return; }
+    if (!camp.recipients?.length) { toast.warning("Add recipients before sending"); return; }
     if (!confirm(`Send campaign to ${camp.recipients.length} recipients?`)) return;
     setSendingId(camp.id);
     const res = await fetch("/api/email-campaigns", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: camp.id, action: "send" }) });

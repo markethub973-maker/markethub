@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Users, MapPin, Globe2, AlertCircle, RefreshCw } from "lucide-react";
+import GlassChart from "@/components/ui/GlassChart";
 
 const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 const MALE = "#1877F2";
@@ -112,8 +113,7 @@ export default function DemographicsPage() {
         {/* Gender + Age */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Gender pie */}
-          <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--color-text)" }}>Gender Distribution</h3>
+          <GlassChart title="Gender Distribution" subtitle="Follower gender breakdown">
             <ResponsiveContainer width="100%" height={220}>
               <PieChart>
                 <Pie data={genderPie} dataKey="value" cx="50%" cy="50%" outerRadius={80} label={({ name, value }) => `${name} ${value}%`} labelLine={false}>
@@ -123,11 +123,10 @@ export default function DemographicsPage() {
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
-          </div>
+          </GlassChart>
 
           {/* Age brackets */}
-          <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="text-sm font-semibold mb-4" style={{ color: "var(--color-text)" }}>Age Distribution</h3>
+          <GlassChart title="Age Distribution" subtitle="Follower age brackets">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={data.ageBrackets} margin={{ left: -20, right: 10 }}>
                 <XAxis dataKey="age" tick={{ fontSize: 11, fill: "#A8967E" }} />
@@ -139,7 +138,7 @@ export default function DemographicsPage() {
                 <Bar dataKey="count" fill={AGE_COLOR} radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </GlassChart>
         </div>
 
         {/* Gender x Age heatmap */}

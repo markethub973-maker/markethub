@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Header from "@/components/layout/Header";
 import { Plus, Trash2, Edit3, Send, Download, Check, X, Loader2, FileText, DollarSign } from "lucide-react";
+import { toast } from "@/lib/toast";
 
 interface Service { name: string; qty: number; price: number; }
 interface Proposal { id: string; client_name: string; client_email: string; title: string; services: Service[]; total_value: number; currency: string; valid_days: number; status: string; notes: string; created_at: string; sent_at: string | null; }
@@ -82,7 +83,7 @@ export default function ProposalsPage() {
   };
 
   const send = async (p: Proposal) => {
-    if (!p.client_email) { alert("Add client email before sending"); return; }
+    if (!p.client_email) { toast.warning("Add client email before sending"); return; }
     setSendingId(p.id);
     await fetch("/api/proposals", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: p.id, action: "send", client_email: p.client_email }) });
     setProposals(prev => prev.map(x => x.id === p.id ? { ...x, status: "sent" } : x));

@@ -14,6 +14,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { toast } from "@/lib/toast";
 import {
   ArrowLeft,
   AlertTriangle,
@@ -110,8 +111,8 @@ export default function MaintenancePage() {
       // being safe to hit via cookie-authed tunnel (isAdminAuthorized is not
       // wired on /api/maint/*). For now, show a hint that manual run must
       // happen via curl.
-      alert(
-        `Manual agent run requires CRON_SECRET. Use:\n\ncurl -H "Authorization: Bearer $CRON_SECRET" https://markethubpromo.com/api/maint/${agent}`,
+      toast.info(
+        `Manual agent run requires CRON_SECRET. Use: curl -H "Authorization: Bearer $CRON_SECRET" https://markethubpromo.com/api/maint/${agent}`,
       );
     } finally {
       setRunningAgent(null);

@@ -10,6 +10,7 @@ import {
   Tags, Megaphone, PenTool, Layout, Globe, BookOpen, Share2, BarChart2,
 } from "lucide-react";
 import { AGENTS, AgentType } from "@/lib/agents";
+import { toast } from "@/lib/toast";
 
 const WorkflowDiagram = dynamic(
   () => import("@/components/ui/WorkflowDiagram"),
@@ -552,7 +553,7 @@ export default function AIHubPage() {
       URL.revokeObjectURL(url);
     } catch (err) {
       console.error("[PDF] Generation failed:", err);
-      alert("PDF generation failed. Please try again.");
+      toast.error("PDF generation failed. Please try again.");
     } finally {
       setPdfLoading(false);
     }

@@ -13,6 +13,7 @@ import ExportButtons from "@/components/ui/ExportButtons";
 import { formatNumber, formatDate, exportCSV, exportJSON } from "@/lib/utils";
 import { Users, Eye, PlayCircle, ThumbsUp, MessageCircle, TrendingUp, Youtube, ChevronUp, ChevronDown, Search, Clock, Flame, Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
+import GlassChart from "@/components/ui/GlassChart";
 
 const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
 
@@ -180,8 +181,7 @@ export default function MyChannelPage() {
 
         {/* Views Chart */}
         {chartData.length > 0 && (
-          <div className="rounded-xl p-5" style={cardStyle}>
-            <h3 className="font-semibold mb-4" style={{ color: "var(--color-text)" }}>Views per video (top 8)</h3>
+          <GlassChart title="Views per video (top 8)" subtitle="Most viewed videos on your channel">
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={chartData} margin={{ top: 0, right: 0, left: 0, bottom: 40 }}>
                 <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#A8967E" }} angle={-30} textAnchor="end" interval={0} />
@@ -197,7 +197,7 @@ export default function MyChannelPage() {
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
-          </div>
+          </GlassChart>
         )}
 
         {/* Tabs + Videos */}

@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import Header from "@/components/layout/Header";
+import { toast } from "@/lib/toast";
 import {
   Film, Loader2, Sparkles, Mic, Image as ImageIcon, AlertCircle,
   Music, Copy, Check, Wand2,
@@ -128,7 +129,7 @@ export default function ReelsStudioPage() {
         body: JSON.stringify({ mode: "music", prompt: plan.music_style, duration_sec: duration }),
       });
       // Music will appear in /studio/audio gallery + /studio/assets
-      alert("Music generation started. Check /studio/audio in 30s.");
+      toast.success("Music generation started. Check /studio/audio in 30s.");
     } catch {
       /* no-op */
     }
