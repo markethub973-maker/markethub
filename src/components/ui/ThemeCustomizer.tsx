@@ -84,13 +84,21 @@ export default function ThemeCustomizer() {
           }}
         >
           <div style={{
-            background: "rgba(13,11,30,0.95)",
-            backdropFilter: "blur(24px)",
-            border: "1px solid rgba(255,255,255,0.15)",
+            background: "#0d0b1e",
+            backdropFilter: "blur(32px) saturate(180%)",
+            border: "1px solid rgba(255,255,255,0.18)",
             borderRadius: 16,
             padding: 20,
-            boxShadow: "0 16px 48px rgba(0,0,0,0.6)",
+            boxShadow: "0 20px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)",
+            position: "relative",
+            overflow: "hidden",
           }}>
+            {/* Glass shine effect */}
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, height: "40%",
+              background: "linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%)",
+              borderRadius: "16px 16px 60% 60%", pointerEvents: "none",
+            }} />
             <h3 style={{ color: "rgba(255,255,255,0.9)", fontWeight: 600, fontSize: 14, marginBottom: 16 }}>
               Theme Customizer
             </h3>
