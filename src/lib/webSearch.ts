@@ -117,13 +117,14 @@ export async function webRead(url: string): Promise<ReadResult> {
   try {
     const octivas = await extractViaOctivas(url);
     if (octivas && typeof octivas === "object") {
+      const octivasObj = octivas as unknown as Record<string, unknown>;
       const text =
-        (octivas as Record<string, unknown>).text as string ||
-        (octivas as Record<string, unknown>).content as string ||
+        (octivasObj.text as string) ||
+        (octivasObj.content as string) ||
         JSON.stringify(octivas).slice(0, 5000);
       return {
         url,
-        title: ((octivas as Record<string, unknown>).title as string) || "",
+        title: (octivasObj.title as string) || "",
         text: text.slice(0, 5000),
         emails: extractEmails(text),
         phones: extractPhones(text),
