@@ -119,7 +119,7 @@ const navGroups = [
       { href: "/time-tracking", label: "Time Tracking", icon: Clock },
       { href: "/roi-calculator", label: "ROI Calculator", icon: Calculator },
       { href: "/referral", label: "Referral", icon: Gift },
-      { href: "/white-label", label: "White-label", icon: Palette },
+      { href: "/dashboard/white-label", label: "White-label", icon: Palette },
       { href: "/api-keys", label: "API Keys", icon: Key },
       { href: "/email-campaigns", label: "Email Campaigns", icon: Send },
       { href: "/dashboard/automations", label: "Automations", icon: Zap },

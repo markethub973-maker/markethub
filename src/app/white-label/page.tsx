@@ -1,139 +1,509 @@
 "use client";
-import { useState, useEffect } from "react";
-import Header from "@/components/layout/Header";
-import { Save, Loader2, Check, Eye, Palette, Globe, Mail, FileText } from "lucide-react";
 
-interface Settings { agency_name: string; agency_logo: string; primary_color: string; accent_color: string; custom_domain: string; support_email: string; footer_text: string; }
+import { useState } from "react";
+import Link from "next/link";
+import {
+  Zap,
+  ArrowRight,
+  Menu,
+  Users,
+  TrendingDown,
+  DollarSign,
+  FileText,
+  ImageIcon,
+  CalendarClock,
+  Palette,
+  Check,
+  Send,
+} from "lucide-react";
+import GlassCard from "@/components/ui/GlassCard";
+import GlassButton from "@/components/ui/GlassButton";
 
-const empty: Settings = { agency_name: "", agency_logo: "", primary_color: "var(--color-primary)", accent_color: "var(--color-primary-hover)", custom_domain: "", support_email: "", footer_text: "" };
-const inp: React.CSSProperties = { border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)", borderRadius: 8, padding: "8px 12px", fontSize: 14, outline: "none", width: "100%" };
-const card = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", borderRadius: 12 };
+/* ── Pain Points ─────────────────────────────────────────────── */
+const painPoints = [
+  {
+    icon: Users,
+    title: "Drowning in client deliverables",
+    body: "15+ clients, each needs weekly content across multiple platforms. Your team is maxed out and dropping balls.",
+  },
+  {
+    icon: TrendingDown,
+    title: "Junior staff turnover",
+    body: "You spend months training writers and designers. They leave. You start over. Repeat.",
+  },
+  {
+    icon: DollarSign,
+    title: "Margin squeeze",
+    body: "You can\u2019t raise prices in a competitive market, but you also can\u2019t cut quality. Profits shrink every quarter.",
+  },
+];
 
-export default function WhiteLabelPage() {
-  const [settings, setSettings] = useState<Settings>(empty);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [preview, setPreview] = useState(false);
+/* ── Solution Features ───────────────────────────────────────── */
+const solutions = [
+  {
+    icon: FileText,
+    title: "60 captions/month per client",
+    body: "AI-generated, brand-voice locked. Each caption matches your client\u2019s tone, language, and target audience.",
+  },
+  {
+    icon: ImageIcon,
+    title: "20 images/month per client",
+    body: "On-brand visuals created with AI. No more stock photo hunting or waiting on designers.",
+  },
+  {
+    icon: CalendarClock,
+    title: "Automated scheduling",
+    body: "Posts go live on Instagram, TikTok, Facebook, and LinkedIn without manual work. Set it and forget it.",
+  },
+  {
+    icon: Palette,
+    title: "White-label dashboard",
+    body: "Your clients see YOUR brand, not ours. Custom logo, colors, domain \u2014 it\u2019s your platform.",
+  },
+];
 
-  useEffect(() => {
-    fetch("/api/agency-settings").then(r => r.json())
-      .then(d => { if (d.settings) setSettings({ ...empty, ...d.settings }); }).finally(() => setLoading(false));
-  }, []);
+/* ── Pricing Tiers ───────────────────────────────────────────── */
+const tiers = [
+  {
+    name: "Starter",
+    price: "\u20ac299",
+    period: "/mo",
+    clients: "Up to 5 clients",
+    popular: false,
+    features: [
+      "60 captions/client/month",
+      "20 images/client/month",
+      "Auto-scheduling",
+      "White-label dashboard",
+      "Email support",
+    ],
+  },
+  {
+    name: "Growth",
+    price: "\u20ac599",
+    period: "/mo",
+    clients: "Up to 15 clients",
+    popular: true,
+    features: [
+      "Everything in Starter",
+      "Brand voice profiles",
+      "Multi-platform scheduling",
+      "Campaign auto-pilot",
+      "Priority support",
+      "Monthly performance reports",
+    ],
+  },
+  {
+    name: "Scale",
+    price: "\u20ac999",
+    period: "/mo",
+    clients: "Unlimited clients",
+    popular: false,
+    features: [
+      "Everything in Growth",
+      "Dedicated account manager",
+      "Custom integrations",
+      "API access",
+      "Priority support + SLA",
+      "Onboarding for your team",
+    ],
+  },
+];
 
-  const f = (k: keyof Settings) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setSettings(p => ({ ...p, [k]: e.target.value }));
+export default function WhiteLabelOfferPage() {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const save = async () => {
-    setSaving(true);
-    await fetch("/api/agency-settings", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings) });
-    setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2000);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    // Fire-and-forget lead capture
+    fetch("/api/leads/capture", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, source: "white-label-offer" }),
+    }).catch(() => {});
+    setSubmitted(true);
   };
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: "var(--color-primary)" }} /></div>;
-
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="White-label Settings" subtitle="Customize the platform with your agency's branding" />
-      <div className="p-4 max-w-2xl mx-auto space-y-4">
+    <div
+      className="relative overflow-hidden"
+      style={{
+        background: "linear-gradient(135deg, #0d0b1e 0%, #1a0a2e 40%, #0a1628 100%)",
+        minHeight: "100vh",
+      }}
+    >
+      {/* ── Ambient blobs ──────────────────────────────────────── */}
+      <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
+        <div
+          className="absolute"
+          style={{
+            top: "-10%",
+            left: "-10%",
+            width: "50%",
+            height: "50%",
+            background: "radial-gradient(circle, rgba(168,85,247,0.2) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+        <div
+          className="absolute"
+          style={{
+            bottom: "-10%",
+            right: "-10%",
+            width: "50%",
+            height: "50%",
+            background: "radial-gradient(circle, rgba(245,158,11,0.18) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+        <div
+          className="absolute"
+          style={{
+            top: "40%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "40%",
+            height: "40%",
+            background: "radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)",
+            filter: "blur(80px)",
+          }}
+        />
+      </div>
 
-        {/* Preview toggle */}
-        <button type="button" onClick={() => setPreview(v => !v)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold"
-          style={{ ...card, color: "#78614E", boxShadow: "0 1px 3px rgba(120,97,78,0.06)" }}>
-          <Eye className="w-4 h-4" /> {preview ? "Edit" : "Preview"}
-        </button>
+      {/* ── Navbar ─────────────────────────────────────────────── */}
+      <nav
+        className="sticky top-0 z-50 border-b backdrop-blur-xl"
+        style={{
+          backgroundColor: "rgba(13,11,30,0.8)",
+          borderColor: "rgba(245,215,160,0.1)",
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)" }}
+            >
+              <Zap className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-bold text-lg text-white">MarketHub Pro</span>
+          </Link>
 
-        {preview ? (
-          /* White-label preview */
-          <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(245,215,160,0.3)", boxShadow: "0 4px 20px rgba(120,97,78,0.1)" }}>
-            <div className="px-6 py-4 flex items-center gap-3"
-              style={{ backgroundColor: settings.primary_color || "var(--color-primary)" }}>
-              {settings.agency_logo ? (
-                <img src={settings.agency_logo} alt="" className="w-8 h-8 rounded-lg object-cover" />
-              ) : (
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold"
-                  style={{ backgroundColor: "rgba(255,255,255,0.2)" }}>
-                  {settings.agency_name?.[0] ?? "A"}
-                </div>
-              )}
-              <span className="font-bold text-white">{settings.agency_name || "Agency Name"}</span>
-            </div>
-            <div className="p-6" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
-              <p className="text-sm" style={{ color: "#78614E" }}>Customized marketing platform for your clients.<br />Access to analytics, reports and more.</p>
-              <div className="mt-4 inline-block px-4 py-2 rounded-lg text-sm font-bold text-white"
-                style={{ backgroundColor: settings.accent_color || "var(--color-primary-hover)" }}>
-                Open Dashboard
-              </div>
-            </div>
-            <div className="px-6 py-3 text-xs" style={{ backgroundColor: "rgba(245,215,160,0.1)", borderTop: "1px solid rgba(245,215,160,0.2)", color: "#A8967E" }}>
-              {settings.footer_text || `© ${new Date().getFullYear()} ${settings.agency_name || "Your Agency"} · ${settings.support_email || "contact@youragency.com"}`}
-            </div>
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-6">
+            <Link href="/pricing" className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.65)" }}>
+              Pricing
+            </Link>
+            <Link href="/login" className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.65)" }}>
+              Sign in
+            </Link>
+            <GlassButton variant="primary" size="sm" onClick={() => (window.location.href = "/register")}>
+              Start free
+            </GlassButton>
           </div>
-        ) : (
-          /* Edit form */
-          <div className="space-y-4">
-            {/* Branding */}
-            <div className="rounded-2xl p-4 space-y-3" style={card}>
-              <div className="flex items-center gap-2 mb-1">
-                <Palette className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
-                <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Visual identity</p>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Agency name</label><input value={settings.agency_name} onChange={f("agency_name")} placeholder="e.g. Digital Studio LLC" style={inp} /></div>
-                <div className="col-span-2"><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Logo URL (image)</label><input value={settings.agency_logo} onChange={f("agency_logo")} placeholder="https://..." style={inp} /></div>
-                <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Primary color</label>
-                  <div className="flex gap-2">
-                    <input type="color" value={settings.primary_color} onChange={f("primary_color")} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
-                    <input value={settings.primary_color} onChange={f("primary_color")} style={{ ...inp, flex: 1 }} />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Accent color</label>
-                  <div className="flex gap-2">
-                    <input type="color" value={settings.accent_color} onChange={f("accent_color")} className="w-10 h-10 rounded-lg cursor-pointer border-0" />
-                    <input value={settings.accent_color} onChange={f("accent_color")} style={{ ...inp, flex: 1 }} />
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Contact & Domain */}
-            <div className="rounded-2xl p-4 space-y-3" style={card}>
-              <div className="flex items-center gap-2 mb-1">
-                <Globe className="w-4 h-4" style={{ color: "#6366F1" }} />
-                <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Domain & Contact</p>
-              </div>
-              <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Custom domain (optional)</label><input value={settings.custom_domain} onChange={f("custom_domain")} placeholder="e.g. portal.youragency.com" style={inp} /></div>
-              <div><label className="block text-xs font-medium mb-1" style={{ color: "#78614E" }}>Support email</label><input value={settings.support_email} onChange={f("support_email")} placeholder="support@youragency.com" style={inp} /></div>
-            </div>
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            aria-label="Toggle menu"
+            className="md:hidden p-2"
+            style={{ color: "rgba(255,255,255,0.65)" }}
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <Menu size={22} />
+          </button>
+        </div>
 
-            {/* Footer */}
-            <div className="rounded-2xl p-4 space-y-3" style={card}>
-              <div className="flex items-center gap-2 mb-1">
-                <FileText className="w-4 h-4" style={{ color: "#10B981" }} />
-                <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Custom footer</p>
-              </div>
-              <textarea value={settings.footer_text} onChange={f("footer_text")} rows={2}
-                placeholder={`© ${new Date().getFullYear()} Your Agency · contact@youragency.com`}
-                className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
-                style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "white", color: "var(--color-text)" }} />
-            </div>
-
-            <button type="button" onClick={save} disabled={saving}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold disabled:opacity-40"
-              style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814" }}>
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
-              {saved ? "Saved!" : "Save settings"}
-            </button>
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t px-4 py-4 space-y-3" style={{ borderColor: "rgba(245,215,160,0.1)" }}>
+            <Link href="/pricing" className="block text-sm py-2" style={{ color: "rgba(255,255,255,0.65)" }}>
+              Pricing
+            </Link>
+            <Link href="/login" className="block text-sm py-2" style={{ color: "rgba(255,255,255,0.65)" }}>
+              Sign in
+            </Link>
+            <Link
+              href="/register"
+              className="block w-full text-center py-3 rounded-xl text-sm font-bold"
+              style={{ backgroundColor: "#f59e0b", color: "#1C1814" }}
+            >
+              Start free
+            </Link>
           </div>
         )}
+      </nav>
 
-        {/* Note */}
-        <div className="rounded-xl p-3 text-xs" style={{ backgroundColor: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.15)", color: "#78614E" }}>
-          💡 Branding settings are automatically applied to <strong>Client Portal</strong> and reports sent to your clients. Custom domain requires additional DNS configuration.
-        </div>
+      {/* ── Content ────────────────────────────────────────────── */}
+      <div className="relative z-10">
+        {/* ── 1. Hero ──────────────────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-4 pt-20 pb-16 text-center">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold mb-6"
+            style={{
+              backgroundColor: "rgba(245,158,11,0.12)",
+              color: "#f59e0b",
+              border: "1px solid rgba(245,158,11,0.3)",
+            }}
+          >
+            <Users className="w-3 h-3" /> For Digital Agencies
+          </div>
+
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6 text-white">
+            Your{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #f59e0b, #fbbf24)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Content Team
+            </span>
+            , Automated
+          </h1>
+
+          <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-10" style={{ color: "rgba(255,255,255,0.65)" }}>
+            Deliver 10x more content to every client without hiring more staff. White-label AI content engine, branded as
+            yours.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <GlassButton
+              variant="primary"
+              size="lg"
+              className="inline-flex items-center gap-2"
+              onClick={() => {
+                const el = document.getElementById("cta-section");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Book a Demo <ArrowRight className="w-5 h-5" />
+            </GlassButton>
+            <GlassButton
+              variant="secondary"
+              size="lg"
+              className="inline-flex items-center gap-2"
+              onClick={() => {
+                const el = document.getElementById("pricing-section");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              See Pricing
+            </GlassButton>
+          </div>
+        </section>
+
+        {/* ── 2. Problem Section ───────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-4 pb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-3 text-white">
+            Sound familiar?
+          </h2>
+          <p className="text-center text-sm mb-10" style={{ color: "rgba(255,255,255,0.45)" }}>
+            Every growing agency hits the same wall.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {painPoints.map((p) => (
+              <GlassCard key={p.title} padding="p-6">
+                <p.icon className="w-8 h-8 mb-4" style={{ color: "#f59e0b" }} />
+                <h3 className="font-bold text-lg mb-2 text-white">{p.title}</h3>
+                <p className="text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>{p.body}</p>
+              </GlassCard>
+            ))}
+          </div>
+        </section>
+
+        {/* ── 3. Solution Section ──────────────────────────────── */}
+        <section className="max-w-5xl mx-auto px-4 pb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-3 text-white">
+            What you get
+          </h2>
+          <p className="text-center text-sm mb-10" style={{ color: "rgba(255,255,255,0.45)" }}>
+            A complete content production line, running 24/7 under your brand.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {solutions.map((s) => (
+              <GlassCard key={s.title} padding="p-6">
+                <div className="flex items-start gap-4">
+                  <div
+                    className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ backgroundColor: "rgba(245,158,11,0.12)" }}
+                  >
+                    <s.icon className="w-5 h-5" style={{ color: "#f59e0b" }} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-lg mb-1 text-white">{s.title}</h3>
+                    <p className="text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>{s.body}</p>
+                  </div>
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        </section>
+
+        {/* ── 4. Pricing Section ───────────────────────────────── */}
+        <section id="pricing-section" className="max-w-5xl mx-auto px-4 pb-20">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-3 text-white">
+            Simple pricing, serious results
+          </h2>
+          <p className="text-center text-sm mb-10" style={{ color: "rgba(255,255,255,0.45)" }}>
+            Pick a plan. Cancel anytime. No hidden fees.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {tiers.map((tier) => (
+              <GlassCard
+                key={tier.name}
+                accent={tier.popular}
+                className={`relative flex flex-col ${tier.popular ? "ring-2 ring-amber-400/40" : ""}`}
+                padding="p-6"
+              >
+                {tier.popular && (
+                  <>
+                    <div
+                      className="absolute top-0 left-4 right-4 h-0.5 rounded-full"
+                      style={{ background: "linear-gradient(90deg, transparent, #f59e0b, transparent)" }}
+                    />
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span
+                        className="px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"
+                        style={{ backgroundColor: "#f59e0b", color: "#1C1814" }}
+                      >
+                        Most Popular
+                      </span>
+                    </div>
+                  </>
+                )}
+
+                <div className="mb-5">
+                  <h3 className="text-xl font-bold mb-1 text-white">{tier.name}</h3>
+                  <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.45)" }}>
+                    {tier.clients}
+                  </p>
+                  <div className="flex items-baseline gap-1">
+                    <span
+                      className="text-4xl font-extrabold"
+                      style={{
+                        background: "linear-gradient(135deg, #f59e0b, #fbbf24)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                      }}
+                    >
+                      {tier.price}
+                    </span>
+                    <span className="text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
+                      {tier.period}
+                    </span>
+                  </div>
+                </div>
+
+                <GlassButton
+                  variant={tier.popular ? "primary" : "secondary"}
+                  size="lg"
+                  className="w-full mb-6 flex items-center justify-center gap-2"
+                  onClick={() => {
+                    const el = document.getElementById("cta-section");
+                    el?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  Get Started <ArrowRight className="w-4 h-4" />
+                </GlassButton>
+
+                <div className="space-y-2.5 flex-1">
+                  {tier.features.map((f) => (
+                    <div key={f} className="flex items-start gap-2.5">
+                      <Check className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "#f59e0b" }} />
+                      <span className="text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>{f}</span>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
+            ))}
+          </div>
+        </section>
+
+        {/* ── 5. CTA Section ───────────────────────────────────── */}
+        <section id="cta-section" className="max-w-3xl mx-auto px-4 pb-20">
+          <GlassCard accent padding="p-8 sm:p-12">
+            <div className="text-center">
+              <h2 className="text-3xl font-extrabold mb-3 text-white">
+                Start with a free 5-client pilot
+              </h2>
+              <p className="mb-8" style={{ color: "rgba(255,255,255,0.55)" }}>
+                See exactly what your clients will experience. No credit card required.
+              </p>
+
+              {submitted ? (
+                <div
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold"
+                  style={{
+                    backgroundColor: "rgba(16,185,129,0.15)",
+                    color: "#10B981",
+                    border: "1px solid rgba(16,185,129,0.3)",
+                  }}
+                >
+                  <Check className="w-5 h-5" />
+                  Thanks! We will be in touch within 24 hours.
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center gap-3 max-w-md mx-auto">
+                  <input
+                    type="email"
+                    required
+                    placeholder="you@agency.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full sm:flex-1 px-4 py-3 rounded-xl text-sm outline-none"
+                    style={{
+                      backgroundColor: "rgba(255,255,255,0.08)",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      color: "#fff",
+                    }}
+                  />
+                  <GlassButton
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 whitespace-nowrap"
+                  >
+                    <Send className="w-4 h-4" /> Book a Demo
+                  </GlassButton>
+                </form>
+              )}
+
+              <p className="text-xs mt-4" style={{ color: "rgba(255,255,255,0.35)" }}>
+                No credit card required
+              </p>
+            </div>
+          </GlassCard>
+        </section>
+
+        {/* ── 6. Footer ────────────────────────────────────────── */}
+        <footer className="border-t py-8" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
+          <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-6 h-6 rounded-md flex items-center justify-center"
+                style={{ background: "linear-gradient(135deg, #f59e0b, #d97706)" }}
+              >
+                <Zap className="w-3 h-3 text-white" />
+              </div>
+              <span className="text-sm font-bold text-white">MarketHub Pro</span>
+            </div>
+            <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+              &copy; 2026 MarketHub Pro &middot; All rights reserved
+            </p>
+            <div className="flex gap-4">
+              <Link href="/login" className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+                Sign in
+              </Link>
+              <Link href="/register" className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+                Register
+              </Link>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );

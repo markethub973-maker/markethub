@@ -137,7 +137,7 @@ const EXACT: Record<string, PageContext> = {
     name: "Referral",
     description: "Referral program. User gets a unique code, invites others via email, tracks signups.",
   },
-  "/white-label": {
+  "/dashboard/white-label": {
     name: "White-Label Settings",
     description: "Agency branding for client portal: logo, agency name, accent color.",
   },

@@ -256,7 +256,7 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     label:      "API Access",
     description: "External REST API access for integrating MarketHub data into your own tools.",
   },
-  "/white-label": {
+  "/dashboard/white-label": {
     minPlan:    "business",
     label:      "White-label Settings",
     description: "Brand the platform with your agency's logo, colors, and custom domain.",

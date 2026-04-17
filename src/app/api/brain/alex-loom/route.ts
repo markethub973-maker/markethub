@@ -25,6 +25,7 @@ import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
 import { ROMANIAN_TTS_PROMPT_RULES } from "@/lib/romanian-tts-rules";
 import { submitEduardAvatarJob } from "@/lib/eduardAvatar";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
+import { screenshotViaLab } from "@/lib/browserbase";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -46,6 +47,19 @@ function authOk(req: NextRequest): boolean {
  * = 1.6 ratio = within Kling's 0.4-2.5 valid range.
  */
 async function screenshotWebsite(url: string): Promise<string | null> {
+  // Primary: Apify website-content-crawler
+  const apifyResult = await apifyScreenshot(url);
+  if (apifyResult) return apifyResult;
+
+  // Fallback: Browserbase (headless cloud browser via CDP)
+  const bb = await screenshotViaLab(url);
+  if (bb) return bb.screenshot_url;
+
+  return null;
+}
+
+/** Apify screenshot — original provider, may hit quota limits. */
+async function apifyScreenshot(url: string): Promise<string | null> {
   const token = process.env.APIFY_TOKEN;
   if (!token) return null;
   try {

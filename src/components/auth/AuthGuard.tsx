@@ -21,6 +21,7 @@ const PUBLIC_PATHS = [
   "/terms",
   "/upgrade-required",
   "/help",
+  "/white-label",
 ];
 
 function isPublicPath(pathname: string): boolean {

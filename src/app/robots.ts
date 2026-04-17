@@ -72,7 +72,7 @@ export default function robots(): MetadataRoute.Robots {
           "/alerts",
           "/monthly-report",
           "/api-keys",
-          "/white-label",
+          "/dashboard/white-label",
           "/news",
           "/trends",
           "/videos",
