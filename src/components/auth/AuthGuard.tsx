@@ -7,6 +7,7 @@ import { ModuleBoundary } from "@/components/ModuleBoundary";
 import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
 import TrialWarningBanner from "@/components/TrialWarningBanner";
 import AmbientBlobs from "@/components/ui/AmbientBlobs";
+import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import { createClient } from "@/lib/supabase/client";
 
 const PUBLIC_PATHS = [
@@ -48,6 +49,15 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [checked, setChecked] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  // Onboarding wizard trigger — show on first login for non-admin pages
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const done = localStorage.getItem("mhp-onboarding-complete");
+    const isAdmin = pathname.includes("/admin");
+    if (!done && !isAdmin && checked) setShowOnboarding(true);
+  }, [pathname, checked]);
 
   // Public pages render IMMEDIATELY — they must be indexable, shareable on
   // social media, and fast on first paint. Skipping the auth gate lets the
@@ -102,6 +112,9 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   return (
     <div className="app-bg">
       <AmbientBlobs />
+      {showOnboarding && (
+        <OnboardingWizard onComplete={() => setShowOnboarding(false)} />
+      )}
       <Sidebar />
       <main className="md:ml-64 min-h-screen flex flex-col relative z-10">
         <TrialWarningBanner />
