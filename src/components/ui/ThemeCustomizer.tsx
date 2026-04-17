@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
 import { type ThemeConfig } from "@/lib/theme";
 import GlassCard from "./GlassCard";
@@ -9,9 +10,27 @@ import GlassCard from "./GlassCard";
  * Floating theme picker — bottom-right corner, toggled by palette icon.
  * Shows 5 preset swatches + custom accent color picker.
  */
+const PUBLIC_PATHS = ["/promo", "/pricing", "/login", "/register", "/white-label", "/privacy", "/terms", "/help"];
+
 export default function ThemeCustomizer() {
   const { theme, setTheme, themes } = useTheme();
   const [open, setOpen] = useState(false);
+  const [hide, setHide] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const p = pathname;
+    const host = typeof window !== "undefined" ? window.location.hostname : "";
+    const isPublic =
+      host === "get.markethubpromo.com" ||
+      PUBLIC_PATHS.some((pp) => p === pp) ||
+      p.startsWith("/offer") || p.startsWith("/l/") ||
+      p.startsWith("/features") || p.startsWith("/guides") ||
+      p.startsWith("/for/") || p.startsWith("/vs/");
+    setHide(isPublic);
+  }, [pathname]);
+
+  if (hide) return null;
 
   const handlePresetClick = (t: ThemeConfig) => {
     setTheme(t);
