@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   if (!auth.ok) return auth.response;
 
   const body = (await req.json().catch(() => null)) as {
-    video_url?: string; targets?: Platform[];
+    video_url?: string; targets?: Platform[]; client_id?: string;
   } | null;
 
   if (!body?.video_url) return NextResponse.json({ error: "video_url required" }, { status: 400 });
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 2. Captions + hashtags
-  const voicePrompt = await buildBrandVoicePrompt(auth.userId);
+  const voicePrompt = await buildBrandVoicePrompt(auth.userId, body?.client_id);
   const system = `You turn a video transcript into platform-ready social captions.
 
 Per-platform rules:

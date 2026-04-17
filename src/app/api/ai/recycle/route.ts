@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
     caption?: string;
     platform?: string;
     original_date?: string;
+    client_id?: string;
   } | null;
 
   if (!body?.caption || body.caption.trim().length < 10) {
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
   if (!apiKey) return NextResponse.json({ error: "AI not configured" }, { status: 500 });
 
   const platform = (body.platform ?? "instagram").toLowerCase();
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, body?.client_id);
 
   const daysAgo = body.original_date
     ? Math.max(0, Math.floor((Date.now() - new Date(body.original_date).getTime()) / (1000 * 60 * 60 * 24)))

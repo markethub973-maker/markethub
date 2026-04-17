@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
   if (!auth.ok) return auth.response;
 
   const body = (await req.json().catch(() => null)) as {
-    caption?: string; platform?: string; count?: number;
+    caption?: string; platform?: string; count?: number; client_id?: string;
   } | null;
 
   if (!body?.caption || body.caption.trim().length < 5) {
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY_APP;
   if (!apiKey) return NextResponse.json({ error: "AI not configured" }, { status: 500 });
 
-  const voicePrompt = await buildBrandVoicePrompt(auth.userId);
+  const voicePrompt = await buildBrandVoicePrompt(auth.userId, body?.client_id);
 
   const system = `You suggest hashtags for social media posts.
 

@@ -70,6 +70,7 @@ export async function POST(req: NextRequest) {
     topic?: string;
     duration_sec?: number;
     hook_style?: string;
+    client_id?: string;
   } | null;
 
   if (!body?.topic || body.topic.trim().length < 5) {
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
   const duration = Math.max(10, Math.min(body.duration_sec ?? 30, 90));
   const hookStyle = body.hook_style?.trim() ?? "";
 
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, body?.client_id);
 
   const userMsg = `Topic: ${body.topic.trim()}
 Target duration: ${duration} seconds

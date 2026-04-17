@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => null)) as {
     brief?: string;
     platforms?: string[];
+    client_id?: string;
   } | null;
 
   if (!body?.brief || body.brief.trim().length < 10) {
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest) {
 
   // Append brand voice (if configured) to the system prompt so the plan
   // sounds like the user's past content, not generic SaaS copy.
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, body.client_id);
   const fullSystem = SYSTEM + voicePrompt;
 
   try {

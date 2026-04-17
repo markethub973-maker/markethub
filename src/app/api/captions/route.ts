@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   }
   // ── End budget check ─────────────────────────────────────────────────────
 
-  const { topic, platform, tone, language, includeHashtags, includeEmoji, maxLength } = await req.json();
+  const { topic, platform, tone, language, includeHashtags, includeEmoji, maxLength, client_id } = await req.json();
 
   if (!topic?.trim()) {
     return NextResponse.json({ error: "Topic is required" }, { status: 400 });
@@ -84,7 +84,7 @@ Example format:
 Do not include any other text, explanations or markdown. Just the JSON array.`;
 
   // Append brand voice (if configured) so captions sound like the user
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, client_id);
   const promptWithVoice = voicePrompt ? `${prompt}${voicePrompt}` : prompt;
 
   try {

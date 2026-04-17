@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
     competitor_captions?: string[];
     my_captions?: string[];
     niche?: string;
+    client_id?: string;
   } | null;
 
   if (!Array.isArray(body?.competitor_captions) || body.competitor_captions.length < 3) {
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY_APP;
   if (!apiKey) return NextResponse.json({ error: "AI not configured" }, { status: 500 });
 
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, body?.client_id);
 
   const system = `You are a content strategist doing a gap analysis between a user and their competitors.
 

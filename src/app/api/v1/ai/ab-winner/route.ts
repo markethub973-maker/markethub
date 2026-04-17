@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
     hashtags?: string;
     has_image?: boolean;
     goal?: string;
+    client_id?: string;
   } | null;
 
   if (!body?.variant_a || !body?.variant_b) {
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
   if (!apiKey) return NextResponse.json({ error: "AI not configured" }, { status: 500 });
 
   const platform = (body.platform ?? "instagram").toLowerCase();
-  const voicePrompt = await buildBrandVoicePrompt(auth.userId);
+  const voicePrompt = await buildBrandVoicePrompt(auth.userId, body?.client_id);
 
   const system = `You are a senior social media strategist picking the better of two draft captions for the same post.
 

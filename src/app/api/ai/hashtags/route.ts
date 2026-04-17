@@ -41,6 +41,7 @@ export async function POST(req: NextRequest) {
     caption?: string;
     platform?: string;
     count?: number;
+    client_id?: string;
   } | null;
 
   if (!body?.caption || body.caption.trim().length < 5) {
@@ -59,7 +60,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "AI not configured" }, { status: 500 });
   }
 
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, body?.client_id);
 
   const system = `You suggest hashtags for social media posts.
 

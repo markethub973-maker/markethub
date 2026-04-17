@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => null)) as {
     caption?: string;
     platform?: string;
+    client_id?: string;
   } | null;
 
   if (!body?.caption || body.caption.trim().length < 10) {
@@ -34,7 +35,7 @@ export async function POST(req: NextRequest) {
   if (!apiKey) return NextResponse.json({ error: "AI not configured" }, { status: 500 });
 
   const platform = (body.platform ?? "instagram").toLowerCase();
-  const voicePrompt = await buildBrandVoicePrompt(auth.userId);
+  const voicePrompt = await buildBrandVoicePrompt(auth.userId, body?.client_id);
 
   const system = `You generate A/B caption variants for social media. Given an original caption, produce THREE alternative angles to test:
   1. "punchy" — half the length, hook-first, emoji-leading

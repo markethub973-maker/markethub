@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
     caption?: string;
     source_platform?: string;
     targets?: string[];
+    client_id?: string;
   } | null;
 
   if (!body?.caption || body.caption.trim().length < 10) {
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "no valid targets" }, { status: 400 });
   }
 
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, body?.client_id);
   const sourcePlatform = (body.source_platform ?? "generic").toLowerCase();
 
   const system = `You repurpose a social media caption into platform-optimized variants.

@@ -26,18 +26,42 @@ export interface BrandVoice {
   strategy: ContentStrategy | null;
 }
 
-export async function loadBrandVoice(userId: string): Promise<BrandVoice | null> {
+/**
+ * Load brand voice for a user, optionally for a specific client.
+ * If clientId is provided, tries client-specific voice first,
+ * then falls back to the user's global voice.
+ */
+export async function loadBrandVoice(userId: string, clientId?: string): Promise<BrandVoice | null> {
   const service = createServiceClient();
-  // Try with `strategy` column first; fall back to base columns if the
-  // column doesn't exist yet (pre-migration environments).
+
+  // If clientId provided, try client-specific voice first
+  if (clientId) {
+    const clientVoice = await service
+      .from("user_brand_voice")
+      .select("tone,vocabulary,style_guide,dos,donts,ai_summary,strategy")
+      .eq("user_id", userId)
+      .eq("client_id", clientId)
+      .maybeSingle();
+    // If found a client-specific voice, use it
+    if (clientVoice.data && !clientVoice.error) {
+      return parseBrandVoiceRow(clientVoice.data as Record<string, unknown>);
+    }
+    // If column doesn't exist (42703), fall through to global voice
+    if (clientVoice.error && clientVoice.error.code !== "42703") {
+      // Some other error — fall through to global
+    }
+  }
+
+  // Global voice (no client_id or client_id IS NULL)
   let data: Record<string, unknown> | null = null;
   const withStrategy = await service
     .from("user_brand_voice")
     .select("tone,vocabulary,style_guide,dos,donts,ai_summary,strategy")
     .eq("user_id", userId)
+    .is("client_id", null)
     .maybeSingle();
   if (withStrategy.error && withStrategy.error.code === "42703") {
-    // column "strategy" does not exist — older schema
+    // column "strategy" or "client_id" does not exist — older schema
     const fallback = await service
       .from("user_brand_voice")
       .select("tone,vocabulary,style_guide,dos,donts,ai_summary")
@@ -48,6 +72,10 @@ export async function loadBrandVoice(userId: string): Promise<BrandVoice | null>
     data = withStrategy.data as Record<string, unknown> | null;
   }
   if (!data) return null;
+  return parseBrandVoiceRow(data);
+}
+
+function parseBrandVoiceRow(data: Record<string, unknown>): BrandVoice {
   const s = data.strategy as ContentStrategy | undefined | null;
   return {
     tone: (data.tone as string | null) ?? null,
@@ -71,8 +99,8 @@ export async function loadBrandVoice(userId: string): Promise<BrandVoice | null>
  * Returns a prompt fragment ready to be appended to any AI system
  * prompt. Empty string if no voice configured — caller adds nothing.
  */
-export async function buildBrandVoicePrompt(userId: string): Promise<string> {
-  const bv = await loadBrandVoice(userId);
+export async function buildBrandVoicePrompt(userId: string, clientId?: string): Promise<string> {
+  const bv = await loadBrandVoice(userId, clientId);
   if (!bv) return "";
   const sections: string[] = [];
 

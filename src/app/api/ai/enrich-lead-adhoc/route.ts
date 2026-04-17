@@ -29,6 +29,7 @@ export async function POST(req: NextRequest) {
     reviews_count?: number;
     source?: string;
     your_offer?: string;
+    client_id?: string;
   } | null;
 
   if (!body?.name || body.name.trim().length < 2) {
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY_APP;
   if (!apiKey) return NextResponse.json({ error: "AI not configured" }, { status: 500 });
 
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, body?.client_id);
   const offer = body.your_offer?.trim().slice(0, 400) ??
     "MarketHub Pro — an all-in-one AI marketing platform for small/mid-size agencies and content teams";
 

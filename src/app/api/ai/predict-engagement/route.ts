@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
     hashtags?: string;
     has_image?: boolean;
     scheduled_for?: string; // ISO
+    client_id?: string;
   } | null;
 
   if (!body?.caption || body.caption.trim().length < 5) {
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
   const apiKey = process.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY_APP;
   if (!apiKey) return NextResponse.json({ error: "AI not configured" }, { status: 500 });
 
-  const voicePrompt = await buildBrandVoicePrompt(user.id);
+  const voicePrompt = await buildBrandVoicePrompt(user.id, body?.client_id);
 
   const system = `You predict engagement for a draft social media post BEFORE it goes live. You are pragmatic and specific — not generic advice.
 
