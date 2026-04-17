@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-const BORDER = "rgba(245,215,160,0.4)";
-const TEXT = "var(--color-text)";
-const MUTED = "#78614E";
-const LIGHTER = "#C4AA8A";
+const BORDER = "rgba(255,255,255,0.08)";
+const TEXT = "rgba(255,255,255,0.95)";
+const MUTED = "rgba(255,255,255,0.55)";
+const CHEVRON = "rgba(255,255,255,0.35)";
 
 // Accordion item isolated as a client component so the rest of /promo can
 // render as a Server Component. This is the only piece of interactive state
@@ -23,7 +23,7 @@ export default function FaqItem({ q, a }: { q: string; a: string }) {
         <span className="font-semibold text-sm pr-4" style={{ color: TEXT }}>{q}</span>
         <ChevronDown
           className="w-4 h-4 flex-shrink-0 transition-transform"
-          style={{ color: LIGHTER, transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
+          style={{ color: CHEVRON, transform: open ? "rotate(180deg)" : "rotate(0deg)" }}
         />
       </button>
       {open && (

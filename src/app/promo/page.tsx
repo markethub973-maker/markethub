@@ -6,6 +6,7 @@ import {
   Sparkles, Shield, Clock, DollarSign, Play,
   Megaphone, PenTool, BookOpen, BarChart, MessageSquare,
 } from "lucide-react";
+import GlassCard from "@/components/ui/GlassCard";
 import FaqItem from "./FaqItem";
 
 export const metadata: Metadata = {
@@ -15,18 +16,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://markethubpromo.com/promo" },
 };
 
-// ── Brand colors ──────────────────────────────────────────────────────────────
-const C = {
-  bg: "var(--color-bg)",
-  card: "var(--color-bg-secondary)",
-  amber: "var(--color-primary)",
-  amberDark: "var(--color-primary-hover)",
-  amberLight: "rgba(245,158,11,0.1)",
-  amberBorder: "rgba(245,215,160,0.4)",
-  text: "var(--color-text)",
-  muted: "#78614E",
-  light: "#A8967E",
-  lighter: "#C4AA8A",
+// ── Dark Liquid Glass palette ────────────────────────────────────────────────
+const D = {
+  heading: "rgba(255,255,255,0.95)",
+  body: "rgba(255,255,255,0.65)",
+  muted: "rgba(255,255,255,0.35)",
+  accent: "#f59e0b",
+  accentDark: "#d97706",
+  border: "rgba(255,255,255,0.08)",
+  cardBg: "rgba(255,255,255,0.04)",
+  cardBorder: "rgba(255,255,255,0.08)",
 };
 
 /**
@@ -56,7 +55,7 @@ const FEATURES = [
   },
   {
     icon: <Zap className="w-5 h-5" />,
-    color: "var(--color-primary)",
+    color: "#f59e0b",
     title: "Campaign Auto-Pilot — brief → full plan",
     description:
       "Type a campaign brief, get a 5-post content plan in 10 seconds: hooks, captions, hashtags, image prompts, suggested times. Generate all images, schedule all posts — one click each.",
@@ -64,7 +63,7 @@ const FEATURES = [
   },
   {
     icon: <Search className="w-5 h-5" />,
-    color: "var(--color-primary)",
+    color: "#f59e0b",
     title: "AI Lead Finder — 50+ leads/week",
     description:
       "Describe your offer. AI scans 8 platforms simultaneously, scores every lead by fit (1–10), flags competitors, and writes personalized outreach in your language. You review and send.",
@@ -121,7 +120,7 @@ const FEATURES = [
 ];
 
 const AGENTS = [
-  { name: "Market Researcher", color: "var(--color-primary-hover)", emoji: "🔍" },
+  { name: "Market Researcher", color: "#d97706", emoji: "🔍" },
   { name: "Pricing Strategist", color: "#16A34A", emoji: "💰" },
   { name: "Copywriter", color: "#8B5CF6", emoji: "✍️" },
   { name: "Ad Copy Creator", color: "#F97316", emoji: "📢" },
@@ -136,7 +135,7 @@ const AGENTS = [
   { name: "Brand Guidelines", color: "#0EA5E9", emoji: "🎯" },
   { name: "Ad Analysis", color: "#EF4444", emoji: "🕵️" },
   { name: "Deep Research", color: "#6366F1", emoji: "🧪" },
-  { name: "Support & Setup", color: "var(--color-primary)", emoji: "⚡" },
+  { name: "Support & Setup", color: "#f59e0b", emoji: "⚡" },
 ];
 
 const PLANS = [
@@ -155,7 +154,7 @@ const PLANS = [
     price: 24,
     actions: "20",
     model: "Standard AI",
-    color: "var(--color-primary)",
+    color: "#f59e0b",
     features: ["20 Premium AI Actions/mo", "Basic AI unlimited", "12 tracked channels", "2 Instagram accounts", "All 16 AI Agents", "Client Portal"],
   },
   {
@@ -219,7 +218,7 @@ const FAQS = [
 const BLOG_POSTS = [
   {
     tag: "Lead Generation",
-    tagColor: "var(--color-primary)",
+    tagColor: "#f59e0b",
     title: "How to find 50+ qualified leads per week using AI — without cold calling",
     excerpt:
       "Most marketing agencies spend 3+ hours daily searching for potential clients across Google, social media and directories. Here's how AI can automate this entire process and deliver scored, ranked leads every morning.",
@@ -264,39 +263,35 @@ const BLOG_POSTS = [
 const TESTIMONIALS = [
   {
     name: "James W.",
-    role: "Marketing Agency Owner, London 🇬🇧",
+    role: "Marketing Agency Owner, London",
     text: "We went from spending 3 hours/day searching for clients to having 50+ qualified leads delivered every week. The AI outreach messages are better than what we wrote manually.",
     rating: 5,
     metric: "50+ leads/week",
   },
   {
     name: "Markus H.",
-    role: "Social Media Manager, Berlin 🇩🇪",
+    role: "Social Media Manager, Berlin",
     text: "The multi-platform analytics alone is worth the subscription. I manage 8 client accounts and see everything in one place. The competitor analysis feature is game-changing.",
     rating: 5,
     metric: "8 accounts managed",
   },
   {
     name: "Carlos R.",
-    role: "E-commerce Brand Owner, Madrid 🇪🇸",
+    role: "E-commerce Brand Owner, Madrid",
     text: "The APEX advisor gave me a content strategy that increased our Instagram ER from 1.2% to 4.8% in 6 weeks. I was skeptical about AI but this actually works.",
     rating: 5,
     metric: "1.2% → 4.8% ER",
   },
   {
     name: "Yuki T.",
-    role: "Digital Marketing Director, Tokyo 🇯🇵",
+    role: "Digital Marketing Director, Tokyo",
     text: "MarketHub Pro changed how our agency operates. The Lead Finder alone saves my team 15 hours per week. The multi-language support works perfectly for our Japanese clients.",
     rating: 5,
     metric: "15h saved/week",
   },
 ];
 
-// ── Page ──────────────────────────────────────────────────────────────────────
 // ── JSON-LD Schemas ──────────────────────────────────────────────────────────
-// Injected into the rendered HTML so Google/Bing see rich snippets
-// (Organization info, FAQ rich results, breadcrumb context). Server Components
-// can embed these via dangerouslySetInnerHTML in <script type="application/ld+json">.
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -367,38 +362,95 @@ export default function PromoPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
-      <div style={{ backgroundColor: C.bg, color: C.text, fontFamily: "system-ui, -apple-system, sans-serif" }}>
+      <div
+        style={{
+          background: "linear-gradient(135deg, #0d0b1e 0%, #1a0a2e 40%, #0a1628 100%)",
+          color: D.body,
+          fontFamily: "system-ui, -apple-system, sans-serif",
+          minHeight: "100vh",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* ── Ambient blobs ──────────────────────────────────────────────── */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            top: "-10vh",
+            left: "-8vw",
+            width: "45vw",
+            height: "45vw",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 70%)",
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            bottom: "-10vh",
+            right: "-8vw",
+            width: "40vw",
+            height: "40vw",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%)",
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        />
+        <div
+          aria-hidden="true"
+          style={{
+            position: "fixed",
+            top: "30vh",
+            left: "35vw",
+            width: "30vw",
+            height: "30vw",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%)",
+            pointerEvents: "none",
+            zIndex: 0,
+          }}
+        />
 
         {/* ── NAV ──────────────────────────────────────────────────────────── */}
         <nav
-          style={{ backgroundColor: C.card, borderBottom: `1px solid ${C.amberBorder}` }}
+          style={{
+            background: "rgba(13,11,30,0.75)",
+            backdropFilter: "blur(20px) saturate(1.6)",
+            WebkitBackdropFilter: "blur(20px) saturate(1.6)",
+            borderBottom: `1px solid ${D.border}`,
+          }}
           className="sticky top-0 z-50 px-6 py-4 flex items-center justify-between"
         >
           <div className="flex items-center gap-2">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ background: `linear-gradient(135deg, ${C.amber}, ${C.amberDark})` }}
+              style={{ background: `linear-gradient(135deg, ${D.accent}, ${D.accentDark})` }}
             >
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="font-bold text-base" style={{ color: C.text }}>MarketHub Pro</span>
+            <span className="font-bold text-base" style={{ color: D.heading }}>MarketHub Pro</span>
           </div>
-          <div className="hidden md:flex items-center gap-6 text-sm" style={{ color: C.muted }}>
-            <Link href="/features">Features</Link>
-            <Link href="/for/agencies">Solutions</Link>
-            <Link href="/vs/buffer">Compare</Link>
-            <Link href="/guides">Guides</Link>
-            <a href="#pricing">Pricing</a>
-            <a href="#faq">FAQ</a>
+          <div className="hidden md:flex items-center gap-6 text-sm" style={{ color: D.muted }}>
+            <Link href="/features" className="hover:text-white transition-colors">Features</Link>
+            <Link href="/for/agencies" className="hover:text-white transition-colors">Solutions</Link>
+            <Link href="/vs/buffer" className="hover:text-white transition-colors">Compare</Link>
+            <Link href="/guides" className="hover:text-white transition-colors">Guides</Link>
+            <a href="#pricing" className="hover:text-white transition-colors">Pricing</a>
+            <a href="#faq" className="hover:text-white transition-colors">FAQ</a>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/login" className="text-sm font-medium px-4 py-2 rounded-lg" style={{ color: C.muted }}>
+            <Link href="/login" className="text-sm font-medium px-4 py-2 rounded-lg hover:text-white transition-colors" style={{ color: D.muted }}>
               Sign in
             </Link>
             <Link
               href="/register"
-              className="text-sm font-bold px-4 py-2 rounded-lg"
-              style={{ backgroundColor: C.amber, color: "white" }}
+              className="text-sm font-bold px-4 py-2 rounded-lg transition-all hover:opacity-90"
+              style={{ backgroundColor: D.accent, color: "#0d0b1e" }}
             >
               Start Free
             </Link>
@@ -406,28 +458,32 @@ export default function PromoPage() {
         </nav>
 
         {/* ── HERO ─────────────────────────────────────────────────────────── */}
-        <section className="px-6 py-20 text-center max-w-4xl mx-auto">
+        <section className="px-6 py-24 md:py-32 text-center max-w-4xl mx-auto relative z-10">
           <div
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-8"
-            style={{ backgroundColor: C.amberLight, color: C.amberDark, border: `1px solid ${C.amberBorder}` }}
+            style={{
+              backgroundColor: "rgba(245,158,11,0.1)",
+              color: D.accent,
+              border: `1px solid rgba(245,158,11,0.2)`,
+            }}
           >
             <Sparkles className="w-4 h-4" />
             Powered by AI MarketHub Engine — Premium tier
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6" style={{ color: C.text }}>
+          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6" style={{ color: D.heading }}>
             The marketing platform that
-            <span style={{ color: C.amber }}> finds your clients</span>,
+            <span style={{ color: D.accent }}> finds your clients</span>,
             writes your copy,
-            and <span style={{ color: C.amber }}>grows your agency</span>
+            and <span style={{ color: D.accent }}>grows your agency</span>
           </h1>
 
-          <p className="text-xl mb-4 max-w-2xl mx-auto leading-relaxed" style={{ color: C.muted }}>
+          <p className="text-xl mb-4 max-w-2xl mx-auto leading-relaxed" style={{ color: D.body }}>
             16 specialized AI agents + real-time analytics for YouTube, Instagram, TikTok & Facebook.
             Find 50+ qualified leads per week — automatically.
           </p>
 
-          <p className="text-base mb-10 max-w-xl mx-auto" style={{ color: C.lighter }}>
+          <p className="text-base mb-10 max-w-xl mx-auto" style={{ color: D.muted }}>
             Used by marketing agencies, content creators and brand owners across Europe, Asia and beyond.
           </p>
 
@@ -435,15 +491,24 @@ export default function PromoPage() {
             <Link
               href="/register"
               className="flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold transition-all hover:opacity-90"
-              style={{ backgroundColor: C.amber, color: "white", boxShadow: `0 8px 24px ${withAlpha(C.amber, "40")}` }}
+              style={{
+                background: `linear-gradient(135deg, ${D.accent}, ${D.accentDark})`,
+                color: "#0d0b1e",
+                boxShadow: `0 8px 32px rgba(245,158,11,0.35)`,
+              }}
             >
               Get Started Free — No card required
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/features"
-              className="flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold border"
-              style={{ color: C.muted, border: `1px solid ${C.amberBorder}`, backgroundColor: C.card }}
+              className="flex items-center gap-2 px-8 py-4 rounded-xl text-base font-semibold transition-all hover:bg-white/5"
+              style={{
+                color: D.body,
+                border: `1px solid ${D.border}`,
+                background: "rgba(255,255,255,0.03)",
+                backdropFilter: "blur(12px)",
+              }}
             >
               <Play className="w-4 h-4" />
               Browse all features
@@ -459,8 +524,8 @@ export default function PromoPage() {
               { v: "7d",   l: "free trial · no card" },
             ].map(s => (
               <div key={s.l} className="text-center">
-                <div className="text-3xl font-bold" style={{ color: C.amber }}>{s.v}</div>
-                <div className="text-xs mt-1" style={{ color: C.light }}>{s.l}</div>
+                <div className="text-3xl font-bold" style={{ color: D.accent }}>{s.v}</div>
+                <div className="text-xs mt-1" style={{ color: D.muted }}>{s.l}</div>
               </div>
             ))}
           </div>
@@ -468,18 +533,22 @@ export default function PromoPage() {
 
         {/* ── TRUST BAR ────────────────────────────────────────────────────── */}
         <div
-          style={{ backgroundColor: C.card, borderTop: `1px solid ${C.amberBorder}`, borderBottom: `1px solid ${C.amberBorder}` }}
-          className="py-5 px-6"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            borderTop: `1px solid ${D.border}`,
+            borderBottom: `1px solid ${D.border}`,
+          }}
+          className="py-5 px-6 relative z-10"
         >
           <div
             className="max-w-4xl mx-auto flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs font-medium"
-            style={{ color: C.lighter }}
+            style={{ color: D.muted }}
           >
             {[
               { icon: <Instagram className="w-3.5 h-3.5" style={{ color: "#E1306C" }} />, label: "Instagram Graph API" },
               { icon: <Youtube className="w-3.5 h-3.5" style={{ color: "#FF0000" }} />, label: "YouTube Data API v3" },
               { icon: <TrendingUp className="w-3.5 h-3.5" />, label: "TikTok Trends" },
-              { icon: <Search className="w-3.5 h-3.5" style={{ color: C.amber }} />, label: "OLX · Google · Reddit" },
+              { icon: <Search className="w-3.5 h-3.5" style={{ color: D.accent }} />, label: "OLX · Google · Reddit" },
               { icon: <Shield className="w-3.5 h-3.5" style={{ color: "#16A34A" }} />, label: "GDPR Compliant" },
               { icon: <Brain className="w-3.5 h-3.5" style={{ color: "#8B5CF6" }} />, label: "Premium AI Engine" },
               { icon: <Globe className="w-3.5 h-3.5" style={{ color: "#0EA5E9" }} />, label: "20+ Languages" },
@@ -490,40 +559,36 @@ export default function PromoPage() {
         </div>
 
         {/* ── FEATURES ─────────────────────────────────────────────────────── */}
-        <section id="features" className="px-6 py-20 max-w-5xl mx-auto">
+        <section id="features" className="px-6 py-24 max-w-5xl mx-auto relative z-10">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: C.text }}>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: D.heading }}>
               Everything your agency needs — in one platform
             </h2>
-            <p className="text-base max-w-xl mx-auto" style={{ color: C.muted }}>
+            <p className="text-base max-w-xl mx-auto" style={{ color: D.body }}>
               From finding your first client to running a full-service agency with 20+ accounts — MarketHub Pro scales with you.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {FEATURES.map((f) => (
-              <div
-                key={f.title}
-                className="rounded-2xl p-6 relative"
-                style={{ backgroundColor: C.card, border: `1px solid ${C.amberBorder}`, boxShadow: "0 2px 8px rgba(120,97,78,0.06)" }}
-              >
+              <GlassCard key={f.title} padding="p-6" className="relative">
                 {f.badge && (
                   <span
                     className="absolute top-4 right-4 text-xs font-bold px-2 py-0.5 rounded-full"
-                    style={{ backgroundColor: withAlpha(f.color, "15"), color: f.color }}
+                    style={{ backgroundColor: withAlpha(f.color, "25"), color: f.color }}
                   >
                     {f.badge}
                   </span>
                 )}
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ backgroundColor: withAlpha(f.color, "15") }}
+                  style={{ backgroundColor: withAlpha(f.color, "20") }}
                 >
                   <span style={{ color: f.color }}>{f.icon}</span>
                 </div>
-                <h3 className="font-bold text-base mb-2" style={{ color: C.text }}>{f.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: C.light }}>{f.description}</p>
-              </div>
+                <h3 className="font-bold text-base mb-2" style={{ color: D.heading }}>{f.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: D.body }}>{f.description}</p>
+              </GlassCard>
             ))}
           </div>
         </section>
@@ -531,15 +596,19 @@ export default function PromoPage() {
         {/* ── AI AGENTS ────────────────────────────────────────────────────── */}
         <section
           id="agents"
-          style={{ backgroundColor: C.card, borderTop: `1px solid ${C.amberBorder}`, borderBottom: `1px solid ${C.amberBorder}` }}
-          className="px-6 py-16"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            borderTop: `1px solid ${D.border}`,
+            borderBottom: `1px solid ${D.border}`,
+          }}
+          className="px-6 py-20 relative z-10"
         >
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-3">
-              <h2 className="text-3xl font-bold mb-3" style={{ color: C.text }}>
+              <h2 className="text-3xl font-bold mb-3" style={{ color: D.heading }}>
                 16 AI Agents. Every marketing discipline. One subscription.
               </h2>
-              <p className="text-base max-w-xl mx-auto" style={{ color: C.muted }}>
+              <p className="text-base max-w-xl mx-auto" style={{ color: D.body }}>
                 Each agent is purpose-built for its domain. They work independently or in sequence through Power Workflows.
               </p>
             </div>
@@ -551,13 +620,13 @@ export default function PromoPage() {
                 { icon: <Target className="w-4 h-4" />, color: "#EF4444", title: "Paid Ads Campaign", steps: "Research → Ad Copy → Landing Page → Pricing Strategy" },
                 { icon: <TrendingUp className="w-4 h-4" />, color: "#10B981", title: "Organic Growth", steps: "SEO Keywords → Blog → Social Media → CTA Copy" },
               ].map(w => (
-                <div key={w.title} className="rounded-xl p-4" style={{ backgroundColor: withAlpha(w.color, "08"), border: `1px solid ${withAlpha(w.color, "25")}` }}>
+                <GlassCard key={w.title} padding="p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <span style={{ color: w.color }}>{w.icon}</span>
-                    <span className="font-bold text-sm" style={{ color: C.text }}>{w.title}</span>
+                    <span className="font-bold text-sm" style={{ color: D.heading }}>{w.title}</span>
                   </div>
-                  <p className="text-xs" style={{ color: C.light }}>{w.steps}</p>
-                </div>
+                  <p className="text-xs" style={{ color: D.body }}>{w.steps}</p>
+                </GlassCard>
               ))}
             </div>
 
@@ -566,10 +635,13 @@ export default function PromoPage() {
                 <div
                   key={a.name}
                   className="rounded-xl px-3 py-2.5 flex items-center gap-2"
-                  style={{ backgroundColor: withAlpha(a.color, "08"), border: `1px solid ${withAlpha(a.color, "25")}` }}
+                  style={{
+                    backgroundColor: withAlpha(a.color, "12"),
+                    border: `1px solid ${withAlpha(a.color, "25")}`,
+                  }}
                 >
                   <span className="text-base">{a.emoji}</span>
-                  <span className="font-medium text-xs" style={{ color: C.text }}>{a.name}</span>
+                  <span className="font-medium text-xs" style={{ color: D.heading }}>{a.name}</span>
                 </div>
               ))}
             </div>
@@ -578,73 +650,72 @@ export default function PromoPage() {
 
         {/* ── IMPACT STATS ─────────────────────────────────────────────────── */}
         <section
-          style={{ background: `linear-gradient(135deg, ${withAlpha(C.amber, "12")}, ${withAlpha(C.amberDark, "06")})`, borderBottom: `1px solid ${C.amberBorder}` }}
-          className="py-16 px-6"
+          style={{
+            background: "linear-gradient(135deg, rgba(245,158,11,0.08) 0%, rgba(139,92,246,0.06) 100%)",
+            borderBottom: `1px solid ${D.border}`,
+          }}
+          className="py-24 px-6 relative z-10"
         >
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl font-bold text-center mb-10" style={{ color: C.text }}>
+            <h2 className="text-2xl font-bold text-center mb-10" style={{ color: D.heading }}>
               The math is simple
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div>
+              <GlassCard padding="p-8">
                 <div className="flex items-center justify-center gap-2 mb-3">
-                  <Clock className="w-5 h-5" style={{ color: C.amber }} />
-                  <span className="text-4xl font-bold" style={{ color: C.amber }}>3h</span>
+                  <Clock className="w-5 h-5" style={{ color: D.accent }} />
+                  <span className="text-4xl font-bold" style={{ color: D.accent }}>3h</span>
                 </div>
-                <p className="font-semibold mb-1" style={{ color: C.text }}>Saved every day</p>
-                <p className="text-sm" style={{ color: C.light }}>15 min × 12 AI actions = 3 hours back in your week, every week</p>
-              </div>
-              <div>
+                <p className="font-semibold mb-1" style={{ color: D.heading }}>Saved every day</p>
+                <p className="text-sm" style={{ color: D.body }}>15 min × 12 AI actions = 3 hours back in your week, every week</p>
+              </GlassCard>
+              <GlassCard padding="p-8">
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <DollarSign className="w-5 h-5" style={{ color: "#16A34A" }} />
                   <span className="text-4xl font-bold" style={{ color: "#16A34A" }}>$750</span>
                 </div>
-                <p className="font-semibold mb-1" style={{ color: C.text }}>Operational savings/month</p>
-                <p className="text-sm" style={{ color: C.light }}>50 Pro actions × 15 min × $25/hr = $312. Senior copywriter cost avoided = $438.</p>
-              </div>
-              <div>
+                <p className="font-semibold mb-1" style={{ color: D.heading }}>Operational savings/month</p>
+                <p className="text-sm" style={{ color: D.body }}>50 Pro actions × 15 min × $25/hr = $312. Senior copywriter cost avoided = $438.</p>
+              </GlassCard>
+              <GlassCard padding="p-8">
                 <div className="flex items-center justify-center gap-2 mb-3">
                   <TrendingUp className="w-5 h-5" style={{ color: "#6366F1" }} />
                   <span className="text-4xl font-bold" style={{ color: "#6366F1" }}>15×</span>
                 </div>
-                <p className="font-semibold mb-1" style={{ color: C.text }}>ROI on subscription</p>
-                <p className="text-sm" style={{ color: C.light }}>Pro plan at $49/month. Value delivered: $750+. ROI: 15x minimum.</p>
-              </div>
+                <p className="font-semibold mb-1" style={{ color: D.heading }}>ROI on subscription</p>
+                <p className="text-sm" style={{ color: D.body }}>Pro plan at $49/month. Value delivered: $750+. ROI: 15x minimum.</p>
+              </GlassCard>
             </div>
           </div>
         </section>
 
         {/* ── TESTIMONIALS ─────────────────────────────────────────────────── */}
-        <section className="px-6 py-16 max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-8" style={{ color: C.text }}>
+        <section className="px-6 py-24 max-w-4xl mx-auto relative z-10">
+          <h2 className="text-2xl font-bold text-center mb-8" style={{ color: D.heading }}>
             What agencies say
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {TESTIMONIALS.map((t) => (
-              <div
-                key={t.name}
-                className="rounded-2xl p-6"
-                style={{ backgroundColor: C.card, border: `1px solid ${C.amberBorder}` }}
-              >
+              <GlassCard key={t.name} padding="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex gap-0.5">
                     {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star key={i} className="w-4 h-4" style={{ color: C.amber, fill: C.amber }} />
+                      <Star key={i} className="w-4 h-4" style={{ color: D.accent, fill: D.accent }} />
                     ))}
                   </div>
                   <span
                     className="text-xs font-bold px-2 py-1 rounded-full"
-                    style={{ backgroundColor: C.amberLight, color: C.amberDark }}
+                    style={{ backgroundColor: "rgba(245,158,11,0.15)", color: D.accent }}
                   >
                     {t.metric}
                   </span>
                 </div>
-                <p className="text-sm leading-relaxed mb-5" style={{ color: C.muted }}>&ldquo;{t.text}&rdquo;</p>
+                <p className="text-sm leading-relaxed mb-5" style={{ color: D.body }}>&ldquo;{t.text}&rdquo;</p>
                 <div>
-                  <p className="font-semibold text-sm" style={{ color: C.text }}>{t.name}</p>
-                  <p className="text-xs mt-0.5" style={{ color: C.lighter }}>{t.role}</p>
+                  <p className="font-semibold text-sm" style={{ color: D.heading }}>{t.name}</p>
+                  <p className="text-xs mt-0.5" style={{ color: D.muted }}>{t.role}</p>
                 </div>
-              </div>
+              </GlassCard>
             ))}
           </div>
         </section>
@@ -652,19 +723,23 @@ export default function PromoPage() {
         {/* ── PRICING ──────────────────────────────────────────────────────── */}
         <section
           id="pricing"
-          style={{ backgroundColor: C.card, borderTop: `1px solid ${C.amberBorder}`, borderBottom: `1px solid ${C.amberBorder}` }}
-          className="px-6 py-20"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            borderTop: `1px solid ${D.border}`,
+            borderBottom: `1px solid ${D.border}`,
+          }}
+          className="px-6 py-24 relative z-10"
         >
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-4">
-              <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: C.text }}>
+              <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: D.heading }}>
                 Pricing that pays for itself
               </h2>
-              <p className="text-base mb-2" style={{ color: C.muted }}>
+              <p className="text-base mb-2" style={{ color: D.body }}>
                 Start free. Upgrade when you see results. No hidden fees, no contracts.
               </p>
-              <p className="text-sm" style={{ color: C.lighter }}>
-                💡 Pro delivers $750+ in value at $49/month — that&apos;s 15× ROI.
+              <p className="text-sm" style={{ color: D.muted }}>
+                Pro delivers $750+ in value at $49/month — that&apos;s 15x ROI.
               </p>
             </div>
 
@@ -674,30 +749,35 @@ export default function PromoPage() {
                   key={plan.id}
                   className="rounded-2xl p-6 flex flex-col relative"
                   style={{
-                    backgroundColor: plan.highlight ? plan.color : C.bg,
-                    border: `2px solid ${plan.highlight ? plan.color : C.amberBorder}`,
-                    boxShadow: plan.highlight ? `0 8px 32px ${withAlpha(plan.color, "30")}` : "0 2px 8px rgba(120,97,78,0.06)",
+                    backgroundColor: plan.highlight
+                      ? `${plan.color}`
+                      : "rgba(255,255,255,0.03)",
+                    border: `1px solid ${plan.highlight ? plan.color : D.border}`,
+                    boxShadow: plan.highlight
+                      ? `0 8px 40px ${withAlpha(plan.color, "35")}`
+                      : "0 2px 8px rgba(0,0,0,0.2)",
+                    backdropFilter: plan.highlight ? undefined : "blur(12px)",
                   }}
                 >
                   {plan.badge && (
                     <div
                       className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"
-                      style={{ backgroundColor: C.text, color: "white" }}
+                      style={{ backgroundColor: "white", color: plan.color }}
                     >
                       {plan.badge}
                     </div>
                   )}
                   <div className="mb-5">
-                    <h3 className="font-bold text-base mb-1" style={{ color: plan.highlight ? "white" : C.text }}>{plan.name}</h3>
+                    <h3 className="font-bold text-base mb-1" style={{ color: plan.highlight ? "white" : D.heading }}>{plan.name}</h3>
                     <div className="flex items-baseline gap-1">
                       <span className="text-3xl font-bold" style={{ color: plan.highlight ? "white" : plan.color }}>
                         {plan.price === 0 ? "Free" : `$${plan.price}`}
                       </span>
                       {plan.price > 0 && (
-                        <span className="text-sm" style={{ color: plan.highlight ? "rgba(255,255,255,0.7)" : C.lighter }}>/month</span>
+                        <span className="text-sm" style={{ color: plan.highlight ? "rgba(255,255,255,0.7)" : D.muted }}>/month</span>
                       )}
                     </div>
-                    <div className="text-xs mt-1" style={{ color: plan.highlight ? "rgba(255,255,255,0.8)" : C.lighter }}>
+                    <div className="text-xs mt-1" style={{ color: plan.highlight ? "rgba(255,255,255,0.8)" : D.muted }}>
                       {plan.actions} Premium Actions · {plan.model}
                     </div>
                   </div>
@@ -705,16 +785,16 @@ export default function PromoPage() {
                     {plan.features.map((f) => (
                       <li key={f} className="flex items-start gap-2 text-xs">
                         <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : "#16A34A" }} />
-                        <span style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : C.muted }}>{f}</span>
+                        <span style={{ color: plan.highlight ? "rgba(255,255,255,0.9)" : D.body }}>{f}</span>
                       </li>
                     ))}
                   </ul>
                   <Link
                     href="/register"
-                    className="text-center py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90"
+                    className="text-center py-2.5 rounded-xl text-sm font-semibold transition-all hover:opacity-90 block"
                     style={{
-                      backgroundColor: plan.highlight ? "white" : C.amberLight,
-                      color: plan.highlight ? plan.color : C.amberDark,
+                      backgroundColor: plan.highlight ? "white" : "rgba(245,158,11,0.12)",
+                      color: plan.highlight ? plan.color : D.accent,
                     }}
                   >
                     {plan.price === 0 ? "Start Free" : "Get Started Free"}
@@ -722,28 +802,28 @@ export default function PromoPage() {
                 </div>
               ))}
             </div>
-            <p className="text-center text-xs mt-6" style={{ color: C.lighter }}>
+            <p className="text-center text-xs mt-6" style={{ color: D.muted }}>
               All paid plans include a 14-day free trial. Cancel anytime.{" "}
-              <Link href="/pricing" style={{ color: C.amberDark }}>Compare all plans →</Link>
+              <Link href="/pricing" style={{ color: D.accent }}>Compare all plans →</Link>
             </p>
           </div>
         </section>
 
         {/* ── MINI BLOG ────────────────────────────────────────────────────── */}
-        <section id="blog" className="px-6 py-20 max-w-5xl mx-auto">
+        <section id="blog" className="px-6 py-24 max-w-5xl mx-auto relative z-10">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-3xl font-bold mb-2" style={{ color: C.text }}>
+              <h2 className="text-3xl font-bold mb-2" style={{ color: D.heading }}>
                 Marketing insights & guides
               </h2>
-              <p className="text-base" style={{ color: C.muted }}>
+              <p className="text-base" style={{ color: D.body }}>
                 Practical tactics used by agencies on MarketHub Pro.
               </p>
             </div>
             <Link
               href="/register"
               className="hidden md:flex items-center gap-1 text-sm font-semibold"
-              style={{ color: C.amber }}
+              style={{ color: D.accent }}
             >
               See more in-app <ChevronRight className="w-4 h-4" />
             </Link>
@@ -751,47 +831,43 @@ export default function PromoPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {BLOG_POSTS.map((post) => (
-              <article
-                key={post.title}
-                className="rounded-2xl overflow-hidden"
-                style={{ backgroundColor: C.card, border: `1px solid ${C.amberBorder}` }}
-              >
+              <GlassCard key={post.title} as="article" padding="p-0" className="overflow-hidden">
                 <div className="p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <span
                       className="text-xs font-bold px-2.5 py-1 rounded-full"
-                      style={{ backgroundColor: withAlpha(post.tagColor, "15"), color: post.tagColor }}
+                      style={{ backgroundColor: withAlpha(post.tagColor, "20"), color: post.tagColor }}
                     >
                       {post.tag}
                     </span>
-                    <span className="text-xs" style={{ color: C.lighter }}>{post.readTime}</span>
+                    <span className="text-xs" style={{ color: D.muted }}>{post.readTime}</span>
                   </div>
-                  <h3 className="font-bold text-base leading-snug mb-3" style={{ color: C.text }}>
+                  <h3 className="font-bold text-base leading-snug mb-3" style={{ color: D.heading }}>
                     {post.title}
                   </h3>
-                  <p className="text-sm leading-relaxed mb-5" style={{ color: C.light }}>
+                  <p className="text-sm leading-relaxed mb-5" style={{ color: D.body }}>
                     {post.excerpt}
                   </p>
                   <ul className="flex flex-col gap-2">
                     {post.points.map((point) => (
                       <li key={point} className="flex items-start gap-2">
                         <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: post.tagColor }} />
-                        <span className="text-xs" style={{ color: C.muted }}>{point}</span>
+                        <span className="text-xs" style={{ color: D.body }}>{point}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
-                <div style={{ borderTop: `1px solid ${C.amberBorder}` }} className="px-6 py-3">
+                <div style={{ borderTop: `1px solid ${D.border}` }} className="px-6 py-3">
                   <Link
                     href="/register"
                     className="flex items-center gap-1 text-xs font-semibold"
-                    style={{ color: C.amberDark }}
+                    style={{ color: D.accent }}
                   >
                     Try it yourself
                     <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
-              </article>
+              </GlassCard>
             ))}
           </div>
         </section>
@@ -799,22 +875,26 @@ export default function PromoPage() {
         {/* ── FAQ ──────────────────────────────────────────────────────────── */}
         <section
           id="faq"
-          style={{ backgroundColor: C.card, borderTop: `1px solid ${C.amberBorder}`, borderBottom: `1px solid ${C.amberBorder}` }}
-          className="px-6 py-20"
+          style={{
+            background: "rgba(255,255,255,0.02)",
+            borderTop: `1px solid ${D.border}`,
+            borderBottom: `1px solid ${D.border}`,
+          }}
+          className="px-6 py-24 relative z-10"
         >
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center gap-3 mb-8">
-              <MessageSquare className="w-5 h-5" style={{ color: C.amber }} />
-              <h2 className="text-3xl font-bold" style={{ color: C.text }}>Frequently asked questions</h2>
+              <MessageSquare className="w-5 h-5" style={{ color: D.accent }} />
+              <h2 className="text-3xl font-bold" style={{ color: D.heading }}>Frequently asked questions</h2>
             </div>
             <div>
               {FAQS.map((faq) => (
                 <FaqItem key={faq.q} q={faq.q} a={faq.a} />
               ))}
             </div>
-            <p className="text-sm mt-8" style={{ color: C.lighter }}>
+            <p className="text-sm mt-8" style={{ color: D.muted }}>
               More questions?{" "}
-              <a href="mailto:support@markethubpromo.com" style={{ color: C.amberDark }}>
+              <a href="mailto:support@markethubpromo.com" style={{ color: D.accent }}>
                 support@markethubpromo.com
               </a>
             </p>
@@ -822,31 +902,35 @@ export default function PromoPage() {
         </section>
 
         {/* ── FINAL CTA ────────────────────────────────────────────────────── */}
-        <section className="px-6 py-24 text-center max-w-2xl mx-auto">
+        <section className="px-6 py-28 text-center max-w-2xl mx-auto relative z-10">
           <div
             className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            style={{ background: `linear-gradient(135deg, ${C.amber}, ${C.amberDark})` }}
+            style={{ background: `linear-gradient(135deg, ${D.accent}, ${D.accentDark})`, boxShadow: `0 8px 32px rgba(245,158,11,0.3)` }}
           >
             <Zap className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: C.text }}>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: D.heading }}>
             Start finding clients today
           </h2>
-          <p className="text-base mb-4" style={{ color: C.muted }}>
+          <p className="text-base mb-4" style={{ color: D.body }}>
             Join marketing agencies using MarketHub Pro to automate lead generation, analyze social media performance, and grow faster with AI.
           </p>
-          <p className="text-sm mb-10" style={{ color: C.lighter }}>
+          <p className="text-sm mb-10" style={{ color: D.muted }}>
             Free trial includes 5 Premium AI Actions, Research Hub, Lead Database and all analytics. No credit card required.
           </p>
           <Link
             href="/register"
             className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-lg font-bold transition-all hover:opacity-90"
-            style={{ backgroundColor: C.amber, color: "white", boxShadow: `0 12px 32px ${withAlpha(C.amber, "40")}` }}
+            style={{
+              background: `linear-gradient(135deg, ${D.accent}, ${D.accentDark})`,
+              color: "#0d0b1e",
+              boxShadow: `0 12px 40px rgba(245,158,11,0.35)`,
+            }}
           >
             Get Started Free
             <ChevronRight className="w-5 h-5" />
           </Link>
-          <p className="text-sm mt-4" style={{ color: C.lighter }}>No credit card · Cancel anytime · Free forever plan available</p>
+          <p className="text-sm mt-4" style={{ color: D.muted }}>No credit card · Cancel anytime · Free forever plan available</p>
 
           {/* Quick feature bullets */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-10 text-left">
@@ -859,7 +943,7 @@ export default function PromoPage() {
               <div
                 key={label}
                 className="flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-medium"
-                style={{ backgroundColor: C.amberLight, color: C.amberDark }}
+                style={{ backgroundColor: "rgba(245,158,11,0.1)", color: D.accent, border: `1px solid rgba(245,158,11,0.15)` }}
               >
                 {icon}{label}
               </div>
@@ -869,51 +953,54 @@ export default function PromoPage() {
 
         {/* ── FOOTER ───────────────────────────────────────────────────────── */}
         <footer
-          style={{ backgroundColor: C.card, borderTop: `1px solid ${C.amberBorder}` }}
-          className="px-6 py-10"
+          style={{
+            background: "rgba(0,0,0,0.3)",
+            borderTop: `1px solid ${D.border}`,
+          }}
+          className="px-6 py-10 relative z-10"
         >
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col md:flex-row items-start justify-between gap-8 mb-8">
               <div className="max-w-xs">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center"
-                    style={{ background: `linear-gradient(135deg, ${C.amber}, ${C.amberDark})` }}>
+                    style={{ background: `linear-gradient(135deg, ${D.accent}, ${D.accentDark})` }}>
                     <Zap className="w-3.5 h-3.5 text-white" />
                   </div>
-                  <span className="font-bold" style={{ color: C.muted }}>MarketHub Pro</span>
+                  <span className="font-bold" style={{ color: D.heading }}>MarketHub Pro</span>
                 </div>
-                <p className="text-xs leading-relaxed" style={{ color: C.lighter }}>
+                <p className="text-xs leading-relaxed" style={{ color: D.muted }}>
                   AI-powered marketing platform for agencies and content creators. Real-time analytics + 16 specialized AI agents.
                 </p>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
                 <div>
-                  <p className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: C.light }}>Product</p>
-                  <div className="flex flex-col gap-2" style={{ color: C.lighter }}>
-                    <Link href="#features" className="hover:text-amber-600 transition-colors text-xs">Features</Link>
-                    <Link href="#agents" className="hover:text-amber-600 transition-colors text-xs">AI Agents</Link>
-                    <Link href="#pricing" className="hover:text-amber-600 transition-colors text-xs">Pricing</Link>
-                    <Link href="/pricing" className="hover:text-amber-600 transition-colors text-xs">Full pricing</Link>
+                  <p className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: D.body }}>Product</p>
+                  <div className="flex flex-col gap-2" style={{ color: D.muted }}>
+                    <Link href="#features" className="hover:text-white transition-colors text-xs">Features</Link>
+                    <Link href="#agents" className="hover:text-white transition-colors text-xs">AI Agents</Link>
+                    <Link href="#pricing" className="hover:text-white transition-colors text-xs">Pricing</Link>
+                    <Link href="/pricing" className="hover:text-white transition-colors text-xs">Full pricing</Link>
                   </div>
                 </div>
                 <div>
-                  <p className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: C.light }}>Resources</p>
-                  <div className="flex flex-col gap-2" style={{ color: C.lighter }}>
-                    <Link href="#blog" className="hover:text-amber-600 transition-colors text-xs">Blog</Link>
-                    <Link href="#faq" className="hover:text-amber-600 transition-colors text-xs">FAQ</Link>
-                    <a href="mailto:support@markethubpromo.com" className="hover:text-amber-600 transition-colors text-xs">Support</a>
+                  <p className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: D.body }}>Resources</p>
+                  <div className="flex flex-col gap-2" style={{ color: D.muted }}>
+                    <Link href="#blog" className="hover:text-white transition-colors text-xs">Blog</Link>
+                    <Link href="#faq" className="hover:text-white transition-colors text-xs">FAQ</Link>
+                    <a href="mailto:support@markethubpromo.com" className="hover:text-white transition-colors text-xs">Support</a>
                   </div>
                 </div>
                 <div>
-                  <p className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: C.light }}>Legal</p>
-                  <div className="flex flex-col gap-2" style={{ color: C.lighter }}>
-                    <Link href="/privacy" className="hover:text-amber-600 transition-colors text-xs">Privacy Policy</Link>
-                    <Link href="/terms" className="hover:text-amber-600 transition-colors text-xs">Terms of Service</Link>
+                  <p className="font-semibold mb-3 text-xs uppercase tracking-wide" style={{ color: D.body }}>Legal</p>
+                  <div className="flex flex-col gap-2" style={{ color: D.muted }}>
+                    <Link href="/privacy" className="hover:text-white transition-colors text-xs">Privacy Policy</Link>
+                    <Link href="/terms" className="hover:text-white transition-colors text-xs">Terms of Service</Link>
                   </div>
                 </div>
               </div>
             </div>
-            <div style={{ borderTop: `1px solid ${C.amberBorder}`, color: C.lighter }} className="pt-6 flex flex-col md:flex-row items-center justify-between gap-2 text-xs">
+            <div style={{ borderTop: `1px solid ${D.border}`, color: D.muted }} className="pt-6 flex flex-col md:flex-row items-center justify-between gap-2 text-xs">
               <span>© {new Date().getFullYear()} MarketHub Pro. All rights reserved.</span>
               <span>Powered by MarketHub Pro · GDPR Compliant</span>
             </div>
