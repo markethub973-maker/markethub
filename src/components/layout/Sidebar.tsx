@@ -144,6 +144,11 @@ function UpgradeModal({
   userPlan: string;
   onClose: () => void;
 }) {
+  const { theme } = useTheme();
+  const sidebarTextColor = theme.textSidebar || "#FFF8F0";
+  const sidebarTextMuted = `color-mix(in srgb, ${sidebarTextColor} 60%, transparent)`;
+  const sidebarTextDim = `color-mix(in srgb, ${sidebarTextColor} 40%, transparent)`;
+
   const gate = getRouteGate(href);
   if (!gate) return null;
 
