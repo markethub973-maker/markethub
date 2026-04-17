@@ -10,7 +10,15 @@ jobs:
     steps:
       - name: Scan Gmail for prospect replies
         run: |
-          curl -sf -X GET \
+          RESULT=$(curl -s -w "\n%{http_code}" -X GET \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             "https://markethubpromo.com/api/cron/outreach-inbox" \
-            --max-time 50 || true
+            --max-time 50)
+          HTTP_CODE=$(echo "$RESULT" | tail -1)
+          BODY=$(echo "$RESULT" | head -n -1)
+          echo "HTTP: $HTTP_CODE"
+          echo "Response: $BODY"
+          if [ "$HTTP_CODE" -ge 400 ]; then
+            echo "::error::Cron returned HTTP $HTTP_CODE"
+            exit 1
+          fi
