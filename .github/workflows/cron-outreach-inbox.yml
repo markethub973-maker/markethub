@@ -12,6 +12,7 @@ jobs:
         run: |
           RESULT=$(curl -s -w "\n%{http_code}" -X GET \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: MarketHubCron/1.0" \
             "https://markethubpromo.com/api/cron/outreach-inbox" \
             --max-time 50)
           HTTP_CODE=$(echo "$RESULT" | tail -1)
