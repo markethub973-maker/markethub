@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Zap, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import GlassCard from "@/components/ui/GlassCard";
+import GlassButton from "@/components/ui/GlassButton";
+import AmbientBlobs from "@/components/ui/AmbientBlobs";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,77 +36,65 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "var(--color-bg)" }}>
-      <div className="w-full max-w-md px-6">
+    <div className="app-bg min-h-screen flex items-center justify-center relative overflow-hidden">
+      <AmbientBlobs />
+
+      <div className="w-full max-w-md px-6 relative z-10">
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <div
             className="w-12 h-12 rounded-xl flex items-center justify-center mb-3"
-            style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))" }}
+            style={{ background: "linear-gradient(135deg, var(--accent), var(--accent-hover, var(--accent)))" }}
           >
             <Zap className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold" style={{ color: "var(--color-text)" }}>MarketHub Pro</h1>
-          <p className="text-sm mt-1" style={{ color: "#A8967E" }}>Social Video Intelligence</p>
+          <h1 className="text-2xl font-bold text-glass-primary">MarketHub Pro</h1>
+          <p className="text-sm mt-1 text-glass-muted">Social Video Intelligence</p>
         </div>
 
         {/* Card */}
-        <div
-          className="rounded-2xl p-8"
-          style={{
-            backgroundColor: "var(--color-bg-secondary)",
-            border: "1px solid rgba(245,215,160,0.35)",
-            boxShadow: "0 4px 24px rgba(120,97,78,0.12)",
-          }}
-        >
-          <h2 className="text-xl font-bold mb-1" style={{ color: "var(--color-text)" }}>Welcome back!</h2>
-          <p className="text-sm mb-6" style={{ color: "#A8967E" }}>Sign into your account</p>
+        <GlassCard accent padding="p-8">
+          <h2 className="text-xl font-bold mb-1 text-glass-primary">Welcome back!</h2>
+          <p className="text-sm mb-6 text-glass-secondary">Sign into your account</p>
 
           <form onSubmit={handleLogin} className="space-y-4">
             {/* Email */}
             <div>
-              <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>
+              <label className="text-xs font-semibold mb-1.5 block text-glass-secondary">
                 Email
               </label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-glass-muted" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
                   required
-                  className="w-full pl-10 pr-4 py-3 text-sm rounded-lg focus:outline-none transition-all"
-                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
-                  onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
-                  onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.4)")}
+                  className="input-glass w-full pl-10 pr-4 py-3 text-sm rounded-lg"
                 />
               </div>
             </div>
 
             {/* Password */}
             <div>
-              <label className="text-xs font-semibold mb-1.5 block" style={{ color: "#78614E" }}>
+              <label className="text-xs font-semibold mb-1.5 block text-glass-secondary">
                 Password
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#C4AA8A" }} />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-glass-muted" />
                 <input
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
                   required
-                  className="w-full pl-10 pr-10 py-3 text-sm rounded-lg focus:outline-none transition-all"
-                  style={{ border: "1px solid rgba(245,215,160,0.4)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}
-                  onFocus={(e) => (e.currentTarget.style.border = "1px solid #F59E0B")}
-                  onBlur={(e) => (e.currentTarget.style.border = "1px solid rgba(245,215,160,0.4)")}
+                  className="input-glass w-full pl-10 pr-10 py-3 text-sm rounded-lg"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                  style={{ color: "#C4AA8A" }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-glass-muted"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -121,28 +112,30 @@ export default function LoginPage() {
             )}
 
             {/* Submit */}
-            <button
+            <GlassButton
               type="submit"
+              variant="primary"
+              size="lg"
               disabled={loading}
-              className="w-full py-3 rounded-lg text-sm font-bold transition-opacity"
-              style={{ backgroundColor: "var(--color-primary)", color: "#1C1814", opacity: loading ? 0.7 : 1 }}
+              className="w-full font-bold"
+              style={{ opacity: loading ? 0.7 : 1 }}
             >
               {loading ? "Loading..." : "Sign in"}
-            </button>
+            </GlassButton>
           </form>
 
-          <p className="text-center text-xs mt-5" style={{ color: "#A8967E" }}>
-            Don't have an account?{" "}
-            <Link href="/register" style={{ color: "var(--color-primary)", fontWeight: 600 }}>
+          <p className="text-center text-xs mt-5 text-glass-muted">
+            Don&apos;t have an account?{" "}
+            <Link href="/register" className="font-semibold" style={{ color: "var(--accent)" }}>
               Sign up free
             </Link>
           </p>
-        </div>
+        </GlassCard>
 
-        <p className="text-center text-xs mt-6" style={{ color: "#C4AA8A" }}>
-          © 2026 MarketHub Pro ·{" "}
-          <a href="/privacy" style={{ color: "var(--color-primary)" }}>Privacy</a> ·{" "}
-          <a href="/terms" style={{ color: "var(--color-primary)" }}>Terms</a>
+        <p className="text-center text-xs mt-6 text-glass-muted">
+          &copy; 2026 MarketHub Pro &middot;{" "}
+          <a href="/privacy" style={{ color: "var(--accent)" }}>Privacy</a> &middot;{" "}
+          <a href="/terms" style={{ color: "var(--accent)" }}>Terms</a>
         </p>
       </div>
     </div>

@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Header from "@/components/layout/Header";
 import ExportButtons from "@/components/ui/ExportButtons";
+import GlassCard from "@/components/ui/GlassCard";
+import GlassButton from "@/components/ui/GlassButton";
 import {
   Instagram, Users, Heart, MessageCircle, Image, ExternalLink,
   RefreshCw, TrendingUp, UserCheck, BarChart2, Plus, Star, Zap
@@ -232,7 +234,7 @@ export default function InstagramPage() {
         {/* ── Single account view ── */}
         {!loading && activeTab !== "compare" && profile && (
           <>
-            <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-6 mb-6">
+            <GlassCard padding="p-6" className="mb-6">
               <div className="flex items-start gap-6">
                 {profile.profile_picture_url ? (
                   <img src={profile.profile_picture_url} alt={profile.username} className="w-20 h-20 rounded-full object-cover border-2 border-pink-500/50" />
@@ -256,7 +258,7 @@ export default function InstagramPage() {
                   )}
                 </div>
               </div>
-            </div>
+            </GlassCard>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               {[
@@ -271,15 +273,15 @@ export default function InstagramPage() {
                   icon: <TrendingUp className="w-4 h-4 text-green-400" />
                 },
               ].map(stat => (
-                <div key={stat.label} className="bg-[#1a1d27] border border-white/10 rounded-xl p-5">
-                  <div className="flex items-center gap-2 mb-3">{stat.icon}<span className="text-gray-400 text-sm">{stat.label}</span></div>
-                  <p className="text-2xl font-bold text-white">{stat.value}</p>
-                </div>
+                <GlassCard key={stat.label} padding="p-5" rounded="rounded-xl">
+                  <div className="flex items-center gap-2 mb-3">{stat.icon}<span className="text-glass-secondary text-sm">{stat.label}</span></div>
+                  <p className="text-2xl font-bold text-glass-primary">{stat.value}</p>
+                </GlassCard>
               ))}
             </div>
 
-            <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-white mb-5 flex items-center gap-2">
+            <GlassCard padding="p-6">
+              <h3 className="text-lg font-semibold text-glass-primary mb-5 flex items-center gap-2">
                 <Image className="w-4 h-4 text-pink-400" />
                 Recent posts ({posts.length})
               </h3>
@@ -322,7 +324,7 @@ export default function InstagramPage() {
                   ))}
                 </div>
               )}
-            </div>
+            </GlassCard>
 
             {posts.length > 0 && (
               <div className="flex justify-end mt-4">

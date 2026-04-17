@@ -36,6 +36,8 @@ import Admin2FAPanel from "@/components/admin/Admin2FAPanel";
 import AdminEmailPreview from "@/components/admin/AdminEmailPreview";
 import AdminAiUsage from "@/components/admin/AdminAiUsage";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
+import GlassCard from "@/components/ui/GlassCard";
+import GlassButton from "@/components/ui/GlassButton";
 
 // ── Panel definitions ──────────────────────────────────────────────────────────
 
@@ -139,38 +141,35 @@ function AdminModal({ panel, onClose }: { panel: PanelDef; onClose: () => void }
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
       {/* Sheet — full screen on mobile, centered on desktop */}
-      <div
-        className="relative flex flex-col w-full md:max-w-4xl md:mx-auto md:my-6 md:rounded-2xl overflow-hidden"
-        style={{
-          backgroundColor: "var(--color-bg-secondary)",
-          flex: 1,
-          maxHeight: "100dvh",
-        }}
+      <GlassCard
+        className="relative flex flex-col w-full md:max-w-4xl md:mx-auto md:my-6 overflow-hidden"
+        rounded="md:rounded-2xl"
+        padding=""
       >
         {/* Modal header */}
         <div
           className="flex items-center gap-3 px-4 py-3 shrink-0"
-          style={{ borderBottom: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)" }}
+          style={{ borderBottom: "1px solid rgba(245,215,160,0.3)" }}
         >
           <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: panel.bg }}>
             <Icon className="w-4 h-4" style={{ color: panel.color }} />
           </div>
-          <p className="font-bold text-base flex-1" style={{ color: "var(--color-text)" }}>{panel.label}</p>
-          <button
+          <p className="font-bold text-base flex-1 text-glass-primary">{panel.label}</p>
+          <GlassButton
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className="p-1.5 rounded-lg transition-colors"
-            style={{ color: "#78614E" }}
             aria-label="Close"
           >
             <X className="w-5 h-5" />
-          </button>
+          </GlassButton>
         </div>
 
         {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto p-4 md:p-6">
           {PANEL_CONTENT[panel.id]}
         </div>
-      </div>
+      </GlassCard>
     </div>
   );
 }
@@ -229,10 +228,10 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAFAF8" }}>
+      <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
-          <p className="text-sm" style={{ color: "#78614E" }}>Loading admin...</p>
+          <p className="text-sm text-glass-muted">Loading admin...</p>
         </div>
       </div>
     );
@@ -240,7 +239,7 @@ export default function AdminPage() {
 
   if (!adminAccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: "#FAFAF8" }}>
+      <div className="min-h-screen flex items-center justify-center">
         <p className="text-red-600 font-semibold">Access Denied</p>
       </div>
     );
@@ -249,7 +248,7 @@ export default function AdminPage() {
   const activePanelDef = openPanel ? PANELS.find(p => p.id === openPanel) : null;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
+    <div className="min-h-screen">
       {/* Top bar */}
       <div className="sticky top-0 z-40 px-4 py-3 flex items-center justify-between"
         style={{ backgroundColor: "#1C1814", borderBottom: "1px solid rgba(245,215,160,0.1)" }}>
@@ -260,12 +259,10 @@ export default function AdminPage() {
           </div>
           <span className="font-bold text-sm" style={{ color: "var(--color-bg)" }}>Admin</span>
         </div>
-        <button onClick={handleLogout}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium"
-          style={{ backgroundColor: "rgba(239,68,68,0.15)", color: "#EF4444" }}>
+        <GlassButton variant="danger" size="sm" onClick={handleLogout} className="flex items-center gap-1.5">
           <LogOut className="w-3.5 h-3.5" />
           Logout
-        </button>
+        </GlassButton>
       </div>
 
       <div className="px-4 py-5 max-w-4xl mx-auto space-y-6">
@@ -289,10 +286,10 @@ export default function AdminPage() {
 
         {/* Revenue analytics inline (small) */}
         {analyticsData && (
-          <div className="rounded-2xl p-4" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
-            <p className="text-sm font-bold mb-3" style={{ color: "var(--color-text)" }}>Revenue Analytics</p>
+          <GlassCard>
+            <p className="text-sm font-bold mb-3 text-glass-primary">Revenue Analytics</p>
             <AdminAnalyticsChart data={analyticsData} />
-          </div>
+          </GlassCard>
         )}
 
         {/* Panel groups */}
@@ -300,30 +297,29 @@ export default function AdminPage() {
           const panels = PANELS.filter(p => p.group === group);
           return (
             <div key={group}>
-              <p className="text-xs font-bold uppercase tracking-wider mb-2 px-1" style={{ color: "#A8967E" }}>{group}</p>
+              <p className="text-xs font-bold uppercase tracking-wider mb-2 px-1 text-glass-muted">{group}</p>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 {panels.map((panel) => {
                   const Icon = panel.icon;
                   return (
-                    <button
+                    <GlassCard
                       key={panel.id}
+                      className="text-left transition-all active:scale-95 cursor-pointer"
+                      rounded="rounded-xl"
+                      padding="p-3"
                       onClick={() => setOpenPanel(panel.id)}
-                      className="flex items-center gap-3 p-3 rounded-xl text-left transition-all active:scale-95"
-                      style={{
-                        backgroundColor: "var(--color-bg-secondary)",
-                        border: "1px solid rgba(245,215,160,0.25)",
-                        boxShadow: "0 1px 3px rgba(120,97,78,0.06)",
-                      }}
                     >
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                        style={{ backgroundColor: panel.bg }}>
-                        <Icon className="w-4 h-4" style={{ color: panel.color }} />
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                          style={{ backgroundColor: panel.bg }}>
+                          <Icon className="w-4 h-4" style={{ color: panel.color }} />
+                        </div>
+                        <span className="text-xs font-semibold flex-1 leading-tight text-glass-primary">
+                          {panel.label}
+                        </span>
+                        <ChevronRight className="w-3.5 h-3.5 shrink-0 text-glass-muted" />
                       </div>
-                      <span className="text-xs font-semibold flex-1 leading-tight" style={{ color: "var(--color-text)" }}>
-                        {panel.label}
-                      </span>
-                      <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "#C4AA8A" }} />
-                    </button>
+                    </GlassCard>
                   );
                 })}
               </div>
@@ -333,7 +329,7 @@ export default function AdminPage() {
 
         {/* Quick links */}
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider mb-2 px-1" style={{ color: "#A8967E" }}>Quick Links</p>
+          <p className="text-xs font-bold uppercase tracking-wider mb-2 px-1 text-glass-muted">Quick Links</p>
           <div className="grid grid-cols-2 gap-2">
             {[
               { href: "/dashboard/admin/cockpit", label: "🚀 Cockpit — Mission Control", icon: Activity, color: "var(--color-primary)" },
@@ -348,18 +344,19 @@ export default function AdminPage() {
             ].map((link) => {
               const Icon = link.icon;
               return (
-                <a key={link.href} href={link.href}
-                  className="flex items-center gap-3 p-3 rounded-xl transition-all"
-                  style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)" }}>
-                  <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: `${link.color}15` }}>
-                    <Icon className="w-4 h-4" style={{ color: link.color }} />
-                  </div>
-                  <span className="text-xs font-semibold flex-1 leading-tight" style={{ color: "var(--color-text)" }}>
-                    {link.label}
-                  </span>
-                  <ChevronRight className="w-3.5 h-3.5 shrink-0" style={{ color: "#C4AA8A" }} />
-                </a>
+                <GlassCard key={link.href} className="transition-all" rounded="rounded-xl" padding="p-0">
+                  <a href={link.href}
+                    className="flex items-center gap-3 p-3">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
+                      style={{ backgroundColor: `${link.color}15` }}>
+                      <Icon className="w-4 h-4" style={{ color: link.color }} />
+                    </div>
+                    <span className="text-xs font-semibold flex-1 leading-tight text-glass-primary">
+                      {link.label}
+                    </span>
+                    <ChevronRight className="w-3.5 h-3.5 shrink-0 text-glass-muted" />
+                  </a>
+                </GlassCard>
               );
             })}
           </div>

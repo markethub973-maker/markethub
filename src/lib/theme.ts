@@ -18,7 +18,26 @@ export type ThemeConfig = {
   blob3: string;      // center ambient glow
 };
 
+/**
+ * DESIGN RULE (Eduard 2026-04-17): Effects = Liquid Glass (blur, layers,
+ * SVG distortion, shine, blobs, animations). Colors = EXISTING MarketHub
+ * Pro palette — UNCHANGED. Default theme uses the current brand cream/amber.
+ * Dark variants available as OPTIONAL alternates in the theme picker.
+ */
 export const THEMES: ThemeConfig[] = [
+  // ── DEFAULT: existing MarketHub Pro brand colors (light cream + amber) ──
+  {
+    name: "MarketHub Pro",
+    bg1: "#FFFCF7",          // existing --color-bg (cream)
+    bg2: "#F5E8D2",          // existing warm tint
+    bg3: "#FFF8F0",          // existing light cream
+    accent: "#F59E0B",       // existing --color-primary (amber)
+    accentGlow: "rgba(245,158,11,0.15)",
+    blob1: "rgba(245,158,11,0.08)",   // warm amber glow
+    blob2: "rgba(236,128,84,0.06)",   // accent coral glow
+    blob3: "rgba(16,185,129,0.05)",   // subtle green balance
+  },
+  // ── Dark alternates (optional — user picks via ThemeCustomizer) ──
   {
     name: "Amber Night",
     bg1: "#0d0b1e",
@@ -63,20 +82,9 @@ export const THEMES: ThemeConfig[] = [
     blob2: "rgba(5,150,105,0.15)",
     blob3: "rgba(99,102,241,0.1)",
   },
-  {
-    name: "Arctic White",
-    bg1: "#f0f4f8",
-    bg2: "#e2e8f0",
-    bg3: "#f8fafc",
-    accent: "#6366f1",
-    accentGlow: "rgba(99,102,241,0.15)",
-    blob1: "rgba(99,102,241,0.1)",
-    blob2: "rgba(245,158,11,0.08)",
-    blob3: "rgba(16,185,129,0.07)",
-  },
 ];
 
-export const DEFAULT_THEME = THEMES[0]; // Amber Night
+export const DEFAULT_THEME = THEMES[0]; // MarketHub Pro (existing brand)
 
 /**
  * Injects theme CSS variables into :root. Called by ThemeContext on

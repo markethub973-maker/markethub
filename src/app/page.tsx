@@ -6,6 +6,8 @@ import WhatsNewModal from "@/components/ui/WhatsNewModal";
 import ProfitStatsCard from "@/components/ui/ProfitStatsCard";
 import StatCard from "@/components/ui/StatCard";
 import PlatformBadge from "@/components/ui/PlatformBadge";
+import GlassCard from "@/components/ui/GlassCard";
+import GlassButton from "@/components/ui/GlassButton";
 import ViewsChart from "@/components/charts/ViewsChart";
 import EngagementChart from "@/components/charts/EngagementChart";
 import PlatformShareChart from "@/components/charts/PlatformShareChart";
@@ -174,30 +176,26 @@ export default function DashboardPage() {
         {/* Platform Cards — real data */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {platformCards.map((p) => (
-            <div
-              key={p.platform}
-              className="rounded-xl p-4"
-              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
-            >
+            <GlassCard key={p.platform} padding="p-4" rounded="rounded-xl">
               <div className="flex items-center justify-between mb-3">
                 <PlatformBadge platform={p.platform} />
                 <span className="text-xs font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)" }}>
                   Live
                 </span>
               </div>
-              <p className="text-xl font-bold" style={{ color: "var(--color-text)" }}>
+              <p className="text-xl font-bold text-glass-primary">
                 {formatNumber(p.views)}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: "#C4AA8A" }}>
+              <p className="text-xs mt-0.5 text-glass-muted">
                 {p.isFollowers ? "followers" : "views"}
               </p>
-              <div className="mt-3 pt-3 flex justify-between text-xs" style={{ borderTop: "1px solid rgba(245,215,160,0.2)", color: "#A8967E" }}>
+              <div className="mt-3 pt-3 flex justify-between text-xs text-glass-secondary" style={{ borderTop: "1px solid rgba(245,215,160,0.2)" }}>
                 {p.er !== null && (
-                  <span>ER: <b style={{ color: "#5C4A35" }}>{p.er}%</b></span>
+                  <span>ER: <b className="text-glass-primary">{p.er}%</b></span>
                 )}
                 <span>{formatNumber(p.count)} {p.countLabel}</span>
               </div>
-            </div>
+            </GlassCard>
           ))}
         </div>
 
@@ -216,10 +214,10 @@ export default function DashboardPage() {
           </div>
 
           {/* Trending Now */}
-          <div className="rounded-xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <GlassCard padding="p-5" rounded="rounded-xl">
             <div className="flex items-center gap-2 mb-4">
               <Flame className="w-4 h-4" style={{ color: "var(--color-primary)" }} />
-              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Trending Now</h3>
+              <h3 className="font-semibold text-glass-primary">Trending Now</h3>
             </div>
             <div className="space-y-3">
               {ytVideos.slice(0, 5).map((v, i) => (
@@ -228,12 +226,12 @@ export default function DashboardPage() {
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate leading-tight" style={{ color: "#3D2E1E" }}>
+                    <p className="text-xs font-medium truncate leading-tight text-glass-primary">
                       {v.title}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <PlatformBadge platform="youtube" />
-                      <span className="text-xs" style={{ color: "#C4AA8A" }}>
+                      <span className="text-xs text-glass-muted">
                         {formatNumber(v.views)} views
                       </span>
                     </div>
@@ -241,10 +239,10 @@ export default function DashboardPage() {
                 </div>
               ))}
               {ytVideos.length === 0 && (
-                <p className="text-xs" style={{ color: "#C4AA8A" }}>Loading...</p>
+                <p className="text-xs text-glass-muted">Loading...</p>
               )}
             </div>
-          </div>
+          </GlassCard>
         </div>
 
         {/* Instagram connection issue */}
@@ -261,18 +259,18 @@ export default function DashboardPage() {
                 <p className="text-xs" style={{ color: "#A8967E" }}>Reconnect your account in Settings or check permissions</p>
               </div>
             </div>
-            <a href="/settings" className="px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0" style={{ backgroundColor: "#E1306C", color: "white" }}>
-              Reconnect →
-            </a>
+            <GlassButton variant="primary" size="sm">
+              <a href="/settings">Reconnect →</a>
+            </GlassButton>
           </div>
         )}
 
         {/* Instagram Insights */}
         {igData && (
-          <div className="rounded-xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <GlassCard padding="p-5" rounded="rounded-xl">
             <div className="flex items-center gap-2 mb-4">
               <Instagram className="w-4 h-4" style={{ color: "#E1306C" }} />
-              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Instagram — @{igData.username}</h3>
+              <h3 className="font-semibold text-glass-primary">Instagram — @{igData.username}</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
               {[
@@ -300,7 +298,7 @@ export default function DashboardPage() {
                 ))}
               </div>
             )}
-          </div>
+          </GlassCard>
         )}
 
         {/* Facebook token expired */}
@@ -313,18 +311,18 @@ export default function DashboardPage() {
                 <p className="text-xs" style={{ color: "#A8967E" }}>Reconnect your Instagram account in Settings to restore access</p>
               </div>
             </div>
-            <a href="/settings" className="px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0" style={{ backgroundColor: "#1877F2", color: "white" }}>
-              Reconnect →
-            </a>
+            <GlassButton variant="primary" size="sm">
+              <a href="/settings">Reconnect →</a>
+            </GlassButton>
           </div>
         )}
 
         {/* Facebook Page Insights */}
         {fbData && (
-          <div className="rounded-xl p-5" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+          <GlassCard padding="p-5" rounded="rounded-xl">
             <div className="flex items-center gap-2 mb-4">
               <FbIcon />
-              <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Facebook — {fbData.name}</h3>
+              <h3 className="font-semibold text-glass-primary">Facebook — {fbData.name}</h3>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
@@ -334,24 +332,24 @@ export default function DashboardPage() {
                 { icon: <TrendingUp className="w-3 h-3" />, label: "Page Views (30d)", val: (() => { const m = fbData.insights?.find((i: any) => i.name === "page_views_total"); const v = m?.values?.slice(-1)[0]?.value; return v ? formatNumber(v) : "—"; })() },
               ].map(s => (
                 <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(24,119,242,0.06)" }}>
-                  <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>{s.icon}{s.label}</div>
-                  <p className="text-base font-bold" style={{ color: "var(--color-text)" }}>{s.val}</p>
+                  <div className="flex items-center gap-1.5 text-xs mb-1 text-glass-muted">{s.icon}{s.label}</div>
+                  <p className="text-base font-bold text-glass-primary">{s.val}</p>
                 </div>
               ))}
             </div>
-          </div>
+          </GlassCard>
         )}
 
         {/* Top Videos Table */}
-        <div className="rounded-xl overflow-hidden" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+        <GlassCard padding="p-0" rounded="rounded-xl">
           <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
-            <h3 className="font-semibold" style={{ color: "var(--color-text)" }}>Top Videos Trending RO</h3>
+            <h3 className="font-semibold text-glass-primary">Top Videos Trending RO</h3>
             <a href="/videos" className="text-xs font-semibold hover:underline" style={{ color: "var(--color-primary)" }}>
               View all →
             </a>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm glass-table">
               <thead>
                 <tr className="text-xs uppercase tracking-wide" style={{ backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E" }}>
                   <th className="text-left px-5 py-3">Video</th>
@@ -419,7 +417,7 @@ export default function DashboardPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        </GlassCard>
       </div>
     </div>
   );
