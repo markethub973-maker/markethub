@@ -1,0 +1,29 @@
+name: Cockpit Complete Backup (weekly, Sunday 05:00 UTC)
+
+# Tier 3/3 — full DB + Storage bucket mirror. One big encrypted blob.
+# Retention: FOREVER. Named with ISO week for predictable restore.
+# Runs once weekly to keep cost + bandwidth reasonable while protecting
+# against catastrophic Supabase project loss.
+
+on:
+  schedule:
+    - cron: "0 5 * * 0"  # Sunday 05:00 UTC
+  workflow_dispatch: {}
+
+concurrency:
+  group: cockpit-backup-complete
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Complete weekly backup
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 300 \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-cockpit/1 (backup-complete)" \
+            https://viralstat-dashboard.vercel.app/api/cockpit/backup-complete

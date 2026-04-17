@@ -1,0 +1,33 @@
+name: Cron — Auto-adjust intermediary scores (daily 08:00 UTC)
+
+# Joins outreach_log + brain_global_prospects to compute reply rates per
+# vertical, then updates brain_intermediary_patterns.our_product_match_score
+# per the thresholds in ALEX_KNOWLEDGE_BRIEF rule 15 (3+ replies = +1,
+# 0 replies on 20+ outreach = -2). Every change logs to brain_agent_activity
+# with [AUTO_SCORE] for Eduard audit.
+#
+# Daily cadence is enough — this operates on 30-day rolling data.
+# Auth: BRAIN_CRON_SECRET (repo secret).
+
+on:
+  schedule:
+    - cron: "0 8 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: cron-auto-pattern-update
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Auto-adjust scores
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 60 \
+            -X POST \
+            -H "x-brain-cron-secret: ${{ secrets.BRAIN_CRON_SECRET }}" \
+            -H "User-Agent: gha-cron/1 (auto-pattern-update)" \
+            https://viralstat-dashboard.vercel.app/api/brain/auto-pattern-update

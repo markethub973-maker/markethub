@@ -1,0 +1,33 @@
+name: Cron — Learn from incidents (every 30 min)
+
+# Scans recent unresolved critical/high incidents and generates preventive
+# rules via /api/brain/learn-from-incident. New rules land in
+# brain_knowledge_base with tag "auto_learned" and every agent picks them
+# up at their next request (per ALEX_KNOWLEDGE_BRIEF rule 14).
+#
+# Auth: BRAIN_CRON_SECRET (repo secret).
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: cron-learn-from-incident
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Process new incidents
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 180 \
+            -X POST \
+            -H "x-brain-cron-secret: ${{ secrets.BRAIN_CRON_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: gha-cron/1 (learn-from-incident)" \
+            -d '{"scan_recent":true,"limit":5}' \
+            https://viralstat-dashboard.vercel.app/api/brain/learn-from-incident

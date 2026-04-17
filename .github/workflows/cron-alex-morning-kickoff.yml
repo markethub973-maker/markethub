@@ -1,0 +1,27 @@
+name: Cron — Alex morning kickoff (daily 07:05 UTC)
+
+# Runs 5 min after morning-debate. Alex commits to the first concrete
+# task of the day, logs it, notifies Eduard via Telegram.
+# Auth: BRAIN_CRON_SECRET (repo secret).
+
+on:
+  schedule:
+    - cron: "5 7 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: cron-alex-morning-kickoff
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Alex kickoff
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 120 \
+            -H "x-brain-cron-secret: ${{ secrets.BRAIN_CRON_SECRET }}" \
+            -H "User-Agent: gha-cron/1 (alex-morning-kickoff)" \
+            https://viralstat-dashboard.vercel.app/api/brain/alex-morning-kickoff

@@ -1,0 +1,30 @@
+name: Cron — AlexLoom avatar poll (every 2 min)
+
+# Polls /api/brain/alex-loom/avatar-poll which checks queued OmniHuman
+# avatar jobs and pushes finished videos to Eduard's Telegram. Runs
+# frequently so newly-queued avatars get delivered ~2-3 min after
+# alex-loom is triggered (OmniHuman typically completes in ~90-150s).
+#
+# Auth: BRAIN_CRON_SECRET (separate from Vercel CRON_SECRET — used by
+# all brain.markethubpromo.com endpoints). Add as repo secret.
+
+on:
+  schedule:
+    - cron: "*/2 * * * *"  # every 2 minutes
+  workflow_dispatch: {}
+
+concurrency:
+  group: cron-alex-loom-avatar-poll
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Poll avatar jobs
+        run: |
+          curl --silent --show-error --fail-with-body \
+            -H "x-brain-cron-secret: ${{ secrets.BRAIN_CRON_SECRET }}" \
+            -H "User-Agent: gha-cron/1 (alex-loom-avatar-poll)" \
+            https://viralstat-dashboard.vercel.app/api/brain/alex-loom/avatar-poll

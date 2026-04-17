@@ -1,0 +1,28 @@
+name: Cockpit Incremental Backup (hourly)
+
+# Tier 1/3 — hourly delta of fast-growing tables. Small blobs, high
+# frequency, retention ~48h. Complemented by the daily full (tier 2)
+# and weekly complete (tier 3).
+
+on:
+  schedule:
+    - cron: "0 * * * *"  # every hour at :00
+  workflow_dispatch: {}
+
+concurrency:
+  group: cockpit-backup-incremental
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Incremental backup
+        run: |
+          curl --silent --show-error --fail-with-body \
+            --max-time 60 \
+            -X POST \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: gha-cockpit/1 (backup-incremental)" \
+            https://viralstat-dashboard.vercel.app/api/cockpit/backup-incremental
