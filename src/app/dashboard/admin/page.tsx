@@ -273,7 +273,11 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="min-h-screen cockpit-bg" style={{ position: "relative", overflow: "hidden" }}>
+    <div className="min-h-screen cockpit-bg" style={{
+      position: "relative", overflow: "hidden",
+      background: "linear-gradient(135deg, #0d0b1e 0%, #1a0a2e 40%, #0a1628 100%)",
+      color: "rgba(255,255,255,0.85)",
+    }}>
       {/* Scan line */}
       <div className="scan-line" aria-hidden="true" />
 
