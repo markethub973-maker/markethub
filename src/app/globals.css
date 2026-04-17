@@ -589,3 +589,80 @@ main .rounded-lg[style*="background-color: rgb"]:hover {
 [data-theme-mode="light"] .text-glass-muted {
   color: rgba(0, 0, 0, 0.4);
 }
+
+/* ── Toast animation ─────────────────────── */
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* ── Enhanced input-glass (validation states) ── */
+
+.input-glass {
+  padding: 10px 14px;
+  font-size: 14px;
+  width: 100%;
+  font-family: inherit;
+}
+
+.input-glass:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.input-glass.valid {
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.08);
+}
+
+.input-glass.invalid {
+  border-color: rgba(239, 68, 68, 0.5);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+.input-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 6px;
+  display: block;
+}
+[data-theme-mode="light"] .input-label {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.input-hint {
+  font-size: 11px;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.input-hint.valid {
+  color: #6ee7b7;
+}
+.input-hint.invalid {
+  color: #fca5a5;
+}
+
+textarea.input-glass {
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.6;
+}
+
+select.input-glass {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}

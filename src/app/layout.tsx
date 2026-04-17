@@ -9,6 +9,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import ThemeSwitcher from "@/components/ThemeSwitcher";
 import { ThemeProvider as LiquidGlassThemeProvider } from "@/context/ThemeContext";
 import ThemeCustomizer from "@/components/ui/ThemeCustomizer";
+import CommandPalette from "@/components/ui/CommandPalette";
+import ToastContainer from "@/components/ui/ToastContainer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -194,6 +196,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </ThemeProvider>
           {/* Liquid Glass theme customizer — bottom-right floating palette button */}
           <ThemeCustomizer />
+          {/* CMD+K Command Palette — keyboard-triggered global navigation */}
+          <CommandPalette />
+          {/* Glass Toast Notifications — bottom-right stacked */}
+          <ToastContainer />
         </LiquidGlassThemeProvider>
       </body>
     </html>
