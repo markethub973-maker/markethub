@@ -360,13 +360,44 @@ export async function POST(req: NextRequest) {
 
   const svc = createServiceClient();
 
-  // Route messages prefixed with @claude or /claude to the Claude (dev)
-  // inbox instead of Alex. They wait there until the next CLI session
-  // picks them up via /api/brain/ping-claude. Acknowledged immediately so
-  // Eduard knows it landed.
+  // Route messages prefixed with @claude or /claude to the Claude daemon
+  // on Contabo (207.180.235.143:7777). If daemon is down, fall back to inbox.
   const claudePrefixMatch = userText.match(/^[@/]claude\b\s*[:,]?\s*([\s\S]*)$/i);
   if (claudePrefixMatch) {
     const messageForClaude = (claudePrefixMatch[1] || userText).trim();
+    if (!messageForClaude) {
+      await tgApi("sendMessage", {
+        chat_id: chatId,
+        text: "Trimite o întrebare după @claude. Ex: @claude cum stăm cu outreach-ul?",
+      });
+      return NextResponse.json({ ok: true });
+    }
+
+    // Try Contabo daemon first
+    try {
+      const contaboRes = await fetch("http://207.180.235.143:7777", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: messageForClaude, secret: "mhp-claude-bridge-2026" }),
+        signal: AbortSignal.timeout(115000),
+      });
+      if (contaboRes.ok) {
+        const data = (await contaboRes.json()) as { answer?: string };
+        const answer = data.answer || "No response from Claude daemon.";
+        // Send answer in chunks (Telegram 4096 char limit)
+        for (let i = 0; i < answer.length; i += 4000) {
+          await tgApi("sendMessage", {
+            chat_id: chatId,
+            text: answer.slice(i, i + 4000),
+          });
+        }
+        return NextResponse.json({ ok: true, routed_to: "claude_daemon" });
+      }
+    } catch {
+      // Daemon unreachable — fall back to inbox
+    }
+
+    // Fallback: save to inbox for next CLI session
     try {
       await svc.from("brain_agent_activity").insert({
         agent_id: "alex",
@@ -377,15 +408,15 @@ export async function POST(req: NextRequest) {
       });
       await tgApi("sendMessage", {
         chat_id: chatId,
-        text: "📬 Mesaj salvat în inbox-ul Claude. Va răspunde la următoarea sesiune CLI.",
+        text: "⚠️ Claude daemon offline. Mesaj salvat în inbox — va răspunde la următoarea sesiune.",
       });
     } catch (e) {
       await tgApi("sendMessage", {
         chat_id: chatId,
-        text: `Eroare la salvare în inbox: ${e instanceof Error ? e.message : "unknown"}`,
+        text: `Eroare: ${e instanceof Error ? e.message : "unknown"}`,
       });
     }
-    return NextResponse.json({ ok: true, routed_to: "claude_inbox" });
+    return NextResponse.json({ ok: true, routed_to: "claude_inbox_fallback" });
   }
 
   // Log user turn
