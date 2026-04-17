@@ -648,8 +648,8 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/db-query" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
-    pathname === "/api/admin-auth" ||
-    pathname === "/api/admin-secret-login" ||
+    pathname.startsWith("/api/admin-auth") ||
+    pathname.startsWith("/api/admin-secret-login") ||
     pathname.startsWith("/api/auth/") || // OAuth callbacks have own state-token verification
     pathname.startsWith("/api/offer/");  // public one-time checkout — called before login exists
 
