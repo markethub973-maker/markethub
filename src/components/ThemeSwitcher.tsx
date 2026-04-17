@@ -107,7 +107,7 @@ export default function ThemeSwitcher() {
     <button
       type="button"
       onClick={() => setOpen(true)}
-      className="fixed top-3 right-3 w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
+      className="fixed top-3 right-16 w-10 h-10 rounded-full shadow-lg flex items-center justify-center transition-transform hover:scale-105"
       style={{
         zIndex: 9998,
         background: `linear-gradient(135deg, var(--color-primary), var(--color-accent))`,
@@ -219,6 +219,8 @@ export default function ThemeSwitcher() {
               { key: "accent"  as const, label: "Accent",     hint: "Badges, links, highlights" },
               { key: "bg"      as const, label: "Background", hint: "Main page color" },
               { key: "surface" as const, label: "Surface",    hint: "Cards, panels, dropdowns" },
+              { key: "text"    as const, label: "Text",       hint: "Main text color across the app" },
+              { key: "sidebar" as const, label: "Sidebar",    hint: "Sidebar / vertical bar background" },
             ]).map((f) => (
               <div key={f.key} className="flex items-center gap-3">
                 <div className="flex-1">
@@ -252,7 +254,7 @@ export default function ThemeSwitcher() {
               <button
                 type="button"
                 onClick={() => {
-                  setCustomColors({ primary: "#F59E0B", accent: "#EC8054", bg: "#FFFCF7", surface: "#FFFFFF" });
+                  setCustomColors({ primary: "#F59E0B", accent: "#EC8054", bg: "#FFFCF7", surface: "#FFFFFF", text: "#2D2620", sidebar: "#1C1814" });
                   setDraftPicked(true);
                 }}
                 className="text-[11px] flex items-center gap-1 underline"

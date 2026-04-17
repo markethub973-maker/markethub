@@ -29,6 +29,8 @@ export interface CustomColors {
   accent: string;    // hex — secondary highlight (badges, links)
   bg: string;        // hex — main page background
   surface: string;   // hex — cards / secondary panel surface
+  text: string;      // hex — main text color
+  sidebar: string;   // hex — sidebar background color
 }
 
 export interface ThemePreset {
@@ -64,6 +66,8 @@ const DEFAULT_CUSTOM: CustomColors = {
   accent: "#EC8054",
   bg: "#FFFCF7",
   surface: "#FFFFFF",
+  text: "#2D2620",
+  sidebar: "#1C1814",
 };
 
 // ── helpers ────────────────────────────────────────────────────────────────
@@ -117,9 +121,15 @@ function applyCustomColors(colors: CustomColors) {
   // Borders — derived from primary at low alpha so they harmonize
   root.style.setProperty("--color-border", rgba(colors.primary, 0.15));
   root.style.setProperty("--color-border-hover", rgba(colors.primary, 0.30));
-  // Sidebar / dark surface — derived from primary's darkest shade
-  root.style.setProperty("--color-surface-dark", darken(colors.primary, 70));
-  root.style.setProperty("--color-surface-dark-secondary", darken(colors.primary, 55));
+  // Text — user-picked or derived
+  const textColor = isValidHex(colors.text) ? colors.text : "#2D2620";
+  root.style.setProperty("--color-text", textColor);
+  root.style.setProperty("--color-text-secondary", rgba(textColor, 0.65));
+  root.style.setProperty("--color-text-muted", rgba(textColor, 0.4));
+  // Sidebar / dark surface — user-picked or derived from primary
+  const sidebarColor = isValidHex(colors.sidebar) ? colors.sidebar : darken(colors.primary, 70);
+  root.style.setProperty("--color-surface-dark", sidebarColor);
+  root.style.setProperty("--color-surface-dark-secondary", darken(sidebarColor, -15));
   root.style.setProperty("--color-surface-dark-text", "#FFFCF7");
   root.style.setProperty("--color-surface-dark-text-muted", rgba(colors.primary, 0.55));
   root.style.setProperty("--color-surface-dark-text-dim", rgba(colors.primary, 0.35));
