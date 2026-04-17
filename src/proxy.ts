@@ -646,6 +646,8 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/octivas-status" ||
     pathname === "/api/brain/prospect-breakdown" ||
     pathname === "/api/brain/db-query" ||
+    pathname === "/api/brain/outreach-send" ||
+    pathname === "/api/brain/outreach-batch-send" ||
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname.startsWith("/api/admin-auth") ||
