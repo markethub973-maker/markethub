@@ -90,19 +90,32 @@ export async function GET(req: NextRequest) {
     const cleanFrom = from.replace(/^.*<(.+)>.*$/, "$1").toLowerCase().trim();
     const senderDomain = cleanFrom.split("@").pop() || "";
 
-    // Skip our own emails
+    // Skip our own emails and system notifications
     if (
       senderDomain === "markethubpromo.com" ||
-      senderDomain === "resend.dev" ||
-      senderDomain === "gmail.com" // skip gmail notifications
+      senderDomain === "resend.dev"
     ) {
       continue;
     }
 
-    // Match by email or domain
-    const matchedDomain =
+    // Match by email, domain, OR by subject line (Re: <outreach subject>)
+    let matchedDomain =
       emailToDomain.get(cleanFrom) ||
       (domainSet.has(senderDomain) ? senderDomain : null);
+
+    // If no direct match, try matching via subject (prospect may reply from personal email)
+    if (!matchedDomain) {
+      const msgSubject = (headerOf(msg, "Subject") || "").toLowerCase();
+      if (msgSubject.startsWith("re:")) {
+        const originalSubject = msgSubject.replace(/^re:\s*/i, "").trim();
+        for (const r of outreachRows) {
+          if (r.subject && r.subject.toLowerCase().trim() === originalSubject) {
+            matchedDomain = r.domain;
+            break;
+          }
+        }
+      }
+    }
 
     if (!matchedDomain) continue;
 
