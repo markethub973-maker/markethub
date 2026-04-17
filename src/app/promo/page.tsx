@@ -29,6 +29,21 @@ const C = {
   lighter: "#C4AA8A",
 };
 
+/**
+ * Safely produce a semi-transparent version of a color.
+ * Works with both hex (#RRGGBB) and CSS variables (var(--x)).
+ * For hex colors, appends a 2-digit alpha suffix (e.g. #F59E0B15).
+ * For CSS variables, uses color-mix() for proper alpha blending.
+ */
+function withAlpha(color: string, hexAlpha: string): string {
+  if (color.startsWith("var(")) {
+    // hexAlpha like "15" = 0x15/0xFF = ~8%, "40" = ~25%, "08" = ~3%, "06" = ~2%, "12" = ~7%, "25" = ~15%, "30" = ~19%
+    const pct = Math.round((parseInt(hexAlpha, 16) / 255) * 100);
+    return `color-mix(in srgb, ${color} ${pct}%, transparent)`;
+  }
+  return `${color}${hexAlpha}`;
+}
+
 // ── Data ──────────────────────────────────────────────────────────────────────
 const FEATURES = [
   {
@@ -420,7 +435,7 @@ export default function PromoPage() {
             <Link
               href="/register"
               className="flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold transition-all hover:opacity-90"
-              style={{ backgroundColor: C.amber, color: "white", boxShadow: `0 8px 24px ${C.amber}40` }}
+              style={{ backgroundColor: C.amber, color: "white", boxShadow: `0 8px 24px ${withAlpha(C.amber, "40")}` }}
             >
               Get Started Free — No card required
               <ArrowRight className="w-4 h-4" />
@@ -495,14 +510,14 @@ export default function PromoPage() {
                 {f.badge && (
                   <span
                     className="absolute top-4 right-4 text-xs font-bold px-2 py-0.5 rounded-full"
-                    style={{ backgroundColor: `${f.color}15`, color: f.color }}
+                    style={{ backgroundColor: withAlpha(f.color, "15"), color: f.color }}
                   >
                     {f.badge}
                   </span>
                 )}
                 <div
                   className="w-10 h-10 rounded-xl flex items-center justify-center mb-4"
-                  style={{ backgroundColor: `${f.color}15` }}
+                  style={{ backgroundColor: withAlpha(f.color, "15") }}
                 >
                   <span style={{ color: f.color }}>{f.icon}</span>
                 </div>
@@ -536,7 +551,7 @@ export default function PromoPage() {
                 { icon: <Target className="w-4 h-4" />, color: "#EF4444", title: "Paid Ads Campaign", steps: "Research → Ad Copy → Landing Page → Pricing Strategy" },
                 { icon: <TrendingUp className="w-4 h-4" />, color: "#10B981", title: "Organic Growth", steps: "SEO Keywords → Blog → Social Media → CTA Copy" },
               ].map(w => (
-                <div key={w.title} className="rounded-xl p-4" style={{ backgroundColor: `${w.color}08`, border: `1px solid ${w.color}25` }}>
+                <div key={w.title} className="rounded-xl p-4" style={{ backgroundColor: withAlpha(w.color, "08"), border: `1px solid ${withAlpha(w.color, "25")}` }}>
                   <div className="flex items-center gap-2 mb-2">
                     <span style={{ color: w.color }}>{w.icon}</span>
                     <span className="font-bold text-sm" style={{ color: C.text }}>{w.title}</span>
@@ -551,7 +566,7 @@ export default function PromoPage() {
                 <div
                   key={a.name}
                   className="rounded-xl px-3 py-2.5 flex items-center gap-2"
-                  style={{ backgroundColor: `${a.color}08`, border: `1px solid ${a.color}25` }}
+                  style={{ backgroundColor: withAlpha(a.color, "08"), border: `1px solid ${withAlpha(a.color, "25")}` }}
                 >
                   <span className="text-base">{a.emoji}</span>
                   <span className="font-medium text-xs" style={{ color: C.text }}>{a.name}</span>
@@ -563,7 +578,7 @@ export default function PromoPage() {
 
         {/* ── IMPACT STATS ─────────────────────────────────────────────────── */}
         <section
-          style={{ background: `linear-gradient(135deg, ${C.amber}12, ${C.amberDark}06)`, borderBottom: `1px solid ${C.amberBorder}` }}
+          style={{ background: `linear-gradient(135deg, ${withAlpha(C.amber, "12")}, ${withAlpha(C.amberDark, "06")})`, borderBottom: `1px solid ${C.amberBorder}` }}
           className="py-16 px-6"
         >
           <div className="max-w-4xl mx-auto">
@@ -661,7 +676,7 @@ export default function PromoPage() {
                   style={{
                     backgroundColor: plan.highlight ? plan.color : C.bg,
                     border: `2px solid ${plan.highlight ? plan.color : C.amberBorder}`,
-                    boxShadow: plan.highlight ? `0 8px 32px ${plan.color}30` : "0 2px 8px rgba(120,97,78,0.06)",
+                    boxShadow: plan.highlight ? `0 8px 32px ${withAlpha(plan.color, "30")}` : "0 2px 8px rgba(120,97,78,0.06)",
                   }}
                 >
                   {plan.badge && (
@@ -745,7 +760,7 @@ export default function PromoPage() {
                   <div className="flex items-center gap-3 mb-4">
                     <span
                       className="text-xs font-bold px-2.5 py-1 rounded-full"
-                      style={{ backgroundColor: `${post.tagColor}15`, color: post.tagColor }}
+                      style={{ backgroundColor: withAlpha(post.tagColor, "15"), color: post.tagColor }}
                     >
                       {post.tag}
                     </span>
@@ -826,7 +841,7 @@ export default function PromoPage() {
           <Link
             href="/register"
             className="inline-flex items-center gap-2 px-10 py-4 rounded-xl text-lg font-bold transition-all hover:opacity-90"
-            style={{ backgroundColor: C.amber, color: "white", boxShadow: `0 12px 32px ${C.amber}40` }}
+            style={{ backgroundColor: C.amber, color: "white", boxShadow: `0 12px 32px ${withAlpha(C.amber, "40")}` }}
           >
             Get Started Free
             <ChevronRight className="w-5 h-5" />
