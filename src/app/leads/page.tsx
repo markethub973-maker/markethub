@@ -2,6 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 import Header from "@/components/layout/Header";
+import GlassCard from "@/components/ui/GlassCard";
+import GlassButton from "@/components/ui/GlassButton";
 import {
   Phone, Globe, Star, MapPin, Instagram, Facebook, Play,
   Search, Trash2, Download, RefreshCw, Loader2, AlertCircle,
@@ -465,10 +467,10 @@ export default function LeadsPage() {
         )}
 
         {/* Webhook setup info */}
-        <div className="rounded-2xl p-5 space-y-3" style={card}>
+        <GlassCard padding="p-5" className="space-y-3">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: GREEN }} />
-            <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>Apify Webhook — Setup</p>
+            <p className="font-bold text-sm text-glass-primary">Apify Webhook — Setup</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div className="rounded-xl p-3" style={{ backgroundColor: "rgba(29,185,84,0.06)", border: "1px solid rgba(29,185,84,0.15)" }}>
@@ -497,36 +499,36 @@ export default function LeadsPage() {
               <p style={{ color: GREEN }}>4. Leads appear here automatically ✓</p>
             </div>
           </div>
-        </div>
+        </GlassCard>
 
         {/* Stats */}
         {!tablesMissing && leads.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="rounded-xl p-4" style={card}>
+            <GlassCard padding="p-4" rounded="rounded-xl">
               <p className="text-2xl font-bold" style={{ color: AMBER }}>{leads.length}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Total leads</p>
-            </div>
-            <div className="rounded-xl p-4" style={card}>
+              <p className="text-xs mt-0.5 text-glass-secondary">Total leads</p>
+            </GlassCard>
+            <GlassCard padding="p-4" rounded="rounded-xl">
               <p className="text-2xl font-bold" style={{ color: GREEN }}>{withPhone}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>With phone</p>
-            </div>
-            <div className="rounded-xl p-4" style={card}>
+              <p className="text-xs mt-0.5 text-glass-secondary">With phone</p>
+            </GlassCard>
+            <GlassCard padding="p-4" rounded="rounded-xl">
               <p className="text-2xl font-bold" style={{ color: "#6366F1" }}>{withEmail}</p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>With email</p>
-            </div>
-            <div className="rounded-xl p-4" style={card}>
+              <p className="text-xs mt-0.5 text-glass-secondary">With email</p>
+            </GlassCard>
+            <GlassCard padding="p-4" rounded="rounded-xl">
               <p className="text-2xl font-bold" style={{ color: STAGE_BY_KEY.client.color }}>
                 {stageCounts.client || 0}
               </p>
-              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>Clients converted</p>
-            </div>
+              <p className="text-xs mt-0.5 text-glass-secondary">Clients converted</p>
+            </GlassCard>
           </div>
         )}
 
         {/* Pipeline funnel — counts per stage in order, click to filter */}
         {!tablesMissing && leads.length > 0 && (
-          <div className="rounded-xl p-3 flex items-center gap-2 flex-wrap" style={card}>
-            <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#A8967E" }}>Pipeline:</span>
+          <GlassCard padding="p-3" rounded="rounded-xl" className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-glass-secondary">Pipeline:</span>
             <button type="button" onClick={() => setStageFilter("all")}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
               style={stageFilter === "all"
@@ -544,18 +546,17 @@ export default function LeadsPage() {
                 {s.label} ({stageCounts[s.key] || 0})
               </button>
             ))}
-          </div>
+          </GlassCard>
         )}
 
         {/* Toolbar */}
         {!tablesMissing && (
           <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-2 flex-1 px-3 py-2 rounded-xl min-w-48"
-              style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "#FFFDF9" }}>
+            <div className="flex items-center gap-2 flex-1 px-3 py-2 rounded-xl min-w-48 input-glass">
               <Search className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#C4AA8A" }} />
               <input type="text" value={search} onChange={e => setSearch(e.target.value)}
                 placeholder="Search by name, phone, city..."
-                className="flex-1 text-xs bg-transparent focus:outline-none" style={{ color: "var(--color-text)" }} />
+                className="flex-1 text-xs bg-transparent focus:outline-none text-glass-primary" />
             </div>
 
             {/* Type filter */}
@@ -578,24 +579,18 @@ export default function LeadsPage() {
 
             <div className="flex gap-2 ml-auto">
               {selected.size > 0 && (
-                <button type="button" onClick={handleDelete}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
-                  style={{ backgroundColor: "rgba(239,68,68,0.1)", color: "#DC2626" }}>
+                <GlassButton variant="danger" size="sm" onClick={handleDelete}>
                   <Trash2 className="w-3 h-3" />Delete ({selected.size})
-                </button>
+                </GlassButton>
               )}
-              <button type="button" onClick={handleEnrich} disabled={enriching}
-                title="Enrich Instagram/YouTube leads with bio + email + phone"
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold disabled:opacity-50"
-                style={{ backgroundColor: "rgba(139,92,246,0.1)", color: "#8B5CF6" }}>
+              <GlassButton variant="secondary" size="sm" onClick={handleEnrich} disabled={enriching}
+                title="Enrich Instagram/YouTube leads with bio + email + phone">
                 {enriching ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
                 Enrich {selected.size > 0 ? `(${selected.size})` : ""}
-              </button>
-              <button type="button" onClick={exportCSV}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold"
-                style={{ backgroundColor: "rgba(29,185,84,0.1)", color: GREEN }}>
+              </GlassButton>
+              <GlassButton variant="secondary" size="sm" onClick={exportCSV}>
                 <Download className="w-3 h-3" />Export CSV {selected.size > 0 ? `(${selected.size})` : ""}
-              </button>
+              </GlassButton>
               <input ref={csvInputRef} type="file" accept=".csv" className="hidden"
                 onChange={e => { const f = e.target.files?.[0]; if (f) importCSV(f); e.target.value = ""; }} />
               <button type="button" onClick={() => csvInputRef.current?.click()} disabled={importing}
@@ -635,26 +630,26 @@ export default function LeadsPage() {
         )}
 
         {!loading && !tablesMissing && filtered.length === 0 && (
-          <div className="rounded-2xl p-10 text-center" style={card}>
+          <GlassCard padding="p-10" className="text-center">
             <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "rgba(196,170,138,0.4)" }} />
-            <p className="font-semibold" style={{ color: "#78614E" }}>
+            <p className="font-semibold text-glass-secondary">
               {leads.length === 0 ? "No leads saved yet" : "No results for the selected filters"}
             </p>
-            <p className="text-sm mt-1" style={{ color: "#C4AA8A" }}>
+            <p className="text-sm mt-1 text-glass-muted">
               {leads.length === 0
                 ? "Start the Marketing Agent → leads are saved automatically via webhook"
                 : "Change the filter or search for a different term"}
             </p>
-          </div>
+          </GlassCard>
         )}
 
         {!loading && filtered.length > 0 && (
-          <div className="rounded-2xl overflow-hidden" style={card}>
+          <GlassCard padding="p-0" className="overflow-hidden">
             <div className="px-4 py-3 flex items-center gap-3"
               style={{ borderBottom: "1px solid rgba(245,215,160,0.2)" }}>
               <input type="checkbox" checked={selected.size === filtered.length && filtered.length > 0}
                 onChange={selectAll} className="w-3.5 h-3.5 rounded" />
-              <span className="text-xs font-semibold" style={{ color: "#A8967E" }}>
+              <span className="text-xs font-semibold text-glass-secondary">
                 {filtered.length} leads {selected.size > 0 ? `· ${selected.size} selected` : ""}
               </span>
             </div>
@@ -825,7 +820,7 @@ export default function LeadsPage() {
                 );
               })}
             </div>
-          </div>
+          </GlassCard>
         )}
 
       </div>

@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Header from "@/components/layout/Header";
+import GlassCard from "@/components/ui/GlassCard";
+import GlassButton from "@/components/ui/GlassButton";
 import {
   Search, Instagram, Facebook, Globe, Loader2,
   ExternalLink, ThumbsUp, MessageCircle, Share2,
@@ -606,7 +608,7 @@ export default function ResearchPage() {
         )}
 
         {/* Tab selector grouped */}
-        <div className="rounded-2xl p-5 space-y-4" style={card}>
+        <GlassCard padding="p-5" className="space-y-4">
           <div className="space-y-2">
             {groups.map(group => {
               const groupTabs = allTabs.filter(t => t.group === group);
@@ -647,23 +649,20 @@ export default function ResearchPage() {
 
           {/* Search bar */}
           <div className="flex gap-2">
-            <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl"
-              style={{ border: `1px solid ${tabColor}40`, backgroundColor: "#FFFDF9" }}>
+            <div className="flex-1 flex items-center gap-2 px-3 py-2.5 rounded-xl input-glass">
               <Search className="w-4 h-4 flex-shrink-0" style={{ color: tabColor }} />
               <input type="text" value={query}
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => e.key === "Enter" && handleSearch()}
                 placeholder={getPlaceholder()}
-                className="flex-1 text-sm bg-transparent focus:outline-none"
-                style={{ color: "var(--color-text)" }} />
+                className="flex-1 text-sm bg-transparent focus:outline-none text-glass-primary" />
             </div>
-            <button type="button" onClick={handleSearch}
-              disabled={loading || !query.trim()}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold disabled:opacity-50 transition-all"
-              style={{ backgroundColor: tabColor, color: tab === "tiktok" ? "var(--color-bg)" : "white" }}>
+            <GlassButton variant="primary"
+              onClick={handleSearch}
+              disabled={loading || !query.trim()}>
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-              {loading ? "Searching…" : "Search"}
-            </button>
+              {loading ? "Searching..." : "Search"}
+            </GlassButton>
           </div>
 
           <p className="text-xs" style={{ color: "#C4AA8A" }}>

@@ -151,24 +151,24 @@ export default function InstagramPage() {
               Add account
             </Link>
             {accounts.length > 0 && (
-              <button
+              <GlassButton
+                variant="secondary"
                 onClick={handleRefresh}
                 disabled={refreshing}
-                className="flex items-center gap-2 px-4 py-2 bg-[#1a1d27] border border-white/10 rounded-lg text-gray-400 hover:text-white transition-all"
               >
                 <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
                 Refresh
-              </button>
+              </GlassButton>
             )}
           </div>
         </div>
 
         {/* No accounts */}
         {noAccounts && (
-          <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-12 text-center">
+          <GlassCard padding="p-12" className="text-center">
             <Instagram className="w-16 h-16 text-pink-500/30 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-white mb-2">No Instagram accounts connected</h2>
-            <p className="text-gray-400 mb-6">Connect your accounts to see real analytics.</p>
+            <h2 className="text-xl font-semibold text-glass-primary mb-2">No Instagram accounts connected</h2>
+            <p className="text-glass-secondary mb-6">Connect your accounts to see real analytics.</p>
             <Link
               href="/settings?tab=integrations"
               className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl font-semibold hover:opacity-90 transition-all"
@@ -176,7 +176,7 @@ export default function InstagramPage() {
               <Plus className="w-4 h-4" />
               Connect Instagram
             </Link>
-          </div>
+          </GlassCard>
         )}
 
         {/* Account tabs */}
@@ -341,8 +341,8 @@ export default function InstagramPage() {
         {!loading && activeTab === "compare" && (
           <div className="space-y-6">
             {/* Metrics comparison table */}
-            <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-6">
-              <h2 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+            <GlassCard padding="p-6">
+              <h2 className="text-lg font-semibold text-glass-primary mb-6 flex items-center gap-2">
                 <BarChart2 className="w-5 h-5 text-purple-400" />
                 Account comparison ({compareData.length})
               </h2>
@@ -392,7 +392,7 @@ export default function InstagramPage() {
                   </div>
                 ))}
               </div>
-            </div>
+            </GlassCard>
 
             {/* Winner highlight */}
             {compareData.filter(a => a.profile).length > 1 && (() => {
@@ -403,23 +403,23 @@ export default function InstagramPage() {
                 (a.profile?.followers_count ?? 0) > (b.profile?.followers_count ?? 0) ? a : b
               );
               return (
-                <div className="bg-[#1a1d27] border border-white/10 rounded-2xl p-6">
-                  <h3 className="text-white font-semibold mb-4 flex items-center gap-2">
+                <GlassCard padding="p-6">
+                  <h3 className="text-glass-primary font-semibold mb-4 flex items-center gap-2">
                     <Zap className="w-4 h-4 text-yellow-400" /> Winners per category
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-[#0f1117] rounded-xl p-4">
-                      <p className="text-gray-400 text-xs mb-1">Highest engagement rate</p>
-                      <p className="text-white font-bold">@{best.username}</p>
+                    <GlassCard padding="p-4" rounded="rounded-xl">
+                      <p className="text-glass-secondary text-xs mb-1">Highest engagement rate</p>
+                      <p className="text-glass-primary font-bold">@{best.username}</p>
                       <p className="text-green-400 text-sm">{best.engagement_rate}%</p>
-                    </div>
-                    <div className="bg-[#0f1117] rounded-xl p-4">
-                      <p className="text-gray-400 text-xs mb-1">Most followers</p>
-                      <p className="text-white font-bold">@{bestFollowers.username}</p>
+                    </GlassCard>
+                    <GlassCard padding="p-4" rounded="rounded-xl">
+                      <p className="text-glass-secondary text-xs mb-1">Most followers</p>
+                      <p className="text-glass-primary font-bold">@{bestFollowers.username}</p>
                       <p className="text-blue-400 text-sm">{fmt(bestFollowers.profile?.followers_count ?? 0)}</p>
-                    </div>
+                    </GlassCard>
                   </div>
-                </div>
+                </GlassCard>
               );
             })()}
           </div>

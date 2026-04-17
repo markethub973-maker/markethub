@@ -9,6 +9,8 @@ import RegionSettings from "@/components/settings/RegionSettings";
 import ApiTokensPanel from "@/components/settings/ApiTokensPanel";
 import AiUsageWidget from "@/components/settings/AiUsageWidget";
 import WebhooksPanel from "@/components/settings/WebhooksPanel";
+import GlassCard from "@/components/ui/GlassCard";
+import GlassButton from "@/components/ui/GlassButton";
 import { createClient } from "@/lib/supabase/client";
 import {
   Zap, User, Plug, CreditCard, CheckCircle, XCircle,
@@ -320,8 +322,8 @@ export default function SettingsPage() {
         {/* ══ Profile Tab ════════════════════════════════════════════════════ */}
         {activeTab === "profile" && (
           <div className="space-y-4">
-            <div className="rounded-xl border p-6" style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: "rgba(245,215,160,0.25)" }}>
-              <h2 className="text-lg font-bold mb-5" style={{ color: "var(--color-text)" }}>Profile Information</h2>
+            <GlassCard padding="p-6" rounded="rounded-xl">
+              <h2 className="text-lg font-bold mb-5 text-glass-primary">Profile Information</h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {[
                   { label: "Name",  value: profile?.name || "Not set" },
@@ -334,11 +336,11 @@ export default function SettingsPage() {
                   </div>
                 ))}
               </div>
-            </div>
-            <div className="rounded-xl border p-6" style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: "rgba(245,215,160,0.25)" }}>
-              <h2 className="text-lg font-bold mb-5" style={{ color: "var(--color-text)" }}>Local Market Preferences</h2>
+            </GlassCard>
+            <GlassCard padding="p-6" rounded="rounded-xl">
+              <h2 className="text-lg font-bold mb-5 text-glass-primary">Local Market Preferences</h2>
               <RegionSettings />
-            </div>
+            </GlassCard>
           </div>
         )}
 
@@ -375,7 +377,7 @@ export default function SettingsPage() {
             )}
 
             {/* Budget card */}
-            <div className="rounded-xl border p-6" style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: "rgba(245,215,160,0.3)" }}>
+            <GlassCard padding="p-6" rounded="rounded-xl">
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: "rgba(194,133,76,0.12)" }}>
@@ -452,7 +454,7 @@ export default function SettingsPage() {
               ) : (
                 <p className="text-sm text-center py-4" style={{ color: "#A8967E" }}>Unable to load budget status.</p>
               )}
-            </div>
+            </GlassCard>
 
             {/* Credit packs */}
             <div>
@@ -539,8 +541,7 @@ export default function SettingsPage() {
             {API_KEYS.map(api => {
               const isExpanded = expandedApi === api.id;
               return (
-                <div key={api.id} className="rounded-xl border overflow-hidden transition-all"
-                  style={{ backgroundColor: "var(--color-bg-secondary)", borderColor: isExpanded ? api.colorBorder : "rgba(245,215,160,0.25)" }}>
+                <GlassCard key={api.id} padding="p-0" rounded="rounded-xl" className="overflow-hidden transition-all">
 
                   {/* Header row */}
                   <div className="p-5 flex items-center gap-4">
@@ -628,7 +629,7 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   )}
-                </div>
+                </GlassCard>
               );
             })}
 
@@ -644,22 +645,22 @@ export default function SettingsPage() {
         )}
 
         {/* AI Usage section — show even for free tier (read-only insight) */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,158,11,0.25)" }}>
+        <GlassCard padding="p-6" className="mt-8">
           <AiUsageWidget />
-        </div>
+        </GlassCard>
 
         {/* API Tokens section — always visible for Pro+ */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,158,11,0.25)" }}>
+        <GlassCard padding="p-6" className="mt-8">
           <ApiTokensPanel />
-        </div>
+        </GlassCard>
 
         {/* Webhooks section — Pro+ */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,158,11,0.25)" }}>
+        <GlassCard padding="p-6" className="mt-8">
           <WebhooksPanel />
-        </div>
+        </GlassCard>
 
         {/* Privacy & Data section — always visible */}
-        <div className="mt-8 rounded-2xl p-6" style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(139,92,246,0.2)" }}>
+        <GlassCard padding="p-6" className="mt-8">
           <h2 className="text-lg font-bold mb-2" style={{ color: "var(--color-text)" }}>
             Privacy & Data
           </h2>
@@ -723,7 +724,7 @@ export default function SettingsPage() {
               <span className="text-xs font-bold" style={{ color: "#3B82F6" }}>View →</span>
             </a>
           </div>
-        </div>
+        </GlassCard>
 
       </div>
     </div>
