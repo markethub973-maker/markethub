@@ -89,12 +89,12 @@ export default function ThemeSwitcher() {
     // No auto-close anymore — user must hit Apply to confirm
   };
 
-  const onColor = (key: "primary" | "accent" | "bg" | "surface") =>
+  const onColor = (key: keyof typeof customColors) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setCustomColors({ ...customColors, [key]: e.target.value });
       setDraftPicked(true);
     };
-  const onHexInput = (key: "primary" | "accent" | "bg" | "surface") =>
+  const onHexInput = (key: keyof typeof customColors) =>
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)) {
         setCustomColors({ ...customColors, [key]: e.target.value });
