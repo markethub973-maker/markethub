@@ -12,7 +12,7 @@ import ThemeCustomizer from "@/components/ui/ThemeCustomizer";
 import CommandPalette from "@/components/ui/CommandPalette";
 import ToastContainer from "@/components/ui/ToastContainer";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 // Microsoft Clarity project ID — session replay + heatmaps (free, unlimited)
 // Used together with Sentry Replay: Clarity = all sessions, Sentry = error sessions.
