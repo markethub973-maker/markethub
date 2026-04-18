@@ -588,7 +588,7 @@ export default function Sidebar() {
 
           {/* Social Accounts — for ALL users */}
           <Link
-            href="/settings"
+            href="/social-accounts"
             className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
             style={{ color: sidebarTextMuted }}
             onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
