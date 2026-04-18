@@ -20,12 +20,16 @@ export default function ThemeCustomizer() {
 
   useEffect(() => {
     const p = pathname;
-    // Show on dashboard pages (each user's theme is saved in their localStorage)
-    // Hide on public pages (prospects see the default brand)
     const host = typeof window !== "undefined" ? window.location.hostname : "";
-    const isDashboard = p.startsWith("/dashboard") || p.startsWith("/studio");
-    const isPublicSite = host === "get.markethubpromo.com";
-    setHide(!isDashboard || isPublicSite);
+    // Hide only on public pages — show on all dashboard/app pages
+    const isPublic =
+      host === "get.markethubpromo.com" ||
+      p === "/login" || p === "/register" || p === "/promo" ||
+      p === "/demo" || p === "/pricing" ||
+      p.startsWith("/features") || p.startsWith("/white-label") ||
+      p.startsWith("/offer") || p.startsWith("/l/") ||
+      p.startsWith("/guides") || p.startsWith("/for/") || p.startsWith("/vs/");
+    setHide(isPublic);
   }, [pathname]);
 
   if (hide) return null;
@@ -47,7 +51,7 @@ export default function ThemeCustomizer() {
   };
 
   return (
-    <div className="fixed bottom-20 right-4 z-50">
+    <div className="fixed bottom-4 left-52 z-50">
       {/* Toggle button */}
       <button
         onClick={() => setOpen((v) => !v)}
@@ -76,7 +80,7 @@ export default function ThemeCustomizer() {
       {/* Panel */}
       {open && (
         <div
-          className="absolute bottom-14 right-0 w-72"
+          className="absolute bottom-14 left-0 w-72"
           style={{
             animation: "slideUpIn 0.2s ease-out",
           }}

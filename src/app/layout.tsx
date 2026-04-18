@@ -8,7 +8,7 @@ import CookieConsent from "@/components/ui/CookieConsent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 // ThemeSwitcher moved to Sidebar — no longer floating
 import { ThemeProvider as LiquidGlassThemeProvider } from "@/context/ThemeContext";
-// ThemeCustomizer removed — using ThemeSwitcher (the original) instead
+import ThemeCustomizer from "@/components/ui/ThemeCustomizer";
 import CommandPalette from "@/components/ui/CommandPalette";
 import ToastContainer from "@/components/ui/ToastContainer";
 
@@ -195,7 +195,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <CookieConsent />
           </ThemeProvider>
           {/* Liquid Glass theme customizer — bottom-right floating palette button */}
-          {/* ThemeCustomizer removed — ThemeSwitcher handles themes */}
+          <ThemeCustomizer />
           {/* CMD+K Command Palette — keyboard-triggered global navigation */}
           <CommandPalette />
           {/* Glass Toast Notifications — bottom-right stacked */}
