@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { Upload, X, Image as ImageIcon, Film } from "lucide-react";
-import { createClient } from "@/lib/supabase/client";
+import { Upload, X } from "lucide-react";
 
 interface FileDropZoneProps {
   accept?: string; // "image/*" | "video/*" | "image/*,video/*"
@@ -29,32 +28,29 @@ export default function FileDropZone({
     setError(null);
     setUploading(true);
 
-    // Max 50MB
     if (file.size > 50 * 1024 * 1024) {
       setError("File too large (max 50MB)");
       setUploading(false);
       return;
     }
 
-    const supabase = createClient();
-    const ext = file.name.split(".").pop() || "bin";
-    const path = `${folder}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("folder", folder);
 
-    const { error: upErr } = await supabase.storage
-      .from("public-assets")
-      .upload(path, file, { contentType: file.type, upsert: false });
-
-    if (upErr) {
-      setError(`Upload failed: ${upErr.message}`);
-      setUploading(false);
-      return;
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        setError(data.error || "Upload failed");
+        setUploading(false);
+        return;
+      }
+      setPreview(data.url);
+      onFileUrl(data.url);
+    } catch (err) {
+      setError(`Upload error: ${String(err).slice(0, 60)}`);
     }
-
-    const { data } = supabase.storage.from("public-assets").getPublicUrl(path);
-    const url = data.publicUrl;
-
-    setPreview(url);
-    onFileUrl(url);
     setUploading(false);
   }, [folder, onFileUrl]);
 
