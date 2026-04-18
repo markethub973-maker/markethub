@@ -51,7 +51,7 @@ export default function ApiKeysPage() {
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: "#FAFAF8" }}>
-      <Header title="API Keys" subtitle="External access to your data via REST API (Business/Enterprise plan)" />
+      <Header title="API Keys" subtitle="External access to your data via REST API (Studio/Agency plan)" />
       <div className="p-4 max-w-3xl mx-auto space-y-4">
 
         {/* Create key */}

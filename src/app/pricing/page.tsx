@@ -176,7 +176,7 @@ export default function PricingPage() {
       return;
     }
     if (planId === "enterprise") {
-      window.location.href = "mailto:markethub973@gmail.com?subject=Enterprise Plan";
+      window.location.href = "mailto:markethub973@gmail.com?subject=Agency Plan";
       return;
     }
     if (!isLoggedIn || currentPlan === "guest") {
