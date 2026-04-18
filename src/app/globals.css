@@ -12,7 +12,7 @@
 [data-theme="amber"] {
   --color-primary: #F59E0B;
   --color-primary-hover: #D97706;
-  --color-primary-light: rgba(245, 158, 11, 0.10);   /* semi-transparent */
+  --color-primary-light: rgba(245, 158, 11, 0.10);
   --color-primary-dark: #92580A;
 
   --color-accent: #EC8054;
@@ -20,8 +20,8 @@
   --color-accent-light: rgba(236, 128, 84, 0.10);
   --color-accent-dark: #6E2E10;
 
-  --color-bg: #FFFCF7;          /* very light cream */
-  --color-bg-secondary: rgba(245, 232, 210, 0.35);   /* soft cream wash */
+  --color-bg: #FFFCF7;
+  --color-bg-secondary: rgba(245, 232, 210, 0.35);
   --color-bg-tertiary: rgba(245, 232, 210, 0.55);
 
   --color-text: #2D2620;
@@ -35,14 +35,13 @@
   --color-warning: #F59E0B;
   --color-danger:  #EF4444;
 
-  /* Sidebar / dark-surface palette — kept dark across themes for contrast,
-     but the dark tint shifts per theme so sidebar feels on-brand. */
-  --color-surface-dark: #1C1814;
-  --color-surface-dark-secondary: #2A2520;
+  /* Sidebar — amber/warm dark for brand identity */
+  --color-surface-dark: #3D2B10;
+  --color-surface-dark-secondary: #4A3518;
   --color-surface-dark-text: #FFF8F0;
-  --color-surface-dark-text-muted: #A8967E;
-  --color-surface-dark-text-dim: #78614E;
-  --color-surface-dark-border: rgba(245, 215, 160, 0.15);
+  --color-surface-dark-text-muted: #D4A76A;
+  --color-surface-dark-text-dim: #A8834E;
+  --color-surface-dark-border: rgba(245, 215, 160, 0.2);
 }
 
 /* Emerald + Pink — fresh, growth-focused, very light */
