@@ -299,6 +299,7 @@ main .rounded-lg[style*="background-color: rgb"]:hover {
 .liquidGlass-content {
   position: relative;
   z-index: 3;
+  color: rgba(255, 255, 255, 0.92);
 }
 
 /* Accent-tinted glass (driven by --accent CSS var) */
