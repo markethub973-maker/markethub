@@ -29,7 +29,7 @@ export const maxDuration = 30;
 const FROM_ADDRESS = "Eduard Bostan <alex@markethubpromo.com>";
 const REPLY_TO = "alex@markethubpromo.com";
 const BCC = "office@markethubpromo.com";
-const CALENDLY_LINK = "https://calendly.com/markethubpro/demo";
+const CALENDLY_LINK = "https://calendar.app.google/kmUnEepd8a3Nj1Mh7";
 const UNSUBSCRIBE_URL = "https://markethubpromo.com/unsubscribe";
 
 // ── Auth ────────────────────────────────────────────────────────────────────
