@@ -20,14 +20,9 @@ export default function ThemeCustomizer() {
 
   useEffect(() => {
     const p = pathname;
-    const host = typeof window !== "undefined" ? window.location.hostname : "";
-    const isPublic =
-      host === "get.markethubpromo.com" ||
-      PUBLIC_PATHS.some((pp) => p === pp) ||
-      p.startsWith("/offer") || p.startsWith("/l/") ||
-      p.startsWith("/features") || p.startsWith("/guides") ||
-      p.startsWith("/for/") || p.startsWith("/vs/");
-    setHide(isPublic);
+    // Hide on ALL pages except /dashboard/admin (admin-only tool)
+    const isAdmin = p.startsWith("/dashboard/admin");
+    setHide(!isAdmin);
   }, [pathname]);
 
   if (hide) return null;
