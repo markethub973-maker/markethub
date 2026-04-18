@@ -131,7 +131,7 @@ export default function YouTubePage() {
   const hasGoogle = true; // Google OAuth is always configured if GOOGLE_CLIENT_ID is set
 
   return (
-    <div className="min-h-screen p-4 md:p-6" style={{ backgroundColor: "#1C1814", color: "var(--color-text)" }}>
+    <div className="min-h-screen p-4 md:p-6" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
       <div className="max-w-5xl mx-auto space-y-5">
 
         {/* Header */}

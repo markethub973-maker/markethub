@@ -144,7 +144,7 @@ export default function CaptionsPage() {
   const selectedPlatform = platforms.find((p) => p.id === platform);
 
   return (
-    <div className="min-h-screen p-6" style={{ backgroundColor: "#13100D", color: "var(--color-bg)" }}>
+    <div className="min-h-screen p-6" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
