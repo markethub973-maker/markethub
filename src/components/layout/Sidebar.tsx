@@ -237,9 +237,21 @@ function UpgradeModal({
   onClose: () => void;
 }) {
   const { theme } = useTheme();
-  const sidebarTextColor = theme.textSidebar || "#FFF8F0";
+  // Read sidebar text from CSS var (set by ThemeProvider custom colors) or fall back to LiquidGlass theme
+  const [sidebarTextColor, setSidebarTextColor] = useState(theme.textSidebar || "#FFF8F0");
   const sidebarTextMuted = `color-mix(in srgb, ${sidebarTextColor} 60%, transparent)`;
   const sidebarTextDim = `color-mix(in srgb, ${sidebarTextColor} 40%, transparent)`;
+  useEffect(() => {
+    const checkCssVar = () => {
+      const cssVal = getComputedStyle(document.documentElement).getPropertyValue("--color-surface-dark-text").trim();
+      if (cssVal && cssVal !== "") setSidebarTextColor(cssVal);
+      else setSidebarTextColor(theme.textSidebar || "#FFF8F0");
+    };
+    checkCssVar();
+    const observer = new MutationObserver(checkCssVar);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "data-theme"] });
+    return () => observer.disconnect();
+  }, [theme.textSidebar]);
 
   const gate = getRouteGate(href);
   if (!gate) return null;
@@ -330,9 +342,21 @@ export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { theme } = useTheme();
-  const sidebarTextColor = theme.textSidebar || "#FFF8F0";
+  // Read sidebar text from CSS var (set by ThemeProvider custom colors) or fall back to LiquidGlass theme
+  const [sidebarTextColor, setSidebarTextColor] = useState(theme.textSidebar || "#FFF8F0");
   const sidebarTextMuted = `color-mix(in srgb, ${sidebarTextColor} 60%, transparent)`;
   const sidebarTextDim = `color-mix(in srgb, ${sidebarTextColor} 40%, transparent)`;
+  useEffect(() => {
+    const checkCssVar = () => {
+      const cssVal = getComputedStyle(document.documentElement).getPropertyValue("--color-surface-dark-text").trim();
+      if (cssVal && cssVal !== "") setSidebarTextColor(cssVal);
+      else setSidebarTextColor(theme.textSidebar || "#FFF8F0");
+    };
+    checkCssVar();
+    const observer = new MutationObserver(checkCssVar);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["style", "data-theme"] });
+    return () => observer.disconnect();
+  }, [theme.textSidebar]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
     new Set(["YouTube Analytics"])
