@@ -7,6 +7,7 @@
 
 import { useState } from "react";
 import Header from "@/components/layout/Header";
+import FileDropZone from "@/components/ui/FileDropZone";
 import {
   Mic2, Loader2, Sparkles, Copy, Check, Instagram, Linkedin, Twitter,
   Music2, Youtube, FileText,
@@ -94,18 +95,21 @@ export default function VideoCaptionPage() {
             </h2>
           </div>
 
+          <FileDropZone
+            accept="video/*,audio/*"
+            onFileUrl={(url) => setVideoUrl(url)}
+            currentUrl={videoUrl}
+            label="Drop video/audio here or click to upload"
+            folder="video-captions"
+          />
           <input
             type="url"
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="https://cdn.example.com/my-reel.mp4"
+            placeholder="Or paste video URL..."
             className="w-full rounded-lg px-3 py-2 text-sm"
-            style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
+            style={{ backgroundColor: "var(--color-bg)", border: "1px solid var(--color-border)", color: "var(--color-text)", outline: "none" }}
           />
-          <p className="text-[11px]" style={{ color: "#A8967E" }}>
-            Tip: drop it in Asset Library or Dropbox / Drive first, then paste the public URL here.
-            Supports mp4, mov, webm, mp3, m4a, wav.
-          </p>
 
           <div>
             <p className="text-xs font-semibold mb-2" style={{ color: "#78614E" }}>

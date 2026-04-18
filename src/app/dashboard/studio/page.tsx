@@ -1,5 +1,7 @@
 "use client";
 
+import FileDropZone from "@/components/ui/FileDropZone";
+
 /**
  * Content Studio — Wave 6 dashboard page.
  *
@@ -249,20 +251,27 @@ function VisualsTab() {
             marginBottom: 6,
           }}
         >
-          Source image URL
+          Source image
         </label>
+        <FileDropZone
+          accept="image/*"
+          onFileUrl={(url) => setSourceUrl(url)}
+          currentUrl={sourceUrl}
+          label="Drop image here or click to upload"
+          folder="studio-visuals"
+        />
         <input
           value={sourceUrl}
           onChange={(e) => setSourceUrl(e.target.value)}
-          placeholder="https://example.com/image.jpg (sau URL din Supabase Storage)"
+          placeholder="Or paste image URL..."
           style={{
             width: "100%",
             padding: "10px 12px",
-            border: "1px solid rgba(245,215,160,0.3)",
+            border: "1px solid var(--color-border, rgba(245,215,160,0.3))",
             borderRadius: 8,
             fontSize: 13,
             outline: "none",
-            background: "white",
+            background: "var(--color-bg)",
             color: "var(--color-text)",
             marginBottom: 12,
           }}

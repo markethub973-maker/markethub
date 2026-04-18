@@ -166,9 +166,13 @@ function AddAssetModal({
             </div>
           </div>
 
-          {/* Upload zone */}
+          {/* Upload zone with drag & drop */}
           {mode === "upload" && (
-            <div>
+            <div
+              onDragOver={e => { e.preventDefault(); e.currentTarget.style.borderColor = "var(--color-primary)"; e.currentTarget.style.backgroundColor = "rgba(245,158,11,0.05)"; }}
+              onDragLeave={e => { e.currentTarget.style.borderColor = "rgba(245,215,160,0.4)"; e.currentTarget.style.backgroundColor = "transparent"; }}
+              onDrop={e => { e.preventDefault(); e.currentTarget.style.borderColor = "rgba(245,215,160,0.4)"; e.currentTarget.style.backgroundColor = "transparent"; const f = e.dataTransfer.files[0]; if (f) setFile(f); }}
+            >
               <input ref={fileRef} type="file" className="hidden"
                 accept="image/*,video/*,application/pdf,text/*,application/zip"
                 onChange={e => setFile(e.target.files?.[0] ?? null)} />
@@ -184,7 +188,7 @@ function AddAssetModal({
                 ) : (
                   <>
                     <Upload className="w-6 h-6" style={{ color: "#C4AA8A" }} />
-                    <p className="text-sm" style={{ color: "#78614E" }}>Tap to select a file</p>
+                    <p className="text-sm" style={{ color: "#78614E" }}>Drop file here or tap to select</p>
                     <p className="text-xs" style={{ color: "#A8967E" }}>Max 50 MB — image, video, PDF, ZIP</p>
                   </>
                 )}
