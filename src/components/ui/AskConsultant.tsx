@@ -130,7 +130,7 @@ export default function AskConsultant() {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-4 left-56 z-[60] rounded-full shadow-lg transition-all hover:scale-105 flex items-center gap-2 px-4 py-3"
+          className="fixed bottom-4 left-2 z-[60] rounded-full shadow-lg transition-all hover:scale-105 flex items-center gap-2 px-4 py-3"
           style={{
             background: "linear-gradient(135deg, #8B5CF6, #6D28D9)",
             color: "white",
