@@ -124,7 +124,7 @@ export default function DemoPage() {
           </h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
             {FEATURES.map((f, i) => (
-              <GlassCard key={i} style={{ padding: 28 }}>
+              <GlassCard key={i} style={{ padding: 28, overflow: "hidden", wordBreak: "break-word" }}>
                 <f.icon size={28} color={D.accent} style={{ marginBottom: 12 }} />
                 <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8, color: D.heading }}>{f.title}</h3>
                 <p style={{ fontSize: 14, color: D.body, lineHeight: 1.6 }}>{f.desc}</p>
@@ -149,7 +149,7 @@ export default function DemoPage() {
               }}>
                 {s.n}
               </div>
-              <GlassCard style={{ flex: 1, padding: 20 }}>
+              <GlassCard style={{ flex: 1, padding: 20, overflow: "hidden", wordBreak: "break-word" }}>
                 <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4, color: D.heading }}>{s.title}</h3>
                 <p style={{ fontSize: 14, color: D.body, lineHeight: 1.6 }}>{s.desc}</p>
               </GlassCard>
