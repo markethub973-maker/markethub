@@ -1044,3 +1044,12 @@ select.input-glass {
   height: 100%; border-radius: 99px;
   transition: width 1.2s ease;
 }
+
+/* ── Global button size improvements ─────── */
+button, a.btn, [role="button"] {
+  min-height: 36px;
+}
+.btn-liquid-primary, .btn-liquid-secondary {
+  padding: 10px 20px;
+  font-size: 14px;
+}
