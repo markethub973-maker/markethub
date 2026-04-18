@@ -1,0 +1,21 @@
+name: Auto-Outreach (daily at 09:00 + 17:00)
+on:
+  schedule:
+    - cron: "0 9,17 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  outreach:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send outreach emails to new prospects
+        run: |
+          RESULT=$(curl -s -w "\n%{http_code}" -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: MarketHubCron/1.0" \
+            "https://markethubpromo.com/api/cron/auto-outreach" \
+            --max-time 50)
+          HTTP_CODE=$(echo "$RESULT" | tail -1)
+          BODY=$(echo "$RESULT" | head -n -1)
+          echo "HTTP: $HTTP_CODE"
+          echo "Response: $BODY"

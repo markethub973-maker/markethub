@@ -1,0 +1,21 @@
+name: Auto-Prospect (daily at 08:00 + 16:00)
+on:
+  schedule:
+    - cron: "0 8,16 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  prospect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find new prospects automatically
+        run: |
+          RESULT=$(curl -s -w "\n%{http_code}" -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: MarketHubCron/1.0" \
+            "https://markethubpromo.com/api/cron/auto-prospect" \
+            --max-time 50)
+          HTTP_CODE=$(echo "$RESULT" | tail -1)
+          BODY=$(echo "$RESULT" | head -n -1)
+          echo "HTTP: $HTTP_CODE"
+          echo "Response: $BODY"
