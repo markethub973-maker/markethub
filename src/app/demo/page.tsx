@@ -14,12 +14,12 @@ const glassBtn: React.CSSProperties = {
   textDecoration: "none",
   fontWeight: 700,
   fontSize: 16,
-  color: "#fff",
-  background: "rgba(245,158,11,0.15)",
+  color: "#1C1814",
+  background: "linear-gradient(135deg, rgba(245,158,11,0.85), rgba(217,119,6,0.85))",
   backdropFilter: "blur(12px)",
   WebkitBackdropFilter: "blur(12px)",
-  border: "1px solid rgba(245,158,11,0.4)",
-  boxShadow: "0 4px 20px rgba(245,158,11,0.2), inset 0 1px 0 rgba(255,255,255,0.2)",
+  border: "1px solid rgba(255,255,255,0.3)",
+  boxShadow: "0 4px 20px rgba(245,158,11,0.35), inset 0 1px 0 rgba(255,255,255,0.4)",
   transition: "all 0.3s ease",
 };
 
@@ -44,12 +44,12 @@ const glassBtnSmall: React.CSSProperties = {
   textDecoration: "none",
   fontWeight: 700,
   fontSize: 14,
-  color: "#fff",
-  background: "rgba(245,158,11,0.15)",
+  color: "#1C1814",
+  background: "linear-gradient(135deg, rgba(245,158,11,0.85), rgba(217,119,6,0.85))",
   backdropFilter: "blur(12px)",
   WebkitBackdropFilter: "blur(12px)",
-  border: "1px solid rgba(245,158,11,0.4)",
-  boxShadow: "0 2px 12px rgba(245,158,11,0.2), inset 0 1px 0 rgba(255,255,255,0.2)",
+  border: "1px solid rgba(255,255,255,0.3)",
+  boxShadow: "0 2px 12px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.4)",
 };
 
 const glassBtnCTA: React.CSSProperties = {
@@ -59,12 +59,12 @@ const glassBtnCTA: React.CSSProperties = {
   textDecoration: "none",
   fontWeight: 700,
   fontSize: 16,
-  color: "#fff",
-  background: "rgba(245,158,11,0.2)",
+  color: "#1C1814",
+  background: "linear-gradient(135deg, rgba(245,158,11,0.9), rgba(217,119,6,0.9))",
   backdropFilter: "blur(16px)",
   WebkitBackdropFilter: "blur(16px)",
-  border: "1px solid rgba(245,158,11,0.5)",
-  boxShadow: "0 6px 30px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.25)",
+  border: "1px solid rgba(255,255,255,0.35)",
+  boxShadow: "0 6px 30px rgba(245,158,11,0.4), inset 0 1px 0 rgba(255,255,255,0.45)",
 };
 
 const card: React.CSSProperties = {
