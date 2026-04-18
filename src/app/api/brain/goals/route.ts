@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
   if (error) {
     if (error.code === "42703") {
       return NextResponse.json(
-        { error: "Migration pending — add goals JSONB column to user_brand_voice", migration_pending: true },
+        { error: "This feature is being configured. Please try again shortly.", migration_pending: true },
         { status: 503 },
       );
     }

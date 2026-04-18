@@ -495,8 +495,8 @@ export default function ClientPortalPage() {
         {(d.ig_followers || 0) === 0 && (d.tt_followers || 0) === 0 && (
           <div className="text-center py-12">
             <p className="text-4xl mb-3">📊</p>
-            <p className="font-semibold" style={{ color: "var(--color-text)" }}>Analytics coming soon</p>
-            <p className="text-sm mt-1" style={{ color: "#78614E" }}>Data will appear here once the agency connects the accounts.</p>
+            <p className="font-semibold" style={{ color: "var(--color-text)" }}>No analytics data yet</p>
+            <p className="text-sm mt-1" style={{ color: "#78614E" }}>Data will appear here once the agency connects the social accounts.</p>
           </div>
         )}
 

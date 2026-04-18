@@ -25,7 +25,7 @@ export default function DocsCopyBlock({ label, code }: Props) {
     <div className="rounded-lg overflow-hidden" style={{ border: "1px solid rgba(0,0,0,0.06)" }}>
       <div
         className="flex items-center justify-between px-3 py-2"
-        style={{ backgroundColor: "#1C1814", color: "var(--color-bg)" }}
+        style={{ backgroundColor: "var(--color-surface-dark)", color: "var(--color-bg)" }}
       >
         <span
           className="text-[10px] font-bold uppercase tracking-widest"

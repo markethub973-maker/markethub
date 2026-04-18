@@ -101,7 +101,7 @@ export default function StrategyPage() {
       if (!res.ok) {
         if (d.migration_pending) {
           setMigrationPending(true);
-          throw new Error("Database migration needed — see banner above.");
+          throw new Error("This feature is being configured. Please try again later or contact support.");
         }
         throw new Error(d.error ?? "Failed");
       }

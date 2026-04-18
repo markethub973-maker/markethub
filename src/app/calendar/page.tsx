@@ -593,29 +593,10 @@ export default function CalendarPage() {
           </div>
         )}
 
-        {/* SQL migration notice for first-time setup */}
+        {/* Empty state for calendar */}
         {!loading && !error && posts.length === 0 && (
-          <div className="rounded-xl px-4 py-3 text-xs" style={{ backgroundColor: "rgba(99,102,241,0.06)", color: "#6366F1", border: "1px solid rgba(99,102,241,0.15)" }}>
-            <strong>First time?</strong> Run this SQL in Supabase to create the posts table:
-            <code className="block mt-1 text-[11px] bg-white/50 rounded p-2 font-mono" style={{ color: "var(--color-text)" }}>
-              {`CREATE TABLE IF NOT EXISTS scheduled_posts (
-  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  title text NOT NULL,
-  caption text DEFAULT '',
-  platform text DEFAULT 'instagram',
-  status text DEFAULT 'draft',
-  date date NOT NULL,
-  time time DEFAULT '12:00',
-  client text DEFAULT '',
-  hashtags text DEFAULT '',
-  created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
-);
-ALTER TABLE scheduled_posts ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Users manage own posts" ON scheduled_posts
-  FOR ALL USING (auth.uid() = user_id);`}
-            </code>
+          <div className="rounded-xl px-4 py-3 text-sm text-center" style={{ backgroundColor: "rgba(99,102,241,0.06)", color: "#6366F1", border: "1px solid rgba(99,102,241,0.15)" }}>
+            No scheduled posts yet. Click any day on the calendar above to create your first post.
           </div>
         )}
       </div>

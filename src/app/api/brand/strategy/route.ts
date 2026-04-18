@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     if (error.code === "42703") {
       return NextResponse.json(
         {
-          error: "Database migration pending — please run supabase-migrations/20260414_content_strategy.sql",
+          error: "This feature is being configured. Please try again shortly.",
           migration_pending: true,
         },
         { status: 503 },

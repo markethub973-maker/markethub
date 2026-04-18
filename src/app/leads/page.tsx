@@ -22,55 +22,6 @@ const FB = "#1877F2";
 const TT = "#010101";
 const GREEN = "#1DB954";
 
-const SQL_MIGRATION = `-- Run in Supabase → SQL Editor
-
-CREATE TABLE IF NOT EXISTS agent_runs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-  session_id TEXT,
-  goal TEXT,
-  step_label TEXT,
-  actor_type TEXT,
-  apify_run_id TEXT,
-  apify_actor_id TEXT,
-  status TEXT DEFAULT 'running',
-  input_params JSONB,
-  raw_data JSONB,
-  leads_count INTEGER DEFAULT 0,
-  started_at TIMESTAMPTZ DEFAULT now(),
-  finished_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
-CREATE TABLE IF NOT EXISTS research_leads (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-  agent_session_id TEXT,
-  goal TEXT,
-  source TEXT,
-  lead_type TEXT,
-  name TEXT,
-  category TEXT,
-  address TEXT,
-  city TEXT,
-  phone TEXT,
-  website TEXT,
-  email TEXT,
-  rating NUMERIC,
-  reviews_count INTEGER,
-  url TEXT,
-  extra_data JSONB,
-  contacted BOOLEAN DEFAULT false,
-  notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
-
-CREATE INDEX IF NOT EXISTS idx_leads_user ON research_leads(user_id);
-CREATE INDEX IF NOT EXISTS idx_leads_type ON research_leads(lead_type);
-CREATE INDEX IF NOT EXISTS idx_leads_session ON research_leads(agent_session_id);
-CREATE INDEX IF NOT EXISTS idx_runs_user ON agent_runs(user_id);
-CREATE INDEX IF NOT EXISTS idx_runs_apify ON agent_runs(apify_run_id);`;
-
 type Lead = {
   id: string;
   lead_type: string;
@@ -162,8 +113,6 @@ export default function LeadsPage() {
   const [filter, setFilter] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [copied, setCopied] = useState(false);
-  const [showSQL, setShowSQL] = useState(false);
   const [editingNote, setEditingNote] = useState<string | null>(null); // lead id
   const [noteText, setNoteText] = useState("");
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -416,12 +365,6 @@ export default function LeadsPage() {
     a.click(); URL.revokeObjectURL(url);
   };
 
-  const copySQL = () => {
-    navigator.clipboard.writeText(SQL_MIGRATION);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   const typeCounts = leads.reduce((acc, l) => {
     acc[l.lead_type] = (acc[l.lead_type] || 0) + 1;
     return acc;
@@ -435,38 +378,17 @@ export default function LeadsPage() {
       <Header title="Leads Database" subtitle="Contacts discovered by Marketing Agent — saved automatically via Apify Webhooks" />
       <div className="p-6 space-y-5">
 
-        {/* SQL Migration notice */}
+        {/* Setup notice — shown when database tables are not yet provisioned */}
         {tablesMissing && (
           <div className="rounded-2xl p-5 space-y-3"
             style={{ backgroundColor: "rgba(99,102,241,0.05)", border: "1px solid rgba(99,102,241,0.2)" }}>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <AlertCircle className="w-5 h-5" style={{ color: "#6366F1" }} />
-                <p className="font-bold" style={{ color: "var(--color-text)" }}>Tables don't exist yet in Supabase</p>
-              </div>
-              <div className="flex gap-2">
-                <button type="button" onClick={() => setShowSQL(s => !s)}
-                  className="text-xs px-3 py-1.5 rounded-lg font-semibold"
-                  style={{ backgroundColor: "rgba(99,102,241,0.1)", color: "#6366F1" }}>
-                  {showSQL ? "Hide SQL" : "View SQL"}
-                </button>
-                <button type="button" onClick={copySQL}
-                  className="flex items-center gap-1 text-xs px-3 py-1.5 rounded-lg font-semibold"
-                  style={{ backgroundColor: copied ? "rgba(29,185,84,0.1)" : "rgba(99,102,241,0.1)", color: copied ? GREEN : "#6366F1" }}>
-                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                  {copied ? "Copied!" : "Copy SQL"}
-                </button>
-              </div>
+            <div className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" style={{ color: "#6366F1" }} />
+              <p className="font-bold" style={{ color: "var(--color-text)" }}>Setup in progress</p>
             </div>
             <p className="text-sm" style={{ color: "#78614E" }}>
-              Run the SQL below in <strong>Supabase → SQL Editor</strong>, then refresh the page.
+              The Leads Database is being configured. Please contact support if this message persists.
             </p>
-            {showSQL && (
-              <pre className="text-xs rounded-xl p-4 overflow-x-auto"
-                style={{ backgroundColor: "#1C1814", color: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.1)" }}>
-                {SQL_MIGRATION}
-              </pre>
-            )}
           </div>
         )}
 

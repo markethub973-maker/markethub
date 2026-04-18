@@ -228,7 +228,53 @@ export const ROUTE_GATES: Record<string, RouteGate> = {
     description: "Calculate and demonstrate ROI of your services to clients.",
   },
 
+  "/captions": {
+    minPlan:    "lite",
+    label:      "AI Caption Generator",
+    description: "Generate platform-optimized captions with AI for Instagram, TikTok, LinkedIn, and more.",
+  },
+  "/competitors": {
+    minPlan:    "lite",
+    label:      "Competitor Analysis",
+    description: "Track competitor brands and benchmark your performance against industry leaders.",
+  },
+  "/videos": {
+    minPlan:    "lite",
+    label:      "Video Analytics",
+    description: "Discover trending videos and analyze viral content across platforms.",
+  },
+  "/alerts": {
+    minPlan:    "lite",
+    label:      "Smart Alerts",
+    description: "Get notified about engagement spikes, follower changes, and important events.",
+  },
+  "/studio": {
+    minPlan:    "lite",
+    label:      "AI Studio",
+    description: "Create images, videos, audio, and more with AI-powered creative tools.",
+  },
+  "/dashboard/reports": {
+    minPlan:    "lite",
+    label:      "Reports",
+    description: "Generate detailed performance reports for your social media accounts.",
+  },
+
   // ── Pro ($49) features ────────────────────────────────────────────────────
+  "/dashboard/crm": {
+    minPlan:    "pro",
+    label:      "CRM Pipeline",
+    description: "Manage client deals, track pipeline stages, and forecast revenue.",
+  },
+  "/dashboard/engagement": {
+    minPlan:    "pro",
+    label:      "Engagement Inbox",
+    description: "Unified inbox for comments, DMs, and mentions across all connected platforms.",
+  },
+  "/dashboard/reviews": {
+    minPlan:    "pro",
+    label:      "Review Management",
+    description: "Monitor and respond to reviews across Google, Facebook, and more.",
+  },
   "/ai-hub": {
     minPlan:    "pro",
     label:      "AI Hub",
