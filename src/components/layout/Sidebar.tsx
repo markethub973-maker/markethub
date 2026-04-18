@@ -586,19 +586,17 @@ export default function Sidebar() {
             <ThemeSwitcherInline />
           </div>
 
-          {/* Social Accounts — for regular users to connect their platforms */}
-          {!profile?.is_admin && (
-            <Link
-              href="/dashboard/settings"
-              className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-              style={{ color: sidebarTextMuted }}
-              onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-              onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
-            >
-              <Users className="w-4 h-4" />
-              Social Accounts
-            </Link>
-          )}
+          {/* Social Accounts — for ALL users */}
+          <Link
+            href="/dashboard/settings"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+            style={{ color: sidebarTextMuted }}
+            onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
+          >
+            <Users className="w-4 h-4" />
+            Social Accounts
+          </Link>
 
           {/* Admin-only links */}
           {profile?.is_admin && (
