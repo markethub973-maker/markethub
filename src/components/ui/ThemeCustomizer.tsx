@@ -20,9 +20,12 @@ export default function ThemeCustomizer() {
 
   useEffect(() => {
     const p = pathname;
-    // Hide on ALL pages except /dashboard/admin (admin-only tool)
-    const isAdmin = p.startsWith("/dashboard/admin");
-    setHide(!isAdmin);
+    // Show on dashboard pages (each user's theme is saved in their localStorage)
+    // Hide on public pages (prospects see the default brand)
+    const host = typeof window !== "undefined" ? window.location.hostname : "";
+    const isDashboard = p.startsWith("/dashboard") || p.startsWith("/studio");
+    const isPublicSite = host === "get.markethubpromo.com";
+    setHide(!isDashboard || isPublicSite);
   }, [pathname]);
 
   if (hide) return null;
@@ -44,7 +47,7 @@ export default function ThemeCustomizer() {
   };
 
   return (
-    <div className="fixed top-4 right-56 z-50">
+    <div className="fixed bottom-20 right-4 z-50">
       {/* Toggle button */}
       <button
         onClick={() => setOpen((v) => !v)}
@@ -73,7 +76,7 @@ export default function ThemeCustomizer() {
       {/* Panel */}
       {open && (
         <div
-          className="absolute top-14 right-0 w-72"
+          className="absolute bottom-14 right-0 w-72"
           style={{
             animation: "slideUpIn 0.2s ease-out",
           }}
