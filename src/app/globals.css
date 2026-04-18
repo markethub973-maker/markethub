@@ -398,15 +398,10 @@ main .rounded-lg[style*="background-color: rgb"]:hover {
 /* ── App Background ──────────────────────── */
 
 .app-bg {
-  background: linear-gradient(
-    135deg,
-    var(--bg1) 0%,
-    var(--bg2) 50%,
-    var(--bg3) 100%
-  );
+  background: var(--color-bg, linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 50%, var(--bg3) 100%));
   min-height: 100vh;
   position: relative;
-  color: var(--text-workspace, #2D2620);
+  color: var(--color-text, var(--text-workspace, #2D2620));
 }
 
 /* ── Ambient Blobs ───────────────────────── */
