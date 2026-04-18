@@ -180,7 +180,18 @@ export default function DemoPage() {
           </div>
         </section>
 
-        <footer style={{ textAlign: "center", padding: "32px 24px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <footer style={{ textAlign: "center", padding: "40px 24px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+          <div style={{ marginBottom: 16, display: "flex", gap: 24, justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="mailto:alex@markethubpromo.com" style={{ color: "#F59E0B", textDecoration: "none", fontSize: 14 }}>
+              alex@markethubpromo.com
+            </a>
+            <a href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: 14 }}>
+              Book a Call
+            </a>
+            <a href="/pricing" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: 14 }}>
+              Pricing
+            </a>
+          </div>
           <p style={{ fontSize: 11, color: "rgba(255,255,255,0.25)" }}>MarketHub Pro — Social Media Marketing for Businesses</p>
         </footer>
       </div>
