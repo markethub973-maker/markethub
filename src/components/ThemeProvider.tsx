@@ -31,6 +31,7 @@ export interface CustomColors {
   surface: string;   // hex — cards / secondary panel surface
   text: string;      // hex — main text color
   sidebar: string;   // hex — sidebar background color
+  sidebarText: string; // hex — sidebar text color
 }
 
 export interface ThemePreset {
@@ -69,7 +70,8 @@ const DEFAULT_CUSTOM: CustomColors = {
   bg: "#FFFCF7",
   surface: "#FFFFFF",
   text: "#2D2620",
-  sidebar: "#1C1814",
+  sidebar: "#3D2B10",
+  sidebarText: "#FFF8F0",
 };
 
 // ── helpers ────────────────────────────────────────────────────────────────
@@ -132,9 +134,10 @@ function applyCustomColors(colors: CustomColors) {
   const sidebarColor = isValidHex(colors.sidebar) ? colors.sidebar : darken(colors.primary, 70);
   root.style.setProperty("--color-surface-dark", sidebarColor);
   root.style.setProperty("--color-surface-dark-secondary", darken(sidebarColor, -15));
-  root.style.setProperty("--color-surface-dark-text", "#FFFCF7");
-  root.style.setProperty("--color-surface-dark-text-muted", rgba(colors.primary, 0.55));
-  root.style.setProperty("--color-surface-dark-text-dim", rgba(colors.primary, 0.35));
+  const sidebarTextColor = isValidHex((colors as Record<string, string>).sidebarText) ? (colors as Record<string, string>).sidebarText : "#FFF8F0";
+  root.style.setProperty("--color-surface-dark-text", sidebarTextColor);
+  root.style.setProperty("--color-surface-dark-text-muted", rgba(sidebarTextColor, 0.55));
+  root.style.setProperty("--color-surface-dark-text-dim", rgba(sidebarTextColor, 0.35));
   root.style.setProperty("--color-surface-dark-border", rgba(colors.primary, 0.15));
 }
 

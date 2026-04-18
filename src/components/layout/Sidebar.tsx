@@ -83,7 +83,8 @@ function ThemeSwitcherInline() {
             { label: "Background", key: "bg" as const },
             { label: "Surface", key: "surface" as const },
             { label: "Text", key: "text" as const },
-            { label: "Sidebar", key: "sidebar" as const },
+            { label: "Sidebar BG", key: "sidebar" as const },
+            { label: "Sidebar Text", key: "sidebarText" as const },
           ].map(c => (
             <div key={c.key} className="flex items-center gap-2 mb-1.5">
               <input type="color" value={displayColors[c.key]}
