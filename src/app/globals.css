@@ -601,27 +601,22 @@ main .rounded-lg[style*="background-color: rgb"]:hover {
 /* ── Input Glass ─────────────────────────── */
 
 .input-glass {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-bg-secondary, rgba(0, 0, 0, 0.03));
+  border: 1px solid var(--color-border, rgba(0, 0, 0, 0.15));
   border-radius: 8px;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--color-text, #2D2620);
   transition: all 0.2s;
+  padding: 10px 14px;
+  font-size: 14px;
+  width: 100%;
 }
 .input-glass:focus {
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
+  border-color: var(--color-primary, #F59E0B);
+  box-shadow: 0 0 0 3px var(--color-primary-light, rgba(245,158,11,0.15));
   outline: none;
 }
 .input-glass::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-}
-[data-theme-mode="light"] .input-glass {
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: rgba(0, 0, 0, 0.85);
-}
-[data-theme-mode="light"] .input-glass::placeholder {
-  color: rgba(0, 0, 0, 0.4);
+  color: var(--color-text-muted, rgba(0, 0, 0, 0.35));
 }
 
 /* ── Glass Table ─────────────────────────── */
@@ -668,13 +663,21 @@ main .rounded-lg[style*="background-color: rgb"]:hover {
 /* ── Text utilities for glass theme ──────── */
 
 .text-glass-primary {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text, rgba(0, 0, 0, 0.85));
 }
 .text-glass-secondary {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--color-text-secondary, rgba(0, 0, 0, 0.55));
 }
 .text-glass-muted {
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--color-text-muted, rgba(0, 0, 0, 0.4));
+}
+[data-theme="amber-dark"] .text-glass-primary,
+[data-theme="high-contrast"] .text-glass-primary {
+  color: rgba(255, 255, 255, 0.9);
+}
+[data-theme="amber-dark"] .text-glass-secondary,
+[data-theme="high-contrast"] .text-glass-secondary {
+  color: rgba(255, 255, 255, 0.6);
 }
 [data-theme-mode="light"] .text-glass-primary {
   color: rgba(0, 0, 0, 0.85);
