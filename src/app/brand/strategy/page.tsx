@@ -121,22 +121,7 @@ export default function StrategyPage() {
       <Header title="Content Strategy" subtitle="Who you write for + what you stand for — compounds with Brand Voice on every AI feature" />
 
       <main className="max-w-4xl mx-auto px-6 py-6 space-y-5">
-        {migrationPending && (
-          <div
-            className="rounded-xl p-4 flex items-start gap-3"
-            style={{ backgroundColor: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.25)" }}
-          >
-            <AlertTriangle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#EF4444" }} />
-            <div className="flex-1">
-              <p className="text-sm font-bold" style={{ color: "#B91C1C" }}>Database migration pending</p>
-              <p className="text-xs mt-1" style={{ color: "#78614E" }}>
-                Run <code className="font-mono" style={{ backgroundColor: "white", padding: "1px 4px", borderRadius: 2 }}>
-                  supabase-migrations/20260414_content_strategy.sql
-                </code> on your Supabase project before saving will work. The form will load and let you prepare content in the meantime.
-              </p>
-            </div>
-          </div>
-        )}
+        {/* Migration banner hidden from users — admin sees in console only */}
 
         {!loading && (
           <>
