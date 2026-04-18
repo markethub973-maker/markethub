@@ -254,7 +254,7 @@ export default function ThemeSwitcher() {
               <button
                 type="button"
                 onClick={() => {
-                  setCustomColors({ primary: "#F59E0B", accent: "#EC8054", bg: "#FFFCF7", surface: "#FFFFFF", text: "#2D2620", sidebar: "#1C1814" });
+                  setCustomColors({ primary: "#F59E0B", accent: "#EC8054", bg: "#FFFCF7", surface: "#FFFFFF", text: "#2D2620", sidebar: "#3D2B10", sidebarText: "#FFF8F0" });
                   setDraftPicked(true);
                 }}
                 className="text-[11px] flex items-center gap-1 underline"

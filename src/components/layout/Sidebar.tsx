@@ -44,6 +44,7 @@ function ThemeSwitcherInline() {
         surface: PRESET_COLORS[id].surface,
         text: PRESET_COLORS[id].text,
         sidebar: PRESET_COLORS[id].sidebar,
+        sidebarText: PRESET_COLORS[id].sidebarText,
       });
     }
   };

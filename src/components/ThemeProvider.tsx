@@ -134,7 +134,7 @@ function applyCustomColors(colors: CustomColors) {
   const sidebarColor = isValidHex(colors.sidebar) ? colors.sidebar : darken(colors.primary, 70);
   root.style.setProperty("--color-surface-dark", sidebarColor);
   root.style.setProperty("--color-surface-dark-secondary", darken(sidebarColor, -15));
-  const sidebarTextColor = isValidHex((colors as Record<string, string>).sidebarText) ? (colors as Record<string, string>).sidebarText : "#FFF8F0";
+  const sidebarTextColor = isValidHex((colors as unknown as Record<string, string>).sidebarText) ? (colors as unknown as Record<string, string>).sidebarText : "#FFF8F0";
   root.style.setProperty("--color-surface-dark-text", sidebarTextColor);
   root.style.setProperty("--color-surface-dark-text-muted", rgba(sidebarTextColor, 0.55));
   root.style.setProperty("--color-surface-dark-text-dim", rgba(sidebarTextColor, 0.35));
