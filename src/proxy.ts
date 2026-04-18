@@ -194,6 +194,7 @@ const PUBLIC_PATHS = [
   "/portal/",               // public client portal pages
   "/promo",                 // public marketing landing page
   "/demo",                  // public demo page for prospects
+  "/white-label",           // public white-label landing page
   "/features",              // marketing — feature catalog (Google-indexed)
   "/guides",                // marketing — how-to articles (Google-indexed)
   "/for/",                  // marketing — /for/<audience> use-case pages
