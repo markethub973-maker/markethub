@@ -1,7 +1,32 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Zap, Image, Calendar, Users, BarChart2, Sparkles } from "lucide-react";
-import GlassCard from "@/components/ui/GlassCard";
+
+function GlassBox({ children, style }: { children: React.ReactNode; style?: React.CSSProperties }) {
+  return (
+    <div
+      style={{
+        background: "rgba(255,255,255,0.06)",
+        backdropFilter: "blur(20px) saturate(1.4)",
+        WebkitBackdropFilter: "blur(20px) saturate(1.4)",
+        border: "1px solid rgba(255,255,255,0.12)",
+        borderRadius: 16,
+        padding: 28,
+        color: "rgba(255,255,255,0.95)",
+        position: "relative",
+        overflow: "hidden",
+        ...style,
+      }}
+    >
+      {/* Shine layer */}
+      <div style={{
+        position: "absolute", top: 0, left: 0, right: 0, height: "1px",
+        background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent)",
+      }} />
+      {children}
+    </div>
+  );
+}
 
 export const metadata: Metadata = {
   title: "Demo — MarketHub Pro",
@@ -120,11 +145,11 @@ export default function DemoPage() {
           </h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
             {FEATURES.map((f, i) => (
-              <GlassCard key={i} style={{ padding: 28 }}>
+              <GlassBox key={i} style={{ padding: 28 }}>
                 <f.icon size={28} color={D.accent} style={{ marginBottom: 12 }} />
                 <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8, color: D.heading }}>{f.title}</h3>
                 <p style={{ fontSize: 14, color: D.body, lineHeight: 1.6 }}>{f.desc}</p>
-              </GlassCard>
+              </GlassBox>
             ))}
           </div>
         </section>
@@ -145,17 +170,17 @@ export default function DemoPage() {
               }}>
                 {s.n}
               </div>
-              <GlassCard style={{ flex: 1, padding: 20 }}>
+              <GlassBox style={{ flex: 1, padding: 20 }}>
                 <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 4, color: D.heading }}>{s.title}</h3>
                 <p style={{ fontSize: 14, color: D.body, lineHeight: 1.6 }}>{s.desc}</p>
-              </GlassCard>
+              </GlassBox>
             </div>
           ))}
         </section>
 
         {/* CTA — Free Pilot */}
         <section style={{ textAlign: "center", padding: "60px 24px", maxWidth: 700, margin: "0 auto" }}>
-          <GlassCard style={{
+          <GlassBox style={{
             padding: 40,
             borderColor: "rgba(245,158,11,0.3)",
             background: "rgba(245,158,11,0.05)",
@@ -181,7 +206,7 @@ export default function DemoPage() {
             <p style={{ fontSize: 12, color: D.muted, marginTop: 12 }}>
               15-minute call. No credit card required. No obligation.
             </p>
-          </GlassCard>
+          </GlassBox>
         </section>
 
         {/* Footer */}
