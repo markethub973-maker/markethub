@@ -340,20 +340,27 @@ export default function Sidebar() {
   const [lockedModal, setLockedModal] = useState<string | null>(null);
 
   useEffect(() => {
-    // Admin sessions use cookie auth, not Supabase auth — grant enterprise access directly
-    if (typeof window !== "undefined" && localStorage.getItem("admin_authenticated") === "true") {
-      setProfile({ plan: "enterprise", subscription_plan: "enterprise", is_admin: true });
-      return;
-    }
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return;
+      if (!user) {
+        // No Supabase user — check admin cookie session (tunnel login)
+        if (typeof window !== "undefined" && localStorage.getItem("admin_authenticated") === "true") {
+          setProfile({ plan: "enterprise", subscription_plan: "enterprise", is_admin: true });
+        }
+        return;
+      }
+      // Regular user — load profile from DB
       const { data } = await supabase
         .from("profiles")
         .select("plan, is_admin")
         .eq("id", user.id)
         .single();
-      if (data) setProfile({ ...data, subscription_plan: data.plan });
+      if (data) {
+        setProfile({ ...data, subscription_plan: data.plan });
+      } else {
+        // No profile row yet — new user, default non-admin
+        setProfile({ plan: "free_test", subscription_plan: "free_test", is_admin: false });
+      }
     });
   }, []);
 
