@@ -367,22 +367,19 @@ export default function Sidebar() {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) {
-        // No Supabase user — check admin cookie session (tunnel login)
-        if (typeof window !== "undefined" && localStorage.getItem("admin_authenticated") === "true") {
-          setProfile({ plan: "enterprise", subscription_plan: "enterprise", is_admin: true });
-        }
+        // No user session — default non-admin
+        setProfile({ plan: "free_test", subscription_plan: "free_test", is_admin: false });
         return;
       }
-      // Regular user — load profile from DB
+      // Load from DB — ONLY DB determines admin, never localStorage
       const { data } = await supabase
         .from("profiles")
         .select("plan, is_admin")
         .eq("id", user.id)
         .single();
       if (data) {
-        setProfile({ ...data, subscription_plan: data.plan });
+        setProfile({ ...data, subscription_plan: data.plan, is_admin: data.is_admin === true });
       } else {
-        // No profile row yet — new user, default non-admin
         setProfile({ plan: "free_test", subscription_plan: "free_test", is_admin: false });
       }
     });
