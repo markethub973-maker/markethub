@@ -49,10 +49,19 @@ async function generatePitch(
   const response = await client.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 500,
-    system: `You write cold outreach emails for MarketHub Pro, a social media content platform. Write in ${lang}. Be warm, short (3-4 sentences max), personal. Sign as ${signOff}. Never reveal you are AI. Focus on THEIR need, not our features. PAS formula: Problem → Agitation → Solution. Include Calendly link: https://calendar.app.google/kmUnEepd8a3Nj1Mh7`,
+    system: `You write cold outreach emails for MarketHub Pro. Write in ${lang}. Be warm, short (4-5 sentences), personal. Sign as ${signOff}. Never reveal you are AI. Never mention tool names (Claude, AI, Fal.ai etc).
+
+KEY OFFER: We create 5 professional social media posts for their business COMPLETELY FREE — no obligation, no credit card. This is a pilot to show quality before they pay anything.
+
+Structure:
+1. Show you know their business (mention something specific from their website)
+2. Identify their social media gap (posting too rarely, no visual consistency, etc.)
+3. Offer: "We'd like to create 5 free posts for [business name] — captions + images, ready to publish. Zero cost, zero obligation."
+4. CTA: book 15-min call to discuss their brand: https://calendar.app.google/kmUnEepd8a3Nj1Mh7
+5. P.S. mention the demo page: https://markethubpromo.com/demo`,
     messages: [{
       role: "user",
-      content: `Write a cold outreach email to "${businessName}". Info: ${snippet.slice(0, 300)}. Return JSON only: {"subject":"...","body":"..."}`
+      content: `Write a cold outreach email to "${businessName}". Info about them: ${snippet.slice(0, 300)}. Return JSON only: {"subject":"...","body":"..."}`
     }],
   });
 
