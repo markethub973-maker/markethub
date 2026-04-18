@@ -8,6 +8,7 @@ import AssetPicker from "@/components/calendar/AssetPicker";
 import HashtagSuggester from "@/components/calendar/HashtagSuggester";
 import CaptionVariants from "@/components/calendar/CaptionVariants";
 import AltTextButton from "@/components/calendar/AltTextButton";
+import FileDropZone from "@/components/ui/FileDropZone";
 import EngagementPredictor from "@/components/calendar/EngagementPredictor";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
@@ -536,10 +537,17 @@ export default function CalendarPage() {
                       />
                     </div>
                   </div>
-                  <input type="url" placeholder="https://cdn.example.com/image.jpg" value={form.image_url}
+                  <FileDropZone
+                    accept="image/*,video/*"
+                    onFileUrl={(url) => setForm(f => ({ ...f, image_url: url }))}
+                    currentUrl={form.image_url}
+                    label="Drop image/video or click to upload"
+                    folder="calendar-media"
+                  />
+                  <input type="url" placeholder="Or paste URL..." value={form.image_url}
                     onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
+                    style={{ border: "1px solid var(--color-border)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
                   {form.image_url && (
                     <div className="mt-2 flex items-start gap-2">
                       <img src={form.image_url} alt="Preview" className="rounded-lg max-h-32 object-cover"

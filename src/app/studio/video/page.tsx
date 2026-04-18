@@ -7,6 +7,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Header from "@/components/layout/Header";
+import FileDropZone from "@/components/ui/FileDropZone";
 import { Film, Sparkles, Loader2, Download, Clock, AlertCircle, Wand2, Image as ImageIcon } from "lucide-react";
 
 type Aspect = "9:16" | "16:9" | "1:1";
@@ -154,17 +155,24 @@ export default function AiVideoStudioPage() {
           {mode === "image-to-video" && (
             <>
               <label className="block text-[10px] font-bold uppercase tracking-wider mb-1" style={{ color: "#78614E" }}>
-                Source image URL
+                Source image
               </label>
+              <FileDropZone
+                accept="image/*"
+                onFileUrl={(url) => setSourceImage(url)}
+                currentUrl={sourceImage}
+                label="Drop image here or click to upload"
+                folder="video-sources"
+              />
               <input
                 type="url"
                 value={sourceImage}
                 onChange={(e) => setSourceImage(e.target.value)}
-                placeholder="https://..."
+                placeholder="Or paste image URL here..."
                 className="w-full rounded-lg px-3 py-2 text-sm mb-4"
                 style={{
                   backgroundColor: "var(--color-bg)",
-                  border: "1px solid rgba(245,215,160,0.4)",
+                  border: "1px solid var(--color-border)",
                   color: "var(--color-text)",
                   outline: "none",
                 }}
