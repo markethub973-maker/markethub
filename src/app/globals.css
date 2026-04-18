@@ -452,16 +452,9 @@ main .rounded-lg[style*="background-color: rgb"]:hover {
 /* ── Sidebar Glass ───────────────────────── */
 
 .sidebar-glass {
-  background: color-mix(in srgb, var(--bg1) 75%, transparent);
-  backdrop-filter: blur(32px) saturate(160%);
-  -webkit-backdrop-filter: blur(32px) saturate(160%);
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
-  color: var(--text-sidebar, #FFF8F0);
-}
-[data-theme-mode="light"] .sidebar-glass {
-  background: color-mix(in srgb, var(--bg1) 85%, transparent);
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
-  color: var(--text-sidebar, #2D2620);
+  background: var(--color-surface-dark, #1C1814);
+  border-right: 1px solid var(--color-surface-dark-border, rgba(245, 215, 160, 0.15));
+  color: var(--color-surface-dark-text, #FFF8F0);
 }
 
 /* ── Nav Active State ────────────────────── */

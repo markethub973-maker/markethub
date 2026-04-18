@@ -16,8 +16,10 @@ import { useTheme } from "@/context/ThemeContext";
 import { useTheme as useOldTheme, THEMES as OLD_THEMES } from "@/components/ThemeProvider";
 
 function ThemeSwitcherInline() {
-  const { theme, setTheme } = useOldTheme();
+  const { theme: oldTheme, setTheme: setOldTheme, customColors, setCustomColors } = useOldTheme();
+  const { theme: glassTheme, setTheme: setGlassTheme, themes: glassThemes } = useTheme();
   const [open, setOpen] = useState(false);
+
   return (
     <div className="relative">
       <button
@@ -29,16 +31,58 @@ function ThemeSwitcherInline() {
         Theme
       </button>
       {open && (
-        <div className="absolute left-full bottom-0 ml-2 p-2 rounded-lg w-48 z-50"
-          style={{ background: "#1C1814", border: "1px solid rgba(245,215,160,0.15)" }}>
-          {OLD_THEMES.filter(t => !t.isCustom).map(t => (
-            <button key={t.id} onClick={() => { setTheme(t.id); setOpen(false); }}
-              className="flex items-center gap-2 w-full px-3 py-2 rounded text-xs text-left"
-              style={{ color: theme === t.id ? "#F59E0B" : "rgba(255,248,240,0.7)", background: theme === t.id ? "rgba(245,158,11,0.1)" : "transparent" }}>
-              <div className="w-3 h-3 rounded-full" style={{ background: t.primary }} />
-              {t.label}
-            </button>
+        <div className="absolute left-full bottom-0 ml-2 p-3 rounded-xl w-72 z-50 max-h-[80vh] overflow-y-auto"
+          style={{ background: "#1C1814", border: "1px solid rgba(245,215,160,0.15)", boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
+
+          {/* Presets */}
+          <p className="text-xs font-bold mb-2" style={{ color: "#D4A76A" }}>Presets</p>
+          <div className="grid grid-cols-3 gap-1 mb-3">
+            {OLD_THEMES.filter(t => !t.isCustom).map(t => (
+              <button key={t.id} onClick={() => setOldTheme(t.id)}
+                className="flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-[10px]"
+                style={{ color: oldTheme === t.id ? "#F59E0B" : "rgba(255,248,240,0.6)", background: oldTheme === t.id ? "rgba(245,158,11,0.1)" : "transparent", border: oldTheme === t.id ? "1px solid rgba(245,158,11,0.3)" : "1px solid transparent" }}>
+                <div className="w-4 h-4 rounded-full" style={{ background: t.primary }} />
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Glass Theme Presets */}
+          <p className="text-xs font-bold mb-2" style={{ color: "#D4A76A" }}>Background</p>
+          <div className="grid grid-cols-3 gap-1 mb-3">
+            {glassThemes.map(t => (
+              <button key={t.name} onClick={() => setGlassTheme(t)}
+                className="flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-[10px]"
+                style={{ color: glassTheme.name === t.name ? "#F59E0B" : "rgba(255,248,240,0.6)", background: glassTheme.name === t.name ? "rgba(245,158,11,0.1)" : "transparent", border: glassTheme.name === t.name ? "1px solid rgba(245,158,11,0.3)" : "1px solid transparent" }}>
+                <div className="w-4 h-4 rounded-full" style={{ background: t.accent }} />
+                {t.name.slice(0,10)}
+              </button>
+            ))}
+          </div>
+
+          {/* Custom Colors */}
+          <p className="text-xs font-bold mb-2" style={{ color: "#D4A76A" }}>Customize</p>
+          {[
+            { label: "Primary", key: "primary" as const, val: customColors.primary },
+            { label: "Accent", key: "accent" as const, val: customColors.accent },
+            { label: "Background", key: "bg" as const, val: customColors.bg },
+            { label: "Surface", key: "surface" as const, val: customColors.surface },
+            { label: "Text", key: "text" as const, val: customColors.text },
+            { label: "Sidebar", key: "sidebar" as const, val: customColors.sidebar },
+          ].map(c => (
+            <div key={c.key} className="flex items-center gap-2 mb-1.5">
+              <input type="color" value={c.val}
+                onChange={e => { setOldTheme("custom"); setCustomColors({ ...customColors, [c.key]: e.target.value }); }}
+                className="w-6 h-6 rounded cursor-pointer border-0" style={{ background: "transparent" }} />
+              <span className="text-xs" style={{ color: "rgba(255,248,240,0.7)" }}>{c.label}</span>
+              <span className="text-[10px] ml-auto" style={{ color: "rgba(255,248,240,0.4)" }}>{c.val}</span>
+            </div>
           ))}
+
+          <button onClick={() => setOpen(false)} className="w-full mt-2 py-1.5 rounded-lg text-xs font-medium"
+            style={{ background: "rgba(245,158,11,0.15)", color: "#F59E0B" }}>
+            Close
+          </button>
         </div>
       )}
     </div>
