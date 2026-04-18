@@ -193,6 +193,7 @@ const PUBLIC_PATHS = [
   "/l/",                    // public Link in Bio pages
   "/portal/",               // public client portal pages
   "/promo",                 // public marketing landing page
+  "/demo",                  // public demo page for prospects
   "/features",              // marketing — feature catalog (Google-indexed)
   "/guides",                // marketing — how-to articles (Google-indexed)
   "/for/",                  // marketing — /for/<audience> use-case pages
@@ -333,8 +334,9 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/brain-private/pipeline";
       return NextResponse.rewrite(url);
     }
-    // Demo generator (sub-page of dashboard)
-    if (pathname === "/demo" || pathname === "/brain-private/demo") {
+    // Demo generator (sub-page of dashboard) — only brain-private path
+    // /demo is now a PUBLIC page (src/app/demo/page.tsx), don't rewrite it
+    if (pathname === "/brain-private/demo") {
       url.pathname = "/brain-private/demo";
       return NextResponse.rewrite(url);
     }
