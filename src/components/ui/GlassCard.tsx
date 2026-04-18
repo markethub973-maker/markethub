@@ -53,7 +53,7 @@ export default function GlassCard({
     );
   }
 
-  // Clean solid card on dashboard
+  // Clean solid card on dashboard — respects theme colors
   return (
     <Tag
       className={`${rounded} ${className}`}
@@ -61,9 +61,9 @@ export default function GlassCard({
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
       style={{
-        background: "rgba(255, 255, 255, 0.06)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        color: "rgba(255, 255, 255, 0.92)",
+        background: "rgba(0, 0, 0, 0.03)",
+        border: "1px solid rgba(0, 0, 0, 0.08)",
+        color: "var(--text-workspace, #2D2620)",
         ...style,
       }}
     >
