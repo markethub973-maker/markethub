@@ -30,16 +30,16 @@ export const THEMES: ThemeConfig[] = [
   // ── DEFAULT: existing MarketHub Pro brand colors (light cream + amber) ──
   {
     name: "MarketHub Pro",
-    bg1: "#FFFCF7",
-    bg2: "#F5E8D2",
-    bg3: "#FFF8F0",
+    bg1: "#0d0b1e",
+    bg2: "#1a1333",
+    bg3: "#0a1628",
     accent: "#F59E0B",
     accentGlow: "rgba(245,158,11,0.15)",
     blob1: "rgba(245,158,11,0.08)",
     blob2: "rgba(236,128,84,0.06)",
     blob3: "rgba(16,185,129,0.05)",
     textSidebar: "#FFF8F0",
-    textWorkspace: "#2D2620",
+    textWorkspace: "rgba(255, 255, 255, 0.9)",
   },
   // ── Dark alternates (optional — user picks via ThemeCustomizer) ──
   {
