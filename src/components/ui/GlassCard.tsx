@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 
 interface GlassCardProps {
   children: ReactNode;
@@ -13,17 +14,13 @@ interface GlassCardProps {
   style?: React.CSSProperties;
 }
 
+// Dark public pages where glass effect looks good
+const GLASS_PATHS = ["/demo", "/promo", "/pricing", "/features", "/white-label", "/for/"];
+
 /**
- * 4-layer Liquid Glass card component.
- *
- * Layers:
- *   1. wrapper (isolation context + border-radius clip)
- *   2. effect (backdrop-filter blur + SVG distortion)
- *   3. tint (semi-transparent background + border)
- *   4. shine (top specular highlight)
- *   5. content (children)
- *
- * Set accent={true} for accent-tinted glass (uses --accent CSS var).
+ * Smart card component:
+ * - On dark public pages → full Liquid Glass (4 layers)
+ * - On dashboard → clean solid card (readable, no artifacts)
  */
 export default function GlassCard({
   children,
@@ -35,18 +32,42 @@ export default function GlassCard({
   as: Tag = "div",
   style,
 }: GlassCardProps) {
+  const pathname = usePathname();
+  const useGlass = GLASS_PATHS.some((p) => pathname?.startsWith(p));
+
+  if (useGlass) {
+    // Full Liquid Glass on dark public pages
+    return (
+      <Tag
+        className={`liquidGlass-wrapper ${accent ? "glass-accent" : ""} ${rounded} ${className}`}
+        onClick={onClick}
+        role={onClick ? "button" : undefined}
+        tabIndex={onClick ? 0 : undefined}
+        style={style}
+      >
+        <div className="liquidGlass-effect" />
+        <div className="liquidGlass-tint" />
+        <div className="liquidGlass-shine" />
+        <div className={`liquidGlass-content ${padding}`}>{children}</div>
+      </Tag>
+    );
+  }
+
+  // Clean solid card on dashboard
   return (
     <Tag
-      className={`liquidGlass-wrapper ${accent ? "glass-accent" : ""} ${rounded} ${className}`}
+      className={`${rounded} ${className}`}
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
-      style={style}
+      style={{
+        background: "rgba(255, 255, 255, 0.06)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        color: "rgba(255, 255, 255, 0.92)",
+        ...style,
+      }}
     >
-      <div className="liquidGlass-effect" />
-      <div className="liquidGlass-tint" />
-      <div className="liquidGlass-shine" />
-      <div className={`liquidGlass-content ${padding}`}>{children}</div>
+      <div className={padding}>{children}</div>
     </Tag>
   );
 }
