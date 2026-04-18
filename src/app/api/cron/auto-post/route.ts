@@ -8,6 +8,9 @@ import {
   publishToLinkedIn,
   publishToFacebook,
   publishToInstagram,
+  publishToInstagramReels,
+  publishToInstagramCarousel,
+  publishToTikTok,
   type ScheduledPostRow,
   type PublishResult,
 } from "@/lib/publishers";
@@ -191,13 +194,33 @@ export async function GET(req: NextRequest) {
       } else if (platform === "facebook") {
         result = await publishToFacebook(post, profile?.fb_page_id ?? null, profile?.fb_page_access_token ?? null);
       } else if (platform === "instagram") {
-        // Prefer per-row instagram_connections token, fall back to legacy
-        // profiles columns for users whose connections predate the multi-
-        // account schema refactor.
         const igPrimary = igPrimaryByUser.get(post.user_id);
         const igUserId = igPrimary?.igId ?? profile?.instagram_user_id ?? null;
         const igToken = igPrimary?.token ?? profile?.instagram_access_token ?? null;
         result = await publishToInstagram(post, igUserId, igToken);
+      } else if (platform === "instagram_reels") {
+        const igPrimary = igPrimaryByUser.get(post.user_id);
+        const igUserId = igPrimary?.igId ?? profile?.instagram_user_id ?? null;
+        const igToken = igPrimary?.token ?? profile?.instagram_access_token ?? null;
+        const videoUrl = post.image_url ?? "";
+        result = await publishToInstagramReels(post, igUserId, igToken, videoUrl);
+      } else if (platform === "instagram_carousel") {
+        const igPrimary = igPrimaryByUser.get(post.user_id);
+        const igUserId = igPrimary?.igId ?? profile?.instagram_user_id ?? null;
+        const igToken = igPrimary?.token ?? profile?.instagram_access_token ?? null;
+        const imageUrls = post.image_url?.split(",").map(u => u.trim()).filter(Boolean) ?? [];
+        result = await publishToInstagramCarousel(post, igUserId, igToken, imageUrls);
+      } else if (platform === "tiktok") {
+        // Get TikTok token from tiktok_connections
+        const { data: tkConn } = await svc
+          .from("tiktok_connections")
+          .select("access_token")
+          .eq("user_id", post.user_id)
+          .eq("is_primary", true)
+          .maybeSingle();
+        const tkToken = (tkConn?.access_token as string | null) ?? null;
+        const videoUrl = post.image_url ?? "";
+        result = await publishToTikTok(post, tkToken, videoUrl);
       }
     } catch (err) {
       result = { ok: false, error: err instanceof Error ? err.message : String(err) };

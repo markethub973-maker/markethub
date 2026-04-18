@@ -246,3 +246,221 @@ export async function publishToInstagram(
   }
   return { ok: true, external_id: publishData.id };
 }
+
+// ── Instagram Reels (Video) ──────────────────────────────────────────────
+export async function publishToInstagramReels(
+  post: ScheduledPostRow,
+  igUserId: string | null,
+  igAccessToken: string | null,
+  videoUrl: string
+): Promise<PublishResult> {
+  if (!igUserId || !igAccessToken) {
+    return { ok: false, error: "Instagram not connected." };
+  }
+  if (!videoUrl) {
+    return { ok: false, error: "Video URL required for Reels." };
+  }
+
+  const text = buildPostText(post);
+
+  // Step 1: create Reels container
+  const createRes = await fetch(
+    `https://graph.facebook.com/v22.0/${igUserId}/media`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        media_type: "REELS",
+        video_url: videoUrl,
+        caption: text,
+        share_to_feed: true,
+        access_token: igAccessToken,
+      }),
+    }
+  );
+  const createData = await createRes.json();
+  if (!createData.id) {
+    return { ok: false, error: createData.error?.message || "Failed to create Reels container" };
+  }
+
+  // Poll status until FINISHED (video processing takes time)
+  let ready = false;
+  for (let i = 0; i < 30; i++) {
+    await new Promise(r => setTimeout(r, 3000));
+    const statusRes = await fetch(
+      `https://graph.facebook.com/v22.0/${createData.id}?fields=status_code&access_token=${igAccessToken}`
+    );
+    const statusData = await statusRes.json();
+    if (statusData.status_code === "FINISHED") { ready = true; break; }
+    if (statusData.status_code === "ERROR") {
+      return { ok: false, error: "Instagram rejected the video" };
+    }
+  }
+  if (!ready) return { ok: false, error: "Video processing timeout (90s)" };
+
+  // Step 2: publish
+  const publishRes = await fetch(
+    `https://graph.facebook.com/v22.0/${igUserId}/media_publish`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ creation_id: createData.id, access_token: igAccessToken }),
+    }
+  );
+  const publishData = await publishRes.json();
+  if (!publishData.id) {
+    return { ok: false, error: publishData.error?.message || "Failed to publish Reels" };
+  }
+  return { ok: true, external_id: publishData.id };
+}
+
+// ── Instagram Carousel ───────────────────────────────────────────────────
+export async function publishToInstagramCarousel(
+  post: ScheduledPostRow,
+  igUserId: string | null,
+  igAccessToken: string | null,
+  imageUrls: string[]
+): Promise<PublishResult> {
+  if (!igUserId || !igAccessToken) {
+    return { ok: false, error: "Instagram not connected." };
+  }
+  if (!imageUrls.length || imageUrls.length < 2) {
+    return { ok: false, error: "Carousel requires at least 2 images." };
+  }
+
+  const text = buildPostText(post);
+
+  // Step 1: create child containers for each image
+  const childIds: string[] = [];
+  for (const url of imageUrls.slice(0, 10)) {
+    const childRes = await fetch(
+      `https://graph.facebook.com/v22.0/${igUserId}/media`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          image_url: url,
+          is_carousel_item: true,
+          access_token: igAccessToken,
+        }),
+      }
+    );
+    const childData = await childRes.json();
+    if (!childData.id) {
+      return { ok: false, error: `Failed to create carousel item: ${childData.error?.message}` };
+    }
+    childIds.push(childData.id);
+  }
+
+  await new Promise(r => setTimeout(r, 2000));
+
+  // Step 2: create carousel container
+  const carouselRes = await fetch(
+    `https://graph.facebook.com/v22.0/${igUserId}/media`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        media_type: "CAROUSEL",
+        children: childIds.join(","),
+        caption: text,
+        access_token: igAccessToken,
+      }),
+    }
+  );
+  const carouselData = await carouselRes.json();
+  if (!carouselData.id) {
+    return { ok: false, error: carouselData.error?.message || "Failed to create carousel" };
+  }
+
+  await new Promise(r => setTimeout(r, 2000));
+
+  // Step 3: publish
+  const publishRes = await fetch(
+    `https://graph.facebook.com/v22.0/${igUserId}/media_publish`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ creation_id: carouselData.id, access_token: igAccessToken }),
+    }
+  );
+  const publishData = await publishRes.json();
+  if (!publishData.id) {
+    return { ok: false, error: publishData.error?.message || "Failed to publish carousel" };
+  }
+  return { ok: true, external_id: publishData.id };
+}
+
+// ── TikTok ───────────────────────────────────────────────────────────────
+// Uses TikTok Content Posting API v2 — "direct post" flow.
+// Requires video URL (mp4). TikTok does NOT support static image posts via API.
+// App must have video.publish scope approved in TikTok Developer Portal.
+export async function publishToTikTok(
+  post: ScheduledPostRow,
+  tiktokAccessToken: string | null,
+  videoUrl: string
+): Promise<PublishResult> {
+  if (!tiktokAccessToken) {
+    return { ok: false, error: "TikTok not connected. Go to Settings → Integrations." };
+  }
+  if (!videoUrl) {
+    return { ok: false, error: "TikTok requires a video URL (mp4)." };
+  }
+
+  const text = buildPostText(post);
+
+  // Step 1: Initialize video publish
+  const initRes = await fetch("https://open.tiktokapis.com/v2/post/publish/video/init/", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${tiktokAccessToken}`,
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    body: JSON.stringify({
+      post_info: {
+        title: text.slice(0, 150),
+        privacy_level: "PUBLIC_TO_EVERYONE",
+        disable_duet: false,
+        disable_comment: false,
+        disable_stitch: false,
+      },
+      source_info: {
+        source: "PULL_FROM_URL",
+        video_url: videoUrl,
+      },
+    }),
+  });
+
+  const initData = await initRes.json();
+  if (initData.error?.code) {
+    return { ok: false, error: `TikTok error: ${initData.error.message || initData.error.code}` };
+  }
+
+  const publishId = initData.data?.publish_id;
+  if (!publishId) {
+    return { ok: false, error: "TikTok did not return a publish_id" };
+  }
+
+  // Step 2: Poll status until complete
+  for (let i = 0; i < 20; i++) {
+    await new Promise(r => setTimeout(r, 5000));
+    const statusRes = await fetch("https://open.tiktokapis.com/v2/post/publish/status/fetch/", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${tiktokAccessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ publish_id: publishId }),
+    });
+    const statusData = await statusRes.json();
+    const status = statusData.data?.status;
+    if (status === "PUBLISH_COMPLETE") {
+      return { ok: true, external_id: publishId };
+    }
+    if (status === "FAILED") {
+      return { ok: false, error: `TikTok publish failed: ${statusData.data?.fail_reason || "unknown"}` };
+    }
+  }
+
+  return { ok: false, error: "TikTok publish timeout (100s)" };
+}
