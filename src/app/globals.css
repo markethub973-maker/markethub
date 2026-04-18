@@ -299,7 +299,40 @@ main .rounded-lg[style*="background-color: rgb"]:hover {
 .liquidGlass-content {
   position: relative;
   z-index: 3;
-  color: rgba(255, 255, 255, 0.92);
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+.liquidGlass-content h1,
+.liquidGlass-content h2,
+.liquidGlass-content h3,
+.liquidGlass-content h4,
+.liquidGlass-content h5,
+.liquidGlass-content p,
+.liquidGlass-content span,
+.liquidGlass-content div,
+.liquidGlass-content label,
+.liquidGlass-content td,
+.liquidGlass-content th,
+.liquidGlass-content li {
+  color: inherit !important;
+}
+.liquidGlass-content .text-gray-900,
+.liquidGlass-content .text-gray-800,
+.liquidGlass-content .text-gray-700,
+.liquidGlass-content .text-black,
+.liquidGlass-content .text-stone-900,
+.liquidGlass-content .text-stone-800,
+.liquidGlass-content .text-stone-700,
+.liquidGlass-content .text-neutral-900,
+.liquidGlass-content .text-neutral-800 {
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+.liquidGlass-content .text-gray-500,
+.liquidGlass-content .text-gray-400,
+.liquidGlass-content .text-stone-500,
+.liquidGlass-content .text-neutral-500,
+.liquidGlass-content .text-gray-600,
+.liquidGlass-content .text-stone-600 {
+  color: rgba(255, 255, 255, 0.55) !important;
 }
 
 /* Accent-tinted glass (driven by --accent CSS var) */
