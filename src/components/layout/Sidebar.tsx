@@ -549,12 +549,26 @@ export default function Sidebar() {
 
         {/* Bottom */}
         <div className="px-3 py-4" style={{ borderTop: "1px solid rgba(245,215,160,0.1)" }}>
-          {/* Theme switcher — inline in sidebar */}
+          {/* Theme — for all users */}
           <div className="px-1 py-1">
             <ThemeSwitcherInline />
           </div>
 
-          {/* Admin-only links — hidden from regular users */}
+          {/* Social Accounts — for regular users to connect their platforms */}
+          {!profile?.is_admin && (
+            <Link
+              href="/dashboard/settings"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+              style={{ color: sidebarTextMuted }}
+              onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
+            >
+              <Users className="w-4 h-4" />
+              Social Accounts
+            </Link>
+          )}
+
+          {/* Admin-only links */}
           {profile?.is_admin && (
             <>
               <Link
@@ -571,7 +585,6 @@ export default function Sidebar() {
                 <Shield className="w-4 h-4" />
                 Admin
               </Link>
-
               <Link
                 href="/integrations"
                 className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
@@ -585,16 +598,19 @@ export default function Sidebar() {
             </>
           )}
 
-          <Link
-            href="/settings"
-            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-            style={{ color: sidebarTextMuted }}
-            onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
-            onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
-          >
-            <Settings className="w-4 h-4" />
-            Settings
-          </Link>
+          {/* Settings — admin only */}
+          {profile?.is_admin && (
+            <Link
+              href="/settings"
+              className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+              style={{ color: sidebarTextMuted }}
+              onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
+            >
+              <Settings className="w-4 h-4" />
+              Settings
+            </Link>
+          )}
 
           {/* Plan box */}
           {!profile?.is_admin && (
