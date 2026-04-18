@@ -130,8 +130,11 @@ export default function DemoPage() {
             </Link>
             <Link
               href="/pricing"
-              className="btn-liquid-secondary"
-              style={{ padding: "16px 32px", borderRadius: 12, textDecoration: "none", fontWeight: 600, fontSize: 16 }}
+              style={{
+                padding: "16px 32px", borderRadius: 12, textDecoration: "none", fontWeight: 600, fontSize: 16,
+                background: "rgba(255,255,255,0.1)", color: "#fff",
+                border: "1px solid rgba(255,255,255,0.25)",
+              }}
             >
               See Pricing
             </Link>
