@@ -464,3 +464,98 @@ export async function publishToTikTok(
 
   return { ok: false, error: "TikTok publish timeout (100s)" };
 }
+
+// ── YouTube ──────────────────────────────────────────────────────────────
+// Uses YouTube Data API v3 — resumable upload flow.
+// Requires youtube.upload scope. Video must be accessible via URL.
+// Flow: download video → initiate resumable upload → upload bytes → set metadata
+export async function publishToYouTube(
+  post: ScheduledPostRow,
+  youtubeAccessToken: string | null,
+  videoUrl: string
+): Promise<PublishResult> {
+  if (!youtubeAccessToken) {
+    return { ok: false, error: "YouTube not connected. Go to Settings → Integrations." };
+  }
+  if (!videoUrl) {
+    return { ok: false, error: "YouTube requires a video URL." };
+  }
+
+  const text = buildPostText(post);
+  const title = (post.title || "New Video").slice(0, 100);
+  const description = text.slice(0, 5000);
+
+  // Step 1: Download video from URL
+  let videoBytes: ArrayBuffer;
+  try {
+    const dlRes = await fetch(videoUrl);
+    if (!dlRes.ok) return { ok: false, error: `Failed to download video: HTTP ${dlRes.status}` };
+    videoBytes = await dlRes.arrayBuffer();
+  } catch (err) {
+    return { ok: false, error: `Video download error: ${String(err).slice(0, 80)}` };
+  }
+
+  // Step 2: Initiate resumable upload
+  const metadata = {
+    snippet: {
+      title,
+      description,
+      tags: post.hashtags?.split(",").map(t => t.trim().replace("#", "")).filter(Boolean).slice(0, 30) || [],
+      categoryId: "22", // People & Blogs (safe default)
+    },
+    status: {
+      privacyStatus: "public",
+      selfDeclaredMadeForKids: false,
+    },
+  };
+
+  const initRes = await fetch(
+    "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${youtubeAccessToken}`,
+        "Content-Type": "application/json; charset=UTF-8",
+        "X-Upload-Content-Length": String(videoBytes.byteLength),
+        "X-Upload-Content-Type": "video/mp4",
+      },
+      body: JSON.stringify(metadata),
+    }
+  );
+
+  if (!initRes.ok) {
+    let errMsg = `YouTube upload init failed (HTTP ${initRes.status})`;
+    try { const e = await initRes.json(); errMsg = e.error?.message || errMsg; } catch {}
+    return { ok: false, error: errMsg };
+  }
+
+  const uploadUrl = initRes.headers.get("location");
+  if (!uploadUrl) {
+    return { ok: false, error: "YouTube did not return upload URL" };
+  }
+
+  // Step 3: Upload video bytes
+  const uploadRes = await fetch(uploadUrl, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "video/mp4",
+      "Content-Length": String(videoBytes.byteLength),
+    },
+    body: videoBytes,
+  });
+
+  if (!uploadRes.ok) {
+    let errMsg = `YouTube upload failed (HTTP ${uploadRes.status})`;
+    try { const e = await uploadRes.json(); errMsg = e.error?.message || errMsg; } catch {}
+    return { ok: false, error: errMsg };
+  }
+
+  const uploadData = await uploadRes.json();
+  const videoId = uploadData.id;
+
+  if (!videoId) {
+    return { ok: false, error: "YouTube upload completed but no video ID returned" };
+  }
+
+  return { ok: true, external_id: videoId };
+}

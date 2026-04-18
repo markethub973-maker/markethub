@@ -11,6 +11,7 @@ import {
   publishToInstagramReels,
   publishToInstagramCarousel,
   publishToTikTok,
+  publishToYouTube,
   type ScheduledPostRow,
   type PublishResult,
 } from "@/lib/publishers";
@@ -211,7 +212,6 @@ export async function GET(req: NextRequest) {
         const imageUrls = post.image_url?.split(",").map(u => u.trim()).filter(Boolean) ?? [];
         result = await publishToInstagramCarousel(post, igUserId, igToken, imageUrls);
       } else if (platform === "tiktok") {
-        // Get TikTok token from tiktok_connections
         const { data: tkConn } = await svc
           .from("tiktok_connections")
           .select("access_token")
@@ -221,6 +221,16 @@ export async function GET(req: NextRequest) {
         const tkToken = (tkConn?.access_token as string | null) ?? null;
         const videoUrl = post.image_url ?? "";
         result = await publishToTikTok(post, tkToken, videoUrl);
+      } else if (platform === "youtube") {
+        const { data: ytConn } = await svc
+          .from("youtube_connections")
+          .select("access_token")
+          .eq("user_id", post.user_id)
+          .eq("is_primary", true)
+          .maybeSingle();
+        const ytToken = (ytConn?.access_token as string | null) ?? null;
+        const videoUrl = post.image_url ?? "";
+        result = await publishToYouTube(post, ytToken, videoUrl);
       }
     } catch (err) {
       result = { ok: false, error: err instanceof Error ? err.message : String(err) };
