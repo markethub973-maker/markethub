@@ -15,10 +15,38 @@ import { createClient } from "@/lib/supabase/client";
 import { useTheme } from "@/context/ThemeContext";
 import { useTheme as useOldTheme, THEMES as OLD_THEMES } from "@/components/ThemeProvider";
 
+// Map preset IDs to their full custom color equivalents
+const PRESET_COLORS: Record<string, { primary: string; accent: string; bg: string; surface: string; text: string; sidebar: string; sidebarText: string }> = {
+  amber:           { primary: "#F59E0B", accent: "#EC8054", bg: "#FFFCF7", surface: "#FFFFFF", text: "#2D2620", sidebar: "#3D2B10", sidebarText: "#FFF8F0" },
+  "amber-dark":    { primary: "#F59E0B", accent: "#D97706", bg: "#0d0b1e", surface: "#1a1333", text: "#EEEEEEF0", sidebar: "#0d0b1e", sidebarText: "#FFF8F0" },
+  "high-contrast": { primary: "#FF9500", accent: "#FF6B00", bg: "#000000", surface: "#111111", text: "#FFFFFF", sidebar: "#000000", sidebarText: "#FFFFFF" },
+  emerald:         { primary: "#10B981", accent: "#F472B6", bg: "#F6FDF9", surface: "#FFFFFF", text: "#1A2E23", sidebar: "#0F2A23", sidebarText: "#E1F5EE" },
+  indigo:          { primary: "#818CF8", accent: "#FB923C", bg: "#F6F5FF", surface: "#FFFFFF", text: "#1E1B4B", sidebar: "#1E1B4B", sidebarText: "#EEEDFE" },
+  mono:            { primary: "#404040", accent: "#84CC16", bg: "#FCFCFC", surface: "#FFFFFF", text: "#171717", sidebar: "#0A0A09", sidebarText: "#FCFCFC" },
+};
+
 function ThemeSwitcherInline() {
   const { theme: oldTheme, setTheme: setOldTheme, customColors, setCustomColors } = useOldTheme();
-  const { theme: glassTheme, setTheme: setGlassTheme, themes: glassThemes } = useTheme();
   const [open, setOpen] = useState(false);
+
+  // Sync customColors display with active preset
+  const displayColors = oldTheme !== "custom" && PRESET_COLORS[oldTheme]
+    ? { ...customColors, ...PRESET_COLORS[oldTheme] }
+    : customColors;
+
+  const selectPreset = (id: string) => {
+    setOldTheme(id as Parameters<typeof setOldTheme>[0]);
+    if (PRESET_COLORS[id]) {
+      setCustomColors({
+        primary: PRESET_COLORS[id].primary,
+        accent: PRESET_COLORS[id].accent,
+        bg: PRESET_COLORS[id].bg,
+        surface: PRESET_COLORS[id].surface,
+        text: PRESET_COLORS[id].text,
+        sidebar: PRESET_COLORS[id].sidebar,
+      });
+    }
+  };
 
   return (
     <div className="relative">
@@ -38,7 +66,7 @@ function ThemeSwitcherInline() {
           <p className="text-xs font-bold mb-2" style={{ color: "#D4A76A" }}>Presets</p>
           <div className="grid grid-cols-3 gap-1 mb-3">
             {OLD_THEMES.filter(t => !t.isCustom).map(t => (
-              <button key={t.id} onClick={() => setOldTheme(t.id)}
+              <button key={t.id} onClick={() => selectPreset(t.id)}
                 className="flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-[10px]"
                 style={{ color: oldTheme === t.id ? "#F59E0B" : "rgba(255,248,240,0.6)", background: oldTheme === t.id ? "rgba(245,158,11,0.1)" : "transparent", border: oldTheme === t.id ? "1px solid rgba(245,158,11,0.3)" : "1px solid transparent" }}>
                 <div className="w-4 h-4 rounded-full" style={{ background: t.primary }} />
@@ -47,35 +75,22 @@ function ThemeSwitcherInline() {
             ))}
           </div>
 
-          {/* Glass Theme Presets */}
-          <p className="text-xs font-bold mb-2" style={{ color: "#D4A76A" }}>Background</p>
-          <div className="grid grid-cols-3 gap-1 mb-3">
-            {glassThemes.map(t => (
-              <button key={t.name} onClick={() => setGlassTheme(t)}
-                className="flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-[10px]"
-                style={{ color: glassTheme.name === t.name ? "#F59E0B" : "rgba(255,248,240,0.6)", background: glassTheme.name === t.name ? "rgba(245,158,11,0.1)" : "transparent", border: glassTheme.name === t.name ? "1px solid rgba(245,158,11,0.3)" : "1px solid transparent" }}>
-                <div className="w-4 h-4 rounded-full" style={{ background: t.accent }} />
-                {t.name.slice(0,10)}
-              </button>
-            ))}
-          </div>
-
-          {/* Custom Colors */}
+          {/* Custom Colors — synced with preset */}
           <p className="text-xs font-bold mb-2" style={{ color: "#D4A76A" }}>Customize</p>
           {[
-            { label: "Primary", key: "primary" as const, val: customColors.primary },
-            { label: "Accent", key: "accent" as const, val: customColors.accent },
-            { label: "Background", key: "bg" as const, val: customColors.bg },
-            { label: "Surface", key: "surface" as const, val: customColors.surface },
-            { label: "Text", key: "text" as const, val: customColors.text },
-            { label: "Sidebar", key: "sidebar" as const, val: customColors.sidebar },
+            { label: "Primary", key: "primary" as const },
+            { label: "Accent", key: "accent" as const },
+            { label: "Background", key: "bg" as const },
+            { label: "Surface", key: "surface" as const },
+            { label: "Text", key: "text" as const },
+            { label: "Sidebar", key: "sidebar" as const },
           ].map(c => (
             <div key={c.key} className="flex items-center gap-2 mb-1.5">
-              <input type="color" value={c.val}
-                onChange={e => { setOldTheme("custom"); setCustomColors({ ...customColors, [c.key]: e.target.value }); }}
+              <input type="color" value={displayColors[c.key]}
+                onChange={e => { setOldTheme("custom"); setCustomColors({ ...displayColors, [c.key]: e.target.value }); }}
                 className="w-6 h-6 rounded cursor-pointer border-0" style={{ background: "transparent" }} />
               <span className="text-xs" style={{ color: "rgba(255,248,240,0.7)" }}>{c.label}</span>
-              <span className="text-[10px] ml-auto" style={{ color: "rgba(255,248,240,0.4)" }}>{c.val}</span>
+              <span className="text-[10px] ml-auto" style={{ color: "rgba(255,248,240,0.4)" }}>{displayColors[c.key]}</span>
             </div>
           ))}
 
