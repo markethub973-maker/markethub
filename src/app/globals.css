@@ -334,6 +334,17 @@ main .rounded-lg[style*="background-color: rgb"]:hover {
 .liquidGlass-content .text-stone-600 {
   color: rgba(255, 255, 255, 0.55) !important;
 }
+/* Icons and images inside glass cards — keep visible */
+.liquidGlass-content svg,
+.liquidGlass-content img,
+.liquidGlass-content icon,
+.liquidGlass-content [class*="lucide"],
+.liquidGlass-content [class*="icon"],
+.liquidGlass-content [class*="Icon"] {
+  opacity: 1 !important;
+  position: relative;
+  z-index: 4;
+}
 
 /* Accent-tinted glass (driven by --accent CSS var) */
 .glass-accent .liquidGlass-tint {
