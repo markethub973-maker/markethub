@@ -22,7 +22,7 @@ import {
   ReactNode,
 } from "react";
 
-export type ThemeId = "amber" | "emerald" | "indigo" | "mono" | "custom";
+export type ThemeId = "amber" | "amber-dark" | "high-contrast" | "emerald" | "indigo" | "mono" | "custom";
 
 export interface CustomColors {
   primary: string;   // hex — brand color (buttons, accents, CTAs)
@@ -42,11 +42,13 @@ export interface ThemePreset {
 }
 
 export const THEMES: ThemePreset[] = [
-  { id: "amber",   label: "Amber",          primary: "#F59E0B", accent: "#EC8054" },
-  { id: "emerald", label: "Emerald + Pink", primary: "#10B981", accent: "#F472B6" },
-  { id: "indigo",  label: "Indigo + Coral", primary: "#818CF8", accent: "#FB923C" },
-  { id: "mono",    label: "Mono + Lime",    primary: "#404040", accent: "#84CC16" },
-  { id: "custom",  label: "Custom…",        primary: "#F59E0B", accent: "#EC8054", isCustom: true },
+  { id: "amber",         label: "Amber",              primary: "#F59E0B", accent: "#EC8054" },
+  { id: "amber-dark",    label: "Amber Dark",         primary: "#F59E0B", accent: "#D97706" },
+  { id: "high-contrast", label: "High Contrast",      primary: "#FF9500", accent: "#FF6B00" },
+  { id: "emerald",       label: "Emerald + Pink",     primary: "#10B981", accent: "#F472B6" },
+  { id: "indigo",        label: "Indigo + Coral",     primary: "#818CF8", accent: "#FB923C" },
+  { id: "mono",          label: "Mono + Lime",        primary: "#404040", accent: "#84CC16" },
+  { id: "custom",        label: "Custom…",            primary: "#F59E0B", accent: "#EC8054", isCustom: true },
 ];
 
 interface ThemeContextValue {

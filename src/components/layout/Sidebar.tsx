@@ -13,6 +13,37 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTheme } from "@/context/ThemeContext";
+import { useTheme as useOldTheme, THEMES as OLD_THEMES } from "@/components/ThemeProvider";
+
+function ThemeSwitcherInline() {
+  const { theme, setTheme } = useOldTheme();
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all w-full"
+        style={{ color: "rgba(255,248,240,0.6)" }}
+      >
+        <Palette className="w-4 h-4" />
+        Theme
+      </button>
+      {open && (
+        <div className="absolute left-full bottom-0 ml-2 p-2 rounded-lg w-48 z-50"
+          style={{ background: "#1C1814", border: "1px solid rgba(245,215,160,0.15)" }}>
+          {OLD_THEMES.filter(t => !t.isCustom).map(t => (
+            <button key={t.id} onClick={() => { setTheme(t.id); setOpen(false); }}
+              className="flex items-center gap-2 w-full px-3 py-2 rounded text-xs text-left"
+              style={{ color: theme === t.id ? "#F59E0B" : "rgba(255,248,240,0.7)", background: theme === t.id ? "rgba(245,158,11,0.1)" : "transparent" }}>
+              <div className="w-3 h-3 rounded-full" style={{ background: t.primary }} />
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 import {
   canAccessRoute, getRouteGate, PLAN_LABELS, PLAN_COLORS, PLAN_PRICES,
   PLAN_ORDER, plansWithAccess, type PlanId,
@@ -457,6 +488,11 @@ export default function Sidebar() {
 
         {/* Bottom */}
         <div className="px-3 py-4" style={{ borderTop: "1px solid rgba(245,215,160,0.1)" }}>
+          {/* Theme switcher — inline in sidebar */}
+          <div className="px-1 py-1">
+            <ThemeSwitcherInline />
+          </div>
+
           {profile?.is_admin && (
             <Link
               href="/dashboard/admin"

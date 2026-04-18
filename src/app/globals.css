@@ -150,6 +150,76 @@
   --color-surface-dark-border: rgba(255, 255, 255, 0.10);
 }
 
+/* Amber Dark — dark background with amber accents, like our public pages */
+[data-theme="amber-dark"] {
+  --color-primary: #F59E0B;
+  --color-primary-hover: #D97706;
+  --color-primary-light: rgba(245, 158, 11, 0.15);
+  --color-primary-dark: #92580A;
+
+  --color-accent: #D97706;
+  --color-accent-hover: #B45309;
+  --color-accent-light: rgba(217, 119, 6, 0.15);
+  --color-accent-dark: #78350F;
+
+  --color-bg: #0d0b1e;
+  --color-bg-secondary: rgba(26, 19, 51, 0.6);
+  --color-bg-tertiary: rgba(10, 22, 40, 0.6);
+
+  --color-text: rgba(255, 255, 255, 0.92);
+  --color-text-secondary: rgba(255, 255, 255, 0.65);
+  --color-text-muted: rgba(255, 255, 255, 0.4);
+
+  --color-border: rgba(245, 158, 11, 0.15);
+  --color-border-hover: rgba(245, 158, 11, 0.3);
+
+  --color-success: #10B981;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+
+  --color-surface-dark: #0d0b1e;
+  --color-surface-dark-secondary: #1a1333;
+  --color-surface-dark-text: rgba(255, 255, 255, 0.92);
+  --color-surface-dark-text-muted: rgba(255, 255, 255, 0.55);
+  --color-surface-dark-text-dim: rgba(255, 255, 255, 0.35);
+  --color-surface-dark-border: rgba(245, 158, 11, 0.12);
+}
+
+/* High Contrast — bold orange on deep black, maximum readability */
+[data-theme="high-contrast"] {
+  --color-primary: #FF9500;
+  --color-primary-hover: #FF6B00;
+  --color-primary-light: rgba(255, 149, 0, 0.2);
+  --color-primary-dark: #CC5500;
+
+  --color-accent: #FF6B00;
+  --color-accent-hover: #FF4500;
+  --color-accent-light: rgba(255, 107, 0, 0.2);
+  --color-accent-dark: #993300;
+
+  --color-bg: #000000;
+  --color-bg-secondary: rgba(20, 20, 20, 0.8);
+  --color-bg-tertiary: rgba(30, 30, 30, 0.8);
+
+  --color-text: #FFFFFF;
+  --color-text-secondary: rgba(255, 255, 255, 0.8);
+  --color-text-muted: rgba(255, 255, 255, 0.5);
+
+  --color-border: rgba(255, 149, 0, 0.25);
+  --color-border-hover: rgba(255, 149, 0, 0.5);
+
+  --color-success: #00FF88;
+  --color-warning: #FF9500;
+  --color-danger: #FF3333;
+
+  --color-surface-dark: #000000;
+  --color-surface-dark-secondary: #111111;
+  --color-surface-dark-text: #FFFFFF;
+  --color-surface-dark-text-muted: rgba(255, 255, 255, 0.7);
+  --color-surface-dark-text-dim: rgba(255, 255, 255, 0.45);
+  --color-surface-dark-border: rgba(255, 149, 0, 0.2);
+}
+
 /* Optional dark mode override (works on top of any theme).
    Apply with `<html data-mode="dark">`. Not yet wired into the
    ThemeSwitcher UI — reserved for future. */

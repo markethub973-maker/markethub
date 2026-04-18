@@ -6,7 +6,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import AskConsultant from "@/components/ui/AskConsultant";
 import CookieConsent from "@/components/ui/CookieConsent";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
+// ThemeSwitcher moved to Sidebar — no longer floating
 import { ThemeProvider as LiquidGlassThemeProvider } from "@/context/ThemeContext";
 // ThemeCustomizer removed — using ThemeSwitcher (the original) instead
 import CommandPalette from "@/components/ui/CommandPalette";
@@ -188,7 +188,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider>
             <AuthGuard>{children}</AuthGuard>
             {/* Theme Customize button (original, top-right) */}
-            <ThemeSwitcher />
+            {/* ThemeSwitcher moved to Sidebar */}
             {/* M9 Sprint 1 — floating AI consultant (bottom-left) */}
             <AskConsultant />
             {/* GDPR cookie consent banner — gates analytics loading */}
