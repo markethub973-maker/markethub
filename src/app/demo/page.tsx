@@ -8,6 +8,65 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://markethubpromo.com/demo" },
 };
 
+const glassBtn: React.CSSProperties = {
+  padding: "16px 32px",
+  borderRadius: 14,
+  textDecoration: "none",
+  fontWeight: 700,
+  fontSize: 16,
+  color: "#fff",
+  background: "rgba(245,158,11,0.15)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border: "1px solid rgba(245,158,11,0.4)",
+  boxShadow: "0 4px 20px rgba(245,158,11,0.2), inset 0 1px 0 rgba(255,255,255,0.2)",
+  transition: "all 0.3s ease",
+};
+
+const glassBtnSecondary: React.CSSProperties = {
+  padding: "16px 32px",
+  borderRadius: 14,
+  textDecoration: "none",
+  fontWeight: 600,
+  fontSize: 16,
+  color: "#fff",
+  background: "rgba(255,255,255,0.06)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border: "1px solid rgba(255,255,255,0.15)",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1)",
+  transition: "all 0.3s ease",
+};
+
+const glassBtnSmall: React.CSSProperties = {
+  padding: "10px 24px",
+  borderRadius: 12,
+  textDecoration: "none",
+  fontWeight: 700,
+  fontSize: 14,
+  color: "#fff",
+  background: "rgba(245,158,11,0.15)",
+  backdropFilter: "blur(12px)",
+  WebkitBackdropFilter: "blur(12px)",
+  border: "1px solid rgba(245,158,11,0.4)",
+  boxShadow: "0 2px 12px rgba(245,158,11,0.2), inset 0 1px 0 rgba(255,255,255,0.2)",
+};
+
+const glassBtnCTA: React.CSSProperties = {
+  display: "inline-block",
+  padding: "16px 40px",
+  borderRadius: 14,
+  textDecoration: "none",
+  fontWeight: 700,
+  fontSize: 16,
+  color: "#fff",
+  background: "rgba(245,158,11,0.2)",
+  backdropFilter: "blur(16px)",
+  WebkitBackdropFilter: "blur(16px)",
+  border: "1px solid rgba(245,158,11,0.5)",
+  boxShadow: "0 6px 30px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.25)",
+};
+
 const card: React.CSSProperties = {
   background: "rgba(255,255,255,0.06)",
   backdropFilter: "blur(16px)",
@@ -49,7 +108,7 @@ export default function DemoPage() {
           <Link href="/" style={{ textDecoration: "none", color: "#fff", fontSize: 20, fontWeight: 800 }}>
             <span style={{ color: "#F59E0B" }}>●</span> MarketHub Pro
           </Link>
-          <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814", padding: "10px 24px", borderRadius: 12, textDecoration: "none", fontWeight: 700, fontSize: 14 }}>
+          <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={glassBtnSmall}>
             Book a Demo
           </Link>
         </header>
@@ -64,10 +123,10 @@ export default function DemoPage() {
             AI-powered social media content for restaurants, hotels, clinics, and retail businesses. Professional posts, images, and scheduling — delivered automatically.
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={{ background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814", padding: "16px 32px", borderRadius: 12, textDecoration: "none", fontWeight: 700, fontSize: 16 }}>
+            <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={glassBtn}>
               Free 15-min Demo
             </Link>
-            <Link href="/pricing" style={{ padding: "16px 32px", borderRadius: 12, textDecoration: "none", fontWeight: 600, fontSize: 16, background: "rgba(255,255,255,0.08)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)" }}>
+            <Link href="/pricing" style={glassBtnSecondary}>
               See Pricing
             </Link>
           </div>
@@ -114,7 +173,7 @@ export default function DemoPage() {
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", marginBottom: 24, lineHeight: 1.6 }}>
               We&apos;ll create <strong style={{ color: "#F59E0B" }}>5 professional posts</strong> for your business — completely free. See the quality before you pay.
             </p>
-            <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={{ display: "inline-block", background: "linear-gradient(135deg,#F59E0B,#D97706)", color: "#1C1814", padding: "16px 40px", borderRadius: 12, textDecoration: "none", fontWeight: 700, fontSize: 16 }}>
+            <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={glassBtnCTA}>
               Get Your Free Posts
             </Link>
             <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 12 }}>15-minute call. No credit card. No obligation.</p>
