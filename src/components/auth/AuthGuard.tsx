@@ -17,6 +17,7 @@ const PUBLIC_PATHS = [
   "/blocked",
   "/pricing",
   "/promo",
+  "/demo",
   "/privacy",
   "/terms",
   "/upgrade-required",
