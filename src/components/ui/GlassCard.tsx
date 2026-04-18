@@ -10,6 +10,7 @@ interface GlassCardProps {
   rounded?: string;
   onClick?: () => void;
   as?: "div" | "section" | "article";
+  style?: React.CSSProperties;
 }
 
 /**
@@ -32,6 +33,7 @@ export default function GlassCard({
   rounded = "rounded-2xl",
   onClick,
   as: Tag = "div",
+  style,
 }: GlassCardProps) {
   return (
     <Tag
@@ -39,6 +41,7 @@ export default function GlassCard({
       onClick={onClick}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
+      style={style}
     >
       <div className="liquidGlass-effect" />
       <div className="liquidGlass-tint" />
