@@ -23,6 +23,11 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
 
+    // Clear admin flag from previous sessions
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("admin_authenticated");
+    }
+
     const supabase = createClient();
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
 

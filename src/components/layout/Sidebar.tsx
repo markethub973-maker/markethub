@@ -408,6 +408,10 @@ export default function Sidebar() {
   const handleLogout = async () => {
     const supabase = createClient();
     await supabase.auth.signOut();
+    // Clear admin flag so next user doesn't inherit admin access
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("admin_authenticated");
+    }
     router.push("/login");
     router.refresh();
   };
