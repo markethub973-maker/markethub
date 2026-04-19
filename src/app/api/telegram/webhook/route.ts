@@ -437,7 +437,7 @@ export async function POST(req: NextRequest) {
       const svcRule = createServiceClient();
       const ruleName = `Eduard rule ${new Date().toISOString().slice(0, 10)}: ${userText.slice(0, 60)}`;
       await svcRule.from("brain_knowledge_base").insert({
-        category: "rule",
+        category: "framework",
         name: ruleName,
         summary: userText.slice(0, 200),
         content: userText,
@@ -717,7 +717,7 @@ NEVER forget a rule Eduard gave you. If unsure, save it.`;
     try {
       const ruleData = JSON.parse(ruleMatch[1]) as { name: string; content: string; tags?: string[] };
       await svc.from("brain_knowledge_base").insert({
-        category: "rule",
+        category: "framework",
         name: ruleData.name,
         summary: ruleData.content.slice(0, 200),
         content: ruleData.content,
