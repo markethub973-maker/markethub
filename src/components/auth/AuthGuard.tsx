@@ -43,7 +43,8 @@ function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith("/portal/")) return true;  // client portal viewer
   if (pathname.startsWith("/approve/")) return true; // client approval
   if (pathname.startsWith("/report/")) return true;  // shared report
-  if (pathname.startsWith("/offer"))   return true;  // /offer-ro, /offer-intl, /offer/thanks
+  if (pathname.startsWith("/offer"))    return true;  // /offer-ro, /offer-intl, /offer/thanks
+  if (pathname.startsWith("/reseller")) return true; // reseller landing + tier pages + signup
   return false;
 }
 

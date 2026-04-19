@@ -208,6 +208,8 @@ const PUBLIC_PATHS = [
   "/offer-pt",              // Portugal + BR DFY landing (€700)
   "/offer/thanks",          // post-payment confirmation (shared by both tiers)
   "/api/offer",             // one-time Stripe checkout for the DFY offer
+  "/reseller",              // public reseller/freelancer landing + signup
+  "/api/reseller/signup",   // reseller registration endpoint (creates user)
   "/help",                  // public help / support page
   "/api/support",           // public support form submission endpoint
   "/blocked",               // blocked account page

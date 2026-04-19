@@ -41,6 +41,17 @@ confirmare finală → raport complet
 - Dacă un cont nu funcționează → ÎL REPAR sau spun clar "nu funcționează"
 - NICIODATĂ nu dau date din memorie fără verificare live — memoria poate fi depășită
 
+### 6. MOBILE RESPONSIVE — OBLIGATORIU PE TOT CODUL
+- ORICE pagină/componentă nouă TREBUIE să fie mobile responsive
+- Folosesc Tailwind breakpoints: `sm:` (640px), `md:` (768px), `lg:` (1024px)
+- Testez pe 3 viewporturi: iPhone (375px), iPad (768px), Desktop (1280px+)
+- Grid-urile devin single column pe mobil (ex: `grid-cols-1 md:grid-cols-2 lg:grid-cols-3`)
+- Text-urile mari scad pe mobil (ex: `text-2xl md:text-4xl lg:text-5xl`)
+- Padding-ul scade pe mobil (ex: `px-4 md:px-6 lg:px-8`)
+- Butoanele rămân full-width pe mobil (`w-full sm:w-auto`)
+- Preview mobile: `preview/mobile-check.html` cu iframe-uri la 375px/768px/1024px
+- NICIODATĂ nu livrez cod care se strânge/overflow pe mobil
+
 ### Anti-pattern-uri INTERZISE:
 - Deploy fără test local = timp pierdut
 - "Am pushuit, verifică tu" = lene
