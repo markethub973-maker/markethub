@@ -16,7 +16,7 @@ export async function GET() {
   const params = new URLSearchParams({
     client_id: process.env.META_APP_ID!,
     redirect_uri: redirectUri,
-    scope: "instagram_basic,instagram_manage_insights,pages_show_list,pages_read_engagement,instagram_manage_comments,ads_read",
+    scope: "instagram_basic,instagram_content_publish,instagram_manage_insights,pages_show_list,pages_read_engagement,pages_manage_posts,instagram_manage_comments,ads_read",
     response_type: "code",
     // HMAC-signed state — callback re-verifies signature AND current Supabase
     // session. Raw user.id is no longer trusted as identity claim. (VULN-CRIT-1)
