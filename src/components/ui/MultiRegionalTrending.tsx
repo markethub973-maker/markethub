@@ -305,15 +305,15 @@ export default function MultiRegionalTrending() {
             className="flex items-center gap-1 rounded-lg overflow-hidden"
             style={{
               border: activeRegion === code ? "2px solid #F59E0B" : "1px solid rgba(245,215,160,0.35)",
-              backgroundColor: activeRegion === code ? "#FFF0CC" : "var(--color-bg-secondary)",
-              boxShadow: activeRegion === code ? "0 2px 6px rgba(245,158,11,0.25)" : "0 1px 3px rgba(0,0,0,0.06)",
+              backgroundColor: activeRegion === code ? "#F59E0B" : "var(--color-bg-secondary)",
+              boxShadow: activeRegion === code ? "0 3px 10px rgba(245,158,11,0.4), inset 0 1px 0 rgba(255,255,255,0.2)" : "0 1px 3px rgba(0,0,0,0.06)",
             }}
           >
             <button
               type="button"
               onClick={() => setActiveRegion(code)}
-              className="text-sm px-3 py-2 font-semibold"
-              style={{ color: activeRegion === code ? "var(--color-primary-hover)" : "var(--color-text)" }}
+              className="text-sm px-3 py-2 font-bold"
+              style={{ color: activeRegion === code ? "#1C1814" : "var(--color-text)" }}
             >
               {countryMap[code]?.split(" ")[0]} {code}
             </button>
@@ -323,10 +323,10 @@ export default function MultiRegionalTrending() {
                 onClick={() => removeRegion(code)}
                 aria-label={`Remove ${code}`}
                 className="pr-2 py-2 transition-colors"
-                style={{ color: activeRegion === code ? "var(--color-primary-hover)" : "#A8967E" }}
+                style={{ color: activeRegion === code ? "#1C1814" : "#A8967E" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#EF4444")}
                 onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = activeRegion === code ? "var(--color-primary-hover)" : "#A8967E")
+                  (e.currentTarget.style.color = activeRegion === code ? "#1C1814" : "#A8967E")
                 }
               >
                 <X className="w-3.5 h-3.5" />
