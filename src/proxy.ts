@@ -658,6 +658,8 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/outreach-reply" ||
     pathname === "/api/brain/web-search" ||
     pathname === "/api/brain/web-read" ||
+    pathname.startsWith("/api/prospect-page") || // prospect page CRUD (brain-cron-secret gated)
+    pathname.startsWith("/api/pitch") ||         // pitch generator (brain-cron-secret gated)
     pathname.startsWith("/api/cost-monitor/") ||
     pathname.startsWith("/api/admin/") ||
     pathname.startsWith("/api/admin-auth") ||
