@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Loader2, User, Mail, Lock, Globe, ArrowLeft } from "lucide-react";
@@ -16,6 +16,14 @@ const TIER_LABELS: Record<string, { label: string; price: string }> = {
 const VALID_TIERS = Object.keys(TIER_LABELS);
 
 export default function ResellerSignupPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ background: "#0A0A0A" }}><Loader2 className="w-8 h-8 animate-spin text-amber-500" /></div>}>
+      <ResellerSignupForm />
+    </Suspense>
+  );
+}
+
+function ResellerSignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawTier = searchParams.get("tier") || "europe";
