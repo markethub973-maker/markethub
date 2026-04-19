@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import Anthropic from "@anthropic-ai/sdk";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
+import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 55;
@@ -58,7 +59,7 @@ Structure:
 2. Identify their social media gap (posting too rarely, no visual consistency, etc.)
 3. Offer: "We'd like to create 5 free posts for [business name] — captions + images, ready to publish. Zero cost, zero obligation."
 4. CTA: book 15-min call to discuss their brand: https://calendar.app.google/kmUnEepd8a3Nj1Mh7
-5. P.S. mention the demo page: https://markethubpromo.com/demo`,
+5. P.S. mention the demo page: https://markethubpromo.com/demo` + OUTPUT_SAFETY_RULES,
     messages: [{
       role: "user",
       content: `Write a cold outreach email to "${businessName}". Info about them: ${snippet.slice(0, 300)}. Return JSON only: {"subject":"...","body":"..."}`

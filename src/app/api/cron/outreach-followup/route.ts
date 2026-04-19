@@ -13,6 +13,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createServiceClient } from "@/lib/supabase/service";
+import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -50,7 +51,7 @@ Rules:
 - Sign "— Alex".
 - No emojis, no buzzwords. Warm and human — write like one founder following up with another, not a CRM template. Avoid academic prose, avoid slang.
 
-OUTPUT STRICT JSON: {"subject":"...","body":"..."}`;
+OUTPUT STRICT JSON: {"subject":"...","body":"..."}` + OUTPUT_SAFETY_RULES;
 
   try {
     const r = await anthropic.messages.create({

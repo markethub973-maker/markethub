@@ -13,6 +13,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -92,7 +93,7 @@ Rules:
 - Distribute across platforms (ex: 2 Instagram, 1 LinkedIn, 1 Facebook, 1 TikTok).
 - Image prompts must be usable for a fal.ai or DALL·E call — photographic, brand-appropriate, no people faces, no text-in-image.
 - Ground every caption in something specific from the website snippet.
-- Tone: warm human founder — professional but conversational, like a peer talking. Not academic, not corporate, not slangy.`;
+- Tone: warm human founder — professional but conversational, like a peer talking. Not academic, not corporate, not slangy.` + OUTPUT_SAFETY_RULES;
 
   const r = await anthropic.messages.create({
     model: HAIKU,

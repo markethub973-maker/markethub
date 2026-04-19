@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { getAnthropicErrorResponse } from "@/lib/anthropic-errors";
 import { getPlanConfig, getRemainingBudget, AI_ACTION_COSTS } from "@/lib/plan-config";
-import { getAppApiKey } from "@/lib/anthropic-client";
+import { getAppApiKey, OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 import { requireAuth } from "@/lib/route-helpers";
 import { buildBrandVoicePrompt } from "@/lib/brandVoice";
 
@@ -92,6 +92,7 @@ Do not include any other text, explanations or markdown. Just the JSON array.`;
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2000,
+      system: OUTPUT_SAFETY_RULES,
       messages: [{ role: "user", content: promptWithVoice }],
     });
 

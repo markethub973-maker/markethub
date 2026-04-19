@@ -20,6 +20,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { generateJsonReviewed } from "@/lib/llm";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
 import { tagClientNeeds } from "@/lib/client-needs-tagger";
+import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -123,7 +124,7 @@ Rules:
 - Include the correct regional link based on domain.
 - No emojis, no buzzwords. Professional but warmly human — write like a founder on a Tuesday morning, not a marketing agency template. Avoid academic prose, avoid slang.
 
-OUTPUT STRICT JSON: {"subject":"...","body":"..."}`;
+OUTPUT STRICT JSON: {"subject":"...","body":"..."}` + OUTPUT_SAFETY_RULES;
 
   const { reviewed } = await generateJsonReviewed<{ subject?: string; body?: string } & Record<string, unknown>>(
     system,

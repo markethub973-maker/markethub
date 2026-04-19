@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
-import { getAppAnthropicClient } from "@/lib/anthropic-client";
+import { getAppAnthropicClient, OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
 import { consumePremiumAction } from "@/lib/premiumActions";
 import { getPlanConfig } from "@/lib/plan-config";
@@ -110,7 +110,7 @@ Generate the complete campaign kit for this offer targeting this specific lead p
     anthropic.messages.create({
       model: MODEL_C,
       max_tokens: 3000,
-      system: SYSTEM,
+      system: SYSTEM + OUTPUT_SAFETY_RULES,
       messages: [{ role: "user", content: prompt }],
     })
   );

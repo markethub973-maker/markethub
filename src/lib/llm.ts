@@ -22,6 +22,17 @@ interface GenerateOpts {
   preferProvider?: "claude" | "openai";
 }
 
+/** Global output safety rules injected into EVERY LLM call. */
+const OUTPUT_SAFETY_RULES = `
+
+MANDATORY OUTPUT RULES (apply to ALL responses, no exceptions):
+- NEVER mention: zone, tier, emerging, southeast, premium, ultra, region, or any geographic pricing reference.
+- NEVER mention: AI, AI-powered, machine learning, Claude, GPT, Anthropic, OpenAI, Fal.ai, Apify, Supabase, Vercel, Stripe, Resend, Contabo, n8n, Sentry, ElevenLabs, or any internal tool name.
+- NEVER reveal that prices differ by country/zone. The price shown is simply "the price".
+- If generating client-facing content (emails, pitches, landing pages, social posts): expose ONLY the result, NEVER the system behind it.
+- Match the platform format: LinkedIn connection max 300 chars, Instagram DM max 150 chars, email max 200 words, TikTok max 100 chars.
+`;
+
 async function callClaude(system: string, user: string, maxTokens: number): Promise<string | null> {
   const apiKey = process.env.ANTHROPIC_API_KEY ?? process.env.ANTHROPIC_API_KEY_APP;
   if (!apiKey) return null;
@@ -30,7 +41,7 @@ async function callClaude(system: string, user: string, maxTokens: number): Prom
     const r = await client.messages.create({
       model: CLAUDE_MODEL,
       max_tokens: maxTokens,
-      system,
+      system: system + OUTPUT_SAFETY_RULES,
       messages: [{ role: "user", content: user }],
     });
     return r.content

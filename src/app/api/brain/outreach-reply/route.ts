@@ -22,6 +22,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import Anthropic from "@anthropic-ai/sdk";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
+import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -146,7 +147,7 @@ Respond with JSON only:
     model: "claude-haiku-4-5-20251001",
     max_tokens: 500,
     messages: [{ role: "user", content: "Compose the reply now." }],
-    system: systemPrompt,
+    system: systemPrompt + OUTPUT_SAFETY_RULES,
   });
 
   const text =

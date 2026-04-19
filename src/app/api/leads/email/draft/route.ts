@@ -4,7 +4,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { requirePlan } from "@/lib/requirePlan";
 import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
-import { getAppAnthropicClient } from "@/lib/anthropic-client";
+import { getAppAnthropicClient, OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
 import { LANGUAGE_RULES } from "@/lib/markets";
 
@@ -106,7 +106,7 @@ Write the personalized cold email now.`;
     anthropic.messages.create({
       model: MODEL,
       max_tokens: 600,
-      system: SYSTEM,
+      system: SYSTEM + OUTPUT_SAFETY_RULES,
       messages: [{ role: "user", content: prompt }],
     })
   );

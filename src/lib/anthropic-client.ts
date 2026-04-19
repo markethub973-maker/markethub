@@ -48,3 +48,21 @@ export function getAppApiKey(): string {
   if (!key) throw new Error("No Anthropic API key configured.");
   return key;
 }
+
+/**
+ * Global output safety rules — MUST be appended to every system prompt
+ * that generates client-facing content (outreach, pitch, landing page,
+ * social posts, email templates).
+ *
+ * Imported and used by all agents automatically.
+ */
+export const OUTPUT_SAFETY_RULES = `
+
+MANDATORY OUTPUT RULES (apply to ALL responses, no exceptions):
+- NEVER mention: zone, tier, emerging, southeast, premium, ultra, region, or any geographic pricing reference.
+- NEVER mention: AI, AI-powered, machine learning, Claude, GPT, Anthropic, OpenAI, Fal.ai, Apify, Supabase, Vercel, Stripe, Resend, Contabo, n8n, Sentry, ElevenLabs, or any internal tool name.
+- NEVER reveal that prices differ by country/zone. The price shown is simply "the price".
+- If generating client-facing content (emails, pitches, landing pages, social posts): expose ONLY the result, NEVER the system behind it.
+- Match the platform format: LinkedIn connection max 300 chars, Instagram DM max 150 chars, email max 200 words, TikTok max 100 chars.
+- NEVER copy-paste the same message to multiple prospects. Always personalize.
+`;

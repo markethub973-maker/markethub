@@ -17,6 +17,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import type { BrainProduct } from "@/lib/brainProducts";
+import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -107,7 +108,7 @@ Rules:
 - No mentions of competing brands.
 - workflow_kind: pick the animated demo pattern most relevant to the product type
   (use "prompt-to-image" for visual products, "voice-clone" for audio gear,
-   "list-to-buckets" for tools that organize / categorize, etc.)`;
+   "list-to-buckets" for tools that organize / categorize, etc.)` + OUTPUT_SAFETY_RULES;
 
   const userBrief = `PRODUCT NAME: ${body.name.trim()}
 ${body.category ? `CATEGORY: ${body.category.trim()}` : ""}

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { safeAnthropic } from "@/lib/serviceGuard";
 import { calcAnthropicCost, logApiCost } from "@/lib/costTracker";
-import { getAppAnthropicClient } from "@/lib/anthropic-client";
+import { getAppAnthropicClient, OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 import { checkAndIncrDailyLimit, limitExceededResponse } from "@/lib/dailyLimits";
 import { consumePremiumAction } from "@/lib/premiumActions";
 import { getPlanConfig } from "@/lib/plan-config";
@@ -61,7 +61,7 @@ Write personalized outreach messages for this specific lead.`;
     anthropic.messages.create({
       model: MODEL_M,
       max_tokens: 1200,
-      system: SYSTEM,
+      system: SYSTEM + OUTPUT_SAFETY_RULES,
       messages: [{ role: "user", content: prompt }],
     })
   );
