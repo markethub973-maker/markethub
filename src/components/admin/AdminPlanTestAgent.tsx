@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { FlaskConical, Play, RefreshCw, CheckCircle, XCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { PLANS } from "@/lib/plan-config";
 
-const PLAN_ORDER = ["free_test", "lite", "pro", "business", "enterprise"] as const;
+const PLAN_ORDER = ["free_test", "lite", "pro", "business", "agency"] as const;
 type PlanId = typeof PLAN_ORDER[number];
 
 // Format helpers — keep matrix display in sync with plan-config (single source of truth)
@@ -24,7 +24,7 @@ const PLAN_LABELS: Record<PlanId, string> = {
   lite: "Creator — $24",
   pro: "Pro — $49",
   business: "Studio — $99",
-  enterprise: "Agency — $249",
+  agency: "Agency — $249",
 };
 
 const PLAN_COLORS: Record<PlanId, string> = {
@@ -32,7 +32,7 @@ const PLAN_COLORS: Record<PlanId, string> = {
   lite: "var(--color-primary)",
   pro: "#8B5CF6",
   business: "#E1306C",
-  enterprise: "#16A34A",
+  agency: "#16A34A",
 };
 
 interface MatrixData {

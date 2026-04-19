@@ -214,13 +214,7 @@ export default function MultiRegionalTrending() {
             <button
               type="button"
               onClick={() => setDropdownOpen((p) => !p)}
-              className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg transition-all"
-              style={{
-                backgroundColor: dropdownOpen ? "var(--color-primary)" : "var(--color-bg-secondary)",
-                color: dropdownOpen ? "#1C1814" : "var(--color-text)",
-                border: dropdownOpen ? "1px solid var(--color-primary)" : "1px solid rgba(245,215,160,0.5)",
-                boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)",
-              }}
+              className={`flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg transition-all ${dropdownOpen ? "btn-3d-active" : "btn-3d"}`}
             >
               <Plus className="w-4 h-4" />
               Add Country
@@ -285,12 +279,7 @@ export default function MultiRegionalTrending() {
             key={cat.id}
             type="button"
             onClick={() => changeCategory(cat.id)}
-            className="text-sm px-3.5 py-2 rounded-lg border font-medium transition-colors"
-            style={
-              categoryId === cat.id
-                ? { backgroundColor: "var(--color-primary)", color: "#1C1814", borderColor: "var(--color-primary)", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }
-                : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", borderColor: "rgba(245,215,160,0.4)", boxShadow: "0 1px 3px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.1)" }
-            }
+            className={`text-sm px-3.5 py-2 rounded-lg transition-all ${categoryId === cat.id ? "btn-3d-active" : "btn-3d"}`}
           >
             {cat.label}
           </button>
@@ -299,41 +288,48 @@ export default function MultiRegionalTrending() {
 
       {/* Region tabs (selected countries, each removable) */}
       <div className="flex gap-1.5 mb-3 flex-wrap">
-        {selectedRegions.map((code) => (
-          <div
-            key={code}
-            className="flex items-center gap-1 rounded-lg overflow-hidden"
-            style={{
-              border: activeRegion === code ? "2px solid #F59E0B" : "1px solid rgba(245,215,160,0.35)",
-              backgroundColor: activeRegion === code ? "#F59E0B" : "var(--color-bg-secondary)",
-              boxShadow: activeRegion === code ? "0 3px 10px rgba(245,158,11,0.4), inset 0 1px 0 rgba(255,255,255,0.2)" : "0 1px 3px rgba(0,0,0,0.06)",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => setActiveRegion(code)}
-              className="text-sm px-3 py-2 font-bold"
-              style={{ color: activeRegion === code ? "#1C1814" : "var(--color-text)" }}
+        {selectedRegions.map((code) => {
+          const isActive = activeRegion === code;
+          return (
+            <div
+              key={code}
+              className={`flex items-center gap-1 overflow-hidden rounded-lg ${isActive ? "btn-3d-active" : "btn-3d"}`}
             >
-              {countryMap[code]?.split(" ")[0]} {code}
-            </button>
-            {selectedRegions.length > 1 && (
               <button
                 type="button"
-                onClick={() => removeRegion(code)}
-                aria-label={`Remove ${code}`}
-                className="pr-2 py-2 transition-colors"
-                style={{ color: activeRegion === code ? "#1C1814" : "#A8967E" }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = "#EF4444")}
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = activeRegion === code ? "#1C1814" : "#A8967E")
-                }
+                onClick={() => setActiveRegion(code)}
+                className="text-sm px-3.5 py-2"
+                style={{
+                  color: isActive ? "#1C1814" : "#4A3F35",
+                  fontWeight: isActive ? 800 : 600,
+                  background: "transparent", border: "none", boxShadow: "none",
+                  minHeight: "auto",
+                }}
               >
-                <X className="w-3.5 h-3.5" />
+                {countryMap[code]?.split(" ")[0]} {code}
               </button>
-            )}
-          </div>
-        ))}
+              {selectedRegions.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeRegion(code)}
+                  aria-label={`Remove ${code}`}
+                  className="pr-2 py-2 transition-colors"
+                  style={{
+                    color: isActive ? "rgba(28,24,20,0.6)" : "#7A6E60",
+                    background: "transparent", border: "none", boxShadow: "none",
+                    minHeight: "auto",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#EF4444")}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = isActive ? "rgba(28,24,20,0.6)" : "#7A6E60")
+                  }
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Keyword filter */}
@@ -356,8 +352,7 @@ export default function MultiRegionalTrending() {
         <button
           type="button"
           onClick={applyKeyword}
-          className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
-          style={{ backgroundColor: "var(--color-primary)", color: "#1C1814", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }}
+          className="px-4 py-2 text-sm rounded-lg transition-all btn-3d-active"
         >
           Filter
         </button>
@@ -365,8 +360,7 @@ export default function MultiRegionalTrending() {
           <button
             type="button"
             onClick={() => { setKeyword(""); setKeywordInput(""); }}
-            className="px-3 py-2 text-sm rounded-lg transition-colors font-medium"
-            style={{ color: "var(--color-text)" }}
+            className="px-3 py-2 text-sm rounded-lg transition-all btn-3d"
           >
             Clear
           </button>

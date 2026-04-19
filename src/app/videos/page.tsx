@@ -322,13 +322,10 @@ export default function VideosPage() {
             type="button"
             onClick={handleGlobal}
             disabled={mode === "search"}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
-            style={isGlobal && mode !== "search"
-              ? { backgroundColor: "#FF0000", color: "white", border: "1px solid #FF0000" }
-              : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)", opacity: mode === "search" ? 0.5 : 1 }
-            }
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm rounded-lg transition-all ${isGlobal && mode !== "search" ? "btn-3d-active" : "btn-3d"}`}
+            style={mode === "search" ? { opacity: 0.5 } : undefined}
           >
-            <Globe className="w-3.5 h-3.5" />
+            <Globe className="w-4 h-4" />
             Global
           </button>
 
@@ -338,11 +335,8 @@ export default function VideosPage() {
               type="button"
               onClick={() => mode !== "search" && setDropdownOpen(prev => !prev)}
               disabled={mode === "search"}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all"
-              style={!isGlobal && mode !== "search"
-                ? { backgroundColor: "#FF0000", color: "white", border: "1px solid #FF0000" }
-                : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)", opacity: mode === "search" ? 0.5 : 1 }
-              }
+              className={`flex items-center gap-2 px-4 py-2 text-sm rounded-lg transition-all ${!isGlobal && mode !== "search" ? "btn-3d-active" : "btn-3d"}`}
+              style={mode === "search" ? { opacity: 0.5 } : undefined}
             >
               {!isGlobal ? selectedCountry?.label : "🗺️ International"}
               <ChevronDown className={`w-3.5 h-3.5 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
@@ -384,8 +378,7 @@ export default function VideosPage() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
-            className="px-3 py-2 text-sm rounded-lg focus:outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg-secondary)", color: "#5C4A35" }}
+            className="px-3 py-2 text-sm rounded-lg focus:outline-none btn-3d"
             title="Sort by"
             aria-label="Sort by"
           >

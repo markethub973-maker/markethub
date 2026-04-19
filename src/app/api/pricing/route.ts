@@ -17,7 +17,7 @@ export async function GET() {
     if (data?.extra_data) savedPrices = data.extra_data as Record<string, number>;
   } catch { /* use defaults */ }
 
-  const PLAN_IDS = ["free_test", "lite", "pro", "business", "enterprise"] as const;
+  const PLAN_IDS = ["free_test", "lite", "pro", "business", "agency"] as const;
 
   // plan-config.ts is the single source of truth for user-facing limits
   // under the Premium AI Actions billing model.

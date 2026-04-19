@@ -8,7 +8,7 @@ const PLAN_LABELS: Record<string, string> = {
   lite: "Creator — $24/mo",
   pro: "Pro — $49/mo",
   business: "Studio — $99/mo",
-  enterprise: "Agency — $249/mo",
+  agency: "Agency — $249/mo",
 };
 
 const PLAN_COLORS: Record<string, string> = {
@@ -16,7 +16,7 @@ const PLAN_COLORS: Record<string, string> = {
   lite: "var(--color-primary)",
   pro: "#8B5CF6",
   business: "#E1306C",
-  enterprise: "#16A34A",
+  agency: "#16A34A",
 };
 
 const PLAN_FEATURES: Record<string, string[]> = {
@@ -24,7 +24,7 @@ const PLAN_FEATURES: Record<string, string[]> = {
   lite:      ["20 Premium Actions", "Basic AI unlimited", "12 channels", "Calendar", "Marketing Agent", "Clients"],
   pro:       ["50 Premium Actions", "Basic AI unlimited", "30 channels", "AI Hub", "Lead Finder", "Leads CRM"],
   business:  ["200 Premium Actions", "Basic AI unlimited", "100 channels", "API Access", "Priority Support"],
-  enterprise:["1,000 Premium Actions", "Basic AI unlimited", "Unlimited channels", "White Label", "Full API"],
+  agency:["1,000 Premium Actions", "Basic AI unlimited", "Unlimited channels", "White Label", "Full API"],
 };
 
 interface TestAccount {

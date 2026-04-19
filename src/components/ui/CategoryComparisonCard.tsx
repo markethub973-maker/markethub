@@ -163,8 +163,7 @@ export default function CategoryComparisonCard({ channelId, niche }: Props) {
           />
         </div>
         <button onClick={fetchCategories} disabled={loadingData}
-          className="px-4 py-2 rounded-lg text-sm font-bold bg-[#292524] text-white hover:bg-[#3D2E1E] disabled:opacity-50 transition-colors"
-          style={{ boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }}>
+          className="btn-3d px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-50 transition-colors">
           {loadingData ? "Loading..." : "Load Data"}
         </button>
       </div>
@@ -177,8 +176,7 @@ export default function CategoryComparisonCard({ channelId, niche }: Props) {
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold text-[#292524]">Avg Views by Category ({categories.length} categories)</p>
             <button onClick={runAIAnalysis} disabled={loadingAI}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-[#F59E0B] text-white hover:bg-[#D97706] disabled:opacity-50 transition-colors"
-              style={{ boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }}>
+              className="btn-3d-active flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold disabled:opacity-50 transition-colors">
               <Sparkles className="w-3 h-3" />
               {loadingAI ? "Analyzing..." : "AI Analysis"}
             </button>

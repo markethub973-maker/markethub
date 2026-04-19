@@ -34,14 +34,14 @@ const PLAN_COLORS: Record<string, string> = {
   lite:       "var(--color-primary)",
   pro:        "#8B5CF6",
   business:   "#E1306C",
-  enterprise: "#16A34A",
+  agency: "#16A34A",
 };
 
 const PLAN_ICONS: Record<string, React.ReactNode> = {
   lite:       <Star className="w-5 h-5" />,
   pro:        <BarChart2 className="w-5 h-5" />,
   business:   <Building2 className="w-5 h-5" />,
-  enterprise: <Globe className="w-5 h-5" />,
+  agency: <Globe className="w-5 h-5" />,
 };
 
 function fmtVal(n: number) {

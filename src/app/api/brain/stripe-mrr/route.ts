@@ -3,7 +3,7 @@
  *
  * Single source of truth for revenue. Instead of trusting profiles.plan
  * (which drifts out of sync with Stripe — legacy test values like
- * "enterprise"/"business"/"lite" exist even though we've never sold them),
+ * "agency"/"business"/"lite" exist even though we've never sold them),
  * this endpoint paginates Stripe subscriptions (status=active) and sums
  * the per-month price of each.
  *

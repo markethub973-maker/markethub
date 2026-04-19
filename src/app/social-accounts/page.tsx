@@ -83,7 +83,7 @@ export default function SocialAccountsPage() {
     lite: { ig: 2, tiktok: true, youtube: false, linkedin: true },
     pro: { ig: 4, tiktok: true, youtube: true, linkedin: true },
     business: { ig: 10, tiktok: true, youtube: true, linkedin: true },
-    enterprise: { ig: 999, tiktok: true, youtube: true, linkedin: true },
+    agency: { ig: 999, tiktok: true, youtube: true, linkedin: true },
   };
 
   const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.free_test;

@@ -4,7 +4,7 @@ import { isAdminAuthorized } from "@/lib/adminAuth";
 import { PLANS, type PlanId } from "@/lib/plan-config";
 import { PLAN_FEATURES } from "@/lib/plan-features";
 
-const PLAN_IDS: PlanId[] = ["free_test", "lite", "pro", "business", "enterprise"];
+const PLAN_IDS: PlanId[] = ["free_test", "lite", "pro", "business", "agency"];
 
 async function getFeatureOverrides(): Promise<Record<string, Record<string, boolean>>> {
   const supabase = createServiceClient();

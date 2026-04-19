@@ -81,7 +81,7 @@ const PLAN_CONFIG: Record<string, {
     startUrl: "https://markethubpromo.com/lead-finder",
     features: ["200 Premium AI Actions/month", "Premium AI (top model)", "100 tracked channels", "10 Instagram accounts", "API Access", "20 client accounts", "White Label"],
     upsell: {
-      nextPlan: "enterprise", nextLabel: "Agency", nextPrice: "$249/mo",
+      nextPlan: "agency", nextLabel: "Agency", nextPrice: "$249/mo",
       gains: [
         "1,000 AI Actions/month (5× more — unlimited daily operations)",
         "Unlimited channels, accounts, and client seats",
@@ -91,7 +91,7 @@ const PLAN_CONFIG: Record<string, {
       ],
     },
   },
-  enterprise: {
+  agency: {
     label: "Agency", price: "$249.00", actions: "1,000", model: "Premium AI ★", color: "#16A34A",
     startUrl: "https://markethubpromo.com/lead-finder",
     features: ["1,000 Premium AI Actions/month", "Premium AI (top model)", "Unlimited everything", "White Label", "Full API Access", "SLA 99.9%", "Priority Support"],

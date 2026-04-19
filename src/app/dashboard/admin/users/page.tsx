@@ -82,11 +82,11 @@ const PLAN_COLORS: Record<string, string> = {
   lite:       "var(--color-primary)",
   pro:        "#8B5CF6",
   business:   "#E1306C",
-  enterprise: "#16A34A",
+  agency: "#16A34A",
 };
 
 const PLAN_PRICES: Record<string, number> = {
-  free_test: 0, lite: 24, pro: 49, business: 99, enterprise: 249,
+  free_test: 0, lite: 24, pro: 49, business: 99, agency: 249,
 };
 
 function planBadge(plan: string) {

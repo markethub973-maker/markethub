@@ -179,7 +179,7 @@ const PLANS = [
     features: ["200 Premium AI Actions/mo", "Top-tier AI model", "100 tracked channels", "10 Instagram accounts", "API Access", "20 client accounts", "White Label"],
   },
   {
-    id: "enterprise",
+    id: "agency",
     name: "Agency",
     price: 249,
     actions: "1,000",

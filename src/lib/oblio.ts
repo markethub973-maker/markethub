@@ -40,14 +40,14 @@ const PLAN_PRICES: Record<string, number> = {
   lite: 24,
   pro: 49,
   business: 99,
-  enterprise: 249,
+  agency: 249,
 };
 
 const PLAN_LABELS: Record<string, string> = {
   lite: "Creator",
   pro: "Pro",
   business: "Studio",
-  enterprise: "Agency",
+  agency: "Agency",
 };
 
 // ── Emite factură ─────────────────────────────────────────────────────────────

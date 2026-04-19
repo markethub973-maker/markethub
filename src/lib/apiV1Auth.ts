@@ -55,7 +55,7 @@ export async function authorizeV1(
     ?? "starter";
   const isAdmin = Boolean(profile?.is_admin);
 
-  if (!isAdmin && !["pro", "studio", "agency", "business", "enterprise"].includes(plan)) {
+  if (!isAdmin && !["pro", "studio", "agency", "business", "agency"].includes(plan)) {
     return {
       ok: false,
       response: NextResponse.json(

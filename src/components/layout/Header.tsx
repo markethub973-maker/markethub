@@ -79,7 +79,7 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
         setUsername(name);
         localStorage.setItem("mh_user", name);
         const p = data.subscription_plan || data.plan || "free_test";
-        const LABELS: Record<string, string> = { free_forever: "Free", free_test: "Starter", lite: "Creator", pro: "Pro", business: "Studio", enterprise: "Agency" };
+        const LABELS: Record<string, string> = { free_forever: "Free", free_test: "Starter", lite: "Creator", pro: "Pro", business: "Studio", agency: "Agency" };
         setPlan(LABELS[p] || p.replace("_", " ").replace(/\b\w/g, (c: string) => c.toUpperCase()));
       }
     });

@@ -21,20 +21,24 @@ export const PLANS = {
     name: "Creator",
     price: "$24/mo",
     priceId: process.env.STRIPE_LITE_PRICE_ID!,
+    yearlyPriceId: process.env.STRIPE_LITE_YEARLY_PRICE_ID!,
   },
   pro: {
     name: "Pro",
     price: "$49/mo",
     priceId: process.env.STRIPE_PRO_PRICE_ID!,
+    yearlyPriceId: process.env.STRIPE_PRO_YEARLY_PRICE_ID!,
   },
   business: {
     name: "Studio",
     price: "$99/mo",
     priceId: process.env.STRIPE_BUSINESS_PRICE_ID!,
+    yearlyPriceId: process.env.STRIPE_BUSINESS_YEARLY_PRICE_ID!,
   },
-  enterprise: {
+  agency: {
     name: "Agency",
     price: "$249/mo",
-    priceId: process.env.STRIPE_ENTERPRISE_PRICE_ID!,
+    priceId: process.env.STRIPE_AGENCY_PRICE_ID!,
+    yearlyPriceId: process.env.STRIPE_AGENCY_YEARLY_PRICE_ID!,
   },
 };

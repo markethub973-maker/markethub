@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
   const plan = (profile?.plan as string | null) ?? (profile?.subscription_plan as string | null) ?? "starter";
   const isAdmin = Boolean(profile?.is_admin);
-  if (!isAdmin && !["pro", "studio", "agency", "business", "enterprise"].includes(plan)) {
+  if (!isAdmin && !["pro", "studio", "agency", "business", "agency"].includes(plan)) {
     return NextResponse.json(
       { error: "AI video generation requires Pro plan or higher", upgrade_required: true },
       { status: 403 },

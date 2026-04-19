@@ -96,7 +96,7 @@ const CATEGORIES = [
           { key: "STRIPE_LITE_PRICE_ID", desc: "Price ID — $24/mo" },
           { key: "STRIPE_PRO_PRICE_ID", desc: "Price ID — $49/mo" },
           { key: "STRIPE_BUSINESS_PRICE_ID", desc: "Price ID — $99/mo" },
-          { key: "STRIPE_ENTERPRISE_PRICE_ID", desc: "Price ID — $249/mo" },
+          { key: "STRIPE_AGENCY_PRICE_ID", desc: "Price ID — $249/mo" },
         ],
         docs: "dashboard.stripe.com",
       },
@@ -167,7 +167,7 @@ const ENV_SUMMARY = [
   { group: "Meta / Instagram", vars: ["INSTAGRAM_APP_ID", "INSTAGRAM_APP_SECRET", "INSTAGRAM_REDIRECT_URI", "META_APP_ID", "META_APP_SECRET"] },
   { group: "RapidAPI", vars: ["RAPIDAPI_KEY"] },
   { group: "Supabase", vars: ["NEXT_PUBLIC_SUPABASE_URL", "NEXT_PUBLIC_SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY"] },
-  { group: "Stripe", vars: ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "STRIPE_LITE_PRICE_ID", "STRIPE_PRO_PRICE_ID", "STRIPE_BUSINESS_PRICE_ID", "STRIPE_ENTERPRISE_PRICE_ID"] },
+  { group: "Stripe", vars: ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "STRIPE_LITE_PRICE_ID", "STRIPE_PRO_PRICE_ID", "STRIPE_BUSINESS_PRICE_ID", "STRIPE_AGENCY_PRICE_ID"] },
   { group: "Email", vars: ["RESEND_API_KEY", "ADMIN_EMAIL"] },
   { group: "System", vars: ["CRON_SECRET", "VERCEL_OIDC_TOKEN", "NEXT_PUBLIC_APP_URL"] },
 ];

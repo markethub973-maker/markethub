@@ -36,7 +36,7 @@ const BADGES: Record<string, { label: string; color: string }> = {
   lite:       { label: "Start Here", color: "var(--color-primary)" },
   pro:        { label: "Best Value", color: "#8B5CF6" },
   business:   { label: "Studio",     color: "#E1306C" },
-  enterprise: { label: "Agency",     color: "#16A34A" },
+  agency: { label: "Agency",     color: "#16A34A" },
 };
 
 function fmtVal(n: number, suffix = "") {

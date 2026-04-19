@@ -81,7 +81,7 @@ const plans = [
     ],
   },
   {
-    id: "enterprise",
+    id: "agency",
     name: "Agency",
     duration: "Monthly",
     price: "$249",

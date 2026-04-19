@@ -13,7 +13,7 @@ export const AI_DAILY_LIMITS: Record<string, { apex: number; research: number }>
   lite:       { apex: 20,  research: 15  },
   pro:        { apex: 50,  research: 30  },
   business:   { apex: 100, research: 80  },
-  enterprise: { apex: -1,  research: -1  }, // -1 = unlimited
+  agency:     { apex: -1,  research: -1  }, // -1 = unlimited
 };
 
 export type AILimitType = "apex" | "research";

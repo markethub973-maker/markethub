@@ -145,10 +145,7 @@ export default function TrendingSoundsCard() {
         <button
           type="button"
           onClick={handleGlobal}
-          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
-          style={isGlobal
-            ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }
-            : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+          className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all ${isGlobal ? "btn-3d-active" : "btn-3d"}`}
         >
           <Globe className="w-4 h-4" /> Global
         </button>
@@ -158,10 +155,7 @@ export default function TrendingSoundsCard() {
           <button
             type="button"
             onClick={() => setDropdownOpen(prev => !prev)}
-            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
-            style={!isGlobal
-              ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }
-              : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
+            className={`flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all ${!isGlobal ? "btn-3d-active" : "btn-3d"}`}
           >
             {!isGlobal ? selectedCountry?.label : "🗺️ International"}
             <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />

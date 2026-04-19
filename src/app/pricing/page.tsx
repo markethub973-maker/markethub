@@ -10,27 +10,6 @@ const FREE_PLANS = ["free_forever", "free_test", "expired"];
 
 const plans = [
   {
-    id: "free_forever",
-    name: "Free Forever",
-    duration: "",
-    price: "$0",
-    priceNum: 0,
-    premiumActions: "0",
-    description: "No credit card required",
-    cta: "Start Free",
-    popular: false,
-    features: [
-      "10 AI captions / month",
-      "3 AI images / month",
-      "1 brand voice",
-      "1 social account",
-      "YouTube analytics",
-      "Basic dashboard",
-      "1 competitor brand",
-    ],
-    missing: ["Content calendar", "Scheduling", "Lead Finder & CRM", "API access", "Premium AI Actions"],
-  },
-  {
     id: "free_test",
     name: "Starter",
     duration: "14 Days",
@@ -127,7 +106,7 @@ const plans = [
     missing: ["White label"],
   },
   {
-    id: "enterprise",
+    id: "agency",
     name: "Agency",
     duration: "/ month",
     price: "$249",
@@ -175,7 +154,7 @@ export default function PricingPage() {
       window.location.href = "/register";
       return;
     }
-    if (planId === "enterprise") {
+    if (planId === "agency") {
       window.location.href = "mailto:markethub973@gmail.com?subject=Agency Plan";
       return;
     }
@@ -200,7 +179,7 @@ export default function PricingPage() {
   const displayPrice = (priceNum: number) => {
     if (priceNum === 0) return "$0";
     if (annual) {
-      const yearly = Math.round(priceNum * 10); // 2 months free
+      const yearly = Math.round(priceNum * 12 * 0.8); // 20% off annual
       return `$${yearly}`;
     }
     return `$${priceNum}`;
@@ -428,7 +407,7 @@ export default function PricingPage() {
                   border: "1px solid rgba(245,158,11,0.3)",
                 }}
               >
-                2 months free
+                Save 20%
               </span>
             )}
           </div>
@@ -440,11 +419,21 @@ export default function PricingPage() {
             {plans.map((plan) => {
               const isCurrent = plan.id === currentPlan;
               return (
-                <GlassCard
+                <div
                   key={plan.id}
-                  accent={plan.popular}
-                  className={`relative flex flex-col ${plan.popular ? "ring-2 ring-amber-400/40" : ""}`}
-                  padding="p-6"
+                  className={`relative flex flex-col rounded-2xl p-6 transition-all duration-200 hover:translate-y-[-2px]`}
+                  style={{
+                    background: plan.popular
+                      ? "linear-gradient(180deg, rgba(245,158,11,0.12) 0%, rgba(30,30,40,0.9) 30%)"
+                      : "rgba(30, 30, 40, 0.85)",
+                    border: plan.popular
+                      ? "2px solid rgba(245,158,11,0.5)"
+                      : "1px solid rgba(255,255,255,0.15)",
+                    boxShadow: plan.popular
+                      ? "0 8px 32px rgba(245,158,11,0.2), inset 0 1px 0 rgba(255,255,255,0.08)"
+                      : "0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)",
+                    backdropFilter: "blur(12px)",
+                  }}
                 >
                   {plan.popular && (
                     <>
@@ -498,15 +487,13 @@ export default function PricingPage() {
                     </div>
                     {annual && plan.priceNum > 0 && (
                       <p className="text-xs mt-1" style={{ color: "rgba(245,158,11,0.7)" }}>
-                        ${plan.priceNum}/mo equivalent
+                        ${Math.round(plan.priceNum * 0.8)}/mo · <span style={{ textDecoration: "line-through", color: "rgba(255,255,255,0.3)" }}>${plan.priceNum}/mo</span> · Save ${Math.round(plan.priceNum * 12 * 0.2)}/yr
                       </p>
                     )}
                     <div className="flex items-center gap-1 mt-1">
                       <Zap className="w-3.5 h-3.5" style={{ color: "#818cf8" }} />
                       <span className="text-xs font-semibold" style={{ color: "#a5b4fc" }}>
-                        {plan.id === "free_forever"
-                          ? "Basic AI only"
-                          : `${plan.premiumActions} Premium AI Actions${plan.id === "free_test" ? " (trial)" : "/month"}`}
+                        {`${plan.premiumActions} Premium AI Actions${plan.id === "free_test" ? " (trial)" : "/month"}`}
                       </span>
                     </div>
                   </div>
@@ -523,16 +510,15 @@ export default function PricingPage() {
                       Current Plan
                     </div>
                   ) : (
-                    <GlassButton
-                      variant={plan.popular ? "primary" : "secondary"}
-                      size="lg"
-                      className="w-full mb-6 flex items-center justify-center gap-2"
+                    <button
+                      type="button"
+                      className={`w-full mb-6 py-3 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${plan.popular ? "btn-3d-active" : "btn-3d"}`}
                       onClick={() => handleCta(plan.id)}
                       disabled={loading}
                     >
                       {plan.cta}
                       <ArrowRight className="w-4 h-4" />
-                    </GlassButton>
+                    </button>
                   )}
 
                   <div className="space-y-2.5 flex-1">
@@ -559,7 +545,7 @@ export default function PricingPage() {
                       </div>
                     ))}
                   </div>
-                </GlassCard>
+                </div>
               );
             })}
           </div>
@@ -818,12 +804,17 @@ export default function PricingPage() {
                 a: "Heavy workflows are paused until next month\u2019s reset, or you can upgrade to a higher plan instantly. Basic AI keeps working unlimited.",
               },
             ].map((item) => (
-              <GlassCard key={item.q} padding="p-5">
+              <div key={item.q} className="rounded-2xl p-5" style={{
+                background: "rgba(30, 30, 40, 0.85)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                boxShadow: "0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)",
+                backdropFilter: "blur(12px)",
+              }}>
                 <h4 className="font-semibold mb-2 text-white">{item.q}</h4>
-                <p className="text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <p className="text-sm" style={{ color: "rgba(255,255,255,0.65)", lineHeight: 1.6 }}>
                   {item.a}
                 </p>
-              </GlassCard>
+              </div>
             ))}
           </div>
         </div>

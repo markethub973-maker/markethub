@@ -6,11 +6,13 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
   try {
-    const { plan } = await req.json();
+    const { plan, interval } = await req.json();
 
-    if (!PLANS[plan as keyof typeof PLANS]) {
+    const planConfig = PLANS[plan as keyof typeof PLANS];
+    if (!planConfig) {
       return NextResponse.json({ error: "Plan invalid." }, { status: 400 });
     }
+    const isAnnual = interval === "year";
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -41,7 +43,7 @@ export async function POST(req: Request) {
       customer: customerId,
       mode: "subscription",
       payment_method_types: ["card"],
-      line_items: [{ price: PLANS[plan as keyof typeof PLANS].priceId, quantity: 1 }],
+      line_items: [{ price: isAnnual && planConfig.yearlyPriceId ? planConfig.yearlyPriceId : planConfig.priceId, quantity: 1 }],
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/settings?upgraded=true`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/upgrade`,
       metadata: { user_id: user.id, plan },

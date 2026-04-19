@@ -13,14 +13,14 @@
  *   lite            Creator   $24     20                   unlimited
  *   pro             Pro       $49     50                   unlimited
  *   business        Studio    $99     200                  unlimited
- *   enterprise      Agency    $249    1000                 unlimited
+ *   agency          Agency    $249    1000                 unlimited
  *
  * The legacy ai_budget_usd / ai_credits fields are kept for the admin
  * finance dashboard which still tracks raw API spend, but they no longer
  * gate user requests — premium_actions_per_month is the source of truth.
  */
 
-export type PlanId = "free_forever" | "free_test" | "lite" | "pro" | "business" | "enterprise";
+export type PlanId = "free_forever" | "free_test" | "lite" | "pro" | "business" | "agency";
 
 export interface PlanConfig {
   id: PlanId;
@@ -173,8 +173,8 @@ export const PLANS: Record<PlanId, PlanConfig> = {
     sla_uptime: 99.5,
   },
 
-  enterprise: {
-    id: "enterprise",
+  agency: {
+    id: "agency",
     name: "Agency",
     price: 249,
     premium_actions_per_month: 1000,

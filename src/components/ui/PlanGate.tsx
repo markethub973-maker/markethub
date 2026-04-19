@@ -10,14 +10,14 @@ interface SubscriptionData {
 }
 
 interface PlanGateProps {
-  /** Minimum plan required: "lite" | "pro" | "business" | "enterprise" */
-  requiredPlan: "lite" | "pro" | "business" | "enterprise";
+  /** Minimum plan required: "lite" | "pro" | "business" | "agency" */
+  requiredPlan: "lite" | "pro" | "business" | "agency";
   children: React.ReactNode;
   /** Custom message to show instead of default */
   message?: string;
 }
 
-const PLAN_ORDER = ["free_test", "lite", "pro", "business", "enterprise"];
+const PLAN_ORDER = ["free_test", "lite", "pro", "business", "agency"];
 
 function meetsRequirement(userPlan: string, required: string): boolean {
   const userIdx = PLAN_ORDER.indexOf(userPlan);
@@ -52,7 +52,7 @@ export default function PlanGate({ requiredPlan, children, message }: PlanGatePr
 
   if (hasAccess) return <>{children}</>;
 
-  const planLabel = { lite: "Creator", pro: "Pro", business: "Studio", enterprise: "Agency" }[requiredPlan];
+  const planLabel = { lite: "Creator", pro: "Pro", business: "Studio", agency: "Agency" }[requiredPlan];
 
   return (
     <div

@@ -36,6 +36,6 @@ export async function GET(req: NextRequest) {
 }
 
 function plan_label(plan: string) {
-  const map: Record<string, string> = { free: "Free Plan", pro: "Pro Plan", enterprise: "Enterprise Plan" };
+  const map: Record<string, string> = { free: "Free Plan", pro: "Pro Plan", agency: "Agency Plan" };
   return map[plan] || "Pro Plan";
 }

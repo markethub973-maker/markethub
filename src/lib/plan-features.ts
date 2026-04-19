@@ -5,7 +5,7 @@
  * message shown when a user tries to access something locked.
  */
 
-export type PlanId = "free_forever" | "free_test" | "lite" | "pro" | "business" | "enterprise";
+export type PlanId = "free_forever" | "free_test" | "lite" | "pro" | "business" | "agency";
 
 // ── Plan order (index = rank, higher = more capable) ─────────────────────────
 export const PLAN_ORDER: PlanId[] = [
@@ -14,7 +14,7 @@ export const PLAN_ORDER: PlanId[] = [
   "lite",
   "pro",
   "business",
-  "enterprise",
+  "agency",
 ];
 
 export const PLAN_PRICES: Record<PlanId, number> = {
@@ -23,7 +23,7 @@ export const PLAN_PRICES: Record<PlanId, number> = {
   lite:       24,
   pro:        49,
   business:   99,
-  enterprise: 249,
+  agency: 249,
 };
 
 export const PLAN_LABELS: Record<PlanId, string> = {
@@ -32,7 +32,7 @@ export const PLAN_LABELS: Record<PlanId, string> = {
   lite:       "Creator",
   pro:        "Pro",
   business:   "Studio",
-  enterprise: "Agency",
+  agency: "Agency",
 };
 
 export const PLAN_COLORS: Record<PlanId, string> = {
@@ -41,7 +41,7 @@ export const PLAN_COLORS: Record<PlanId, string> = {
   lite:       "#F59E0B",
   pro:        "#8B5CF6",
   business:   "#E1306C",
-  enterprise: "#16A34A",
+  agency: "#16A34A",
 };
 
 // ── Plan feature flags (runtime route gating; limits mirror plan-config.ts) ──
@@ -101,7 +101,7 @@ export const PLAN_FEATURES: Record<PlanId, PlanFeatureSet> = {
     team_members:       2,
     client_accounts:    10,
   },
-  enterprise: {
+  agency: {
     has_calendar:       true,
     has_tiktok:         true,
     has_api_access:     true,

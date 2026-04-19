@@ -3,7 +3,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 import { PLANS, type PlanId } from "@/lib/plan-config";
 
-const PLAN_IDS: PlanId[] = ["free_test", "lite", "pro", "business", "enterprise"];
+const PLAN_IDS: PlanId[] = ["free_test", "lite", "pro", "business", "agency"];
 
 async function getPrices(): Promise<Record<string, number>> {
   const supabase = createServiceClient();

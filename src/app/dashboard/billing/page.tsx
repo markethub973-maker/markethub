@@ -44,7 +44,7 @@ const PLAN_LABELS: Record<string, string> = {
   lite: "Creator",
   pro: "Pro",
   business: "Studio",
-  enterprise: "Agency",
+  agency: "Agency",
   expired: "Expired",
 };
 

@@ -121,7 +121,7 @@ async function readState(userId: string): Promise<BrainState> {
   const profs = profiles.data ?? [];
   // ONLY 4 real pricing bands (validated with Eduard 2026-04-16):
   //   Starter = 14d trial (not paid) · Creator $24 · Pro $49 · Studio $99 · Agency $249
-  // Legacy DB values (enterprise/business/lite) = test accounts, NOT real MRR.
+  // Legacy DB values (agency/business/lite) = test accounts, NOT real MRR.
   // For accurate MRR use /api/brain/stripe-mrr which reads from Stripe API.
   const paying = profs.filter((p) => {
     const plan = (p.plan ?? p.subscription_plan ?? "").toLowerCase();

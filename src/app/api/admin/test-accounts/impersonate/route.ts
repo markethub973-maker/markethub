@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 
-const PLAN_ORDER = ["free_test", "lite", "pro", "business", "enterprise"];
+const PLAN_ORDER = ["free_test", "lite", "pro", "business", "agency"];
 
 export async function POST(req: NextRequest) {
   if (!isAdminAuthorized(req)) {

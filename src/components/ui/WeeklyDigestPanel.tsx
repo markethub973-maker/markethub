@@ -146,8 +146,7 @@ export default function WeeklyDigestPanel({ clients }: Props) {
             <div className="flex flex-wrap gap-1.5">
               {PLATFORM_OPTIONS.map(p => (
                 <button key={p} onClick={() => togglePlatform(p)}
-                  className={`text-sm px-3.5 py-2 rounded-lg border transition-colors ${platforms.includes(p) ? "bg-[#F59E0B] text-white border-[#F59E0B]" : "bg-white text-[#78614E] border-[#E8D9C5] hover:border-[#F59E0B]"}`}
-                  style={{ boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+                  className={`text-sm px-3.5 py-2 rounded-lg transition-colors ${platforms.includes(p) ? "btn-3d-active" : "btn-3d"}`}>
                   {p}
                 </button>
               ))}
@@ -242,8 +241,7 @@ export default function WeeklyDigestPanel({ clients }: Props) {
               <div className="flex flex-wrap gap-1.5 mb-3">
                 {clients.map(c => (
                   <button key={c.id} onClick={() => toggleClient(c.id)}
-                    className={`text-sm px-3.5 py-2 rounded-lg border transition-colors ${selectedClients.includes(c.id) ? "bg-[#F59E0B] text-white border-[#F59E0B]" : "bg-white text-[#78614E] border-[#E8D9C5] hover:border-[#F59E0B]"}`}
-                    style={{ boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
+                    className={`text-sm px-3.5 py-2 rounded-lg transition-colors ${selectedClients.includes(c.id) ? "btn-3d-active" : "btn-3d"}`}>
                     {c.name}
                   </button>
                 ))}

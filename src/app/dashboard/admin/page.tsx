@@ -210,7 +210,7 @@ export default function AdminPage() {
         setStats({
           totalUsers: analyticsData.summary.total_users,
           totalRevenue: analyticsData.summary.total_revenue,
-          activeSubscriptions: (subs.lite || 0) + (subs.pro || 0) + (subs.business || 0) + (subs.enterprise || 0),
+          activeSubscriptions: (subs.lite || 0) + (subs.pro || 0) + (subs.business || 0) + (subs.agency || 0),
           freeTrials: subs.free_test || 0,
         });
       }

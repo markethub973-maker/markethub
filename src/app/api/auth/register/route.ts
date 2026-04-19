@@ -6,7 +6,7 @@ import { logAudit, getIpFromHeaders } from "@/lib/auditLog";
 import { logSecurityEvent } from "@/lib/siem";
 import { checkPasswordBreach } from "@/lib/hibp";
 
-const VALID_PLANS = ["free_forever", "free_test", "lite", "pro", "business", "enterprise"];
+const VALID_PLANS = ["free_forever", "free_test", "lite", "pro", "business", "agency"];
 
 // ── Email normalization (Gmail dot-trick + plus-aliasing) ─────────────────────
 function normalizeEmail(email: string): string {

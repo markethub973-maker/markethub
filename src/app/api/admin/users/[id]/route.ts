@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { isAdminAuthorized } from "@/lib/adminAuth";
 
-const VALID_PLANS = ["free_test", "lite", "pro", "business", "enterprise"];
+const VALID_PLANS = ["free_test", "lite", "pro", "business", "agency"];
 
 export async function PATCH(
   request: NextRequest,

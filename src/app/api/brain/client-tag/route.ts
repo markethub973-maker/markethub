@@ -45,7 +45,7 @@ interface PostRow {
   created_at: string;
 }
 
-const PAID_PLANS = new Set(["pro", "studio", "agency", "business", "enterprise", "creator"]);
+const PAID_PLANS = new Set(["pro", "studio", "agency", "business", "agency", "creator"]);
 const DAY_MS = 24 * 3600_000;
 
 function computeTags(profile: ProfileRow, brand: BrandRow | null, posts: PostRow[]): string[] {

@@ -26,7 +26,7 @@ const PLAN_OPTIONS = [
   { id: "lite", label: "Creator" },
   { id: "pro", label: "Pro" },
   { id: "business", label: "Studio" },
-  { id: "enterprise", label: "Agency" },
+  { id: "agency", label: "Agency" },
 ];
 
 const EMPTY_FORM = {

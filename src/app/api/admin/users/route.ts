@@ -15,7 +15,7 @@ const PLAN_PRICES: Record<string, number> = {
   lite:       24,
   pro:        49,
   business:   99,
-  enterprise: 249,
+  agency: 249,
 };
 
 function getPlanPrice(plan: string): number {

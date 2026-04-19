@@ -1133,6 +1133,46 @@ button[style*="rgba(245,215,160,0.2)"] {
   border: 1px solid rgba(245,215,160,0.4) !important;
 }
 
+/* ── 3D Bej Button (inactive state) ────────── */
+.btn-3d {
+  background: linear-gradient(180deg, #D4C8B8 0%, #C4B8A8 50%, #B0A494 100%) !important;
+  color: #4A3F35 !important;
+  border: 1px solid #BEB2A2 !important;
+  border-bottom: 2px solid #9A8E7E !important;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(0,0,0,0.08) !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.15);
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+.btn-3d:hover {
+  background: linear-gradient(180deg, #F5D89A 0%, #E8C56E 50%, #D4A84A 100%) !important;
+  color: #2D2015 !important;
+  border-color: #D4A84A !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245,158,11,0.35), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.1) !important;
+}
+.btn-3d:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15) !important;
+}
+
+/* ── 3D Amber Button (active state) ────────── */
+.btn-3d-active {
+  background: linear-gradient(180deg, #FBBF24 0%, #F59E0B 50%, #D97706 100%) !important;
+  color: #1C1814 !important;
+  border: 1px solid #D97706 !important;
+  border-bottom: 2px solid #B45309 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 4px 14px rgba(245,158,11,0.5), inset 0 1px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.1) !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.2);
+  transform: scale(1.05);
+  transition: all 0.2s ease;
+}
+.btn-3d-active:hover {
+  box-shadow: 0 6px 20px rgba(245,158,11,0.6), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -2px 0 rgba(0,0,0,0.1) !important;
+  transform: scale(1.08);
+}
+
 .btn-liquid-primary, .btn-liquid-secondary {
   padding: 10px 20px;
   font-size: 14px;

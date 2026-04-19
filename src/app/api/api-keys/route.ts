@@ -23,8 +23,8 @@ export async function POST(req: NextRequest) {
   const auth = await requireAuth();
   if (!auth.ok) return auth.response;
 
-  // Check plan — only Business/Enterprise
-  if (!["business", "enterprise", "admin"].includes(auth.userPlan)) {
+  // Check plan — only Business/Agency
+  if (!["business", "agency", "admin"].includes(auth.userPlan)) {
     return NextResponse.json({ error: "API access requires Business plan or higher" }, { status: 403 });
   }
 

@@ -239,10 +239,7 @@ export default function ChannelsPage() {
         <div className="flex flex-wrap items-center gap-3">
           {/* Global Button */}
           <button type="button" onClick={handleGlobal}
-            className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all"
-            style={isGlobal
-              ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }
-              : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+            className={`flex items-center gap-1.5 px-4 py-2.5 text-sm rounded-lg transition-all ${isGlobal ? "btn-3d-active" : "btn-3d"}`}
           >
             <Globe className="w-4 h-4" /> Global
           </button>
@@ -250,10 +247,7 @@ export default function ChannelsPage() {
           {/* International Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button type="button" onClick={() => setDropdownOpen(prev => !prev)}
-              className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all"
-              style={!isGlobal
-                ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }
-                : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm rounded-lg transition-all ${!isGlobal ? "btn-3d-active" : "btn-3d"}`}
             >
               {!isGlobal ? selectedCountry?.label : "🗺️ International"}
               <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
@@ -279,8 +273,7 @@ export default function ChannelsPage() {
             onChange={(e) => setSort(e.target.value)}
             title="Sort channels"
             aria-label="Sort channels"
-            className="px-4 py-2.5 text-sm font-semibold rounded-lg focus:outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+            className="px-4 py-2.5 text-sm rounded-lg focus:outline-none btn-3d"
           >
             <option value="subscribers">Most Subscribers</option>
             <option value="views">Most Views</option>
@@ -292,10 +285,7 @@ export default function ChannelsPage() {
               <button
                 type="button"
                 onClick={() => compareList.length === 2 ? setShowCompare(true) : null}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-colors"
-                style={compareList.length === 2
-                  ? { backgroundColor: "var(--color-primary)", color: "#1C1814", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }
-                  : { backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.35)" }}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm transition-all ${compareList.length === 2 ? "btn-3d-active" : "btn-3d"}`}
               >
                 <ArrowLeftRight className="w-4 h-4" />
                 {compareList.length === 2 ? "Compare now!" : `Selected ${compareList.length}/2`}
@@ -304,8 +294,7 @@ export default function ChannelsPage() {
             <button
               type="button"
               onClick={() => exportCSV(filtered)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold"
-              style={{ backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.1)" }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm btn-3d"
             >
               <Download className="w-4 h-4" />
               Export CSV
@@ -378,19 +367,14 @@ export default function ChannelsPage() {
                     <button
                       type="button"
                       onClick={() => toggleCompare(ch)}
-                      className="text-sm font-bold transition-colors px-3 py-1.5 rounded-lg"
-                      style={isSelected
-                        ? { color: "#1C1814", backgroundColor: "var(--color-primary)", boxShadow: "0 2px 6px rgba(245,158,11,0.3)" }
-                        : { color: "var(--color-text)", backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }
-                      }
+                      className={`text-sm px-3 py-1.5 rounded-lg transition-all ${isSelected ? "btn-3d-active" : "btn-3d"}`}
                     >
                       {isSelected ? "✓ Selected" : "Compare"}
                     </button>
                     <button
                       type="button"
                       onClick={() => setAnalyticsChannel(ch)}
-                      className="text-sm font-bold px-3 py-1.5 rounded-lg transition-colors"
-                      style={{ color: "#1C1814", backgroundColor: "var(--color-primary)", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }}
+                      className="text-sm px-3 py-1.5 rounded-lg transition-all btn-3d-active"
                     >
                       Analytics →
                     </button>
