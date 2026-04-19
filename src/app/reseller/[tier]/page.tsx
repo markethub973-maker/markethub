@@ -299,7 +299,7 @@ export default async function ResellerTierPage({
       {/* How It Works */}
       <section className="max-w-4xl mx-auto px-6 py-12">
         <h2 className="text-3xl font-bold text-center mb-10">{t.howTitle}</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {t.steps.map((s) => (
             <div key={s.num} className="text-center">
               <div

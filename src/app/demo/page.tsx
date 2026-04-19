@@ -104,7 +104,7 @@ export default function DemoPage() {
 
       <div style={{ position: "relative", zIndex: 1 }}>
         {/* Header */}
-        <header style={{ padding: "24px 32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <header className="px-4 sm:px-6 md:px-8 py-4 sm:py-6" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <Link href="/" style={{ textDecoration: "none", color: "#fff", fontSize: 20, fontWeight: 800 }}>
             <span style={{ color: "#F59E0B" }}>●</span> MarketHub Pro
           </Link>
@@ -116,10 +116,10 @@ export default function DemoPage() {
         {/* Hero */}
         <section style={{ textAlign: "center", padding: "80px 24px 40px", maxWidth: 800, margin: "0 auto" }}>
           <div style={{ fontSize: 13, color: "#F59E0B", fontWeight: 600, marginBottom: 16, letterSpacing: 2, textTransform: "uppercase" }}>Social Media Content Platform</div>
-          <h1 style={{ fontSize: 48, fontWeight: 800, lineHeight: 1.1, marginBottom: 24 }}>
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold" style={{ lineHeight: 1.1, marginBottom: 24 }}>
             3x More Content.<br /><span style={{ color: "#F59E0B" }}>Zero Extra Staff.</span>
           </h1>
-          <p style={{ fontSize: 18, color: "rgba(255,255,255,0.65)", maxWidth: 560, margin: "0 auto 40px", lineHeight: 1.6 }}>
+          <p className="text-sm sm:text-base md:text-lg" style={{ color: "rgba(255,255,255,0.65)", maxWidth: 560, margin: "0 auto 40px", lineHeight: 1.6 }}>
             AI-powered social media content for restaurants, hotels, clinics, and retail businesses. Professional posts, images, and scheduling — delivered automatically.
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
@@ -134,8 +134,8 @@ export default function DemoPage() {
 
         {/* Features */}
         <section style={{ maxWidth: 960, margin: "0 auto", padding: "60px 24px" }}>
-          <h2 style={{ textAlign: "center", fontSize: 32, fontWeight: 700, marginBottom: 48 }}>What You Get</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ textAlign: "center", marginBottom: 48 }}>What You Get</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map((f, i) => (
               <div key={i} style={card}>
                 <f.icon size={24} color="#F59E0B" style={{ marginBottom: 12 }} />
@@ -148,7 +148,7 @@ export default function DemoPage() {
 
         {/* How It Works */}
         <section style={{ maxWidth: 640, margin: "0 auto", padding: "60px 24px" }}>
-          <h2 style={{ textAlign: "center", fontSize: 32, fontWeight: 700, marginBottom: 48 }}>How It Works</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold" style={{ textAlign: "center", marginBottom: 48 }}>How It Works</h2>
           {[
             { n: "1", title: "Connect Your Social Accounts", desc: "Link Instagram, Facebook, LinkedIn in 2 minutes." },
             { n: "2", title: "Tell Us Your Brand", desc: "Share your colors, tone, and audience. AI learns your voice." },

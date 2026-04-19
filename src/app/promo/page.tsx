@@ -472,7 +472,7 @@ export default function PromoPage() {
             Powered by AI MarketHub Engine — Premium tier
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6" style={{ color: D.heading }}>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-tight mb-6" style={{ color: D.heading }}>
             The marketing platform that
             <span style={{ color: D.accent }}> finds your clients</span>,
             writes your copy,

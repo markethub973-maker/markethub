@@ -286,7 +286,7 @@ export default function CampaignsPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
           {[
             { label: "Active Campaigns", value: totals.activeCampaigns.toString(), icon: Target, color: "#10B981" },
             { label: "Total Budget", value: fmtCurrency(totals.totalBudget), icon: DollarSign, color: "var(--color-primary)" },

@@ -754,7 +754,7 @@ export default function PricingPage() {
               <Zap className="w-5 h-5" style={{ color: "#818cf8" }} />
               <h3 className="font-bold text-lg text-white">How Premium AI Actions work</h3>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
               {[
                 { label: "Lead Scoring", cost: "1 Action" },
                 { label: "Outreach Message", cost: "1 Action" },
