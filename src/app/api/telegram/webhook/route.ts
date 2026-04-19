@@ -453,6 +453,43 @@ export async function POST(req: NextRequest) {
     } catch { /* non-fatal */ }
   }
 
+  // Booking management commands
+  if (userText === "/bookings") {
+    try {
+      const svcB = createServiceClient();
+      const { data: bookings } = await svcB
+        .from("bookings")
+        .select("id, slug, prospect_name, prospect_email, date, time_slot, status")
+        .order("date", { ascending: true })
+        .limit(20);
+      if (!bookings || bookings.length === 0) {
+        await tgApi("sendMessage", { chat_id: chatId, text: "Nu ai booking-uri." });
+      } else {
+        const list = bookings.map((b, i) =>
+          `${i + 1}. ${b.date} ${b.time_slot} — ${b.prospect_name} (${b.prospect_email})\n   ${b.slug} · ${b.status}\n   Șterge: /anuleaza ${String(b.id).slice(0, 8)}`
+        ).join("\n\n");
+        await tgApi("sendMessage", { chat_id: chatId, text: `📅 BOOKING-URI (${bookings.length}):\n\n${list}` });
+      }
+    } catch { await tgApi("sendMessage", { chat_id: chatId, text: "Eroare la citirea booking-urilor." }); }
+    return NextResponse.json({ ok: true, action: "list_bookings" });
+  }
+
+  if (userText.startsWith("/anuleaza ")) {
+    const shortId = userText.slice(10).trim();
+    try {
+      const svcB = createServiceClient();
+      const { data: all } = await svcB.from("bookings").select("id, prospect_name, date, time_slot").limit(50);
+      const match = (all ?? []).find(b => String(b.id).startsWith(shortId));
+      if (!match) {
+        await tgApi("sendMessage", { chat_id: chatId, text: `Nu am găsit booking-ul ${shortId}.` });
+      } else {
+        await svcB.from("bookings").delete().eq("id", match.id);
+        await tgApi("sendMessage", { chat_id: chatId, text: `🗑️ Booking anulat: ${match.prospect_name} — ${match.date} ${match.time_slot}` });
+      }
+    } catch { await tgApi("sendMessage", { chat_id: chatId, text: "Eroare la anulare." }); }
+    return NextResponse.json({ ok: true, action: "cancel_booking" });
+  }
+
   // Rule management commands from Eduard
   if (userText === "/reguli") {
     try {
