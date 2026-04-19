@@ -90,7 +90,7 @@ export default function SocialAccountsPage() {
   const igCount = connections.filter(c => c.platform === "Instagram").length;
 
   const platforms = [
-    { name: "Instagram", icon: Instagram, color: "#E1306C", connectUrl: "/api/auth/instagram/connect", allowed: true, limit: limits.ig, count: igCount },
+    { name: "Instagram", icon: Instagram, color: "#E1306C", connectUrl: "/api/auth/instagram", allowed: true, limit: limits.ig, count: igCount },
     { name: "LinkedIn", icon: Linkedin, color: "#0A66C2", connectUrl: "/api/auth/linkedin-post/connect", allowed: limits.linkedin, limit: 1, count: connections.filter(c => c.platform === "LinkedIn").length },
     { name: "TikTok", icon: null, color: "#000000", connectUrl: "/api/auth/tiktok", allowed: limits.tiktok, limit: 1, count: connections.filter(c => c.platform === "TikTok").length },
     { name: "YouTube", icon: Youtube, color: "#FF0000", connectUrl: "/api/auth/youtube/connect", allowed: limits.youtube, limit: 1, count: connections.filter(c => c.platform === "YouTube").length },
