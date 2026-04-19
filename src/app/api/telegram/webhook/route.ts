@@ -517,6 +517,22 @@ export async function POST(req: NextRequest) {
     .map((h) => `${h.role}: ${h.text ?? h.voice_transcript ?? ""}`)
     .join("\n");
 
+  // Fetch permanent rules from brain_knowledge_base
+  // These are rules Eduard gave Alex that must PERSIST across all conversations
+  let permanentRules = "";
+  try {
+    const { data: rules } = await svc
+      .from("brain_knowledge_base")
+      .select("name, content")
+      .or("tags.cs.{permanent},tags.cs.{absolute},tags.cs.{sales-rule},tags.cs.{operational}")
+      .order("created_at", { ascending: false })
+      .limit(20);
+    if (rules && rules.length > 0) {
+      permanentRules = "\n\n📜 PERMANENT RULES FROM KNOWLEDGE BASE (Eduard-approved, NEVER violate):\n" +
+        (rules).map(r => `• ${r.name}: ${String(r.content).slice(0, 300)}`).join("\n\n");
+    }
+  } catch { /* no-op */ }
+
   const [brainCtx, liveDbCtx] = await Promise.all([fetchBrainContext(), fetchLiveDbContext()]);
 
   const sys = `${ALEX_KNOWLEDGE_BRIEF}
@@ -566,7 +582,18 @@ ${brainCtx}
 ${liveDbCtx}
 
 Recent chat history:
-${historyStr}`;
+${historyStr}
+${permanentRules}
+
+RULE CREATION SYSTEM:
+When Eduard gives you a new rule (ex: "nu mai contacta clinici", "regula: doar office@ si contact@", "obligatoriu: verifica emailul inainte"), you MUST save it permanently by outputting:
+[SAVE_RULE:{"name":"Rule name here","content":"Full rule description","tags":["permanent","sales-rule"]}]
+
+This saves to brain_knowledge_base and will be loaded at EVERY future conversation.
+You can also save learnings from mistakes:
+[SAVE_RULE:{"name":"Learning: dental clinics auto-reply","content":"Dental clinics have auto-reply on programari@ — skip these emails, target office@ or personal email instead","tags":["permanent","learning"]}]
+
+NEVER forget a rule Eduard gave you. If unsure, save it.`;
 
   const reply = (await generateText(sys, `Eduard just said: "${userText}"`, { maxTokens: 500 }))
     ?? "Scuze, Alex e momentan offline. Încearcă din nou în câteva minute.";
@@ -578,8 +605,26 @@ ${historyStr}`;
     approvalText = await saveProposalsForApproval(proposals);
   }
 
-  // Clean reply: remove [PROPOSE:...] blocks from visible text
-  const cleanReply = reply.replace(/\[PROPOSE:\w+:\{[^}]+\}]/g, "").trim();
+  // Handle SAVE_RULE blocks — save new rules to brain_knowledge_base
+  const ruleRegex = /\[SAVE_RULE:(\{[^}]+\})]/g;
+  let ruleMatch;
+  while ((ruleMatch = ruleRegex.exec(reply)) !== null) {
+    try {
+      const ruleData = JSON.parse(ruleMatch[1]) as { name: string; content: string; tags?: string[] };
+      await svc.from("brain_knowledge_base").insert({
+        category: "rule",
+        name: ruleData.name,
+        summary: ruleData.content.slice(0, 200),
+        content: ruleData.content,
+        tags: ruleData.tags ?? ["permanent"],
+        source: "alex-learning",
+        confidence: 0.9,
+      });
+    } catch { /* skip malformed */ }
+  }
+
+  // Clean reply: remove [PROPOSE:...] and [SAVE_RULE:...] blocks from visible text
+  const cleanReply = reply.replace(/\[PROPOSE:\w+:\{[^}]+\}]/g, "").replace(/\[SAVE_RULE:\{[^}]+\}]/g, "").trim();
 
   // Send text reply + approval buttons
   await tgApi("sendMessage", { chat_id: chatId, text: cleanReply + approvalText });
