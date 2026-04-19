@@ -568,7 +568,9 @@ export async function POST(req: NextRequest) {
   }
 
   // Handle Eduard's approval/rejection of Alex's proposals
-  if (/^\/?da\s+\w{8}/i.test(cmdText) || /^\/?nu\s+\w{8}/i.test(cmdText)) {
+  // ONLY trigger on messages that are EXACTLY "da XXXXXXXX" or "nu XXXXXXXX" (nothing else)
+  const isApprovalCmd = /^(da|nu)\s+[a-z0-9]{8,14}$/i.test(cmdText.trim());
+  if (isApprovalCmd) {
     const result = await handleApproval(cmdText);
     if (result) {
       await tgApi("sendMessage", { chat_id: chatId, text: result });
