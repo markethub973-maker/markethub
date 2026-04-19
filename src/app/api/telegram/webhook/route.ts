@@ -422,6 +422,37 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
+  // Auto-detect rules from Eduard's messages and save permanently
+  // Triggers: "regulă:", "nu mai", "interzis", "obligatoriu:", "stop", "blocat"
+  const ruleTriggers = [
+    /\b(regul[aă])\b/i,
+    /\b(nu mai)\b.*\b(face|trimite|contacta|folosit|caut|scrie)\b/i,
+    /\b(interzis|blocat|stop)\b/i,
+    /\b(obligatoriu)\b/i,
+    /\b(niciodat[aă])\b.*\b(trimite|contacta|menționa|dezvălui)\b/i,
+  ];
+  const looksLikeRule = ruleTriggers.some(r => r.test(userText));
+  if (looksLikeRule && userText.length > 20) {
+    try {
+      const svcRule = createServiceClient();
+      const ruleName = `Eduard rule ${new Date().toISOString().slice(0, 10)}: ${userText.slice(0, 60)}`;
+      await svcRule.from("brain_knowledge_base").insert({
+        category: "rule",
+        name: ruleName,
+        summary: userText.slice(0, 200),
+        content: userText,
+        tags: ["permanent", "eduard-rule", "auto-captured"],
+        source: "eduard-telegram",
+        confidence: 1.0,
+      });
+      // Notify Eduard it was saved
+      await tgApi("sendMessage", {
+        chat_id: chatId,
+        text: `📌 Regulă salvată permanent în sistem. Toți agenții o vor primi la fiecare conversație.`,
+      });
+    } catch { /* non-fatal */ }
+  }
+
   // Handle Eduard's approval/rejection of Alex's proposals
   if (userText.startsWith("/da ") || userText.startsWith("/nu ")) {
     const result = await handleApproval(userText);
