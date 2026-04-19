@@ -620,11 +620,11 @@ export default function ResearchPage() {
                   {groupTabs.map(({ id, label, icon: Icon, color }) => (
                     <button key={id} type="button"
                       onClick={() => { setTab(id); setResults(null); setError(""); setQuery(""); setMode("username"); setSortBy(null); setExpandedRows({}); }}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
+                      className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all"
                       style={tab === id
-                        ? { backgroundColor: color, color: id === "tiktok" ? "var(--color-bg)" : "white", boxShadow: `0 2px 8px ${color}40` }
+                        ? { backgroundColor: color, color: id === "tiktok" ? "var(--color-bg)" : "white", boxShadow: `0 3px 10px ${color}40`, borderBottom: "2px solid rgba(0,0,0,0.15)" }
                         : { backgroundColor: "rgba(245,215,160,0.1)", color: "#78614E", border: "1px solid rgba(245,215,160,0.2)" }}>
-                      <Icon className="w-3.5 h-3.5" />
+                      <Icon className="w-4 h-4" />
                       {label}
                     </button>
                   ))}
