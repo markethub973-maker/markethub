@@ -210,6 +210,8 @@ const PUBLIC_PATHS = [
   "/api/offer",             // one-time Stripe checkout for the DFY offer
   "/reseller",              // public reseller/freelancer landing + signup
   "/api/reseller/signup",   // reseller registration endpoint (creates user)
+  "/p/",                    // public prospect landing pages (/p/[slug])
+  "/api/prospect-page/track", // prospect page visit tracking (no auth)
   "/help",                  // public help / support page
   "/api/support",           // public support form submission endpoint
   "/blocked",               // blocked account page
