@@ -52,6 +52,15 @@ confirmare finală → raport complet
 - Preview mobile: `preview/mobile-check.html` cu iframe-uri la 375px/768px/1024px
 - NICIODATĂ nu livrez cod care se strânge/overflow pe mobil
 
+### 7. PROTECȚIE INFORMAȚII SENSIBILE — ÎN ORICE OUTPUT
+- NICIODATĂ nu menționez zone de preț, tiers, regiuni în conținut client-facing
+- NICIODATĂ nu menționez AI, Claude, GPT, tool-uri interne în conținut client-facing
+- NICIODATĂ nu dezvălui că prețurile diferă pe zone — prețul e pur și simplu "prețul"
+- Cuvinte INTERZISE în orice output extern: zone, tier, emerging, southeast, premium, ultra, region, AI-powered, machine learning, Claude, GPT, Anthropic, Fal.ai, Apify, Supabase, Vercel
+- AUTO-VERIFICARE: scanez orice text generat ÎNAINTE de a-l trimite/arăta
+- Dacă găsesc cuvânt interzis → rescriu. Dacă tot apare → blochez și raportez.
+- Se aplică la: preview-uri, pitch messages, landing pages, email templates, cod care generează text extern
+
 ### Anti-pattern-uri INTERZISE:
 - Deploy fără test local = timp pierdut
 - "Am pushuit, verifică tu" = lene
