@@ -422,6 +422,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
+  // Strip @botname suffix from commands (Telegram adds it sometimes)
+  const cmdText = userText.trim().replace(/@\w+$/, "");
+
   // Auto-detect rules from Eduard's messages and save permanently
   // Triggers: "regulă:", "nu mai", "interzis", "obligatoriu:", "stop", "blocat"
   const ruleTriggers = [
@@ -454,7 +457,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Booking management commands
-  if (userText === "/bookings") {
+  if (cmdText === "/bookings") {
     try {
       const svcB = createServiceClient();
       const { data: bookings } = await svcB
@@ -474,7 +477,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, action: "list_bookings" });
   }
 
-  if (userText.startsWith("/anuleaza ")) {
+  if (cmdText.startsWith("/anuleaza ")) {
     const shortId = userText.slice(10).trim();
     try {
       const svcB = createServiceClient();
@@ -491,7 +494,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Rule management commands from Eduard
-  if (userText === "/reguli") {
+  if (cmdText === "/reguli") {
     try {
       const svcR = createServiceClient();
       const { data: rules } = await svcR
@@ -513,7 +516,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, action: "list_rules" });
   }
 
-  if (userText.startsWith("/sterge ")) {
+  if (cmdText.startsWith("/sterge ")) {
     const shortId = userText.slice(8).trim();
     try {
       const svcR = createServiceClient();
@@ -533,7 +536,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, action: "delete_rule" });
   }
 
-  if (userText.startsWith("/modifica ")) {
+  if (cmdText.startsWith("/modifica ")) {
     const parts = userText.slice(10).trim();
     const spaceIdx = parts.indexOf(" ");
     if (spaceIdx < 4) {
@@ -565,8 +568,8 @@ export async function POST(req: NextRequest) {
   }
 
   // Handle Eduard's approval/rejection of Alex's proposals
-  if (userText.startsWith("/da ") || userText.startsWith("/nu ")) {
-    const result = await handleApproval(userText);
+  if (cmdText.startsWith("/da ") || cmdText.startsWith("/nu ")) {
+    const result = await handleApproval(cmdText);
     if (result) {
       await tgApi("sendMessage", { chat_id: chatId, text: result });
       const svcApproval = createServiceClient();
