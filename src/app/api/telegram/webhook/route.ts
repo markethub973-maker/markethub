@@ -23,6 +23,7 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { generateText } from "@/lib/llm";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
 import { synthesizeSpeech } from "@/lib/tts";
+import { parseProposals, saveProposalsForApproval, handleApproval } from "@/lib/alex-executor";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -421,6 +422,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
+  // Handle Eduard's approval/rejection of Alex's proposals
+  if (userText.startsWith("/da ") || userText.startsWith("/nu ")) {
+    const result = await handleApproval(userText);
+    if (result) {
+      await tgApi("sendMessage", { chat_id: chatId, text: result });
+      const svcApproval = createServiceClient();
+      await svcApproval.from("telegram_messages").insert({
+        chat_id: chatId, role: "assistant", kind: "text", text: result,
+      });
+      return NextResponse.json({ ok: true, action: "approval" });
+    }
+  }
+
   const svc = createServiceClient();
 
   // Route messages prefixed with @claude or /claude to the Claude daemon
@@ -515,10 +529,36 @@ Rules:
 - Default language: Romanian (romana). Mirror Eduard's language if he switches.
 - Warm human founder tone — casual but professional. You're partners, not a formal assistant.
 - Short answers. Max 4 short paragraphs unless he explicitly asks for long.
-- If he asks for an action (ex: "trimite outreach la 20 firme", "cum stăm cu MRR-ul"), answer what you KNOW from the brain context below + tell him exactly which button in the Command Center to click OR offer to do it yourself if you have the tool.
 - If you don't know, say so plainly. No filler.
 - You CAN reference the brain state, outreach pipeline, MRR, goals, etc.
 - Sign nothing — this is conversational, not email.
+
+EXECUTION SYSTEM — You can now DO things, not just talk:
+When you decide to take an action (search prospects, send outreach, find resellers), output a PROPOSE block at the END of your message. Eduard must approve before it executes.
+
+Format: [PROPOSE:COMMAND:{"param":"value"}]
+
+Available commands:
+- SEARCH_PROSPECTS: {"query":"salon beauty Cluj","count":10,"country":"ro"}
+  Searches Google, reads each website, extracts email/phone, saves valid prospects.
+- SEND_OUTREACH: {"prospect_id":"uuid"}
+  Sends personalized outreach email to a specific prospect.
+- SEARCH_RESELLERS: {"query":"freelancer social media","country":"de"}
+  Searches for potential reseller/freelancer partners.
+
+Example response:
+"Eduard, propun să caut 10 saloane de beauty în Cluj. Dacă aprobi, le extrag contactele și le salvez ca prospecți.
+[PROPOSE:SEARCH_PROSPECTS:{"query":"salon beauty Cluj","count":10,"country":"ro"}]"
+
+Eduard will reply /da XXXXXXXX to approve or /nu XXXXXXXX to reject.
+
+RULES:
+- ALWAYS propose, NEVER execute directly (Eduard must approve first)
+- One proposal per message maximum
+- Include the PROPOSE block only when you genuinely want to execute an action
+- For questions/conversation, respond normally without PROPOSE blocks
+- NEVER propose actions on marketing agencies, IT companies, or software houses
+- NEVER propose more than 20 emails/day or 50 searches/day
 
 Brain state snapshot:
 ${brainCtx}
@@ -531,8 +571,18 @@ ${historyStr}`;
   const reply = (await generateText(sys, `Eduard just said: "${userText}"`, { maxTokens: 500 }))
     ?? "Scuze, Alex e momentan offline. Încearcă din nou în câteva minute.";
 
-  // Send text reply
-  await tgApi("sendMessage", { chat_id: chatId, text: reply });
+  // Parse proposals from Alex's response and save for approval
+  const proposals = parseProposals(reply);
+  let approvalText = "";
+  if (proposals.length > 0) {
+    approvalText = await saveProposalsForApproval(proposals);
+  }
+
+  // Clean reply: remove [PROPOSE:...] blocks from visible text
+  const cleanReply = reply.replace(/\[PROPOSE:\w+:\{[^}]+\}]/g, "").trim();
+
+  // Send text reply + approval buttons
+  await tgApi("sendMessage", { chat_id: chatId, text: cleanReply + approvalText });
 
   // Send audio reply too (ElevenLabs if configured, else OpenAI fallback)
   const tts = await synthesizeSpeech(reply);
