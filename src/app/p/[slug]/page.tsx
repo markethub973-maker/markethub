@@ -42,7 +42,10 @@ interface ProspectPage {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const CALENDLY = "https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en";
+// Booking link now points to built-in booking page per prospect slug
+function bookingUrl(slug: string) {
+  return `/book/${slug}`;
+}
 
 async function getPage(slug: string): Promise<ProspectPage | null> {
   const svc = createServiceClient();
@@ -178,7 +181,7 @@ export default async function ProspectLandingPage({
             <span style={{ color: "#F59E0B" }}>●</span> MarketHub Pro
           </Link>
           <Link
-            href={CALENDLY}
+            href={bookingUrl(slug)}
             style={{
               padding: "10px 24px",
               borderRadius: 12,
@@ -402,7 +405,7 @@ export default async function ProspectLandingPage({
               </span>
             </div>
             <Link
-              href={CALENDLY}
+              href={bookingUrl(slug)}
               className="w-full sm:w-auto"
               style={{
                 display: "inline-block",
@@ -463,7 +466,7 @@ export default async function ProspectLandingPage({
               alex@markethubpromo.com
             </a>
             <a
-              href={CALENDLY}
+              href={bookingUrl(slug)}
               style={{
                 color: "rgba(255,255,255,0.5)",
                 textDecoration: "none",

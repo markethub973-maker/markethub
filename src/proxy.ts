@@ -211,6 +211,8 @@ const PUBLIC_PATHS = [
   "/reseller",              // public reseller/freelancer landing + signup
   "/api/reseller/signup",   // reseller registration endpoint (creates user)
   "/p/",                    // public prospect landing pages (/p/[slug])
+  "/book/",                 // public booking pages (/book/[slug])
+  "/api/booking",           // public booking API (slots + create)
   "/api/prospect-page",     // prospect page CRUD (brain-cron-secret gated internally)
   "/api/pitch",             // pitch generator (brain-cron-secret gated internally)
   "/help",                  // public help / support page
@@ -659,6 +661,7 @@ export async function proxy(request: NextRequest) {
     pathname === "/api/brain/outreach-reply" ||
     pathname === "/api/brain/web-search" ||
     pathname === "/api/brain/web-read" ||
+    pathname.startsWith("/api/booking") ||        // booking create (public, prospect books)
     pathname.startsWith("/api/prospect-page") || // prospect page CRUD (brain-cron-secret gated)
     pathname.startsWith("/api/pitch") ||         // pitch generator (brain-cron-secret gated)
     pathname.startsWith("/api/cost-monitor/") ||

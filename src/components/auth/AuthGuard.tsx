@@ -46,6 +46,7 @@ function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith("/offer"))    return true;  // /offer-ro, /offer-intl, /offer/thanks
   if (pathname.startsWith("/reseller")) return true; // reseller landing + tier pages + signup
   if (pathname.startsWith("/p/")) return true;       // prospect landing pages
+  if (pathname.startsWith("/book/")) return true;   // booking pages
   return false;
 }
 
