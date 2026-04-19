@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
-import { sendTelegramMessage } from "@/lib/channels/telegram";
 
 const VALID_SLOTS = new Set([
   "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
@@ -124,27 +123,72 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // ── Telegram notification ─────────────────────────────────────────────────
-  const chatId = process.env.TELEGRAM_ALLOWED_CHAT_ID;
-  if (chatId) {
-    const dateFormatted = dateObj.toLocaleDateString("en-US", {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-    });
-    const msg = [
-      `New booking: ${page.business_name}`,
-      `${name.trim()} at ${dateFormatted} ${time_slot}`,
-      `Email: ${email.trim()}`,
-      timezone ? `Timezone: ${timezone}` : "",
-      notes?.trim() ? `Notes: ${notes.trim()}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n");
+  const dateFormatted = dateObj.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
 
-    sendTelegramMessage(chatId, msg).catch((err) => {
-      console.error("[booking] telegram notification failed:", err);
-    });
+  // ── Telegram notification to Eduard ──────────────────────────────────────
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_ALLOWED_CHAT_ID;
+  if (botToken && chatId) {
+    const tgMsg = `📅 New booking!\n\n${page.business_name}\n${name.trim()} — ${dateFormatted} at ${time_slot}\nEmail: ${email.trim()}${notes?.trim() ? `\nNotes: ${notes.trim()}` : ""}`;
+    try {
+      await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: chatId, text: tgMsg }),
+      });
+    } catch (e) {
+      console.error("[booking] telegram failed:", e);
+    }
+  }
+
+  // ── Email confirmation to prospect ───────────────────────────────────────
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey) {
+    try {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendKey}`,
+        },
+        body: JSON.stringify({
+          from: "MarketHub Pro <noreply@markethubpromo.com>",
+          to: email.trim(),
+          subject: `Your call is confirmed — ${dateFormatted} at ${time_slot}`,
+          html: `
+<div style="font-family:system-ui,sans-serif;max-width:500px;margin:0 auto;padding:32px;background:#111;color:#fff;border-radius:16px;">
+  <div style="text-align:center;margin-bottom:24px;">
+    <span style="font-size:48px;">✅</span>
+  </div>
+  <h1 style="font-size:22px;font-weight:800;text-align:center;margin-bottom:8px;">You're Booked!</h1>
+  <p style="text-align:center;color:rgba(255,255,255,0.6);font-size:14px;margin-bottom:24px;">
+    Your call with MarketHub Pro is confirmed.
+  </p>
+  <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px;margin-bottom:24px;">
+    <p style="margin:0 0 8px;font-size:13px;color:rgba(255,255,255,0.4);">DATE & TIME</p>
+    <p style="margin:0;font-size:18px;font-weight:700;color:#F59E0B;">${dateFormatted} at ${time_slot}</p>
+  </div>
+  <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px;margin-bottom:24px;">
+    <p style="margin:0 0 8px;font-size:13px;color:rgba(255,255,255,0.4);">REGARDING</p>
+    <p style="margin:0;font-size:16px;font-weight:600;">${page.business_name}</p>
+  </div>
+  <p style="font-size:13px;color:rgba(255,255,255,0.5);text-align:center;">
+    Duration: 15 minutes · No commitment<br>
+    We'll discuss how we can help grow your social media presence.
+  </p>
+  <p style="font-size:11px;color:rgba(255,255,255,0.25);text-align:center;margin-top:24px;">
+    MarketHub Pro · markethubpromo.com
+  </p>
+</div>`,
+        }),
+      });
+    } catch (e) {
+      console.error("[booking] email confirmation failed:", e);
+    }
   }
 
   return NextResponse.json({ ok: true, booking_id: booking.id });
