@@ -79,7 +79,7 @@ export async function saveProposalsForApproval(
       continue;
     }
 
-    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    const id = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6);
     await svc.from("brain_agent_activity").insert({
       agent_id: "alex",
       agent_name: "Alex (CEO)",
@@ -155,7 +155,7 @@ export async function handleApproval(text: string): Promise<string | null> {
 
   const match = (activities ?? []).find(a => {
     const res = a.result as Record<string, unknown> | null;
-    return res && String(res.proposal_id ?? "").startsWith(shortId);
+    return res && String(res.proposal_id ?? "").slice(0, 8) === shortId;
   });
 
   if (!match) return `Nu am găsit propunerea ${shortId}. Poate a expirat.`;
