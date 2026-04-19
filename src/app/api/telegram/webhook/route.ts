@@ -568,7 +568,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Handle Eduard's approval/rejection of Alex's proposals
-  if (cmdText.startsWith("/da ") || cmdText.startsWith("/nu ")) {
+  if (/^\/?da\s+\w{8}/i.test(cmdText) || /^\/?nu\s+\w{8}/i.test(cmdText)) {
     const result = await handleApproval(cmdText);
     if (result) {
       await tgApi("sendMessage", { chat_id: chatId, text: result });

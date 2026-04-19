@@ -89,7 +89,7 @@ export async function saveProposalsForApproval(
     });
 
     const desc = describeCommand(p.cmd, p.params);
-    summaries.push(`⏳ ${desc}\n   Aprobă: /da ${id.slice(0, 8)}\n   Respinge: /nu ${id.slice(0, 8)}`);
+    summaries.push(`⏳ ${desc}\n   Aprobă: da ${id.slice(0, 8)}\n   Respinge: nu ${id.slice(0, 8)}`);
   }
 
   if (summaries.length === 0) return "";
@@ -135,8 +135,8 @@ function describeCommand(cmd: string, params: Record<string, unknown>): string {
  * Returns result message for Telegram.
  */
 export async function handleApproval(text: string): Promise<string | null> {
-  const approveMatch = text.match(/^\/da\s+(\w{8})/i);
-  const rejectMatch = text.match(/^\/nu\s+(\w{8})/i);
+  const approveMatch = text.match(/^\/?da\s+(\w{8})/i);
+  const rejectMatch = text.match(/^\/?nu\s+(\w{8})/i);
 
   if (!approveMatch && !rejectMatch) return null;
 
