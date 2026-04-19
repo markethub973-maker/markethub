@@ -211,7 +211,8 @@ const PUBLIC_PATHS = [
   "/reseller",              // public reseller/freelancer landing + signup
   "/api/reseller/signup",   // reseller registration endpoint (creates user)
   "/p/",                    // public prospect landing pages (/p/[slug])
-  "/api/prospect-page/track", // prospect page visit tracking (no auth)
+  "/api/prospect-page",     // prospect page CRUD (brain-cron-secret gated internally)
+  "/api/pitch",             // pitch generator (brain-cron-secret gated internally)
   "/help",                  // public help / support page
   "/api/support",           // public support form submission endpoint
   "/blocked",               // blocked account page
