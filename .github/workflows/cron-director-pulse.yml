@@ -1,0 +1,17 @@
+name: Director Pulse (hourly)
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log director activities
+        run: |
+          curl -sf -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: MarketHubCron/1.0" \
+            "https://markethubpromo.com/api/cron/director-pulse" \
+            --max-time 25 || true
