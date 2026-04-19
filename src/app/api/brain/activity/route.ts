@@ -161,11 +161,55 @@ export async function GET(req: NextRequest) {
     }
   } catch { /* no-op */ }
 
+  // Per-agent activity: latest activity line for each agent (for director cards)
+  const per_agent: Record<string, { agent_id: string; agent_name: string; description: string; time: string; activity: string }> = {};
+  try {
+    const { data: agentActs } = await svc
+      .from("brain_agent_activity")
+      .select("agent_id,agent_name,activity,description,created_at")
+      .gte("created_at", new Date(Date.now() - 24 * 3600_000).toISOString())
+      .order("created_at", { ascending: false })
+      .limit(50);
+    (agentActs ?? []).forEach((r) => {
+      const aid = r.agent_id as string;
+      if (!per_agent[aid]) {
+        per_agent[aid] = {
+          agent_id: aid,
+          agent_name: r.agent_name as string,
+          description: String(r.description ?? "").replace(/^\[(normal|warning|critical)\]\s*/i, ""),
+          time: fmtTime(r.created_at as string),
+          activity: r.activity as string,
+        };
+      }
+    });
+  } catch { /* no-op */ }
+
+  // Structured feed items (for right panel with agent tags)
+  const feed_items: Array<{ agent_id: string; agent_name: string; line: string; time: string }> = [];
+  try {
+    const { data: feedActs } = await svc
+      .from("brain_agent_activity")
+      .select("agent_id,agent_name,description,created_at")
+      .gte("created_at", new Date(Date.now() - 12 * 3600_000).toISOString())
+      .order("created_at", { ascending: false })
+      .limit(15);
+    (feedActs ?? []).forEach((r) => {
+      feed_items.push({
+        agent_id: r.agent_id as string,
+        agent_name: r.agent_name as string,
+        line: String(r.description ?? "").replace(/^\[(normal|warning|critical)\]\s*/i, ""),
+        time: fmtTime(r.created_at as string),
+      });
+    });
+  } catch { /* no-op */ }
+
   return NextResponse.json({
     ok: true,
     events: lines,
     count: lines.length,
     active_agents,
+    per_agent,
+    feed_items,
     note: lines.length === 0 ? "No activity in the last 24h" : undefined,
   });
 }

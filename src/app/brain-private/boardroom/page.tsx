@@ -219,6 +219,8 @@ export default function Boardroom() {
   const [whisper] = useState<{ from: string; to: string } | null>(null); // kept for compatibility, never set
   const [liveFeed, setLiveFeed] = useState<string[]>([]);
   const [activeAgents, setActiveAgents] = useState<string[]>([]);
+  const [perAgent, setPerAgent] = useState<Record<string, { agent_id: string; agent_name: string; description: string; time: string; activity: string }>>({});
+  const [feedItems, setFeedItems] = useState<Array<{ agent_id: string; agent_name: string; line: string; time: string }>>([]);
   const [debugInfo, setDebugInfo] = useState<string>("init");
   const timersRef = useRef<NodeJS.Timeout[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -387,6 +389,12 @@ export default function Boardroom() {
           setActiveAgents(d.active_agents as string[]);
           setAmbientAgent(d.active_agents[0] ?? null);
         }
+        if (d.per_agent && typeof d.per_agent === "object") {
+          setPerAgent(d.per_agent as Record<string, { agent_id: string; agent_name: string; description: string; time: string; activity: string }>);
+        }
+        if (Array.isArray(d.feed_items)) {
+          setFeedItems(d.feed_items as Array<{ agent_id: string; agent_name: string; line: string; time: string }>);
+        }
         setDebugInfo(`OK · active=[${(d.active_agents ?? []).join(",") || "none"}] · events=${(d.events ?? []).length} · ${new Date().toLocaleTimeString().slice(-5)}`);
       } catch (e) {
         setDebugInfo(`EXCEPTION ${e instanceof Error ? e.message : "?"}`);
@@ -487,280 +495,230 @@ export default function Boardroom() {
         <ProxyDrawer approvals={proxyApprovals} />
       )}
 
-      {/* Boardroom Arena — rectangular table layout */}
-      <div className="relative mx-auto px-4" style={{ maxWidth: 1200, paddingBottom: 20 }}>
+      {/* MAIN LAYOUT: Left column + Right live panel */}
+      <div className="flex" style={{ height: "calc(100vh - 44px)", overflow: "hidden" }}>
 
-        {/* TOP ROW: 11 seats (5 left + Alex center elevated + 5 right) */}
-        <div className="flex items-end justify-center gap-3 mb-6" style={{ perspective: "1200px" }}>
-          {/* Left 5 members */}
-          {TOP_LEFT.map((s) => {
-            const isActive = phase.active === s.id;
-            const isBackendActive = activeAgents.includes(s.id);
-            const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
-            const contrib = activeContribs.get(s.id);
-            return (
-              <SeatCard key={s.id} seat={s} isActive={isActive} isAmbient={isAmbient}
-                contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
-                activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} />
-            );
-          })}
+        {/* LEFT COLUMN: Boardroom + Agent cards + Input */}
+        <div className="flex-1 flex flex-col overflow-y-auto px-4 min-w-0">
 
-          {/* Alex CEO — elevated center */}
-          {(() => {
-            const s = CENTER_SEAT;
-            const isActive = phase.active === s.id;
-            const isBackendActive = activeAgents.includes(s.id);
-            const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
-            const contrib = activeContribs.get(s.id);
-            return (
-              <div className="relative" style={{ transform: "translateY(-12px)" }}>
-                <SeatCard seat={s} isActive={isActive} isAmbient={isAmbient}
-                  contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
-                  activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} elevated />
+          {/* Boardroom Arena — rectangular table layout */}
+          <div className="flex-shrink-0">
+            {/* TOP ROW */}
+            <div className="flex items-end justify-center gap-2 mb-4 flex-wrap">
+              {TOP_LEFT.map((s) => {
+                const isActive = phase.active === s.id;
+                const isBackendActive = activeAgents.includes(s.id);
+                const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
+                const contrib = activeContribs.get(s.id);
+                return (
+                  <SeatCard key={s.id} seat={s} isActive={isActive} isAmbient={isAmbient}
+                    contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
+                    activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} />
+                );
+              })}
+              <div className="relative" style={{ transform: "translateY(-10px)" }}>
+                {(() => {
+                  const s = CENTER_SEAT;
+                  const isActive = phase.active === s.id;
+                  const isBackendActive = activeAgents.includes(s.id);
+                  const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
+                  const contrib = activeContribs.get(s.id);
+                  return (
+                    <SeatCard seat={s} isActive={isActive} isAmbient={isAmbient}
+                      contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
+                      activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} elevated />
+                  );
+                })()}
               </div>
-            );
-          })()}
+              {TOP_RIGHT.map((s) => {
+                const isActive = phase.active === s.id;
+                const isBackendActive = activeAgents.includes(s.id);
+                const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
+                const contrib = activeContribs.get(s.id);
+                return (
+                  <SeatCard key={s.id} seat={s} isActive={isActive} isAmbient={isAmbient}
+                    contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
+                    activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} />
+                );
+              })}
+            </div>
 
-          {/* Right 5 members */}
-          {TOP_RIGHT.map((s) => {
-            const isActive = phase.active === s.id;
-            const isBackendActive = activeAgents.includes(s.id);
-            const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
-            const contrib = activeContribs.get(s.id);
-            return (
-              <SeatCard key={s.id} seat={s} isActive={isActive} isAmbient={isAmbient}
-                contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
-                activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} />
-            );
-          })}
-        </div>
+            {/* TABLE */}
+            <div className="mx-auto flex items-center justify-center" style={{
+              width: "90%", height: 70, borderRadius: 40,
+              background: "radial-gradient(ellipse at 30% 25%, rgba(245,158,11,0.12), transparent 55%), repeating-linear-gradient(88deg, rgba(101,67,33,0.9) 0 2px, rgba(120,80,40,0.85) 2px 5px, rgba(85,55,25,0.88) 5px 9px), linear-gradient(180deg, rgba(92,55,25,1), rgba(60,35,15,1))",
+              border: "2px solid rgba(139,90,43,0.5)",
+              boxShadow: "inset 0 -6px 20px rgba(0,0,0,0.5), 0 16px 32px rgba(0,0,0,0.4), 0 0 0 3px rgba(50,30,15,0.8)",
+            }}>
+              <span style={{ color: "rgba(245,215,160,0.18)", letterSpacing: 4, fontWeight: 700, fontSize: "0.8rem" }}>BOARDROOM TABLE</span>
+            </div>
 
-        {/* RECTANGULAR TABLE */}
-        <div
-          className="mx-auto flex items-center justify-center"
-          style={{
-            width: "85%",
-            height: 100,
-            background: `
-              radial-gradient(ellipse at 30% 25%, rgba(245,158,11,0.12), transparent 55%),
-              repeating-linear-gradient(88deg, rgba(101,67,33,0.9) 0 2px, rgba(120,80,40,0.85) 2px 5px, rgba(85,55,25,0.88) 5px 9px),
-              linear-gradient(180deg, rgba(92,55,25,1), rgba(60,35,15,1))
-            `,
-            borderRadius: 50,
-            border: "2px solid rgba(139,90,43,0.5)",
-            boxShadow: "inset 0 -8px 30px rgba(0,0,0,0.5), inset 0 3px 15px rgba(245,158,11,0.06), 0 20px 40px rgba(0,0,0,0.5), 0 0 0 3px rgba(50,30,15,0.8)",
-          }}
-        >
-          <span style={{ color: "rgba(245,215,160,0.18)", letterSpacing: 5, fontWeight: 700, fontSize: "0.85rem" }}>
-            BOARDROOM TABLE
-          </span>
-        </div>
-
-        {/* BOTTOM: Dara CFO alone */}
-        <div className="flex justify-center mt-6">
-          {(() => {
-            const s = BOTTOM_SEAT;
-            const isActive = phase.active === s.id;
-            const isBackendActive = activeAgents.includes(s.id);
-            const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
-            const contrib = activeContribs.get(s.id);
-            return (
-              <SeatCard seat={s} isActive={isActive} isAmbient={isAmbient}
-                contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
-                activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} elevated />
-            );
-          })()}
-        </div>
-
-        {/* Wall screen — agenda display */}
-        <div className="absolute" style={{
-          right: 16, top: 0, width: 260, padding: "10px 14px",
-          background: "linear-gradient(180deg, #0D1117 0%, #161B22 100%)",
-          border: "2px solid #2a2a2a", borderRadius: 8,
-          boxShadow: "0 0 30px rgba(88,166,255,0.1), inset 0 0 20px rgba(88,166,255,0.05)",
-          fontSize: 11, color: "#c9d1d9", lineHeight: 1.4,
-        }}>
-          <div style={{ fontSize: 9, color: "#F59E0B", fontWeight: 700, marginBottom: 4, letterSpacing: "0.15em" }}>
-            AGENDA · BOARD MEETING
+            {/* EDUARD — bottom */}
+            <div className="flex justify-center mt-4 mb-3">
+              {(() => {
+                const s = BOTTOM_SEAT;
+                const isActive = phase.active === s.id;
+                const isBackendActive = activeAgents.includes(s.id);
+                const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
+                const contrib = activeContribs.get(s.id);
+                return (
+                  <SeatCard seat={s} isActive={isActive} isAmbient={isAmbient}
+                    contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
+                    activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} elevated />
+                );
+              })()}
+            </div>
           </div>
-          <div style={{ fontSize: 10, color: "#8b949e" }}>
-            {phase.synthesis
-              ? "✓ Decision made · Alex preparing report"
-              : phase.asking
-              ? "▸ In debate..."
-              : question || "Session · ready for your question"}
-          </div>
-          <div className="flex gap-2 mt-2">
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 2s infinite" }} />
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 2.5s infinite" }} />
-            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#3B82F6", animation: "brainBreath 3s infinite" }} />
-          </div>
-        </div>
-      </div>
 
-      {/* Alex synthesis notification — header status already announces it.
-          Removed the floating pill that covered the agents around the table. */}
+          {/* DEBATE SECTION: Alex hero + 9 directors grid — fills remaining space */}
+          <div className="flex-1 flex flex-col min-h-0 mt-1">
+            <p className="text-[10px] uppercase tracking-widest font-bold mb-2 flex-shrink-0" style={{ color: "#F59E0B", letterSpacing: "0.15em" }}>
+              💬 Live Debate
+            </p>
 
-      {/* Alex hero + 9 directors grid — flush to input */}
-      <div
-        className="mx-auto px-2 mt-1"
-        style={{ maxWidth: "100%", marginBottom: 0 }}
-      >
-        {/* Alex — full-width hero panel. Always visible, scrollable inside. */}
-        {(() => {
-          const alexSeat = SEATS.find((s) => s.id === "alex");
-          const isActive = phase.active === "alex";
-          return (
-            <div
-              className="rounded-xl p-3 mb-2"
-              style={{
-                background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
-                border: `1px solid ${isActive ? "rgba(245,158,11,0.65)" : "rgba(245,158,11,0.3)"}`,
-                boxShadow: isActive ? "0 0 24px rgba(245,158,11,0.25)" : "0 6px 16px rgba(0,0,0,0.3)",
-                minHeight: 180,
-                maxHeight: 230,
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div className="flex items-center gap-2 mb-2 flex-shrink-0">
-                <span className="text-xl">{alexSeat?.icon ?? "👔"}</span>
+            {/* Alex synthesis panel */}
+            <div className="rounded-xl p-3 mb-2 flex-shrink-0" style={{
+              background: "linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.02))",
+              border: `1px solid ${phase.active === "alex" ? "rgba(245,158,11,0.65)" : "rgba(245,158,11,0.3)"}`,
+              boxShadow: phase.active === "alex" ? "0 0 24px rgba(245,158,11,0.25)" : "0 4px 12px rgba(0,0,0,0.3)",
+              maxHeight: 150,
+            }}>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-lg">👔</span>
                 <div className="flex-1">
                   <p className="font-bold text-sm flex items-center gap-2" style={{ color: "#F59E0B" }}>
                     Alex · CEO
-                    {isActive && <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 1.5s infinite" }} />}
+                    {phase.active === "alex" && <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 1.5s infinite" }} />}
+                    {activeAgents.includes("alex") && !phase.asking && <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainPulseSoft 2.4s infinite" }} />}
                   </p>
                   <p className="text-[10px]" style={{ color: "#b88a3a" }}>
-                    {phase.synthesis ? "Recomandare finală" : phase.asking ? "Ascultă echipa, pregătește sinteza..." : "Așteaptă întrebarea ta"}
+                    {phase.synthesis ? "Final recommendation" : phase.asking ? "Listening, preparing synthesis..." : perAgent.alex?.description || "Waiting for your question"}
                   </p>
                 </div>
               </div>
-              <div className="overflow-y-auto flex-1 text-sm" style={{ color: "#eee", lineHeight: 1.6 }}>
+              <div className="overflow-y-auto text-sm" style={{ color: "#eee", lineHeight: 1.6, maxHeight: 90 }}>
                 {phase.synthesis ? (
                   <p className="whitespace-pre-wrap">{phase.synthesis}</p>
                 ) : (
-                  <p style={{ color: "#888", fontStyle: "italic" }}>
-                    — Alex va sintetiza toate punctele de vedere ale directorilor după ce termină dezbaterea.
-                  </p>
+                  <p style={{ color: "#888", fontStyle: "italic" }}>— Alex will synthesize all perspectives after the debate.</p>
                 )}
               </div>
             </div>
-          );
-        })()}
 
-        {/* 9 directors — 3×3 grid, each scrollable internally */}
-        <div
-          className="grid gap-2"
-          style={{
-            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-            gridAutoRows: "minmax(90px, 115px)",
-          }}
-        >
-          {SEATS.filter((s) => s.kind === "agent").map((seat) => {
-            const latest = [...phase.contributions].reverse().find((c) => c.agent_id === seat.id);
-            const isAlex = false;
-            const isActive = phase.active === seat.id;
-            return (
-              <div
-                key={seat.id}
-                className="rounded-xl p-3 flex flex-col"
-                style={{
-                  backgroundColor: isAlex ? "rgba(245,158,11,0.08)" : "rgba(26,26,36,0.9)",
-                  border: `1px solid ${isActive ? "rgba(245,158,11,0.5)" : isAlex ? "rgba(245,158,11,0.25)" : "rgba(255,255,255,0.08)"}`,
-                  transition: "all 0.3s ease",
-                  boxShadow: isActive ? "0 0 20px rgba(245,158,11,0.2)" : undefined,
-                }}
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">{seat.icon}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-xs truncate">{seat.name}</p>
-                    <p className="text-[10px] truncate" style={{ color: "#888" }}>{seat.title}</p>
+            {/* 9 directors — 3×3 grid, fills remaining space */}
+            <div className="grid gap-2 flex-1 min-h-0" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+              {SEATS.filter((s) => s.kind === "agent").map((seat) => {
+                const latestDebate = [...phase.contributions].reverse().find((c) => c.agent_id === seat.id);
+                const isActive = phase.active === seat.id;
+                const isBackendActive = activeAgents.includes(seat.id);
+                const agentActivity = perAgent[seat.id];
+                return (
+                  <div key={seat.id} className="rounded-xl p-2.5 flex flex-col overflow-hidden" style={{
+                    backgroundColor: "rgba(26,26,36,0.9)",
+                    border: `1px solid ${isActive ? `${seat.color}80` : isBackendActive ? `${seat.color}40` : "rgba(255,255,255,0.08)"}`,
+                    transition: "all 0.3s ease",
+                    boxShadow: isActive ? `0 0 20px ${seat.color}33` : isBackendActive ? `0 0 12px ${seat.color}22` : undefined,
+                  }}>
+                    <div className="flex items-center gap-2 mb-1.5 flex-shrink-0">
+                      <span className="text-base">{seat.icon}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-xs truncate" style={{ color: seat.color }}>{seat.name}</p>
+                        <p className="text-[9px] truncate" style={{ color: "#888" }}>{seat.title}</p>
+                      </div>
+                      {(isActive || isBackendActive) && (
+                        <span className="inline-block w-2 h-2 rounded-full flex-shrink-0" style={{
+                          backgroundColor: isActive ? "#F59E0B" : seat.color,
+                          animation: isActive ? "brainBreath 1.5s infinite" : "brainPulseSoft 2.4s infinite",
+                          boxShadow: `0 0 6px ${isActive ? "#F59E0B" : seat.color}`,
+                        }} />
+                      )}
+                    </div>
+                    <div className="flex-1 text-[11px] overflow-y-auto" style={{ color: "#ccc", lineHeight: 1.45 }}>
+                      {latestDebate ? (
+                        <p className="whitespace-pre-wrap">{latestDebate.text}</p>
+                      ) : phase.asking && isActive ? (
+                        <p style={{ color: seat.color, fontStyle: "italic" }}>Thinking...</p>
+                      ) : agentActivity ? (
+                        <p style={{ color: "#999" }}>
+                          <span className="text-[9px] font-mono" style={{ color: "#666" }}>{agentActivity.time}</span>{" "}
+                          {agentActivity.description}
+                        </p>
+                      ) : (
+                        <p style={{ color: "#444", fontStyle: "italic" }}>—</p>
+                      )}
+                    </div>
                   </div>
-                  {isActive && (
-                    <span className="inline-block w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: "#10B981", animation: "brainBreath 1.5s infinite" }} />
-                  )}
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Input bar — pinned bottom of left column */}
+          <form onSubmit={(e) => { e.preventDefault(); if (!phase.asking) { ask(); } }}
+            className="flex-shrink-0 py-2 mt-1" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+            <div className="flex gap-2 items-center">
+              <button type="button" onClick={() => setVoiceOn((v) => !v)}
+                title={voiceOn ? "Voice: ON" : "Voice: OFF"}
+                className="w-10 h-10 rounded-lg inline-flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: voiceOn ? "rgba(245,158,11,0.15)" : "rgba(255,255,255,0.05)", border: `1px solid ${voiceOn ? "rgba(245,158,11,0.35)" : "rgba(255,255,255,0.1)"}`, color: voiceOn ? "#F59E0B" : "#888" }}>
+                {voiceOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              </button>
+              <button type="button" onClick={recording ? stopRecording : startRecording} disabled={phase.asking}
+                title={recording ? "Stop recording" : "Voice input"}
+                className="w-10 h-10 rounded-lg inline-flex items-center justify-center flex-shrink-0 disabled:opacity-40"
+                style={{ backgroundColor: recording ? "#EF4444" : "rgba(255,255,255,0.05)", border: `1px solid ${recording ? "#EF4444" : "rgba(255,255,255,0.1)"}`, color: recording ? "white" : "#ccc", animation: recording ? "brainBreath 1.3s infinite" : undefined }}>
+                {recording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </button>
+              <input value={question} onChange={(e) => setQuestion(e.target.value)}
+                placeholder={recording ? "Listening..." : (phase.asking ? "Board is debating..." : "Ask the board a question...")}
+                disabled={recording} autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+                name={`board-q-${Date.now()}`}
+                className="flex-1 rounded-lg px-4 py-3 text-sm"
+                style={{ backgroundColor: "rgba(26,26,36,0.95)", border: "1px solid rgba(255,255,255,0.1)", color: "white", outline: "none" }} />
+              <button type="submit" disabled={phase.asking || !question}
+                className="px-4 py-3 rounded-lg font-bold inline-flex items-center gap-2 disabled:opacity-50"
+                style={{ backgroundColor: "#F59E0B", color: "black" }}>
+                {phase.asking ? <><Loader2 className="w-4 h-4 animate-spin" /> Debating...</> : <><Sparkles className="w-4 h-4" /> Ask</>}
+              </button>
+            </div>
+            {error && <p className="text-xs text-center mt-1" style={{ color: "#F87171" }}>{error}</p>}
+          </form>
+        </div>
+
+        {/* RIGHT PANEL: Live Activity Feed — full height */}
+        <div className="w-72 flex-shrink-0 hidden lg:flex flex-col overflow-y-auto"
+          style={{ borderLeft: "1px solid rgba(16,185,129,0.2)", background: "rgba(10,10,16,0.85)", backdropFilter: "blur(12px)" }}>
+          <div className="px-4 py-3 flex items-center gap-2 flex-shrink-0" style={{ borderBottom: "1px solid rgba(16,185,129,0.15)" }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 2s infinite" }} />
+            <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: "#10B981" }}>Live Activity</span>
+          </div>
+          <div className="flex-1 overflow-y-auto">
+            {feedItems.length > 0 ? feedItems.map((item, i) => {
+              const seat = SEATS.find((s) => s.id === item.agent_id);
+              const color = seat?.color ?? "#888";
+              return (
+                <div key={i} className="px-4 py-2.5" style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", opacity: 1 - i * 0.05 }}>
+                  <div className="text-[9px] mb-0.5" style={{ color: "#555" }}>{item.time}</div>
+                  <div className="text-[11px]" style={{ color: "#aaa", lineHeight: 1.4 }}>
+                    <span className="inline-block text-[9px] font-bold px-1.5 py-0.5 rounded mr-1" style={{ backgroundColor: `${color}22`, color }}>{item.agent_name.split(" ")[0]}</span>
+                    {item.line}
+                  </div>
                 </div>
-                <div className="flex-1 text-[11px] overflow-y-auto" style={{ color: "#ccc", lineHeight: 1.5 }}>
-                  {latest ? (
-                    <p className="whitespace-pre-wrap">{latest.text}</p>
-                  ) : phase.asking && isActive ? (
-                    <p style={{ color: "#F59E0B", fontStyle: "italic" }}>Gândește acum...</p>
-                  ) : (
-                    <p style={{ color: "#555", fontStyle: "italic" }}>—</p>
-                  )}
-                </div>
+              );
+            }) : liveFeed.length > 0 ? liveFeed.map((line, i) => (
+              <div key={i} className="px-4 py-2.5 text-[11px]" style={{ color: "#aaa", lineHeight: 1.35, borderBottom: "1px solid rgba(255,255,255,0.04)", opacity: 1 - i * 0.1 }}>
+                {line}
               </div>
-            );
-          })}
+            )) : (
+              <div className="px-4 py-6 text-[11px] text-center" style={{ color: "#555" }}>No activity yet</div>
+            )}
+          </div>
+          {/* Debug */}
+          <div className="px-3 py-1.5 text-[9px] font-mono flex-shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", color: debugInfo.startsWith("OK") ? "#6ee7b7" : "#fca5a5" }}>
+            🔌 {debugInfo}
+          </div>
         </div>
       </div>
-
-      {/* Input — pinned flush to viewport bottom (no gap) */}
-      <form
-        onSubmit={(e) => { e.preventDefault(); if (!phase.asking) { ask(); } }}
-        className="sticky mt-1 px-4 pt-1 z-30"
-        style={{
-          bottom: 0,
-          paddingBottom: 4,
-          background: "linear-gradient(180deg, transparent, rgba(10,10,16,0.95))",
-          borderTop: "1px solid rgba(255,255,255,0.06)",
-        }}
-      >
-        <div className="max-w-5xl mx-auto flex gap-2 items-center">
-          <button
-            type="button"
-            onClick={() => setVoiceOn((v) => !v)}
-            title={voiceOn ? "Voce Alex: ON (click pt mute)" : "Voce Alex: OFF (click pt pornire)"}
-            className="w-11 h-11 rounded-lg inline-flex items-center justify-center flex-shrink-0"
-            style={{
-              backgroundColor: voiceOn ? "rgba(245,158,11,0.15)" : "rgba(255,255,255,0.05)",
-              border: `1px solid ${voiceOn ? "rgba(245,158,11,0.35)" : "rgba(255,255,255,0.1)"}`,
-              color: voiceOn ? "#F59E0B" : "#888",
-            }}
-          >
-            {voiceOn ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-          </button>
-          <button
-            type="button"
-            onClick={recording ? stopRecording : startRecording}
-            disabled={phase.asking}
-            title={recording ? "Oprește înregistrarea" : "Vorbește cu boardul (apasă pentru microfon)"}
-            className="w-11 h-11 rounded-lg inline-flex items-center justify-center flex-shrink-0 disabled:opacity-40"
-            style={{
-              backgroundColor: recording ? "#EF4444" : "rgba(255,255,255,0.05)",
-              border: `1px solid ${recording ? "#EF4444" : "rgba(255,255,255,0.1)"}`,
-              color: recording ? "white" : "#ccc",
-              animation: recording ? "brainBreath 1.3s infinite" : undefined,
-            }}
-          >
-            {recording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          </button>
-          <input
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder={recording ? "Ascult... vorbește în română" : (phase.asking ? "Board-ul dezbate — poți scrie următoarea întrebare..." : "Pune o întrebare boardului sau apasă mic...")}
-            disabled={recording}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            spellCheck={false}
-            name={`board-q-${Date.now()}`}
-            className="flex-1 rounded-lg px-5 py-4 text-sm"
-            style={{
-              backgroundColor: "rgba(26,26,36,0.95)", border: "1px solid rgba(255,255,255,0.1)", color: "white", outline: "none",
-            }}
-          />
-          <button
-            type="submit" disabled={phase.asking || !question}
-            className="px-5 py-3 rounded-lg font-bold inline-flex items-center gap-2 disabled:opacity-50"
-            style={{ backgroundColor: "#F59E0B", color: "black" }}
-          >
-            {phase.asking ? <><Loader2 className="w-4 h-4 animate-spin" /> Dezbat...</> : <><Sparkles className="w-4 h-4" /> Întreabă</>}
-          </button>
-        </div>
-        {error && <p className="text-xs text-center mt-2" style={{ color: "#F87171" }}>{error}</p>}
-      </form>
 
       <style jsx global>{`
         @keyframes brainPulse {
@@ -781,48 +739,7 @@ export default function Boardroom() {
           from { opacity: 0; transform: translateY(6px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes brainWhisper {
-          0% { opacity: 0; stroke-dashoffset: 0; }
-          30% { opacity: 1; }
-          100% { opacity: 0; stroke-dashoffset: 40; }
-        }
       `}</style>
-
-      {/* Transcript panel REMOVED — now lives in the horizontal strip below, see after the input */}
-
-      {/* Live activity feed — fixed right side, wider */}
-      <div className="fixed right-3 top-16 w-80 p-3 rounded-xl hidden lg:block z-20"
-        style={{
-          backgroundColor: "rgba(10,10,16,0.8)",
-          border: "1px solid rgba(16,185,129,0.2)",
-          backdropFilter: "blur(12px)",
-        }}>
-        <p className="text-[10px] uppercase tracking-wider font-bold mb-2 flex items-center gap-1" style={{ color: "#10B981" }}>
-          <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 2s infinite" }} />
-          Activitate live
-        </p>
-        <ul className="space-y-1">
-          {liveFeed.map((line, i) => (
-            <li key={i} className="text-[11px]" style={{ color: "#aaa", lineHeight: 1.35, opacity: 1 - i * 0.1 }}>
-              {line}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Debug indicator — bottom-right, shows real-time state of agent polling.
-          Lets Eduard visually verify the pulse system is actually working. */}
-      <div
-        className="fixed bottom-2 right-2 text-[9px] font-mono px-2 py-1 rounded z-40"
-        style={{
-          backgroundColor: "rgba(0,0,0,0.6)",
-          color: debugInfo.startsWith("OK") ? "#6ee7b7" : debugInfo.startsWith("ERR") || debugInfo.startsWith("EXCEPTION") ? "#fca5a5" : "#d1d5db",
-          border: "1px solid rgba(255,255,255,0.1)",
-          pointerEvents: "none",
-        }}
-      >
-        🔌 {debugInfo}
-      </div>
     </div>
   );
 }
