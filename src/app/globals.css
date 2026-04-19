@@ -1045,10 +1045,63 @@ select.input-glass {
   transition: width 1.2s ease;
 }
 
-/* ── Global button size improvements ─────── */
-button, a.btn, [role="button"] {
+/* ── Global button 3D + size ─────────────── */
+button:not([class*="liquidGlass"]):not([class*="nav-"]):not([class*="chevron"]),
+a.btn,
+[role="button"] {
   min-height: 36px;
+  font-size: 13px;
+  border-radius: 8px;
+  transition: all 0.15s ease;
 }
+
+/* 3D effect on primary-colored buttons */
+button[style*="var(--color-primary)"],
+button[style*="#F59E0B"],
+button[style*="primary"],
+.btn-liquid-primary,
+a[style*="var(--color-primary)"],
+a[style*="#F59E0B"] {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  border-bottom: 2px solid rgba(0,0,0,0.15) !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.15);
+}
+button[style*="var(--color-primary)"]:hover,
+button[style*="#F59E0B"]:hover,
+.btn-liquid-primary:hover,
+a[style*="var(--color-primary)"]:hover,
+a[style*="#F59E0B"]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.25) !important;
+}
+button[style*="var(--color-primary)"]:active,
+button[style*="#F59E0B"]:active,
+.btn-liquid-primary:active,
+a[style*="var(--color-primary)"]:active,
+a[style*="#F59E0B"]:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.15) !important;
+}
+
+/* All small buttons (tags, pills, filters) — slightly bigger */
+button.text-xs,
+button.text-\[10px\],
+button.text-\[11px\],
+a.text-xs {
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  min-height: 32px;
+}
+
+/* Search/action buttons — more prominent */
+button.rounded-lg,
+button.rounded-xl,
+a.rounded-lg,
+a.rounded-xl {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
 .btn-liquid-primary, .btn-liquid-secondary {
   padding: 10px 20px;
   font-size: 14px;
