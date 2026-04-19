@@ -116,7 +116,7 @@ export default function HashtagScanPage() {
               className="w-full rounded-lg px-3 py-2 text-sm resize-none font-mono"
               style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none", fontSize: 11 }}
             />
-            <p className="text-[10px] mt-1" style={{ color: "#A8967E" }}>
+            <p className="text-xs mt-1" style={{ color: "#A8967E" }}>
               {candList.length} candidate{candList.length === 1 ? "" : "s"} — OR leave empty and paste competitor captions below (hashtags auto-extracted)
             </p>
           </div>
@@ -160,7 +160,7 @@ export default function HashtagScanPage() {
                 value={niche}
                 onChange={(e) => setNiche(e.target.value)}
                 placeholder="e.g. small fitness studios in Romania"
-                className="w-full rounded-md px-2 py-1.5 text-xs"
+                className="w-full rounded-lg px-3 py-1.5 text-sm"
                 style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
             </div>
@@ -169,7 +169,7 @@ export default function HashtagScanPage() {
               <select
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
-                className="rounded-md px-2 py-1.5 text-xs"
+                className="rounded-lg px-3 py-1.5 text-sm"
                 style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               >
                 {["instagram", "tiktok", "twitter", "linkedin", "facebook", "youtube"].map((p) => (
@@ -217,13 +217,13 @@ export default function HashtagScanPage() {
                     <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                       {label}
                     </p>
-                    <p className="text-[10px] flex-1" style={{ color: "#A8967E" }}>
+                    <p className="text-xs flex-1" style={{ color: "#A8967E" }}>
                       {desc} · {items.length}
                     </p>
                     <button
                       type="button"
                       onClick={() => copyBucket(key, items)}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                       style={{ backgroundColor: copiedKey === key ? "#10B981" : color, color: "white" }}
                     >
                       {copiedKey === key ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

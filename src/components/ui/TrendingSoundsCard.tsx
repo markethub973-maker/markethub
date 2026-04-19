@@ -145,12 +145,12 @@ export default function TrendingSoundsCard() {
         <button
           type="button"
           onClick={handleGlobal}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
           style={isGlobal
-            ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B" }
-            : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+            ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }
+            : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
         >
-          <Globe className="w-3 h-3" /> Global
+          <Globe className="w-4 h-4" /> Global
         </button>
 
         {/* International dropdown */}
@@ -158,13 +158,13 @@ export default function TrendingSoundsCard() {
           <button
             type="button"
             onClick={() => setDropdownOpen(prev => !prev)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
             style={!isGlobal
-              ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B" }
-              : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+              ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }
+              : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}
           >
             {!isGlobal ? selectedCountry?.label : "🗺️ International"}
-            <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+            <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
           </button>
           {dropdownOpen && (
             <div
@@ -176,11 +176,12 @@ export default function TrendingSoundsCard() {
                   key={c.code}
                   type="button"
                   onClick={() => handleSelectCountry(c)}
-                  className="w-full text-left px-4 py-2.5 text-xs transition-colors"
+                  className="w-full text-left px-4 py-2.5 text-sm transition-colors"
                   style={{
                     color: selectedCountry?.code === c.code ? "var(--color-primary-hover)" : "#5C4A35",
                     backgroundColor: selectedCountry?.code === c.code ? "rgba(245,158,11,0.08)" : "transparent",
                     fontWeight: selectedCountry?.code === c.code ? "600" : "400",
+                    boxShadow: selectedCountry?.code === c.code ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
                   }}
                   onMouseEnter={e => { if (selectedCountry?.code !== c.code) e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.2)"; }}
                   onMouseLeave={e => { if (selectedCountry?.code !== c.code) e.currentTarget.style.backgroundColor = "transparent"; }}

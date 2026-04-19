@@ -1083,23 +1083,54 @@ a[style*="#F59E0B"]:active {
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.15) !important;
 }
 
-/* All small buttons (tags, pills, filters) — slightly bigger */
+/* All small buttons (tags, pills, filters) — enforce minimum size */
 button.text-xs,
 button.text-\[10px\],
 button.text-\[11px\],
-a.text-xs {
-  padding: 6px 12px !important;
-  font-size: 12px !important;
+a.text-xs[role="button"],
+a.text-xs.font-semibold,
+a.text-xs.font-bold {
+  padding: 6px 14px !important;
+  font-size: 13px !important;
   min-height: 32px;
 }
 
-/* Search/action buttons — more prominent */
+/* All rounded buttons — 3D effect + proper sizing */
 button.rounded-lg,
 button.rounded-xl,
+button.rounded-md,
 a.rounded-lg,
 a.rounded-xl {
-  padding: 8px 16px;
-  font-size: 13px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1);
+  transition: all 0.15s ease;
+  min-height: 34px;
+}
+button.rounded-lg:hover,
+button.rounded-xl:hover,
+button.rounded-md:hover,
+a.rounded-lg:hover,
+a.rounded-xl:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+button.rounded-lg:active,
+button.rounded-xl:active,
+button.rounded-md:active,
+a.rounded-lg:active,
+a.rounded-xl:active {
+  transform: translateY(0px);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Secondary/ghost buttons with light colors — make them visible */
+button[style*="#78614E"],
+button[style*="#A8967E"],
+button[style*="#C4AA8A"],
+button[style*="rgba(245,215,160,0.15)"],
+button[style*="rgba(245,215,160,0.12)"],
+button[style*="rgba(245,215,160,0.2)"] {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+  border: 1px solid rgba(245,215,160,0.4) !important;
 }
 
 .btn-liquid-primary, .btn-liquid-secondary {

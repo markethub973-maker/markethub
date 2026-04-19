@@ -291,8 +291,8 @@ export default function ClientsPage() {
               <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold"
                 style={activeTab === tab.key
-                  ? { backgroundColor: "rgba(225,48,108,0.1)", color: IG, border: `1px solid rgba(225,48,108,0.3)` }
-                  : { ...cardStyle, color: "#78614E" }
+                  ? { backgroundColor: "rgba(225,48,108,0.1)", color: IG, border: `1px solid rgba(225,48,108,0.3)`, boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
+                  : { ...cardStyle, color: "var(--color-text)" }
                 }>
                 {tab.icon}{tab.label}
               </button>
@@ -300,14 +300,14 @@ export default function ClientsPage() {
           </div>
           <div className="ml-auto flex gap-2">
             <Link href="/clients/share-links"
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
-              style={{ ...cardStyle, color: "#78614E" }}>
+              className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold"
+              style={{ ...cardStyle, color: "var(--color-text)" }}>
               <Link2 className="w-3.5 h-3.5" />
               Manage Share Links
             </Link>
             {clients.length > 0 && (
               <button type="button" onClick={refreshAll} disabled={refreshingId !== null}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold" style={{ ...cardStyle, color: "#78614E" }}>
+                className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-semibold" style={{ ...cardStyle, color: "var(--color-text)" }}>
                 <RefreshCw className={`w-3.5 h-3.5 ${refreshingId ? "animate-spin" : ""}`} />
                 Refresh All
               </button>
@@ -367,7 +367,7 @@ export default function ClientsPage() {
               </button>
               <button type="button" onClick={() => setShowForm(false)}
                 className="px-5 py-2.5 rounded-xl text-sm font-semibold"
-                style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
+                style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "var(--color-text)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}>
                 Cancel
               </button>
             </div>
@@ -504,10 +504,10 @@ export default function ClientsPage() {
                         <button type="button"
                           onClick={e => { e.stopPropagation(); createLiveLink(client); }}
                           disabled={creatingLiveId === client.id}
-                          className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                          className="flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors"
                           style={liveLink?.clientId === client.id
-                            ? { backgroundColor: "rgba(16,163,74,0.12)", color: "#16A34A" }
-                            : { backgroundColor: "rgba(59,130,246,0.1)", color: "#3B82F6" }
+                            ? { backgroundColor: "rgba(16,163,74,0.12)", color: "#16A34A", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
+                            : { backgroundColor: "rgba(59,130,246,0.1)", color: "#3B82F6", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
                           }
                           title="Create live portal link (30 days, stored in DB)">
                           {creatingLiveId === client.id
@@ -517,21 +517,21 @@ export default function ClientsPage() {
                         </button>
                         <button type="button"
                           onClick={e => { e.stopPropagation(); copyShareLink(client); }}
-                          className="flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                          className="flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-semibold transition-colors"
                           style={copiedId === client.id
-                            ? { backgroundColor: "rgba(16,185,129,0.12)", color: "#10B981" }
-                            : { backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }
+                            ? { backgroundColor: "rgba(16,185,129,0.12)", color: "#10B981", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
+                            : { backgroundColor: "rgba(245,215,160,0.15)", color: "var(--color-text)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }
                           }
                           title="Copy snapshot link (Base64, no expiry)">
                           <ExternalLink className="w-3 h-3" />
                           <span className="hidden sm:inline">{copiedId === client.id ? "Copied!" : "Share"}</span>
                         </button>
                         <button type="button" onClick={e => { e.stopPropagation(); refreshClient(client.id); }}
-                          disabled={isRefreshing} className="p-1.5 rounded-lg" style={{ color: "#A8967E" }}>
+                          disabled={isRefreshing} className="p-2 rounded-lg" style={{ color: "var(--color-text)" }}>
                           <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
                         </button>
                         <button type="button" onClick={e => { e.stopPropagation(); deleteClient(client.id); }}
-                          className="p-1.5 rounded-lg" style={{ color: "#EF4444" }}>
+                          className="p-2 rounded-lg" style={{ color: "#EF4444" }}>
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                         {expanded ? <ChevronUp className="w-4 h-4" style={{ color: "#A8967E" }} /> : <ChevronDown className="w-4 h-4" style={{ color: "#A8967E" }} />}

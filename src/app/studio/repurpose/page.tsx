@@ -106,7 +106,7 @@ export default function RepurposePage() {
             <select
               value={sourcePlatform}
               onChange={(e) => setSourcePlatform(e.target.value as Target)}
-              className="rounded-md px-2 py-1 text-xs"
+              className="rounded-lg px-3 py-1.5 text-sm"
               style={{
                 backgroundColor: "var(--color-bg)",
                 border: "1px solid rgba(245,215,160,0.4)",
@@ -202,13 +202,13 @@ export default function RepurposePage() {
                     <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                       {t.label}
                     </p>
-                    <span className="text-[10px]" style={{ color: "#A8967E" }}>
+                    <span className="text-xs" style={{ color: "#A8967E" }}>
                       {v.length} chars
                     </span>
                     <button
                       type="button"
                       onClick={() => copy(t.id, v)}
-                      className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                       style={{ backgroundColor: copied === t.id ? "#10B981" : "rgba(0,0,0,0.04)", color: copied === t.id ? "white" : "#78614E" }}
                     >
                       {copied === t.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

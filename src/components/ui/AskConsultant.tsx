@@ -234,10 +234,11 @@ export default function AskConsultant() {
                     {t.action && (
                       <a
                         href={t.action.url}
-                        className="mt-2 inline-flex items-center gap-1 text-xs font-semibold rounded-md px-2 py-1"
+                        className="mt-2 inline-flex items-center gap-1 text-sm font-semibold rounded-md px-3.5 py-2"
                         style={{
                           backgroundColor: "#8B5CF6",
                           color: "white",
+                          boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
                         }}
                       >
                         {t.action.label}

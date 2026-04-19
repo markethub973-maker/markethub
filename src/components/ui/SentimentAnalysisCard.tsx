@@ -116,7 +116,8 @@ export default function SentimentAnalysisCard({ comments: propComments, youtubeV
         <button
           onClick={analyze}
           disabled={loading || !hasSource}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-[#F59E0B] text-white hover:bg-[#D97706] transition-colors disabled:opacity-50"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-[#F59E0B] text-white hover:bg-[#D97706] transition-colors disabled:opacity-50"
+          style={{ boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }}
         >
           {loading ? (
             <>

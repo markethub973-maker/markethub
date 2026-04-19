@@ -114,7 +114,7 @@ export default function RecyclePage() {
               <h2 className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                 Your published posts
               </h2>
-              <span className="text-[10px]" style={{ color: "#A8967E" }}>
+              <span className="text-xs" style={{ color: "#A8967E" }}>
                 {posts.length}
               </span>
             </div>
@@ -198,7 +198,7 @@ export default function RecyclePage() {
                 className="rounded-xl p-4"
                 style={{ backgroundColor: "rgba(16,185,129,0.04)", border: "1px solid rgba(16,185,129,0.2)" }}
               >
-                <p className="text-[10px] font-bold uppercase mb-1" style={{ color: "#059669" }}>
+                <p className="text-xs font-bold uppercase mb-1" style={{ color: "#059669" }}>
                   Original
                 </p>
                 <p className="text-xs" style={{ color: "var(--color-text)", lineHeight: 1.5 }}>
@@ -234,13 +234,13 @@ export default function RecyclePage() {
                       <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>
                         {meta.label}
                       </p>
-                      <p className="text-[10px] flex-1" style={{ color: "#A8967E" }}>
+                      <p className="text-xs flex-1" style={{ color: "#A8967E" }}>
                         {meta.desc}
                       </p>
                       <button
                         type="button"
                         onClick={() => copy(i, v.caption)}
-                        className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                         style={{ backgroundColor: copied === i ? "#10B981" : "rgba(0,0,0,0.04)", color: copied === i ? "white" : "#78614E" }}
                       >
                         {copied === i ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -249,7 +249,7 @@ export default function RecyclePage() {
                       <button
                         type="button"
                         onClick={() => scheduleOnCalendar(v.caption)}
-                        className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                         style={{ backgroundColor: meta.color, color: "white" }}
                       >
                         <CalIcon className="w-3 h-3" />

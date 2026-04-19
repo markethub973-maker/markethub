@@ -147,22 +147,22 @@ export default function GlobalTrendingPanel() {
 
         {/* Global button */}
         <button type="button" onClick={handleGlobal}
-          className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all"
+          className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
           style={isGlobal
-            ? { backgroundColor: YT, color: "#1C1814", border: `1px solid ${YT}` }
-            : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
-          <Globe className="w-3 h-3" /> Global
+            ? { backgroundColor: YT, color: "#1C1814", border: `1px solid ${YT}`, boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }
+            : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
+          <Globe className="w-4 h-4" /> Global
         </button>
 
         {/* International dropdown */}
         <div className="relative" ref={dropdownRef}>
           <button type="button" onClick={() => setDropdownOpen(prev => !prev)}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all"
+            className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg transition-all"
             style={!isGlobal
-              ? { backgroundColor: YT, color: "#1C1814", border: `1px solid ${YT}` }
-              : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}>
+              ? { backgroundColor: YT, color: "#1C1814", border: `1px solid ${YT}`, boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }
+              : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
             {!isGlobal ? selectedCountry?.label : "🗺️ International"}
-            <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+            <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
           </button>
           {dropdownOpen && (
             <div className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
@@ -187,13 +187,13 @@ export default function GlobalTrendingPanel() {
         {/* Platform switcher */}
         <div className="flex gap-1 p-0.5 rounded-lg ml-auto" style={{ backgroundColor: "rgba(245,215,160,0.15)", border: "1px solid rgba(245,215,160,0.25)" }}>
           <button type="button" onClick={() => setPlatform("youtube")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all"
-            style={platform === "youtube" ? { backgroundColor: YT, color: "white" } : { color: "#78614E" }}>
+            className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-bold transition-all"
+            style={platform === "youtube" ? { backgroundColor: YT, color: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" } : { color: "var(--color-text)", boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
             ▶ YouTube
           </button>
           <button type="button" onClick={() => setPlatform("trends")}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-bold transition-all"
-            style={platform === "trends" ? { backgroundColor: GT, color: "white" } : { color: "#78614E" }}>
+            className="flex items-center gap-1.5 px-4 py-2 rounded-md text-sm font-bold transition-all"
+            style={platform === "trends" ? { backgroundColor: GT, color: "white", boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" } : { color: "var(--color-text)", boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
             🔍 Google Trends
           </button>
         </div>
@@ -205,15 +205,15 @@ export default function GlobalTrendingPanel() {
               `youtube-trending-${region}`,
               ["#", "Title", "Channel", "Views", "Likes", "Comments"],
               videos.map((v, i) => [i + 1, v.title, v.channel, v.views, v.likes, v.comments])
-            )} className="flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold"
-              style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
-              <Download className="w-3 h-3" />CSV
+            )} className="flex items-center gap-1 px-3 py-1.5 rounded text-sm font-semibold"
+              style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "var(--color-text)", boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
+              <Download className="w-4 h-4" />CSV
             </button>
             <button type="button" onClick={() => exportJSON(
               `youtube-trending-${region}`, { region, videos }
-            )} className="flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold"
-              style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E" }}>
-              <Download className="w-3 h-3" />JSON
+            )} className="flex items-center gap-1 px-3 py-1.5 rounded text-sm font-semibold"
+              style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "var(--color-text)", boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
+              <Download className="w-4 h-4" />JSON
             </button>
           </>
         )}
@@ -222,9 +222,9 @@ export default function GlobalTrendingPanel() {
             `google-trends-${region}`,
             ["#", "Topic", "Traffic"],
             trends.map((t, i) => [i + 1, t.title, t.traffic])
-          )} className="flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold"
-            style={{ backgroundColor: "rgba(66,133,244,0.1)", color: GT }}>
-            <Download className="w-3 h-3" />CSV
+          )} className="flex items-center gap-1 px-3 py-1.5 rounded text-sm font-semibold"
+            style={{ backgroundColor: "rgba(66,133,244,0.1)", color: GT, boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)" }}>
+            <Download className="w-4 h-4" />CSV
           </button>
         )}
         {(platform === "youtube" ? ytLoading : trendsLoading) && (

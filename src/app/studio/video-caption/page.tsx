@@ -164,13 +164,13 @@ export default function VideoCaptionPage() {
                 <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                   Transcript
                 </p>
-                <span className="text-[10px]" style={{ color: "#A8967E" }}>
+                <span className="text-xs" style={{ color: "#A8967E" }}>
                   {result.transcript.length} chars
                 </span>
                 <button
                   type="button"
                   onClick={() => copy("transcript", result.transcript)}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                   style={{ backgroundColor: copied === "transcript" ? "#10B981" : "rgba(0,0,0,0.04)", color: copied === "transcript" ? "white" : "#78614E" }}
                 >
                   {copied === "transcript" ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -196,7 +196,7 @@ export default function VideoCaptionPage() {
                   <button
                     type="button"
                     onClick={() => copy("hashtags", result.hashtags.join(" "))}
-                    className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                     style={{ backgroundColor: copied === "hashtags" ? "#10B981" : "var(--color-primary-hover)", color: "white" }}
                   >
                     {copied === "hashtags" ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -207,7 +207,7 @@ export default function VideoCaptionPage() {
                   {result.hashtags.map((h) => (
                     <span
                       key={h}
-                      className="text-xs px-2 py-1 rounded-md"
+                      className="text-xs px-3 py-1.5 rounded-lg"
                       style={{ backgroundColor: "white", color: "var(--color-text)", border: "1px solid rgba(245,158,11,0.3)" }}
                     >
                       {h.startsWith("#") ? h : `#${h}`}
@@ -238,13 +238,13 @@ export default function VideoCaptionPage() {
                       <p className="text-sm font-bold flex-1" style={{ color: "var(--color-text)" }}>
                         {t.label}
                       </p>
-                      <span className="text-[10px]" style={{ color: "#A8967E" }}>
+                      <span className="text-xs" style={{ color: "#A8967E" }}>
                         {c.length} chars
                       </span>
                       <button
                         type="button"
                         onClick={() => copy(t.id, c)}
-                        className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                         style={{ backgroundColor: copied === t.id ? "#10B981" : "rgba(0,0,0,0.04)", color: copied === t.id ? "white" : "#78614E" }}
                       >
                         {copied === t.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

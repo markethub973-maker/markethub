@@ -239,20 +239,24 @@ export default function ChannelsPage() {
         <div className="flex flex-wrap items-center gap-3">
           {/* Global Button */}
           <button type="button" onClick={handleGlobal}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all"
-            style={isGlobal ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B" } : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+            className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all"
+            style={isGlobal
+              ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }
+              : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
           >
-            <Globe className="w-3 h-3" /> Global
+            <Globe className="w-4 h-4" /> Global
           </button>
 
           {/* International Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button type="button" onClick={() => setDropdownOpen(prev => !prev)}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg transition-all"
-              style={!isGlobal ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B" } : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+              className="flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all"
+              style={!isGlobal
+                ? { backgroundColor: "var(--color-primary)", color: "#1C1814", border: "1px solid #F59E0B", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }
+                : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
             >
               {!isGlobal ? selectedCountry?.label : "🗺️ International"}
-              <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
             </button>
             {dropdownOpen && (
               <div className="absolute top-full left-0 mt-1 z-50 rounded-xl overflow-hidden overflow-y-auto"
@@ -275,8 +279,8 @@ export default function ChannelsPage() {
             onChange={(e) => setSort(e.target.value)}
             title="Sort channels"
             aria-label="Sort channels"
-            className="px-3 py-2 text-sm rounded-lg focus:outline-none"
-            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg-secondary)", color: "#5C4A35" }}
+            className="px-4 py-2.5 text-sm font-semibold rounded-lg focus:outline-none"
+            style={{ border: "1px solid rgba(245,215,160,0.35)", backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
           >
             <option value="subscribers">Most Subscribers</option>
             <option value="views">Most Views</option>
@@ -288,10 +292,10 @@ export default function ChannelsPage() {
               <button
                 type="button"
                 onClick={() => compareList.length === 2 ? setShowCompare(true) : null}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold transition-colors"
                 style={compareList.length === 2
-                  ? { backgroundColor: "var(--color-primary)", color: "#1C1814" }
-                  : { backgroundColor: "rgba(245,158,11,0.12)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.25)" }}
+                  ? { backgroundColor: "var(--color-primary)", color: "#1C1814", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }
+                  : { backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.35)" }}
               >
                 <ArrowLeftRight className="w-4 h-4" />
                 {compareList.length === 2 ? "Compare now!" : `Selected ${compareList.length}/2`}
@@ -300,8 +304,8 @@ export default function ChannelsPage() {
             <button
               type="button"
               onClick={() => exportCSV(filtered)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold"
-              style={{ backgroundColor: "rgba(245,215,160,0.15)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold"
+              style={{ backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.1)" }}
             >
               <Download className="w-4 h-4" />
               Export CSV
@@ -362,7 +366,7 @@ export default function ChannelsPage() {
                       { icon: <TrendingUp className="w-3 h-3" />, label: "ER Trending", val: ch.engagementRate + "%" },
                     ].map(s => (
                       <div key={s.label} className="rounded-lg p-3" style={{ backgroundColor: "rgba(245,215,160,0.1)" }}>
-                        <div className="flex items-center gap-1.5 text-xs mb-1" style={{ color: "#C4AA8A" }}>
+                        <div className="flex items-center gap-1.5 text-xs font-medium mb-1" style={{ color: "var(--color-text-secondary, #78614E)" }}>
                           {s.icon}{s.label}
                         </div>
                         <p className="text-base font-bold" style={{ color: s.label === "ER Trending" ? "#16a34a" : "var(--color-text)" }}>{s.val}</p>
@@ -370,14 +374,14 @@ export default function ChannelsPage() {
                     ))}
                   </div>
 
-                  <div className="mt-3 flex items-center justify-end gap-2 text-xs">
+                  <div className="mt-3 flex items-center justify-end gap-2">
                     <button
                       type="button"
                       onClick={() => toggleCompare(ch)}
-                      className="font-semibold transition-colors px-2 py-1 rounded"
+                      className="text-sm font-bold transition-colors px-3 py-1.5 rounded-lg"
                       style={isSelected
-                        ? { color: "var(--color-primary)", backgroundColor: "rgba(245,158,11,0.1)" }
-                        : { color: "#A8967E" }
+                        ? { color: "#1C1814", backgroundColor: "var(--color-primary)", boxShadow: "0 2px 6px rgba(245,158,11,0.3)" }
+                        : { color: "var(--color-text)", backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.35)", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }
                       }
                     >
                       {isSelected ? "✓ Selected" : "Compare"}
@@ -385,8 +389,8 @@ export default function ChannelsPage() {
                     <button
                       type="button"
                       onClick={() => setAnalyticsChannel(ch)}
-                      className="font-semibold hover:underline"
-                      style={{ color: "var(--color-primary)" }}
+                      className="text-sm font-bold px-3 py-1.5 rounded-lg transition-colors"
+                      style={{ color: "#1C1814", backgroundColor: "var(--color-primary)", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }}
                     >
                       Analytics →
                     </button>

@@ -93,7 +93,8 @@ export default function CommentFAQCard({ youtubeVideoId, videoTitle, channelNich
           <button
             onClick={analyze}
             disabled={loading}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#F59E0B] text-white hover:bg-[#D97706] disabled:opacity-50 transition-colors"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-[#F59E0B] text-white hover:bg-[#D97706] disabled:opacity-50 transition-colors"
+            style={{ boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }}
           >
             {loading ? (
               <><svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"/></svg>Analyzing...</>
@@ -115,7 +116,8 @@ export default function CommentFAQCard({ youtubeVideoId, videoTitle, channelNich
           <div className="flex gap-1 border-b border-[#E8D9C5] pb-0">
             {(["faq", "ideas", "cta"] as const).map(s => (
               <button key={s} onClick={() => setSection(s)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-t transition-colors capitalize ${section === s ? "bg-[#F59E0B] text-white" : "text-[#78614E] hover:text-[#292524]"}`}>
+                className={`px-4 py-2 text-sm font-semibold rounded-t transition-colors capitalize ${section === s ? "bg-[#F59E0B] text-white" : "text-[#78614E] hover:text-[#292524]"}`}
+                style={section === s ? { boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" } : undefined}>
                 {s === "faq" ? "FAQ" : s === "ideas" ? "Content Ideas" : "CTAs"}
               </button>
             ))}

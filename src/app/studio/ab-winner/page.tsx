@@ -98,7 +98,7 @@ export default function ABWinnerPage() {
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none"
                 style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
-              <p className="text-[10px] mt-0.5" style={{ color: "#A8967E" }}>{a.length} chars</p>
+              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{a.length} chars</p>
             </div>
             <div>
               <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
@@ -113,7 +113,7 @@ export default function ABWinnerPage() {
                 className="w-full rounded-lg px-3 py-2 text-sm resize-none"
                 style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
-              <p className="text-[10px] mt-0.5" style={{ color: "#A8967E" }}>{b.length} chars</p>
+              <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>{b.length} chars</p>
             </div>
           </div>
 
@@ -123,7 +123,7 @@ export default function ABWinnerPage() {
               <select
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
-                className="rounded-md px-2 py-1.5 text-xs"
+                className="rounded-lg px-3 py-1.5 text-sm"
                 style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               >
                 {PLATFORMS.map((p) => (
@@ -148,7 +148,7 @@ export default function ABWinnerPage() {
                 value={goal}
                 onChange={(e) => setGoal(e.target.value)}
                 placeholder="drive signups, build trust, get comments..."
-                className="w-full rounded-md px-2 py-1.5 text-xs"
+                className="w-full rounded-lg px-3 py-1.5 text-sm"
                 style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
               />
             </div>
@@ -186,7 +186,7 @@ export default function ABWinnerPage() {
                   >
                     {isWinner && (
                       <span
-                        className="absolute -top-2 -right-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
+                        className="absolute -top-2 -right-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold"
                         style={{ background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))", color: "white" }}
                       >
                         <Trophy className="w-2.5 h-2.5" />
@@ -253,7 +253,7 @@ export default function ABWinnerPage() {
                   <button
                     type="button"
                     onClick={copyMerged}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-bold"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                     style={{ backgroundColor: copied ? "#10B981" : "var(--color-primary-hover)", color: "white" }}
                   >
                     {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}

@@ -199,12 +199,12 @@ export default function MultiRegionalTrending() {
     <div>
       {/* Header row: title + Add Country */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <h3 className="font-semibold text-[#292524] text-sm flex items-center gap-1.5">
+        <h3 className="font-bold text-sm flex items-center gap-1.5" style={{ color: "var(--color-text)" }}>
           <span>🌍</span> Multi-Regional Trending
-          <span className="text-xs text-[#C4AA8A] font-normal">YouTube</span>
+          <span className="text-xs font-normal" style={{ color: "var(--color-text-secondary, #78614E)" }}>YouTube</span>
         </h3>
 
-        <span className="text-xs text-[#C4AA8A]">
+        <span className="text-xs font-medium" style={{ color: "var(--color-text-secondary, #78614E)" }}>
           {selectedRegions.length}/{MAX_REGIONS} countries · {ALL_COUNTRIES.length} available
         </span>
 
@@ -214,16 +214,17 @@ export default function MultiRegionalTrending() {
             <button
               type="button"
               onClick={() => setDropdownOpen((p) => !p)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-lg transition-all"
               style={{
                 backgroundColor: dropdownOpen ? "var(--color-primary)" : "var(--color-bg-secondary)",
-                color: dropdownOpen ? "#1C1814" : "#78614E",
-                border: "1px solid rgba(245,215,160,0.5)",
+                color: dropdownOpen ? "#1C1814" : "var(--color-text)",
+                border: dropdownOpen ? "1px solid var(--color-primary)" : "1px solid rgba(245,215,160,0.5)",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.1)",
               }}
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-4 h-4" />
               Add Country
-              <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+              <ChevronDown className={`w-4 h-4 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
             </button>
 
             {dropdownOpen && (
@@ -278,17 +279,17 @@ export default function MultiRegionalTrending() {
       </div>
 
       {/* Category filter */}
-      <div className="flex flex-wrap gap-1 mb-3">
+      <div className="flex flex-wrap gap-1.5 mb-3">
         {CATEGORIES.map((cat) => (
           <button
             key={cat.id}
             type="button"
             onClick={() => changeCategory(cat.id)}
-            className="text-xs px-2.5 py-1 rounded-lg border transition-colors"
+            className="text-sm px-3.5 py-2 rounded-lg border font-medium transition-colors"
             style={
               categoryId === cat.id
-                ? { backgroundColor: "var(--color-primary)", color: "#1C1814", borderColor: "var(--color-primary)" }
-                : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", borderColor: "rgba(245,215,160,0.4)" }
+                ? { backgroundColor: "var(--color-primary)", color: "#1C1814", borderColor: "var(--color-primary)", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }
+                : { backgroundColor: "var(--color-bg-secondary)", color: "var(--color-text)", borderColor: "rgba(245,215,160,0.4)", boxShadow: "0 1px 3px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.1)" }
             }
           >
             {cat.label}
@@ -297,21 +298,22 @@ export default function MultiRegionalTrending() {
       </div>
 
       {/* Region tabs (selected countries, each removable) */}
-      <div className="flex gap-1 mb-3 flex-wrap">
+      <div className="flex gap-1.5 mb-3 flex-wrap">
         {selectedRegions.map((code) => (
           <div
             key={code}
             className="flex items-center gap-1 rounded-lg overflow-hidden"
             style={{
-              border: activeRegion === code ? "1px solid #F59E0B" : "1px solid rgba(245,215,160,0.35)",
+              border: activeRegion === code ? "2px solid #F59E0B" : "1px solid rgba(245,215,160,0.35)",
               backgroundColor: activeRegion === code ? "#FFF0CC" : "var(--color-bg-secondary)",
+              boxShadow: activeRegion === code ? "0 2px 6px rgba(245,158,11,0.25)" : "0 1px 3px rgba(0,0,0,0.06)",
             }}
           >
             <button
               type="button"
               onClick={() => setActiveRegion(code)}
-              className="text-xs px-2.5 py-1.5 font-medium"
-              style={{ color: activeRegion === code ? "var(--color-primary-hover)" : "#78614E" }}
+              className="text-sm px-3 py-2 font-semibold"
+              style={{ color: activeRegion === code ? "var(--color-primary-hover)" : "var(--color-text)" }}
             >
               {countryMap[code]?.split(" ")[0]} {code}
             </button>
@@ -320,14 +322,14 @@ export default function MultiRegionalTrending() {
                 type="button"
                 onClick={() => removeRegion(code)}
                 aria-label={`Remove ${code}`}
-                className="pr-1.5 py-1.5 transition-colors"
-                style={{ color: activeRegion === code ? "var(--color-primary-hover)" : "#C4AA8A" }}
+                className="pr-2 py-2 transition-colors"
+                style={{ color: activeRegion === code ? "var(--color-primary-hover)" : "#A8967E" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#EF4444")}
                 onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = activeRegion === code ? "var(--color-primary-hover)" : "#C4AA8A")
+                  (e.currentTarget.style.color = activeRegion === code ? "var(--color-primary-hover)" : "#A8967E")
                 }
               >
-                <X className="w-3 h-3" />
+                <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
@@ -337,13 +339,13 @@ export default function MultiRegionalTrending() {
       {/* Keyword filter */}
       <div className="flex gap-2 mb-3">
         <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#C4AA8A]" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8967E]" />
           <input
             value={keywordInput}
             onChange={(e) => setKeywordInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && applyKeyword()}
             placeholder="Filter by keyword..."
-            className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg focus:outline-none"
+            className="w-full text-sm pl-9 pr-3 py-2 rounded-lg focus:outline-none"
             style={{
               backgroundColor: "var(--color-bg-secondary)",
               color: "var(--color-text)",
@@ -354,8 +356,8 @@ export default function MultiRegionalTrending() {
         <button
           type="button"
           onClick={applyKeyword}
-          className="px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors"
-          style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
+          className="px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
+          style={{ backgroundColor: "var(--color-primary)", color: "#1C1814", boxShadow: "0 2px 6px rgba(245,158,11,0.3), inset 0 1px 0 rgba(255,255,255,0.2)" }}
         >
           Filter
         </button>
@@ -363,8 +365,8 @@ export default function MultiRegionalTrending() {
           <button
             type="button"
             onClick={() => { setKeyword(""); setKeywordInput(""); }}
-            className="px-2 py-1.5 text-xs rounded-lg transition-colors"
-            style={{ color: "#A8967E" }}
+            className="px-3 py-2 text-sm rounded-lg transition-colors font-medium"
+            style={{ color: "var(--color-text)" }}
           >
             Clear
           </button>

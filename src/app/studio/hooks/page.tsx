@@ -205,7 +205,7 @@ export default function HookLibraryPage() {
               type="button"
               onClick={addManual}
               disabled={draftText.trim().length < 5}
-              className="inline-flex items-center gap-1 px-3 py-2 rounded-md text-xs font-bold disabled:opacity-40"
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold disabled:opacity-40"
               style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
             >
               <Plus className="w-3 h-3" />
@@ -234,7 +234,7 @@ export default function HookLibraryPage() {
               type="button"
               onClick={extract}
               disabled={sourceCaption.trim().length < 20 || extracting}
-              className="inline-flex items-center gap-1 px-3 py-2 rounded-md text-xs font-bold disabled:opacity-40"
+              className="inline-flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-bold disabled:opacity-40"
               style={{ backgroundColor: "#8B5CF6", color: "white" }}
             >
               {extracting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
@@ -255,14 +255,14 @@ export default function HookLibraryPage() {
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold" style={{ color: "var(--color-text)" }}>{x.hook}</p>
-                      <p className="text-[10px] mt-0.5" style={{ color: "#78614E" }}>
+                      <p className="text-xs mt-0.5" style={{ color: "#78614E" }}>
                         <span className="uppercase font-bold" style={{ color: "#8B5CF6" }}>{x.type}</span> · {x.rationale}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={() => saveExtracted(i)}
-                      className="flex-shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold"
+                      className="flex-shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold"
                       style={{ backgroundColor: "#8B5CF6", color: "white" }}
                     >
                       <Plus className="w-2.5 h-2.5" />
@@ -297,7 +297,7 @@ export default function HookLibraryPage() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as HookType | "all")}
-              className="rounded-md px-2 py-1 text-xs"
+              className="rounded-lg px-3 py-1.5 text-sm"
               style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             >
               <option value="all">All types</option>
@@ -311,7 +311,7 @@ export default function HookLibraryPage() {
             <select
               value={minRating}
               onChange={(e) => setMinRating(parseInt(e.target.value))}
-              className="rounded-md px-2 py-1 text-xs"
+              className="rounded-lg px-3 py-1.5 text-sm"
               style={{ backgroundColor: "var(--color-bg)", border: "1px solid rgba(245,215,160,0.4)", color: "var(--color-text)", outline: "none" }}
             >
               <option value={0}>Any rating</option>
@@ -354,7 +354,7 @@ export default function HookLibraryPage() {
               >
                 <div className="flex items-center gap-2 flex-wrap">
                   <span
-                    className="text-[10px] font-bold uppercase px-1.5 py-0.5 rounded"
+                    className="text-xs font-bold uppercase px-1.5 py-0.5 rounded-lg"
                     style={{ backgroundColor: `${meta.color}1A`, color: meta.color }}
                   >
                     {meta.label}
@@ -378,7 +378,7 @@ export default function HookLibraryPage() {
                       </button>
                     ))}
                   </div>
-                  <span className="ml-auto text-[10px]" style={{ color: "#A8967E" }}>
+                  <span className="ml-auto text-xs" style={{ color: "#A8967E" }}>
                     {new Date(h.created_at).toLocaleDateString()}
                   </span>
                 </div>
@@ -395,7 +395,7 @@ export default function HookLibraryPage() {
                     {h.tags.map((t) => (
                       <span
                         key={t}
-                        className="inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded"
+                        className="inline-flex items-center gap-0.5 text-xs px-1.5 py-0.5 rounded-lg"
                         style={{ backgroundColor: "rgba(0,0,0,0.04)", color: "#78614E" }}
                       >
                         <Tag className="w-2 h-2" />
@@ -408,7 +408,7 @@ export default function HookLibraryPage() {
                   <button
                     type="button"
                     onClick={() => copyHook(h.id, h.text)}
-                    className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                    className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                     style={{ backgroundColor: copiedId === h.id ? "#10B981" : "rgba(0,0,0,0.04)", color: copiedId === h.id ? "white" : "#78614E" }}
                   >
                     {copiedId === h.id ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -417,7 +417,7 @@ export default function HookLibraryPage() {
                   <button
                     type="button"
                     onClick={() => useInCalendar(h.text)}
-                    className="flex-1 inline-flex items-center justify-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                    className="flex-1 inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                     style={{ backgroundColor: meta.color, color: "white" }}
                   >
                     <CalIcon className="w-3 h-3" />
@@ -426,7 +426,7 @@ export default function HookLibraryPage() {
                   <button
                     type="button"
                     onClick={() => deleteHook(h.id)}
-                    className="inline-flex items-center justify-center w-7 h-7 rounded"
+                    className="inline-flex items-center justify-center w-8 h-8 rounded-lg"
                     style={{ backgroundColor: "rgba(239,68,68,0.08)", color: "#EF4444" }}
                     aria-label="Delete"
                   >

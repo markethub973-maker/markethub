@@ -227,7 +227,7 @@ export default function OnboardingChecklist() {
                 <Link
                   href={step.href}
                   onClick={() => handleStepClick(step.id)}
-                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium flex-shrink-0 transition-colors"
+                  className="flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium flex-shrink-0 transition-colors"
                   style={{ backgroundColor: step.accentColor + "18", color: step.accentColor }}
                   onMouseEnter={e => (e.currentTarget.style.backgroundColor = step.accentColor + "28")}
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = step.accentColor + "18")}

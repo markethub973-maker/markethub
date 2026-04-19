@@ -153,8 +153,8 @@ export default function WorkflowDiagram({
         </div>
         <button
           onClick={exportPNG}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all hover:opacity-90 active:scale-95"
-          style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
+          className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-semibold rounded-lg transition-all hover:opacity-90 active:scale-95"
+          style={{ backgroundColor: "var(--color-primary)", color: "#1C1814", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
         >
           <Download className="w-3.5 h-3.5" />
           Export PNG

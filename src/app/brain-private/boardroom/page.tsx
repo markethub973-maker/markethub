@@ -16,25 +16,31 @@ interface Seat {
   name: string;
   title: string;
   icon: string;
-  angle: number; // degrees around the oval (0 = 3 o'clock, 90 = 12, etc.)
+  color: string; // accent color for seat border
+  angle: number; // kept for compatibility with speech bubble positioning
   kind: "alex" | "agent" | "you";
+  side: "top" | "bottom"; // top row or bottom row (CFO)
 }
 
-const SEATS: Seat[] = [
-  // 12 seats now — Alex head + 10 specialists + Eduard. Evenly distributed.
-  { id: "alex",       name: "Alex",   title: "CEO",                  icon: "👔", angle: 270, kind: "alex" },
-  { id: "cmo",        name: "Vera",   title: "Dir. Marketing",       icon: "🎯", angle: 300, kind: "agent" },
-  { id: "content",    name: "Marcus", title: "Dir. Conținut",        icon: "✍️", angle: 330, kind: "agent" },
-  { id: "sales",      name: "Sofia",  title: "Dir. Vânzări",         icon: "🤝", angle: 0,   kind: "agent" },
-  { id: "analyst",    name: "Ethan",  title: "Analist Growth",       icon: "📊", angle: 30,  kind: "agent" },
-  { id: "researcher", name: "Nora",   title: "Cercetător",           icon: "🔍", angle: 60,  kind: "agent" },
-  { id: "legal",      name: "Theo",   title: "Chief Legal",          icon: "⚖️", angle: 90,  kind: "agent" },
-  { id: "you",        name: "Eduard", title: "Founder (tu)",         icon: "🧑‍💼", angle: 120, kind: "you" },
-  { id: "competitive",name: "Kai",    title: "Competitive",          icon: "⚔️", angle: 150, kind: "agent" },
-  { id: "copywriter", name: "Iris",   title: "Copywriter",           icon: "🎨", angle: 180, kind: "agent" },
-  { id: "strategist", name: "Leo",    title: "Strategist",           icon: "🧠", angle: 210, kind: "agent" },
-  { id: "finance",    name: "Dara",   title: "CFO",                  icon: "💰", angle: 240, kind: "agent" },
+// Layout: top row has 11 seats (5 left + Alex center + 5 right), bottom has Dara (CFO)
+const TOP_LEFT: Seat[] = [
+  { id: "cmo",        name: "Vera",   title: "Dir. Marketing",  icon: "🎯", color: "#3498db", angle: 300, kind: "agent", side: "top" },
+  { id: "content",    name: "Marcus", title: "Dir. Content",     icon: "✍️", color: "#9b59b6", angle: 330, kind: "agent", side: "top" },
+  { id: "sales",      name: "Sofia",  title: "Dir. Sales",       icon: "🤝", color: "#e67e22", angle: 0,   kind: "agent", side: "top" },
+  { id: "analyst",    name: "Ethan",  title: "Growth Analyst",   icon: "📊", color: "#1abc9c", angle: 30,  kind: "agent", side: "top" },
+  { id: "finance",    name: "Dara",   title: "CFO",              icon: "💰", color: "#f1c40f", angle: 60,  kind: "agent", side: "top" },
 ];
+const CENTER_SEAT: Seat = { id: "alex", name: "Alex", title: "CEO", icon: "👔", color: "#2ecc71", angle: 270, kind: "alex", side: "top" };
+const TOP_RIGHT: Seat[] = [
+  { id: "legal",      name: "Theo",   title: "Chief Legal",      icon: "⚖️", color: "#e74c3c", angle: 90,  kind: "agent", side: "top" },
+  { id: "researcher", name: "Nora",   title: "Researcher",       icon: "🔍", color: "#34495e", angle: 120, kind: "agent", side: "top" },
+  { id: "competitive",name: "Kai",    title: "Competitive",      icon: "⚔️", color: "#95a5a6", angle: 150, kind: "agent", side: "top" },
+  { id: "copywriter", name: "Iris",   title: "Copywriter",       icon: "🎨", color: "#d35400", angle: 180, kind: "agent", side: "top" },
+  { id: "strategist", name: "Leo",    title: "Strategist",       icon: "🧠", color: "#8e44ad", angle: 210, kind: "agent", side: "top" },
+];
+const BOTTOM_SEAT: Seat = { id: "you", name: "Eduard", title: "Founder", icon: "🧑‍💼", color: "#e91e63", angle: 240, kind: "you", side: "bottom" };
+
+const SEATS: Seat[] = [...TOP_LEFT, CENTER_SEAT, ...TOP_RIGHT, BOTTOM_SEAT];
 
 interface Contribution { agent_id: string; agent_name: string; text: string; sessionId?: string; round?: 1 | 2; responds_to?: string | null; }
 
@@ -89,6 +95,95 @@ function ProxyDrawer({ approvals }: { approvals: Array<{ ts: string; question: s
   );
 }
 interface Phase { active: string | null; contributions: Contribution[]; synthesis: string | null; asking: boolean; }
+
+function SeatCard({ seat: s, isActive, isAmbient, contrib, delegateActive, ambientMsg, elevated }: {
+  seat: Seat; isActive: boolean; isAmbient: boolean;
+  contrib?: Contribution; delegateActive: boolean; ambientMsg: string;
+  activeAgents: string[]; ambientAgent: string | null; asking: boolean; elevated?: boolean;
+}) {
+  const isAlex = s.kind === "alex";
+  const isYou = s.kind === "you";
+  return (
+    <div className="relative flex flex-col items-center" style={{ width: 80 }}>
+      {/* Pulse ring */}
+      {(isActive || isAmbient) && (
+        <span className="absolute rounded-full" style={{
+          animation: isActive ? "brainPulse 1.4s ease-out infinite" : "brainPulseSoft 2.4s ease-out infinite",
+          backgroundColor: isActive
+            ? (isAlex ? "rgba(245,158,11,0.5)" : "rgba(59,130,246,0.4)")
+            : (isAlex ? "rgba(245,158,11,0.25)" : "rgba(16,185,129,0.3)"),
+          width: 72, height: 72, top: -4, left: 4, zIndex: 0,
+        }} />
+      )}
+      {/* Ambient whisper */}
+      {isAmbient && ambientMsg && (
+        <div className="absolute text-[10px] px-2 py-1 rounded-md whitespace-nowrap z-20"
+          style={{
+            backgroundColor: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.35)",
+            color: "#86efac", top: -28, left: "50%", transform: "translateX(-50%)",
+            animation: "brainFadeIn 0.3s ease-out",
+          }}>
+          {ambientMsg}
+        </div>
+      )}
+      {/* Avatar */}
+      <div
+        className="w-14 h-14 rounded-full flex items-center justify-center text-2xl relative overflow-hidden z-10"
+        style={{
+          backgroundColor: isAlex ? "rgba(245,158,11,0.25)"
+            : isYou && delegateActive ? "rgba(139,92,246,0.28)"
+            : isYou ? "rgba(59,130,246,0.25)"
+            : "rgba(255,255,255,0.06)",
+          border: elevated ? `3px solid ${s.color}` : `2px solid ${s.color}`,
+          boxShadow: isActive
+            ? `0 0 24px ${isAlex ? "rgba(245,158,11,0.6)" : "rgba(59,130,246,0.5)"}`
+            : `0 4px 12px rgba(0,0,0,0.4)`,
+          transition: "all 0.3s ease",
+          backgroundImage: isYou ? "url(/avatars/eduard.jpg)" : undefined,
+          backgroundSize: "cover", backgroundPosition: "center 20%",
+        }}
+      >
+        {!isYou && s.icon}
+        {isAlex && <span className="absolute -top-1 -right-1 text-xs">👑</span>}
+        {isYou && delegateActive && (
+          <span className="absolute -top-1 -right-1 text-xs flex items-center justify-center rounded-full"
+            style={{ backgroundColor: "#8B5CF6", width: 18, height: 18, boxShadow: "0 0 10px rgba(139,92,246,0.8)", animation: "brainBreath 1.5s infinite" }}
+            title="Delegate Mode">🛡️</span>
+        )}
+      </div>
+      {/* Status dot */}
+      <span className="absolute w-2.5 h-2.5 rounded-full z-10" style={{
+        bottom: 22, right: 16,
+        backgroundColor: isYou && delegateActive ? "#8B5CF6" : isActive ? "#F59E0B" : isAmbient ? "#10B981" : s.color,
+        boxShadow: `0 0 8px ${isActive ? "#F59E0B" : s.color}`,
+        animation: "brainBreath 3s ease-in-out infinite",
+      }} />
+      {/* Name + title */}
+      <p className="text-xs font-bold text-center mt-1" style={{ color: isAlex ? "#2ecc71" : isYou ? "#3B82F6" : "white" }}>{s.name}</p>
+      <p className="text-[10px] text-center" style={{ color: "#888" }}>{s.title}</p>
+      {/* Color accent bar */}
+      <div className="w-10 h-1 rounded-full mt-1" style={{ backgroundColor: s.color, opacity: isActive ? 1 : 0.5 }} />
+      {/* Speech bubble */}
+      {isActive && contrib && (
+        <div className="absolute text-xs p-2.5 rounded-lg shadow-2xl z-30"
+          style={{
+            backgroundColor: "rgba(26,26,36,0.98)", border: `1px solid ${s.color}80`,
+            color: "#eee", width: 220,
+            top: s.side === "bottom" ? "auto" : "100%",
+            bottom: s.side === "bottom" ? "100%" : "auto",
+            left: "50%", transform: "translateX(-50%)",
+            marginTop: s.side === "bottom" ? 0 : 8,
+            marginBottom: s.side === "bottom" ? 8 : 0,
+            backdropFilter: "blur(12px)", lineHeight: 1.5,
+            animation: "brainFadeIn 0.3s ease-out",
+          }}>
+          <p className="font-bold text-[11px]" style={{ color: s.color }}>{contrib.agent_name}</p>
+          <p className="mt-1.5 text-[11px]">{contrib.text.slice(0, 180)}{contrib.text.length > 180 ? "..." : ""}</p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 // No fake ambient feed — removed. All displayed activity is real data from DB.
 // No auto-kickoff question — removed. User initiates every session manually.
@@ -343,17 +438,6 @@ export default function Boardroom() {
     }
   };
 
-  // Oval geometry — wider table (conference-room shape), all agents sit
-  // spread horizontally around it.
-  const tableCx = 50; const tableCy = 52; const tableRx = 36; const tableRy = 13;
-  // Seats further out on the horizontal axis, closer vertically
-  const seatRx = 43; const seatRy = 19;
-
-  const seatPos = (angle: number) => ({
-    left: `${tableCx + seatRx * Math.cos((angle * Math.PI) / 180)}%`,
-    top: `${tableCy + seatRy * Math.sin((angle * Math.PI) / 180)}%`,
-  });
-
   const activeContribs = new Map(phase.contributions.map((c) => [c.agent_id, c]));
 
   return (
@@ -403,267 +487,115 @@ export default function Boardroom() {
         <ProxyDrawer approvals={proxyApprovals} />
       )}
 
-      {/* Room arena — leaves 300px clear on the right for Activity Live panel */}
-      <div className="relative" style={{ width: "min(calc(100vw - 320px), 1500px)", height: "min(26vh, 220px)", perspective: "1400px", marginLeft: 16 }}>
-        {/* Back wall with subtle wallpaper texture */}
-        <div className="absolute inset-0" style={{
-          background: "linear-gradient(180deg, rgba(30,25,20,0.6) 0%, transparent 40%), repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 12px)",
-          pointerEvents: "none",
-        }} />
-        {/* Wall screen projecting current topic */}
+      {/* Boardroom Arena — rectangular table layout */}
+      <div className="relative mx-auto px-4" style={{ maxWidth: 1200, paddingBottom: 20 }}>
+
+        {/* TOP ROW: 11 seats (5 left + Alex center elevated + 5 right) */}
+        <div className="flex items-end justify-center gap-3 mb-6" style={{ perspective: "1200px" }}>
+          {/* Left 5 members */}
+          {TOP_LEFT.map((s) => {
+            const isActive = phase.active === s.id;
+            const isBackendActive = activeAgents.includes(s.id);
+            const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
+            const contrib = activeContribs.get(s.id);
+            return (
+              <SeatCard key={s.id} seat={s} isActive={isActive} isAmbient={isAmbient}
+                contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
+                activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} />
+            );
+          })}
+
+          {/* Alex CEO — elevated center */}
+          {(() => {
+            const s = CENTER_SEAT;
+            const isActive = phase.active === s.id;
+            const isBackendActive = activeAgents.includes(s.id);
+            const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
+            const contrib = activeContribs.get(s.id);
+            return (
+              <div className="relative" style={{ transform: "translateY(-12px)" }}>
+                <SeatCard seat={s} isActive={isActive} isAmbient={isAmbient}
+                  contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
+                  activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} elevated />
+              </div>
+            );
+          })()}
+
+          {/* Right 5 members */}
+          {TOP_RIGHT.map((s) => {
+            const isActive = phase.active === s.id;
+            const isBackendActive = activeAgents.includes(s.id);
+            const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
+            const contrib = activeContribs.get(s.id);
+            return (
+              <SeatCard key={s.id} seat={s} isActive={isActive} isAmbient={isAmbient}
+                contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
+                activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} />
+            );
+          })}
+        </div>
+
+        {/* RECTANGULAR TABLE */}
+        <div
+          className="mx-auto flex items-center justify-center"
+          style={{
+            width: "85%",
+            height: 100,
+            background: `
+              radial-gradient(ellipse at 30% 25%, rgba(245,158,11,0.12), transparent 55%),
+              repeating-linear-gradient(88deg, rgba(101,67,33,0.9) 0 2px, rgba(120,80,40,0.85) 2px 5px, rgba(85,55,25,0.88) 5px 9px),
+              linear-gradient(180deg, rgba(92,55,25,1), rgba(60,35,15,1))
+            `,
+            borderRadius: 50,
+            border: "2px solid rgba(139,90,43,0.5)",
+            boxShadow: "inset 0 -8px 30px rgba(0,0,0,0.5), inset 0 3px 15px rgba(245,158,11,0.06), 0 20px 40px rgba(0,0,0,0.5), 0 0 0 3px rgba(50,30,15,0.8)",
+          }}
+        >
+          <span style={{ color: "rgba(245,215,160,0.18)", letterSpacing: 5, fontWeight: 700, fontSize: "0.85rem" }}>
+            BOARDROOM TABLE
+          </span>
+        </div>
+
+        {/* BOTTOM: Dara CFO alone */}
+        <div className="flex justify-center mt-6">
+          {(() => {
+            const s = BOTTOM_SEAT;
+            const isActive = phase.active === s.id;
+            const isBackendActive = activeAgents.includes(s.id);
+            const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
+            const contrib = activeContribs.get(s.id);
+            return (
+              <SeatCard seat={s} isActive={isActive} isAmbient={isAmbient}
+                contrib={contrib} delegateActive={delegateActive} ambientMsg={ambientMsg}
+                activeAgents={activeAgents} ambientAgent={ambientAgent} asking={phase.asking} elevated />
+            );
+          })()}
+        </div>
+
+        {/* Wall screen — agenda display */}
         <div className="absolute" style={{
-          left: "32%", top: "4%", width: "36%", height: "18%",
+          right: 16, top: 0, width: 260, padding: "10px 14px",
           background: "linear-gradient(180deg, #0D1117 0%, #161B22 100%)",
-          border: "3px solid #2a2a2a",
-          borderRadius: "6px",
-          boxShadow: "0 0 40px rgba(88,166,255,0.15), inset 0 0 30px rgba(88,166,255,0.08)",
-          padding: "10px 14px",
-          overflow: "hidden",
-          fontSize: "11px",
-          color: "#c9d1d9",
-          lineHeight: 1.4,
+          border: "2px solid #2a2a2a", borderRadius: 8,
+          boxShadow: "0 0 30px rgba(88,166,255,0.1), inset 0 0 20px rgba(88,166,255,0.05)",
+          fontSize: 11, color: "#c9d1d9", lineHeight: 1.4,
         }}>
-          <div style={{ fontSize: "9px", color: "#F59E0B", fontWeight: 700, marginBottom: 4, letterSpacing: "0.15em" }}>
+          <div style={{ fontSize: 9, color: "#F59E0B", fontWeight: 700, marginBottom: 4, letterSpacing: "0.15em" }}>
             AGENDA · BOARD MEETING
           </div>
-          <div style={{ fontSize: "10px", color: "#8b949e", maxHeight: "70%", overflow: "hidden" }}>
+          <div style={{ fontSize: 10, color: "#8b949e" }}>
             {phase.synthesis
-              ? "✓ Decizia luată · Alex pregătește raportul"
+              ? "✓ Decision made · Alex preparing report"
               : phase.asking
-              ? "▸ În dezbatere: primul client în 72h"
-              : question || "Ședință · ofertă €499/€1000 lansată · target €3K MRR"}
+              ? "▸ In debate..."
+              : question || "Session · ready for your question"}
+          </div>
+          <div className="flex gap-2 mt-2">
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 2s infinite" }} />
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 2.5s infinite" }} />
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#3B82F6", animation: "brainBreath 3s infinite" }} />
           </div>
         </div>
-        {/* Wall mini indicator lights */}
-        <div className="absolute flex gap-2" style={{ left: "8%", top: "6%" }}>
-          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#10B981", animation: "brainBreath 2s infinite" }} />
-          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#F59E0B", animation: "brainBreath 2.5s infinite" }} />
-          <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#3B82F6", animation: "brainBreath 3s infinite" }} />
-        </div>
-
-        {/* Table group — tilted for 3/4 perspective */}
-        <div className="absolute inset-0" style={{ transform: "rotateX(15deg) translateY(20px)", transformStyle: "preserve-3d" }}>
-          {/* Soft spot light on table */}
-          <div className="absolute" style={{
-            left: `${tableCx - tableRx - 8}%`,
-            top: `${tableCy - tableRy - 8}%`,
-            width: `${(tableRx + 8) * 2}%`,
-            height: `${(tableRy + 8) * 2}%`,
-            borderRadius: "50%",
-            background: "radial-gradient(ellipse at center, rgba(245,158,11,0.18), transparent 60%)",
-            pointerEvents: "none",
-          }} />
-
-          {/* Oval table with realistic wood */}
-          <div
-            className="absolute"
-            style={{
-              left: `${tableCx - tableRx}%`,
-              top: `${tableCy - tableRy}%`,
-              width: `${tableRx * 2}%`,
-              height: `${tableRy * 2}%`,
-              borderRadius: "50%",
-              background: `
-                radial-gradient(ellipse at 30% 25%, rgba(245,158,11,0.12), transparent 55%),
-                repeating-linear-gradient(88deg, rgba(101,67,33,0.9) 0 2px, rgba(120,80,40,0.85) 2px 5px, rgba(85,55,25,0.88) 5px 9px),
-                linear-gradient(180deg, rgba(92,55,25,1), rgba(60,35,15,1))
-              `,
-              border: "1px solid rgba(139,90,43,0.6)",
-              boxShadow:
-                "inset 0 -10px 40px rgba(0,0,0,0.6), inset 0 4px 20px rgba(245,158,11,0.06), 0 30px 60px rgba(0,0,0,0.5), 0 0 0 3px rgba(50,30,15,0.8)",
-            }}
-          />
-          {/* Brass inlay */}
-          <div className="absolute" style={{
-            left: `${tableCx - tableRx + 3}%`,
-            top: `${tableCy - tableRy + 3}%`,
-            width: `${(tableRx - 3) * 2}%`,
-            height: `${(tableRy - 3) * 2}%`,
-            borderRadius: "50%",
-            border: "1px solid rgba(245,158,11,0.15)",
-            pointerEvents: "none",
-          }} />
-          {/* Table label */}
-          <div
-            className="absolute text-center"
-            style={{
-              left: "50%", top: "50%", transform: "translate(-50%, -50%)",
-              color: "rgba(245,215,160,0.18)", fontSize: "0.85rem", fontWeight: 700, letterSpacing: "0.3em",
-              pointerEvents: "none",
-            }}
-          >
-            MARKETHUB PRO
-          </div>
-        </div>
-
-        {/* Whisper line between two agents */}
-        {whisper && (() => {
-          const from = SEATS.find((s) => s.id === whisper.from);
-          const to = SEATS.find((s) => s.id === whisper.to);
-          if (!from || !to) return null;
-          const f = seatPos(from.angle);
-          const t = seatPos(to.angle);
-          return (
-            <svg className="absolute inset-0 pointer-events-none" style={{ width: "100%", height: "100%" }}>
-              <line
-                x1={f.left as string} y1={f.top as string}
-                x2={t.left as string} y2={t.top as string}
-                stroke="rgba(168,85,247,0.5)" strokeWidth="1.5" strokeDasharray="4 4"
-                style={{ animation: "brainWhisper 2s ease-out" }}
-              />
-            </svg>
-          );
-        })()}
-
-        {/* Seats */}
-        {SEATS.map((s) => {
-          const pos = seatPos(s.angle);
-          const isActive = phase.active === s.id;
-          // Real backend-job pulse: seat glows when an actual task is running
-          // for this agent (e.g., Nora scanning Google Maps right now).
-          const isBackendActive = activeAgents.includes(s.id);
-          const isAmbient = (ambientAgent === s.id && !phase.asking) || isBackendActive;
-          const contrib = activeContribs.get(s.id);
-          const isAlex = s.kind === "alex";
-          const isYou = s.kind === "you";
-          return (
-            <div key={s.id} className="absolute" style={{ left: pos.left, top: pos.top, transform: "translate(-50%, -50%)", zIndex: 10 }}>
-              {/* Pulse ring when active (loud) or ambient (soft) */}
-              {(isActive || isAmbient) && (
-                <span
-                  className="absolute inset-0 rounded-full"
-                  style={{
-                    animation: isActive ? "brainPulse 1.4s ease-out infinite" : "brainPulseSoft 2.4s ease-out infinite",
-                    backgroundColor: isActive
-                      ? (isAlex ? "rgba(245,158,11,0.5)" : "rgba(59,130,246,0.4)")
-                      : (isAlex ? "rgba(245,158,11,0.25)" : "rgba(16,185,129,0.3)"),
-                    width: 72, height: 72, left: -8, top: -8,
-                  }}
-                />
-              )}
-              {/* Ambient whisper bubble */}
-              {isAmbient && ambientMsg && (
-                <div className="absolute text-[10px] px-2 py-1 rounded-md whitespace-nowrap"
-                  style={{
-                    backgroundColor: "rgba(16,185,129,0.15)",
-                    border: "1px solid rgba(16,185,129,0.35)",
-                    color: "#86efac",
-                    top: "-32px", left: "50%", transform: "translateX(-50%)",
-                    animation: "brainFadeIn 0.3s ease-out",
-                  }}>
-                  {ambientMsg}
-                </div>
-              )}
-              {/* Status dot — always on, breathing */}
-              <span className="absolute bottom-2 right-0 w-2.5 h-2.5 rounded-full"
-                style={{
-                  backgroundColor: isYou && delegateActive ? "#8B5CF6" : isActive ? "#F59E0B" : isAmbient ? "#10B981" : "#3B82F6",
-                  boxShadow: `0 0 8px ${isYou && delegateActive ? "#8B5CF6" : isActive ? "#F59E0B" : isAmbient ? "#10B981" : "#3B82F6"}`,
-                  animation: "brainBreath 3s ease-in-out infinite",
-                }}
-              />
-              {/* Avatar circle — real photo for Eduard, icon for rest.
-                  Eduard's seat flips to PURPLE when Delegate Mode is active
-                  so the whole team sees at a glance he's represented by AI. */}
-              <div
-                className="w-14 h-14 rounded-full flex items-center justify-center text-2xl relative overflow-hidden"
-                style={{
-                  backgroundColor: isAlex
-                    ? "rgba(245,158,11,0.25)"
-                    : isYou && delegateActive
-                    ? "rgba(139,92,246,0.28)"
-                    : isYou
-                    ? "rgba(59,130,246,0.25)"
-                    : "rgba(255,255,255,0.06)",
-                  border: `2px solid ${
-                    isAlex
-                      ? "#F59E0B"
-                      : isYou && delegateActive
-                      ? "#8B5CF6"
-                      : isYou
-                      ? "#3B82F6"
-                      : "rgba(255,255,255,0.12)"
-                  }`,
-                  boxShadow: isActive
-                    ? `0 0 24px ${isAlex ? "rgba(245,158,11,0.6)" : isYou && delegateActive ? "rgba(139,92,246,0.6)" : "rgba(59,130,246,0.5)"}`
-                    : isYou && delegateActive
-                    ? "0 0 18px rgba(139,92,246,0.5)"
-                    : "0 4px 12px rgba(0,0,0,0.4)",
-                  transition: "all 0.3s ease",
-                  backgroundImage: isYou ? "url(/avatars/eduard.jpg)" : undefined,
-                  backgroundSize: "cover",
-                  backgroundPosition: "center 20%",
-                }}
-              >
-                {!isYou && s.icon}
-                {isAlex && (
-                  <span className="absolute -top-1 -right-1 text-xs">👑</span>
-                )}
-                {isYou && delegateActive && (
-                  <span
-                    className="absolute -top-1 -right-1 text-xs flex items-center justify-center rounded-full"
-                    style={{
-                      backgroundColor: "#8B5CF6",
-                      width: 18, height: 18,
-                      boxShadow: "0 0 10px rgba(139,92,246,0.8)",
-                      animation: "brainBreath 1.5s infinite",
-                    }}
-                    title="Delegate Mode activ — AI te reprezintă"
-                  >
-                    🛡️
-                  </span>
-                )}
-              </div>
-              {/* Laptop in front of seat */}
-              <div
-                className="absolute mx-auto"
-                style={{
-                  width: 28, height: 18, top: 58, left: "50%", transform: "translateX(-50%)",
-                  background: "linear-gradient(180deg, #1a1a24 0%, #0a0a10 100%)",
-                  border: "1px solid rgba(120,120,140,0.35)",
-                  borderRadius: "2px",
-                  boxShadow: "0 2px 6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                }}
-              >
-                <div className="w-full h-full" style={{
-                  background: isActive || isAmbient
-                    ? "linear-gradient(180deg, rgba(88,166,255,0.55), rgba(88,166,255,0.15))"
-                    : "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01))",
-                  borderRadius: "1px",
-                }} />
-              </div>
-              <p className="text-xs font-bold text-center" style={{ marginTop: 56 }}>{s.name}</p>
-              <p className="text-[10px] text-center" style={{ color: "#888" }}>{s.title}</p>
-
-              {/* Speech bubble — SHOW ONLY when THIS agent is currently active
-                  (one bubble at a time, prevents overlap). Full transcript
-                  lives in the side panel. */}
-              {isActive && contrib && (
-                <div
-                  className="absolute text-xs p-2.5 rounded-lg shadow-2xl"
-                  style={{
-                    backgroundColor: "rgba(26,26,36,0.98)",
-                    border: "1px solid rgba(245,158,11,0.5)",
-                    color: "#eee",
-                    width: 220,
-                    left: s.angle > 90 && s.angle < 270 ? "auto" : "100%",
-                    right: s.angle > 90 && s.angle < 270 ? "100%" : "auto",
-                    [s.angle > 90 && s.angle < 270 ? "marginRight" : "marginLeft"]: 14,
-                    top: "-40%",
-                    backdropFilter: "blur(12px)",
-                    lineHeight: 1.5,
-                    animation: "brainFadeIn 0.3s ease-out",
-                    zIndex: 30,
-                  }}
-                >
-                  <p className="font-bold text-[11px]" style={{ color: "#F59E0B" }}>{contrib.agent_name} vorbește</p>
-                  <p className="mt-1.5 text-[11px]">{contrib.text.slice(0, 180)}{contrib.text.length > 180 ? "..." : ""}</p>
-                </div>
-              )}
-            </div>
-          );
-        })}
       </div>
 
       {/* Alex synthesis notification — header status already announces it.

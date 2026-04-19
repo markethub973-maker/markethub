@@ -176,8 +176,8 @@ export default function WhatsNewModal() {
                 <Link
                   href={f.href}
                   onClick={dismiss}
-                  className="mt-2 inline-flex items-center gap-1 text-xs font-bold rounded-md px-3 py-1.5 transition-all hover:gap-2"
-                  style={{ backgroundColor: f.color, color: "white" }}
+                  className="mt-2 inline-flex items-center gap-1 text-sm font-bold rounded-md px-3.5 py-2 transition-all hover:gap-2"
+                  style={{ backgroundColor: f.color, color: "white", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
                 >
                   {f.cta}
                   <ArrowRight className="w-3 h-3" />
@@ -197,8 +197,8 @@ export default function WhatsNewModal() {
           <button
             type="button"
             onClick={dismiss}
-            className="px-4 py-2 rounded-lg text-xs font-bold"
-            style={{ backgroundColor: "var(--color-text)", color: "white" }}
+            className="px-4 py-2 rounded-lg text-sm font-bold"
+            style={{ backgroundColor: "var(--color-text)", color: "white", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
           >
             Got it
           </button>

@@ -228,7 +228,7 @@ export default function LeadEnrichPage() {
                 <button
                   type="button"
                   onClick={() => copy("angle", result.company_angle)}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                   style={{ backgroundColor: copied === "angle" ? "#10B981" : "rgba(0,0,0,0.04)", color: copied === "angle" ? "white" : "#78614E" }}
                 >
                   {copied === "angle" ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -250,7 +250,7 @@ export default function LeadEnrichPage() {
                 <button
                   type="button"
                   onClick={() => copy("pitch", result.ideal_pitch)}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                   style={{ backgroundColor: copied === "pitch" ? "#10B981" : "rgba(0,0,0,0.04)", color: copied === "pitch" ? "white" : "#78614E" }}
                 >
                   {copied === "pitch" ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
@@ -272,7 +272,7 @@ export default function LeadEnrichPage() {
                 <button
                   type="button"
                   onClick={() => copy("opener", result.opener_message)}
-                  className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-bold"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm font-bold"
                   style={{ backgroundColor: copied === "opener" ? "#10B981" : "var(--color-primary-hover)", color: "white" }}
                 >
                   {copied === "opener" ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
