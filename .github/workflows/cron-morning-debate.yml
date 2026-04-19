@@ -1,0 +1,21 @@
+name: Morning Board Debate (daily 07:00)
+on:
+  schedule:
+    - cron: "0 7 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  debate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run board debate
+        run: |
+          RESULT=$(curl -s -w "\n%{http_code}" -X GET \
+            -H "x-brain-cron-secret: ${{ secrets.BRAIN_CRON_SECRET }}" \
+            -H "User-Agent: MarketHubCron/1.0" \
+            "https://markethubpromo.com/api/brain/morning-debate" \
+            --max-time 170)
+          HTTP_CODE=$(echo "$RESULT" | tail -1)
+          BODY=$(echo "$RESULT" | head -n -1)
+          echo "HTTP: $HTTP_CODE"
+          echo "Response: $BODY"
