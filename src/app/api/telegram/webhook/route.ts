@@ -453,6 +453,80 @@ export async function POST(req: NextRequest) {
     } catch { /* non-fatal */ }
   }
 
+  // Rule management commands from Eduard
+  if (userText === "/reguli") {
+    try {
+      const svcR = createServiceClient();
+      const { data: rules } = await svcR
+        .from("brain_knowledge_base")
+        .select("id, name, created_at")
+        .or("tags.cs.{permanent},tags.cs.{eduard-rule},tags.cs.{absolute}")
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (!rules || rules.length === 0) {
+        await tgApi("sendMessage", { chat_id: chatId, text: "Nu ai reguli salvate." });
+      } else {
+        const list = rules.map((r, i) =>
+          `${i + 1}. ${r.name}\n   ID: ${String(r.id).slice(0, 8)}\n   Șterge: /sterge ${String(r.id).slice(0, 8)}`
+        ).join("\n\n");
+        await tgApi("sendMessage", { chat_id: chatId, text: `📜 REGULI ACTIVE (${rules.length}):\n\n${list}` });
+      }
+    } catch { await tgApi("sendMessage", { chat_id: chatId, text: "Eroare la citirea regulilor." }); }
+    return NextResponse.json({ ok: true, action: "list_rules" });
+  }
+
+  if (userText.startsWith("/sterge ")) {
+    const shortId = userText.slice(8).trim();
+    try {
+      const svcR = createServiceClient();
+      const { data: all } = await svcR
+        .from("brain_knowledge_base")
+        .select("id, name")
+        .or("tags.cs.{permanent},tags.cs.{eduard-rule},tags.cs.{absolute}")
+        .limit(50);
+      const match = (all ?? []).find(r => String(r.id).startsWith(shortId));
+      if (!match) {
+        await tgApi("sendMessage", { chat_id: chatId, text: `Nu am găsit regula ${shortId}.` });
+      } else {
+        await svcR.from("brain_knowledge_base").delete().eq("id", match.id);
+        await tgApi("sendMessage", { chat_id: chatId, text: `🗑️ Regulă ștearsă: "${match.name}"` });
+      }
+    } catch { await tgApi("sendMessage", { chat_id: chatId, text: "Eroare la ștergere." }); }
+    return NextResponse.json({ ok: true, action: "delete_rule" });
+  }
+
+  if (userText.startsWith("/modifica ")) {
+    const parts = userText.slice(10).trim();
+    const spaceIdx = parts.indexOf(" ");
+    if (spaceIdx < 4) {
+      await tgApi("sendMessage", { chat_id: chatId, text: "Format: /modifica ID_SCURT text nou" });
+      return NextResponse.json({ ok: true });
+    }
+    const shortId = parts.slice(0, spaceIdx);
+    const newContent = parts.slice(spaceIdx + 1).trim();
+    try {
+      const svcR = createServiceClient();
+      const { data: all } = await svcR
+        .from("brain_knowledge_base")
+        .select("id, name")
+        .or("tags.cs.{permanent},tags.cs.{eduard-rule},tags.cs.{absolute}")
+        .limit(50);
+      const match = (all ?? []).find(r => String(r.id).startsWith(shortId));
+      if (!match) {
+        await tgApi("sendMessage", { chat_id: chatId, text: `Nu am găsit regula ${shortId}.` });
+      } else {
+        await svcR.from("brain_knowledge_base").update({
+          content: newContent,
+          summary: newContent.slice(0, 200),
+          updated_at: new Date().toISOString(),
+        }).eq("id", match.id);
+        await tgApi("sendMessage", { chat_id: chatId, text: `✏️ Regulă modificată: "${match.name}"\nConținut nou: ${newContent.slice(0, 100)}...` });
+      }
+    } catch { await tgApi("sendMessage", { chat_id: chatId, text: "Eroare la modificare." }); }
+    return NextResponse.json({ ok: true, action: "modify_rule" });
+  }
+
   // Handle Eduard's approval/rejection of Alex's proposals
   if (userText.startsWith("/da ") || userText.startsWith("/nu ")) {
     const result = await handleApproval(userText);
