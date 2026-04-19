@@ -796,7 +796,7 @@ NEVER forget a rule Eduard gave you. If unsure, save it.`;
     chat_id: chatId,
     role: "assistant",
     kind: "text",
-    text: reply,
+    text: cleanReply + approvalText,
     audio_reply_sent: Boolean(tts),
   });
 
