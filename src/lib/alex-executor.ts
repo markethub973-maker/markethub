@@ -79,7 +79,7 @@ export async function saveProposalsForApproval(
       continue;
     }
 
-    const id = crypto.randomUUID();
+    const id = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     await svc.from("brain_agent_activity").insert({
       agent_id: "alex",
       agent_name: "Alex (CEO)",

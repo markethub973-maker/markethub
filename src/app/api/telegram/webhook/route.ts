@@ -747,7 +747,18 @@ NEVER forget a rule Eduard gave you. If unsure, save it.`;
   const proposals = parseProposals(reply);
   let approvalText = "";
   if (proposals.length > 0) {
-    approvalText = await saveProposalsForApproval(proposals);
+    try {
+      approvalText = await saveProposalsForApproval(proposals);
+    } catch (e) {
+      console.error("[webhook] saveProposals failed:", e);
+      // Fallback: show proposals inline even if DB save fails
+      approvalText = "\n\n⚠️ Proposals detected but save failed. Try /da manually after Alex repropose.";
+    }
+    // If saveProposalsForApproval returned empty (DB error inside), build inline
+    if (!approvalText && proposals.length > 0) {
+      const lines = proposals.map(p => `⏳ ${p.cmd}: ${JSON.stringify(p.params)}`);
+      approvalText = "\n\n📋 ACȚIUNI DETECTATE (save eșuat, repropose):\n" + lines.join("\n");
+    }
   }
 
   // Handle SAVE_RULE blocks — save new rules to brain_knowledge_base
