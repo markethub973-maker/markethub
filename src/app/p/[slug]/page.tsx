@@ -42,7 +42,7 @@ interface ProspectPage {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-const CALENDLY = "https://calendar.app.google/kmUnEepd8a3Nj1Mh7";
+const CALENDLY = "https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en";
 
 async function getPage(slug: string): Promise<ProspectPage | null> {
   const svc = createServiceClient();

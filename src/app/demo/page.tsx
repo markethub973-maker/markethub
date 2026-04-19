@@ -108,7 +108,7 @@ export default function DemoPage() {
           <Link href="/" style={{ textDecoration: "none", color: "#fff", fontSize: 20, fontWeight: 800 }}>
             <span style={{ color: "#F59E0B" }}>●</span> MarketHub Pro
           </Link>
-          <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={glassBtnSmall}>
+          <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en" style={glassBtnSmall}>
             Book a Demo
           </Link>
         </header>
@@ -123,7 +123,7 @@ export default function DemoPage() {
             AI-powered social media content for restaurants, hotels, clinics, and retail businesses. Professional posts, images, and scheduling — delivered automatically.
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={glassBtn}>
+            <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en" style={glassBtn}>
               Free 15-min Demo
             </Link>
             <Link href="/pricing" style={glassBtnSecondary}>
@@ -173,7 +173,7 @@ export default function DemoPage() {
             <p style={{ fontSize: 15, color: "rgba(255,255,255,0.65)", marginBottom: 24, lineHeight: 1.6 }}>
               We&apos;ll create <strong style={{ color: "#F59E0B" }}>5 professional posts</strong> for your business — completely free. See the quality before you pay.
             </p>
-            <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={glassBtnCTA}>
+            <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en" style={glassBtnCTA}>
               Get Your Free Posts
             </Link>
             <p style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", marginTop: 12 }}>15-minute call. No credit card. No obligation.</p>
@@ -185,7 +185,7 @@ export default function DemoPage() {
             <a href="mailto:alex@markethubpromo.com" style={{ color: "#F59E0B", textDecoration: "none", fontSize: 14 }}>
               alex@markethubpromo.com
             </a>
-            <a href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: 14 }}>
+            <a href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: 14 }}>
               Book a Call
             </a>
             <a href="/pricing" style={{ color: "rgba(255,255,255,0.5)", textDecoration: "none", fontSize: 14 }}>

@@ -90,7 +90,7 @@ function buildEmailHtml(businessName: string, body: string, recipientEmail: stri
 <p style="margin:0 0 20px;">Bună ziua,</p>
 <div style="margin:0 0 24px;padding:16px 20px;background:#FFF8F0;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">${bodyHtml}</div>
 <table role="presentation" style="margin:0 0 24px;"><tr><td style="background:linear-gradient(135deg,#F59E0B,#D97706);border-radius:12px;">
-<a href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7" style="display:inline-block;padding:14px 28px;color:#1C1814;text-decoration:none;font-weight:700;font-size:14px;">Demo gratuit 15 min</a>
+<a href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en" style="display:inline-block;padding:14px 28px;color:#1C1814;text-decoration:none;font-weight:700;font-size:14px;">Demo gratuit 15 min</a>
 </td></tr></table>
 <p style="margin:0 0 4px;">Cu stimă,</p><p style="margin:0;font-weight:700;">Eduard Bostan</p>
 </td></tr>

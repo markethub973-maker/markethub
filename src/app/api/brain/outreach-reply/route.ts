@@ -29,7 +29,7 @@ export const maxDuration = 30;
 
 const FROM_ADDRESS = "Eduard Bostan <alex@markethubpromo.com>";
 const REPLY_TO = "alex@markethubpromo.com";
-const CALENDLY_LINK = "https://calendar.app.google/kmUnEepd8a3Nj1Mh7";
+const CALENDLY_LINK = "https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en";
 
 // Intents that trigger Eduard notification
 const NOTIFY_INTENTS = ["demo_interest", "pricing_question", "demo_booked"];
