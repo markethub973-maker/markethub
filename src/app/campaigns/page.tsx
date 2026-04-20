@@ -258,7 +258,7 @@ export default function CampaignsPage() {
               </div>
               Campaign Tracker
             </h1>
-            <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
+            <p className="text-sm mt-1" style={{ color: "#5C4A35" }}>
               Monitor campaigns with live data from Instagram and TikTok
             </p>
           </div>
@@ -300,7 +300,7 @@ export default function CampaignsPage() {
             <div key={i} className="rounded-xl p-4" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
               <div className="flex items-center gap-2 mb-2">
                 <s.icon className="w-4 h-4" style={{ color: s.color }} />
-                <span className="text-xs" style={{ color: "#A8967E" }}>{s.label}</span>
+                <span className="text-xs" style={{ color: "#5C4A35" }}>{s.label}</span>
               </div>
               <p className="text-lg font-bold" style={{ color: s.color }}>{s.value}</p>
             </div>
@@ -331,7 +331,7 @@ export default function CampaignsPage() {
           {filtered.length === 0 && (
             <div className="rounded-xl p-12 flex flex-col items-center gap-4 text-center" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
               <Target className="w-8 h-8" style={{ color: "#A8967E" }} />
-              <p className="text-sm" style={{ color: "#A8967E" }}>
+              <p className="text-sm" style={{ color: "#5C4A35" }}>
                 {campaigns.length === 0 ? "No campaigns yet. Create your first campaign!" : "No campaigns found with the selected filters."}
               </p>
             </div>
@@ -367,7 +367,7 @@ export default function CampaignsPage() {
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 text-xs" style={{ color: "#A8967E" }}>
+                    <div className="flex items-center gap-3 text-xs" style={{ color: "#5C4A35" }}>
                       {c.client && <span>{c.client}</span>}
                       <span>{c.startDate} - {c.endDate || "..."}</span>
                     </div>
@@ -375,15 +375,15 @@ export default function CampaignsPage() {
 
                   <div className="hidden md:flex items-center gap-6 shrink-0">
                     <div className="text-right">
-                      <p className="text-xs" style={{ color: "#A8967E" }}>Budget</p>
+                      <p className="text-xs" style={{ color: "#5C4A35" }}>Budget</p>
                       <p className="text-sm font-bold" style={{ color: "#F5D7A0" }}>{fmtCurrency(c.budget)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs" style={{ color: "#A8967E" }}>Spent</p>
+                      <p className="text-xs" style={{ color: "#5C4A35" }}>Spent</p>
                       <p className="text-sm font-bold" style={{ color: budgetPct > 90 ? "#EF4444" : "var(--color-bg)" }}>{fmtCurrency(c.spent)}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs" style={{ color: "#A8967E" }}>ROI</p>
+                      <p className="text-xs" style={{ color: "#5C4A35" }}>ROI</p>
                       <p className="text-sm font-bold flex items-center gap-1" style={{ color: campaignRoi >= 0 ? "#10B981" : "#EF4444" }}>
                         {campaignRoi >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                         {campaignRoi.toFixed(1)}%
@@ -394,11 +394,11 @@ export default function CampaignsPage() {
                   <div className="flex items-center gap-1 shrink-0">
                     {hasSocial && (
                       <button type="button" title="Sync social data" onClick={(e) => { e.stopPropagation(); fetchSocialData(c.id); }} disabled={isFetching}
-                        className="p-2 rounded-lg" style={{ color: "#A8967E" }}>
+                        className="p-2 rounded-lg" style={{ color: "#5C4A35" }}>
                         <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`} />
                       </button>
                     )}
-                    <button type="button" title="Edit campaign" onClick={(e) => { e.stopPropagation(); openEdit(c); }} className="p-2 rounded-lg" style={{ color: "#A8967E" }}>
+                    <button type="button" title="Edit campaign" onClick={(e) => { e.stopPropagation(); openEdit(c); }} className="p-2 rounded-lg" style={{ color: "#5C4A35" }}>
                       <Edit3 className="w-4 h-4" />
                     </button>
                     <button type="button" title="Delete campaign" onClick={(e) => { e.stopPropagation(); handleDelete(c.id); }} className="p-2 rounded-lg" style={{ color: "#EF4444" }}>
@@ -458,7 +458,7 @@ export default function CampaignsPage() {
                             <div key={i} className="rounded-lg p-3" style={{ backgroundColor: `${m.color}08`, border: `1px solid ${m.color}15` }}>
                               <div className="flex items-center gap-1 mb-1">
                                 <m.icon className="w-3 h-3" style={{ color: m.color }} />
-                                <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
+                                <p className="text-[10px] uppercase tracking-wider" style={{ color: "#5C4A35" }}>{m.label}</p>
                               </div>
                               <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{m.value}</p>
                             </div>
@@ -470,7 +470,7 @@ export default function CampaignsPage() {
                             <div key={i} className="rounded-lg p-3" style={{ backgroundColor: `${m.color}08`, border: `1px solid ${m.color}15` }}>
                               <div className="flex items-center gap-1 mb-1">
                                 <m.icon className="w-3 h-3" style={{ color: m.color }} />
-                                <p className="text-[10px] uppercase tracking-wider" style={{ color: "#A8967E" }}>{m.label}</p>
+                                <p className="text-[10px] uppercase tracking-wider" style={{ color: "#5C4A35" }}>{m.label}</p>
                               </div>
                               <p className="text-sm font-bold" style={{ color: "var(--color-text)" }}>{m.value}</p>
                             </div>
@@ -495,7 +495,7 @@ export default function CampaignsPage() {
                     {c.notes && (
                       <div className="rounded-lg p-3" style={{ backgroundColor: "rgba(255,248,240,0.03)" }}>
                         <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#6B5E50" }}>Note</p>
-                        <p className="text-sm" style={{ color: "#A8967E" }}>{c.notes}</p>
+                        <p className="text-sm" style={{ color: "#5C4A35" }}>{c.notes}</p>
                       </div>
                     )}
                   </div>
@@ -509,49 +509,49 @@ export default function CampaignsPage() {
         {showForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
             <div className="w-full max-w-2xl rounded-2xl p-6 max-h-[90vh] overflow-y-auto"
-              style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.15)" }}>
+              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(200,180,150,0.3)", boxShadow: "0 12px 40px rgba(120,97,78,0.15)" }}>
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-bold" style={{ color: "#F5D7A0" }}>
+                <h2 className="text-lg font-bold" style={{ color: "#2D2620" }}>
                   {editId ? "Edit Campaign" : "New Campaign"}
                 </h2>
-                <button type="button" title="Close" onClick={() => setShowForm(false)} className="p-1" style={{ color: "#A8967E" }}><X className="w-5 h-5" /></button>
+                <button type="button" title="Close" onClick={() => setShowForm(false)} className="p-1" style={{ color: "#78614E" }}><X className="w-5 h-5" /></button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Name */}
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Campaign name *</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Campaign name *</label>
                   <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Ex: Black Friday 2026"
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
 
                 {/* Client */}
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Client</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Client</label>
                   <input value={form.client} onChange={(e) => setForm({ ...form, client: e.target.value })}
                     placeholder="Client name"
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
 
                 {/* Platform */}
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Platform</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Platform</label>
                   <select title="Platform" value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }}>
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }}>
                     {Object.keys(platformColors).map((p) => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
 
                 {/* Status */}
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Status</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Status</label>
                   <select title="Status" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as Campaign["status"] })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }}>
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }}>
                     {Object.entries(statusConfig).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
                   </select>
                 </div>
@@ -580,65 +580,65 @@ export default function CampaignsPage() {
 
                 {/* Budget */}
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Budget (USD)</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Budget (USD)</label>
                   <input type="number" value={form.budget || ""} onChange={(e) => setForm({ ...form, budget: parseFloat(e.target.value) || 0 })}
                     placeholder="0" className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
 
                 {/* Dates */}
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Start date</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Start date</label>
                   <input type="date" title="Start date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>End date</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>End date</label>
                   <input type="date" title="End date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
 
                 {/* Spent, Impressions, Clicks, Conversions, Revenue */}
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Spent (USD)</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Spent (USD)</label>
                   <input type="number" placeholder="0" value={form.spent || ""} onChange={(e) => setForm({ ...form, spent: parseFloat(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Impressions</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Impressions</label>
                   <input type="number" placeholder="0" value={form.impressions || ""} onChange={(e) => setForm({ ...form, impressions: parseInt(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Clicks</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Clicks</label>
                   <input type="number" placeholder="0" value={form.clicks || ""} onChange={(e) => setForm({ ...form, clicks: parseInt(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Conversions</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Conversions</label>
                   <input type="number" placeholder="0" value={form.conversions || ""} onChange={(e) => setForm({ ...form, conversions: parseInt(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Revenue (USD)</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Revenue (USD)</label>
                   <input type="number" placeholder="0" value={form.revenue || ""} onChange={(e) => setForm({ ...form, revenue: parseFloat(e.target.value) || 0 })}
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
 
                 {/* Notes */}
                 <div className="md:col-span-2">
-                  <label className="block text-xs font-medium mb-1" style={{ color: "#A8967E" }}>Note</label>
+                  <label className="block text-xs font-medium mb-1" style={{ color: "#5C4A35" }}>Note</label>
                   <textarea value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })}
                     rows={3} placeholder="Note despre campanie..."
                     className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none"
-                    style={{ backgroundColor: "rgba(255,248,240,0.05)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }} />
+                    style={{ backgroundColor: "white", border: "1px solid rgba(200,180,150,0.25)", color: "#2D2620" }} />
                 </div>
               </div>
 
