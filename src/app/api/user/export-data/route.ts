@@ -60,12 +60,16 @@ export async function GET(req: Request) {
   const bundle: Record<string, unknown[]> = {};
 
   for (const table of USER_TABLES) {
-    const column = USER_ID_COLUMN[table] ?? "user_id";
-    const { data, error } = await supa
-      .from(table)
-      .select("*")
-      .eq(column, auth.userId);
-    if (!error && data) bundle[table] = data;
+    try {
+      const column = USER_ID_COLUMN[table] ?? "user_id";
+      const { data, error } = await supa
+        .from(table)
+        .select("*")
+        .eq(column, auth.userId);
+      if (!error && data) bundle[table] = data;
+    } catch {
+      // Table might not exist — skip silently
+    }
   }
 
   await logAudit({

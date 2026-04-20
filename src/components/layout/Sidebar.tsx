@@ -656,11 +656,13 @@ export default function Sidebar() {
                 style={{ color: sidebarTextMuted }}>
                 Plan & Billing
               </Link>
-              <Link href="/upgrade"
-                className="mt-1 block w-full py-1.5 rounded-md text-xs font-bold text-center"
-                style={{ backgroundColor: "var(--color-primary)", color: "var(--color-surface-dark)" }}>
-                Upgrade
-              </Link>
+              {userPlan !== "agency" && (
+                <Link href="/upgrade"
+                  className="mt-1 block w-full py-1.5 rounded-md text-xs font-bold text-center"
+                  style={{ backgroundColor: "var(--color-primary)", color: "var(--color-surface-dark)" }}>
+                  Upgrade
+                </Link>
+              )}
             </div>
           )}
 
