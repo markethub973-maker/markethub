@@ -263,7 +263,7 @@ export default function CalendarPage() {
             <select value={filterPlatform} onChange={e => setFilterPlatform(e.target.value)}
               aria-label="Filter by platform"
               className="px-2 py-1.5 text-xs rounded-lg focus:outline-none"
-              style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
+              style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }}>
               <option value="all">All platforms</option>
               {PLATFORMS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
             </select>
@@ -341,7 +341,7 @@ export default function CalendarPage() {
             <div className="grid grid-cols-7">
               {Array.from({ length: firstDay }).map((_, i) => (
                 <div key={`e-${i}`} className="min-h-24 p-1"
-                  style={{ borderBottom: "1px solid rgba(245,215,160,0.06)", borderRight: "1px solid rgba(245,215,160,0.06)" }} />
+                  style={{ borderBottom: "1px solid rgba(200,180,150,0.2)", borderRight: "1px solid rgba(200,180,150,0.2)" }} />
               ))}
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
@@ -352,9 +352,9 @@ export default function CalendarPage() {
                 return (
                   <div key={day} className="min-h-24 p-1 cursor-pointer transition-colors"
                     style={{
-                      borderBottom: "1px solid rgba(245,215,160,0.06)",
-                      borderRight: "1px solid rgba(245,215,160,0.06)",
-                      backgroundColor: isSelected ? "rgba(245,158,11,0.06)" : isToday ? "rgba(245,158,11,0.03)" : "transparent",
+                      borderBottom: "1px solid rgba(200,180,150,0.2)",
+                      borderRight: "1px solid rgba(200,180,150,0.2)",
+                      backgroundColor: isSelected ? "rgba(245,158,11,0.12)" : isToday ? "rgba(245,158,11,0.06)" : "transparent",
                     }}
                     onClick={() => setSelectedDate(dateStr)}>
                     <div className="flex items-center justify-between mb-1">
@@ -444,8 +444,8 @@ export default function CalendarPage() {
         {showForm && (
           <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
             onClick={() => { setShowForm(false); setError(""); }}>
-            <div className="w-full max-w-lg rounded-xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
-              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.3)" }}
+            <div className="w-full max-w-lg rounded-xl p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-xl"
+              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(200,180,150,0.4)" }}
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
                 <h3 className="font-bold" style={{ color: "var(--color-text)" }}>{editingPost ? "Edit post" : "New post"}</h3>
@@ -465,20 +465,20 @@ export default function CalendarPage() {
                   <input type="text" placeholder="Ex: New product reel" value={form.title}
                     onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
+                    style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Date</label>
                     <input type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
                       className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
+                      style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }} />
                   </div>
                   <div>
                     <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>Time</label>
                     <input type="time" value={form.time} onChange={e => setForm(f => ({ ...f, time: e.target.value }))}
                       className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
+                      style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }} />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -487,7 +487,7 @@ export default function CalendarPage() {
                     <select value={form.platform} onChange={e => setForm(f => ({ ...f, platform: e.target.value }))}
                       aria-label="Platform"
                       className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
+                      style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }}>
                       {PLATFORMS.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
                     </select>
                   </div>
@@ -498,7 +498,7 @@ export default function CalendarPage() {
                     <select value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
                       aria-label="Status"
                       className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                      style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }}>
+                      style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }}>
                       {STATUSES.map(s => <option key={s.id} value={s.id}>{s.label}</option>)}
                     </select>
                   </div>
@@ -508,7 +508,7 @@ export default function CalendarPage() {
                   <input type="text" placeholder="Ex: Brand XYZ" value={form.client}
                     onChange={e => setForm(f => ({ ...f, client: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
+                    style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }} />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -522,7 +522,7 @@ export default function CalendarPage() {
                   <textarea placeholder="Post text..." value={form.caption}
                     onChange={e => setForm(f => ({ ...f, caption: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none" rows={3}
-                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
+                    style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }} />
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
@@ -537,7 +537,7 @@ export default function CalendarPage() {
                   <input type="text" placeholder="#marketing #socialmedia #brand" value={form.hashtags}
                     onChange={e => setForm(f => ({ ...f, hashtags: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none"
-                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
+                    style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }} />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold mb-1" style={{ color: "#78614E" }}>
@@ -546,7 +546,7 @@ export default function CalendarPage() {
                   <textarea placeholder="Paste your hashtags here to keep caption clean..." value={form.first_comment}
                     onChange={e => setForm(f => ({ ...f, first_comment: e.target.value }))}
                     className="w-full px-3 py-2 text-sm rounded-lg focus:outline-none resize-none" rows={2}
-                    style={{ border: "1px solid rgba(245,215,160,0.3)", backgroundColor: "var(--color-bg)", color: "var(--color-text)" }} />
+                    style={{ border: "1px solid rgba(200,180,150,0.35)", backgroundColor: "white", color: "#2D2620" }} />
                 </div>
                 <div className="md:col-span-2">
                   <div className="flex items-center justify-between mb-1 gap-2 flex-wrap">
