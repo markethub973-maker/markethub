@@ -132,9 +132,41 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ ok: true, sent: 0, note: "no prospects to email" });
   }
 
-  // Filter to unsent
+  // ── STRICT SAFETY GUARDS ──────────────────────────────────────────────
+  // Blocked keywords in domain/business name — NEVER contact these
+  const BLOCKED_KEYWORDS = [
+    "marketing", "agency", "digital", "software", "seo", "web", "media",
+    "creative", "branding", "design", "studio", "tech", "IT", "saas",
+    "development", "developer", "consulting", "advertis", "marcom",
+  ];
+
+  // Blocked email prefixes
+  const BLOCKED_EMAILS = ["programari@", "appointments@", "rezervari@", "booking@", "noreply@", "no-reply@"];
+
+  // Filter to unsent + apply safety guards
   const toSend = prospects
-    .filter((p) => p.email && !sentDomains.has(p.domain))
+    .filter((p) => {
+      if (!p.email) return false;
+      if (sentDomains.has(p.domain)) return false;
+
+      // Block agencies by domain/name keywords
+      const domainLower = (p.domain || "").toLowerCase();
+      const nameLower = (p.business_name || "").toLowerCase();
+      const combined = domainLower + " " + nameLower;
+      if (BLOCKED_KEYWORDS.some(kw => combined.includes(kw.toLowerCase()))) {
+        // Auto-mark as blocked in DB
+        void svc.from("brain_global_prospects").update({ outreach_status: "blocked_competitor" }).eq("domain", p.domain);
+        return false;
+      }
+
+      // Block bad email prefixes
+      const emailLower = p.email.toLowerCase();
+      if (BLOCKED_EMAILS.some(prefix => emailLower.startsWith(prefix))) {
+        return false;
+      }
+
+      return true;
+    })
     .slice(0, BATCH_SIZE);
 
   if (!toSend.length) {
@@ -146,6 +178,24 @@ export async function GET(req: NextRequest) {
   const results: Array<{ domain: string; email: string; status: string }> = [];
 
   for (const prospect of toSend) {
+    // SAFETY: web-read check — verify NOT a marketing agency before sending
+    try {
+      const checkUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://markethubpromo.com"}/api/brain/web-read?url=https://${prospect.domain}`;
+      const checkRes = await fetch(checkUrl, {
+        headers: { "x-brain-cron-secret": process.env.BRAIN_CRON_SECRET ?? "" },
+        signal: AbortSignal.timeout(8000),
+      });
+      if (checkRes.ok) {
+        const checkData = await checkRes.json();
+        if (checkData.isMarketingAgency) {
+          await svc.from("brain_global_prospects").update({ outreach_status: "blocked_competitor" }).eq("domain", prospect.domain);
+          await svc.from("outreach_log").insert({ domain: prospect.domain, email_to: prospect.email, status: "blocked_competitor", subject: "AUTO-BLOCKED: marketing agency detected" });
+          results.push({ domain: prospect.domain, email: prospect.email, status: "blocked_agency" });
+          continue;
+        }
+      }
+    } catch { /* non-fatal — proceed with send if check fails */ }
+
     // Generate personalized pitch
     const pitch = await generatePitch(
       prospect.business_name || prospect.domain,
