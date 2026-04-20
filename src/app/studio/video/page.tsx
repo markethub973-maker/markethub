@@ -295,8 +295,9 @@ export default function AiVideoStudioPage() {
               autoPlay
               loop
               muted
-              className="w-full max-h-[600px] rounded-xl"
-              style={{ backgroundColor: "rgba(0,0,0,0.03)" }}
+              playsInline
+              className="w-full rounded-xl"
+              style={{ backgroundColor: "#000", maxHeight: 500, objectFit: "contain", aspectRatio: latest.aspect_ratio === "9:16" ? "9/16" : latest.aspect_ratio === "1:1" ? "1/1" : "16/9" }}
             />
             <div className="mt-3 flex items-center justify-between text-xs" style={{ color: "#78614E" }}>
               <span>
@@ -351,12 +352,13 @@ export default function AiVideoStudioPage() {
                         v.pause();
                         v.currentTime = 0;
                       }}
-                      className="w-full aspect-[9/16] object-cover"
+                      className="w-full object-cover"
+                      style={{ aspectRatio: g.aspect_ratio === "16:9" ? "16/9" : g.aspect_ratio === "1:1" ? "1/1" : "9/16" }}
                     />
                   ) : (
                     <div
-                      className="w-full aspect-[9/16] flex items-center justify-center"
-                      style={{ backgroundColor: "rgba(0,0,0,0.04)" }}
+                      className="w-full flex items-center justify-center"
+                      style={{ aspectRatio: g.aspect_ratio === "16:9" ? "16/9" : g.aspect_ratio === "1:1" ? "1/1" : "9/16", backgroundColor: "rgba(0,0,0,0.04)" }}
                     >
                       {g.status === "failed" ? (
                         <AlertCircle className="w-6 h-6" style={{ color: "#EF4444" }} />
