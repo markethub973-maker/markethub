@@ -193,8 +193,9 @@ export default function OnboardingChecklist() {
               key={step.id}
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all"
               style={{
-                backgroundColor: isDone ? "rgba(245,215,160,0.15)" : "rgba(255,255,255,0.6)",
-                border: `1px solid ${isDone ? "rgba(245,215,160,0.4)" : "rgba(245,215,160,0.2)"}`,
+                backgroundColor: isDone ? "rgba(245,215,160,0.15)" : "white",
+                border: `1px solid ${isDone ? "rgba(245,215,160,0.4)" : "rgba(200,180,150,0.35)"}`,
+                boxShadow: isDone ? "none" : "0 2px 8px rgba(120,97,78,0.08)",
               }}
             >
               {/* Checkbox */}
@@ -227,13 +228,23 @@ export default function OnboardingChecklist() {
                 <Link
                   href={step.href}
                   onClick={() => handleStepClick(step.id)}
-                  className="flex items-center gap-1 px-3.5 py-2 rounded-lg text-sm font-medium flex-shrink-0 transition-colors"
-                  style={{ backgroundColor: step.accentColor + "18", color: step.accentColor }}
-                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = step.accentColor + "28")}
-                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = step.accentColor + "18")}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0 transition-all hover:scale-105"
+                  style={{
+                    background: `linear-gradient(135deg, ${step.accentColor}15, ${step.accentColor}25)`,
+                    color: step.accentColor,
+                    border: `1px solid ${step.accentColor}30`,
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = `linear-gradient(135deg, ${step.accentColor}25, ${step.accentColor}40)`;
+                    e.currentTarget.style.borderColor = step.accentColor;
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = `linear-gradient(135deg, ${step.accentColor}15, ${step.accentColor}25)`;
+                    e.currentTarget.style.borderColor = `${step.accentColor}30`;
+                  }}
                 >
                   Go
-                  <ChevronRight className="w-3 h-3" />
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               )}
             </div>
