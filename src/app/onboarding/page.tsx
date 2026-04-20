@@ -22,7 +22,7 @@ const PLATFORMS: Platform[] = [
   {
     id: "instagram",
     name: "Instagram",
-    icon: "\uD83D\uDCF7",
+    icon: "📷",
     color: "#E1306C",
     colorBg: "rgba(225,48,108,0.12)",
     connectUrl: "/api/auth/instagram",
@@ -33,7 +33,7 @@ const PLATFORMS: Platform[] = [
   {
     id: "facebook",
     name: "Facebook",
-    icon: "\uD83D\uDCF1",
+    icon: "📱",
     color: "#1877F2",
     colorBg: "rgba(24,119,242,0.12)",
     connectUrl: "/api/auth/facebook-page/connect",
@@ -44,7 +44,7 @@ const PLATFORMS: Platform[] = [
   {
     id: "tiktok",
     name: "TikTok",
-    icon: "\uD83C\uDFB5",
+    icon: "🎵",
     color: "#00F2EA",
     colorBg: "rgba(0,242,234,0.10)",
     connectUrl: "/api/auth/tiktok",
@@ -54,7 +54,7 @@ const PLATFORMS: Platform[] = [
   {
     id: "linkedin",
     name: "LinkedIn",
-    icon: "\uD83D\uDCBC",
+    icon: "💼",
     color: "#0A66C2",
     colorBg: "rgba(10,102,194,0.12)",
     connectUrl: "/api/auth/linkedin-post/connect",
@@ -231,7 +231,7 @@ export default function OnboardingPage() {
           <div style={styles.card}>
             <div style={styles.cardInner}>
               <div style={{ fontSize: 56, marginBottom: 16, textAlign: "center" as const }}>
-                \uD83D\uDC4B
+                👋
               </div>
               <h1 style={styles.title}>
                 Welcome to MarketHub Pro!
@@ -260,7 +260,7 @@ export default function OnboardingPage() {
           <div style={styles.card}>
             <div style={styles.cardInner}>
               <div style={{ fontSize: 48, marginBottom: 12, textAlign: "center" as const }}>
-                \uD83D\uDD17
+                🔗
               </div>
               <h1 style={styles.title}>
                 Connect your accounts
@@ -333,7 +333,7 @@ export default function OnboardingPage() {
           <div style={styles.card}>
             <div style={styles.cardInner}>
               <div style={{ fontSize: 56, marginBottom: 16, textAlign: "center" as const }}>
-                \uD83C\uDF89
+                🎉
               </div>
               <h1 style={styles.title}>
                 You&apos;re all set!
