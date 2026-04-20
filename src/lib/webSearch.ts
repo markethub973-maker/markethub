@@ -39,7 +39,7 @@ export async function webSearch(
     },
     body: JSON.stringify({
       q: query,
-      num: options.num ?? 10,
+      num: Math.min(options.num ?? 9, 9), // Max 9 — Serper charges 2x credits for 10+
       gl: options.country ?? "ro",
       hl: options.lang ?? "ro",
     }),

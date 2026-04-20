@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
 
     let searchResults;
     try {
-      searchResults = await webSearch(query, { num: 10, country, lang });
+      searchResults = await webSearch(query, { num: 9, country, lang });
     } catch {
       results.push({ domain: query, name: "search_failed", status: "error" });
       continue;

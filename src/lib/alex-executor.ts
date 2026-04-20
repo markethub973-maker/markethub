@@ -389,7 +389,7 @@ async function searchResellers(params: Record<string, unknown>): Promise<Command
 
   try {
     const res = await fetch(
-      `${BASE_URL}/api/brain/web-search?q=${encodeURIComponent(query)}&num=10&country=${country}`,
+      `${BASE_URL}/api/brain/web-search?q=${encodeURIComponent(query)}&num=9&country=${country}`,
       { headers: { "x-brain-cron-secret": BRAIN_CRON_SECRET }, signal: AbortSignal.timeout(15000) }
     );
     if (!res.ok) return { executed: false, action: "SEARCH_RESELLERS", details: `Search failed: HTTP ${res.status}` };
