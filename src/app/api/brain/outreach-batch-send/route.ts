@@ -23,6 +23,11 @@ import { startActivity, completeActivity, failActivity } from "@/lib/agent-activ
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
 
+// 🛑 KILL SWITCH — batch outreach DEZACTIVAT
+export async function GET() {
+  return NextResponse.json({ paused: true, reason: "Outreach paused — platform not ready" });
+}
+
 const FROM_ADDRESS = "Eduard Bostan <alex@markethubpromo.com>";
 const REPLY_TO = "alex@markethubpromo.com";
 const BCC = "office@markethubpromo.com";

@@ -18,6 +18,15 @@ import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
+// 🛑 KILL SWITCH — follow-ups DEZACTIVAT până platforma e funcțională
+export async function GET() {
+  return NextResponse.json({
+    paused: true,
+    reason: "Follow-ups paused — platform publishing not yet functional",
+  });
+}
+export async function _DISABLED_GET_ORIGINAL() {
+
 const HAIKU = "claude-haiku-4-5-20251001";
 
 interface LogRow {

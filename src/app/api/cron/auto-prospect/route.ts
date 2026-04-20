@@ -19,6 +19,15 @@ import { webSearch, webRead, classifyProspect } from "@/lib/webSearch";
 export const dynamic = "force-dynamic";
 export const maxDuration = 55;
 
+// 🛑 KILL SWITCH — prospecting DEZACTIVAT până platforma e funcțională
+export async function GET() {
+  return NextResponse.json({
+    paused: true,
+    reason: "Prospecting paused — platform publishing not yet functional",
+  });
+}
+export async function _DISABLED_GET_ORIGINAL(req: NextRequest) {
+
 function authOk(req: NextRequest): boolean {
   const h = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;

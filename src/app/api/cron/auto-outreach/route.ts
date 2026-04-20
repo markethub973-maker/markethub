@@ -20,6 +20,21 @@ import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
 export const dynamic = "force-dynamic";
 export const maxDuration = 55;
 
+// ═══════════════════════════════════════════════════════════════════════
+// 🛑 KILL SWITCH — outreach DEZACTIVAT până platforma e funcțională
+// Instagram publish blocked (Meta app Development Mode, needs business verification)
+// Nu trimitem pitch-uri pentru features care nu merg.
+// Reactivare: scoate acest return + setează OUTREACH_ENABLED=true în env
+// ═══════════════════════════════════════════════════════════════════════
+export async function GET() {
+  return NextResponse.json({
+    paused: true,
+    reason: "Outreach paused — platform publishing not yet functional (Meta business verification pending)",
+  });
+}
+export async function _DISABLED_GET_ORIGINAL(req: NextRequest) {
+// ═══════════════════════════════════════════════════════════════════════
+
 const BATCH_SIZE = 5;
 const FROM_ADDRESS = "Eduard Bostan <alex@markethubpromo.com>";
 const REPLY_TO = "alex@markethubpromo.com";
