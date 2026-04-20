@@ -6,6 +6,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 import AskConsultant from "@/components/ui/AskConsultant";
 import CookieConsent from "@/components/ui/CookieConsent";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { UserThemeProvider } from "@/components/providers/ThemeProvider";
 // ThemeSwitcher moved to Sidebar — no longer floating
 import { ThemeProvider as LiquidGlassThemeProvider } from "@/context/ThemeContext";
 // ThemeCustomizer removed — integrated into Sidebar Theme button
@@ -186,6 +187,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
         <LiquidGlassThemeProvider>
           <ThemeProvider>
+            <UserThemeProvider>
             <AuthGuard>{children}</AuthGuard>
             {/* Theme Customize button (original, top-right) */}
             {/* ThemeSwitcher moved to Sidebar */}
@@ -193,6 +195,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AskConsultant />
             {/* GDPR cookie consent banner — gates analytics loading */}
             <CookieConsent />
+          </UserThemeProvider>
           </ThemeProvider>
           {/* Liquid Glass theme customizer — bottom-right floating palette button */}
           {/* ThemeCustomizer integrated in Sidebar */}

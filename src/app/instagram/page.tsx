@@ -129,19 +129,19 @@ export default function InstagramPage() {
   const noAccounts = !loading && accounts.length === 0;
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-[#0f1117]">
+    <div className="flex-1 flex flex-col min-h-screen">
       <Header title="My Instagram" />
-      <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
+      <main className="flex-1 p-4 md:p-6 max-w-7xl mx-auto w-full">
 
         {/* Page header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-pink-500 via-purple-500 to-orange-400 rounded-xl flex items-center justify-center">
               <Instagram className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Instagram Analytics</h1>
-              <p className="text-gray-400 text-sm">
+              <h1 className="text-xl md:text-2xl font-bold" style={{ color: "var(--color-text)" }}>Instagram Analytics</h1>
+              <p className="text-sm" style={{ color: "#A8967E" }}>
                 {accounts.length > 0 ? `${accounts.length} account${accounts.length > 1 ? "s connected" : " connected"}` : "No accounts connected"}
               </p>
             </div>
@@ -149,7 +149,8 @@ export default function InstagramPage() {
           <div className="flex items-center gap-2">
             <Link
               href="/settings?tab=integrations"
-              className="flex items-center gap-1.5 px-3 py-2 bg-[#1a1d27] border border-white/10 rounded-lg text-gray-400 hover:text-pink-400 hover:border-pink-500/40 transition-all text-sm"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm transition-all hover:border-pink-500/40"
+              style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", color: "#A8967E" }}
             >
               <Plus className="w-4 h-4" />
               Add account
@@ -188,9 +189,14 @@ export default function InstagramPage() {
                 onClick={() => setActiveTab(acc.instagram_id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
                   activeTab === acc.instagram_id
-                    ? "text-white border-pink-500/60 bg-pink-500/10"
-                    : "text-gray-400 border-white/10 bg-[#1a1d27] hover:text-white hover:border-white/20"
+                    ? "border-pink-500/60 bg-pink-500/10"
+                    : "hover:border-pink-500/30"
                 }`}
+                style={{
+                  color: activeTab === acc.instagram_id ? "#E1306C" : "#A8967E",
+                  borderColor: activeTab === acc.instagram_id ? undefined : "rgba(245,215,160,0.25)",
+                  backgroundColor: activeTab === acc.instagram_id ? undefined : "var(--color-bg-secondary)",
+                }}
               >
                 <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                 @{acc.username}
@@ -203,9 +209,14 @@ export default function InstagramPage() {
                 onClick={() => setActiveTab("compare")}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all border ${
                   activeTab === "compare"
-                    ? "text-white border-purple-500/60 bg-purple-500/10"
-                    : "text-gray-400 border-white/10 bg-[#1a1d27] hover:text-white hover:border-white/20"
+                    ? "border-purple-500/60 bg-purple-500/10"
+                    : "hover:border-purple-500/30"
                 }`}
+                style={{
+                  color: activeTab === "compare" ? "#8B5CF6" : "#A8967E",
+                  borderColor: activeTab === "compare" ? undefined : "rgba(245,215,160,0.25)",
+                  backgroundColor: activeTab === "compare" ? undefined : "var(--color-bg-secondary)",
+                }}
               >
                 <BarChart2 className="w-4 h-4" />
                 Compare ({accounts.length})
@@ -215,8 +226,8 @@ export default function InstagramPage() {
         )}
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 text-red-400">
-            ⚠️ {error}
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-red-600">
+            {error}
           </div>
         )}
 
@@ -233,7 +244,7 @@ export default function InstagramPage() {
         {!loading && activeTab !== "compare" && profile && (
           <>
             <GlassCard padding="p-6" className="mb-6">
-              <div className="flex items-start gap-6">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-6">
                 {profile.profile_picture_url ? (
                   <img src={profile.profile_picture_url} alt={profile.username} className="w-20 h-20 rounded-full object-cover border-2 border-pink-500/50" />
                 ) : (
@@ -241,15 +252,15 @@ export default function InstagramPage() {
                     <Instagram className="w-8 h-8 text-white" />
                   </div>
                 )}
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-1">
-                    <h2 className="text-xl font-bold text-white">{profile.name}</h2>
-                    <span className="text-sm text-pink-400 bg-pink-500/10 px-2 py-0.5 rounded-full">Business</span>
+                <div className="flex-1 text-center sm:text-left">
+                  <div className="flex items-center justify-center sm:justify-start gap-3 mb-1">
+                    <h2 className="text-xl font-bold" style={{ color: "var(--color-text)" }}>{profile.name}</h2>
+                    <span className="text-sm text-pink-500 bg-pink-500/10 px-2 py-0.5 rounded-full">Business</span>
                   </div>
-                  <p className="text-gray-400 mb-2">@{profile.username}</p>
-                  {profile.biography && <p className="text-gray-300 text-sm mb-3">{profile.biography}</p>}
+                  <p className="mb-2" style={{ color: "#A8967E" }}>@{profile.username}</p>
+                  {profile.biography && <p className="text-sm mb-3" style={{ color: "#2D2620" }}>{profile.biography}</p>}
                   {profile.website && (
-                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-pink-400 text-sm hover:underline flex items-center gap-1">
+                    <a href={profile.website} target="_blank" rel="noopener noreferrer" className="text-pink-500 text-sm hover:underline flex items-center justify-center sm:justify-start gap-1">
                       <ExternalLink className="w-3 h-3" />
                       {profile.website.replace(/^https?:\/\//, "").substring(0, 50)}
                     </a>
@@ -284,19 +295,23 @@ export default function InstagramPage() {
                 Recent posts ({posts.length})
               </h3>
               {posts.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
+                <div className="text-center py-12" style={{ color: "#C4AA8A" }}>
                   <Instagram className="w-12 h-12 mx-auto mb-3 opacity-30" />
                   <p>No posts available</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {posts.map(post => (
-                    <div key={post.id} className="bg-[#0f1117] border border-white/5 rounded-xl overflow-hidden hover:border-pink-500/30 transition-all group">
-                      <div className="relative aspect-square bg-[#0a0c14] flex items-center justify-center">
+                    <div
+                      key={post.id}
+                      className="rounded-xl overflow-hidden hover:border-pink-500/30 transition-all group"
+                      style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
+                    >
+                      <div className="relative aspect-square flex items-center justify-center" style={{ backgroundColor: "rgba(245,215,160,0.1)" }}>
                         {post.media_url ? (
                           <img src={post.media_url} alt={post.caption || "Post"} className="w-full h-full object-cover" />
                         ) : (
-                          <Instagram className="w-12 h-12 text-gray-700" />
+                          <Instagram className="w-12 h-12" style={{ color: "#C4AA8A" }} />
                         )}
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-6">
                           <div className="flex items-center gap-1 text-white"><Heart className="w-5 h-5" /><span>{post.like_count}</span></div>
@@ -304,15 +319,15 @@ export default function InstagramPage() {
                         </div>
                       </div>
                       <div className="p-4">
-                        {post.caption && <p className="text-gray-300 text-sm mb-3 line-clamp-2">{post.caption}</p>}
+                        {post.caption && <p className="text-sm mb-3 line-clamp-2" style={{ color: "#2D2620" }}>{post.caption}</p>}
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 text-sm text-gray-500">
-                            <span className="flex items-center gap-1"><Heart className="w-3 h-3 text-pink-400" />{post.like_count}</span>
+                          <div className="flex items-center gap-3 text-sm" style={{ color: "#A8967E" }}>
+                            <span className="flex items-center gap-1"><Heart className="w-3 h-3 text-pink-500" />{post.like_count}</span>
                             <span className="flex items-center gap-1"><MessageCircle className="w-3 h-3 text-blue-400" />{post.comments_count}</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-gray-600">{timeAgo(post.timestamp)}</span>
-                            <a href={post.permalink} target="_blank" rel="noopener noreferrer" title="View on Instagram" className="text-pink-400 hover:text-pink-300">
+                            <span className="text-xs" style={{ color: "#C4AA8A" }}>{timeAgo(post.timestamp)}</span>
+                            <a href={post.permalink} target="_blank" rel="noopener noreferrer" title="View on Instagram" className="text-pink-500 hover:text-pink-400">
                               <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           </div>
@@ -344,48 +359,52 @@ export default function InstagramPage() {
                 <BarChart2 className="w-5 h-5 text-purple-400" />
                 Account comparison ({compareData.length})
               </h2>
-              <div className={`grid gap-4 ${compareData.length === 2 ? "grid-cols-2" : compareData.length === 3 ? "grid-cols-3" : "grid-cols-2 lg:grid-cols-4"}`}>
+              <div className={`grid gap-4 grid-cols-1 sm:grid-cols-2 ${compareData.length === 3 ? "lg:grid-cols-3" : compareData.length >= 4 ? "lg:grid-cols-4" : ""}`}>
                 {compareData.map((acc, i) => (
-                  <div key={acc.instagram_id} className="bg-[#0f1117] border border-white/10 rounded-xl p-5 relative">
+                  <div
+                    key={acc.instagram_id}
+                    className="rounded-xl p-5 relative"
+                    style={{ backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" }}
+                  >
                     {acc.is_primary && (
-                      <span className="absolute top-3 right-3 flex items-center gap-1 text-xs text-yellow-400">
+                      <span className="absolute top-3 right-3 flex items-center gap-1 text-xs text-yellow-600">
                         <Star className="w-3 h-3" /> Primary
                       </span>
                     )}
                     <div className="flex items-center gap-2 mb-4">
                       <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
                       <div>
-                        <p className="font-semibold text-white text-sm">@{acc.username}</p>
-                        <p className="text-xs text-gray-500">{acc.label}</p>
+                        <p className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>@{acc.username}</p>
+                        <p className="text-xs" style={{ color: "#C4AA8A" }}>{acc.label}</p>
                       </div>
                     </div>
                     {acc.error ? (
-                      <p className="text-red-400 text-xs">{acc.error}</p>
+                      <p className="text-red-500 text-xs">{acc.error}</p>
                     ) : acc.profile ? (
                       <div className="space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-500 text-xs flex items-center gap-1"><Users className="w-3 h-3" /> Followers</span>
-                          <span className="text-white font-bold">{fmt(acc.profile.followers_count)}</span>
+                          <span className="text-xs flex items-center gap-1" style={{ color: "#A8967E" }}><Users className="w-3 h-3" /> Followers</span>
+                          <span className="font-bold" style={{ color: "var(--color-text)" }}>{fmt(acc.profile.followers_count)}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-500 text-xs flex items-center gap-1"><Image className="w-3 h-3" /> Posts</span>
-                          <span className="text-white font-bold">{acc.profile.media_count}</span>
+                          <span className="text-xs flex items-center gap-1" style={{ color: "#A8967E" }}><Image className="w-3 h-3" /> Posts</span>
+                          <span className="font-bold" style={{ color: "var(--color-text)" }}>{acc.profile.media_count}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-500 text-xs flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Engagement</span>
+                          <span className="text-xs flex items-center gap-1" style={{ color: "#A8967E" }}><TrendingUp className="w-3 h-3" /> Engagement</span>
                           <span className="font-bold" style={{ color: COLORS[i % COLORS.length] }}>{acc.engagement_rate}%</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-500 text-xs flex items-center gap-1"><Heart className="w-3 h-3" /> Avg likes</span>
-                          <span className="text-white font-bold">{fmt(acc.avg_likes)}</span>
+                          <span className="text-xs flex items-center gap-1" style={{ color: "#A8967E" }}><Heart className="w-3 h-3" /> Avg likes</span>
+                          <span className="font-bold" style={{ color: "var(--color-text)" }}>{fmt(acc.avg_likes)}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-gray-500 text-xs flex items-center gap-1"><MessageCircle className="w-3 h-3" /> Avg comments</span>
-                          <span className="text-white font-bold">{fmt(acc.avg_comments)}</span>
+                          <span className="text-xs flex items-center gap-1" style={{ color: "#A8967E" }}><MessageCircle className="w-3 h-3" /> Avg comments</span>
+                          <span className="font-bold" style={{ color: "var(--color-text)" }}>{fmt(acc.avg_comments)}</span>
                         </div>
                       </div>
                     ) : (
-                      <p className="text-gray-500 text-xs">Loading...</p>
+                      <p className="text-xs" style={{ color: "#C4AA8A" }}>Loading...</p>
                     )}
                   </div>
                 ))}
@@ -405,7 +424,7 @@ export default function InstagramPage() {
                   <h3 className="text-glass-primary font-semibold mb-4 flex items-center gap-2">
                     <Zap className="w-4 h-4 text-yellow-400" /> Winners per category
                   </h3>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <GlassCard padding="p-4" rounded="rounded-xl">
                       <p className="text-glass-secondary text-xs mb-1">Highest engagement rate</p>
                       <p className="text-glass-primary font-bold">@{best.username}</p>
