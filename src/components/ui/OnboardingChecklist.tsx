@@ -193,9 +193,9 @@ export default function OnboardingChecklist() {
               key={step.id}
               className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all"
               style={{
-                background: isDone ? "rgba(245,215,160,0.15)" : "linear-gradient(135deg, rgba(0,242,234,0.15), rgba(255,0,80,0.12))",
-                border: `1px solid ${isDone ? "rgba(245,215,160,0.4)" : "rgba(0,242,234,0.3)"}`,
-                boxShadow: isDone ? "none" : "0 2px 8px rgba(0,242,234,0.1)",
+                backgroundColor: isDone ? "rgba(245,215,160,0.15)" : "white",
+                border: `1px solid ${isDone ? "rgba(245,215,160,0.4)" : "rgba(200,180,150,0.35)"}`,
+                boxShadow: isDone ? "none" : "0 2px 8px rgba(120,97,78,0.08)",
               }}
             >
               {/* Checkbox */}
