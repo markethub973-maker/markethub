@@ -97,21 +97,12 @@ const cardStyle = {
   boxShadow: "0 1px 3px rgba(120,97,78,0.08)",
 };
 
-function load<T>(key: string, def: T): T {
-  if (typeof window === "undefined") return def;
-  const s = localStorage.getItem(key);
-  return s ? (JSON.parse(s) as T) : def;
-}
-function save<T>(key: string, val: T) {
-  localStorage.setItem(key, JSON.stringify(val));
-}
-
 // ── Main Page ────────────────────────────────────────────────────────────────
 
 export default function AlertsPage() {
-  const [rules, setRules] = useState<MetricRule[]>(() => load("mh_metric_rules", []));
-  const [events, setEvents] = useState<AlertEvent[]>(() => load("mh_alert_events", []));
-  const [keywords, setKeywords] = useState<KeywordAlert[]>(() => load("mh_alerts", []));
+  const [rules, setRules] = useState<MetricRule[]>([]);
+  const [events, setEvents] = useState<AlertEvent[]>([]);
+  const [keywords, setKeywords] = useState<KeywordAlert[]>([]);
   const [ytVideos, setYtVideos] = useState<YTVideo[]>([]);
   const [kwInput, setKwInput] = useState("");
   const [showRuleForm, setShowRuleForm] = useState(false);
@@ -127,10 +118,59 @@ export default function AlertsPage() {
     notifyEmail: false, email: "",
   });
 
-  // Persist
-  useEffect(() => { save("mh_metric_rules", rules); }, [rules]);
-  useEffect(() => { save("mh_alert_events", events); }, [events]);
-  useEffect(() => { save("mh_alerts", keywords); }, [keywords]);
+  // Fetch alerts from API on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/alerts");
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.rules) {
+          setRules(data.rules.map((r: any) => ({
+            id: r.id,
+            name: r.metric, // use metric as display name if no name field
+            platform: METRIC_LABELS[r.metric as MetricKey]?.platform || "instagram",
+            metric: r.metric as MetricKey,
+            condition: r.condition as Condition,
+            threshold: r.threshold,
+            notifyEmail: !!r.email,
+            email: r.email || "",
+            status: r.active ? ("active" as AlertStatus) : ("dismissed" as AlertStatus),
+            lastChecked: r.last_triggered_at,
+            lastValue: null,
+            createdAt: r.created_at,
+          })));
+        }
+        if (data.events) {
+          setEvents(data.events.map((e: any) => ({
+            id: e.id,
+            ruleId: e.alert_id,
+            ruleName: e.metric,
+            message: e.message,
+            value: e.value,
+            threshold: 0,
+            timestamp: e.created_at,
+            emailSent: false,
+          })));
+        }
+      } catch { /* ignore fetch errors */ }
+    })();
+  }, []);
+
+  // Keywords still use localStorage (no DB table for keywords)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const s = localStorage.getItem("mh_alerts");
+        if (s) setKeywords(JSON.parse(s));
+      } catch { /* ignore */ }
+    }
+  }, []);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try { localStorage.setItem("mh_alerts", JSON.stringify(keywords)); } catch { /* ignore */ }
+    }
+  }, [keywords]);
 
   useEffect(() => {
     fetch("/api/youtube/trending?region=RO&max=12")
@@ -148,31 +188,76 @@ export default function AlertsPage() {
   };
 
   // ── Rules ──────────────────────────────────────────────────────────────────
-  const addRule = () => {
+  const addRule = async () => {
     if (!form.name.trim()) return;
-    const rule: MetricRule = {
-      id: Date.now().toString(),
-      name: form.name.trim(),
-      platform: METRIC_LABELS[form.metric].platform,
-      metric: form.metric,
-      condition: form.condition,
-      threshold: Number(form.threshold),
-      notifyEmail: form.notifyEmail,
-      email: form.email.trim(),
-      status: "active",
-      lastChecked: null,
-      lastValue: null,
-      createdAt: new Date().toISOString(),
-    };
-    setRules(prev => [...prev, rule]);
-    setForm({ name: "", metric: "ig_followers", condition: "below", threshold: 1000, notifyEmail: false, email: "" });
-    setShowRuleForm(false);
-    flash("Rule added successfully!");
+    try {
+      const res = await fetch("/api/alerts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          metric: form.metric,
+          condition: form.condition,
+          threshold: Number(form.threshold),
+          email: form.notifyEmail ? form.email.trim() : null,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      const saved = await res.json();
+      const rule: MetricRule = {
+        id: saved.id,
+        name: form.name.trim(),
+        platform: METRIC_LABELS[form.metric].platform,
+        metric: form.metric,
+        condition: form.condition,
+        threshold: Number(form.threshold),
+        notifyEmail: form.notifyEmail,
+        email: form.email.trim(),
+        status: "active",
+        lastChecked: null,
+        lastValue: null,
+        createdAt: saved.created_at || new Date().toISOString(),
+      };
+      setRules(prev => [...prev, rule]);
+      setForm({ name: "", metric: "ig_followers", condition: "below", threshold: 1000, notifyEmail: false, email: "" });
+      setShowRuleForm(false);
+      flash("Rule added successfully!");
+    } catch {
+      flash("Failed to save rule. Please try again.");
+    }
   };
 
-  const deleteRule = (id: string) => setRules(prev => prev.filter(r => r.id !== id));
-  const dismissRule = (id: string) => setRules(prev => prev.map(r => r.id === id ? { ...r, status: "dismissed" } : r));
-  const reactivateRule = (id: string) => setRules(prev => prev.map(r => r.id === id ? { ...r, status: "active" } : r));
+  const deleteRule = async (id: string) => {
+    setRules(prev => prev.filter(r => r.id !== id));
+    try {
+      await fetch("/api/alerts", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+    } catch { /* optimistic UI — already removed */ }
+  };
+
+  const dismissRule = async (id: string) => {
+    setRules(prev => prev.map(r => r.id === id ? { ...r, status: "dismissed" } : r));
+    try {
+      await fetch("/api/alerts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, active: false }),
+      });
+    } catch { /* optimistic UI */ }
+  };
+
+  const reactivateRule = async (id: string) => {
+    setRules(prev => prev.map(r => r.id === id ? { ...r, status: "active" } : r));
+    try {
+      await fetch("/api/alerts", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, active: true }),
+      });
+    } catch { /* optimistic UI */ }
+  };
 
   const flash = (msg: string) => { setSuccessMsg(msg); setTimeout(() => setSuccessMsg(""), 3000); };
 

@@ -35,7 +35,6 @@ interface Hook {
   created_at: number;
 }
 
-const STORAGE_KEY = "mhp_hooks_v1";
 const TYPE_META: Record<HookType, { label: string; color: string }> = {
   question:      { label: "Question",      color: "#0EA5E9" },
   contradiction: { label: "Contradiction", color: "#EF4444" },
@@ -44,15 +43,6 @@ const TYPE_META: Record<HookType, { label: string; color: string }> = {
   contrarian:    { label: "Contrarian",    color: "#8B5CF6" },
   manual:        { label: "Manual",        color: "#78614E" },
 };
-
-function loadHooks(): Hook[] {
-  if (typeof window === "undefined") return [];
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as Hook[]; }
-  catch { return []; }
-}
-function saveHooks(list: Hook[]) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch { /* storage full */ }
-}
 
 export default function HookLibraryPage() {
   const [hooks, setHooks] = useState<Hook[]>([]);
@@ -75,30 +65,55 @@ export default function HookLibraryPage() {
   >([]);
 
   useEffect(() => {
-    setHooks(loadHooks());
-    setMounted(true);
+    (async () => {
+      try {
+        const res = await fetch("/api/hooks");
+        if (!res.ok) { setMounted(true); return; }
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setHooks(data.map((h: any) => ({
+            id: h.id,
+            text: h.text,
+            type: (h.source || "manual") as HookType,
+            rationale: undefined,
+            tags: Array.isArray(h.tags) ? h.tags : [],
+            rating: h.rating || 0,
+            created_at: new Date(h.created_at).getTime(),
+          })));
+        }
+      } catch { /* ignore */ }
+      setMounted(true);
+    })();
   }, []);
 
   const commit = useCallback((next: Hook[]) => {
     setHooks(next);
-    saveHooks(next);
   }, []);
 
-  const addManual = () => {
+  const addManual = async () => {
     const text = draftText.trim();
     if (text.length < 5) return;
     const tags = draftTags.split(",").map((t) => t.trim()).filter(Boolean).slice(0, 8);
-    const newHook: Hook = {
-      id: `h_${Date.now()}`,
-      text,
-      type: "manual",
-      tags,
-      rating: 0,
-      created_at: Date.now(),
-    };
-    commit([newHook, ...hooks]);
-    setDraftText("");
-    setDraftTags("");
+    try {
+      const res = await fetch("/api/hooks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, source: "manual", tags, rating: 0 }),
+      });
+      if (!res.ok) return;
+      const saved = await res.json();
+      const newHook: Hook = {
+        id: saved.id,
+        text: saved.text,
+        type: "manual",
+        tags: saved.tags || tags,
+        rating: 0,
+        created_at: new Date(saved.created_at).getTime(),
+      };
+      commit([newHook, ...hooks]);
+      setDraftText("");
+      setDraftTags("");
+    } catch { /* ignore */ }
   };
 
   const extract = async () => {
@@ -123,28 +138,54 @@ export default function HookLibraryPage() {
     }
   };
 
-  const saveExtracted = (idx: number) => {
+  const saveExtracted = async (idx: number) => {
     const item = extractedBatch[idx];
     if (!item) return;
     const type: HookType = (["question", "contradiction", "stat", "story", "contrarian"] as const)
       .find((t) => t === item.type) ?? "manual";
-    const newHook: Hook = {
-      id: `h_${Date.now()}_${idx}`,
-      text: item.hook,
-      type,
-      rationale: item.rationale,
-      tags: [],
-      rating: 0,
-      created_at: Date.now(),
-    };
-    commit([newHook, ...hooks]);
-    setExtractedBatch((prev) => prev.filter((_, i) => i !== idx));
+    try {
+      const res = await fetch("/api/hooks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: item.hook, source: type, tags: [], rating: 0 }),
+      });
+      if (!res.ok) return;
+      const saved = await res.json();
+      const newHook: Hook = {
+        id: saved.id,
+        text: item.hook,
+        type,
+        rationale: item.rationale,
+        tags: [],
+        rating: 0,
+        created_at: new Date(saved.created_at).getTime(),
+      };
+      commit([newHook, ...hooks]);
+      setExtractedBatch((prev) => prev.filter((_, i) => i !== idx));
+    } catch { /* ignore */ }
   };
 
-  const deleteHook = (id: string) => commit(hooks.filter((h) => h.id !== id));
+  const deleteHook = async (id: string) => {
+    commit(hooks.filter((h) => h.id !== id));
+    try {
+      await fetch("/api/hooks", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+    } catch { /* optimistic UI */ }
+  };
 
-  const rate = (id: string, r: number) => {
-    commit(hooks.map((h) => (h.id === id ? { ...h, rating: h.rating === r ? 0 : r } : h)));
+  const rate = async (id: string, r: number) => {
+    const newRating = hooks.find((h) => h.id === id)?.rating === r ? 0 : r;
+    commit(hooks.map((h) => (h.id === id ? { ...h, rating: newRating } : h)));
+    try {
+      await fetch("/api/hooks", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, rating: newRating }),
+      });
+    } catch { /* optimistic UI */ }
   };
 
   const copyHook = async (id: string, text: string) => {

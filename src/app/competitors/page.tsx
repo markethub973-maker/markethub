@@ -82,19 +82,7 @@ function timeAgo(ts: number) {
   return `${Math.floor(diff / 86400000)}d`;
 }
 
-function loadCompetitors(): Competitor[] {
-  if (typeof window === "undefined") return [];
-  const stored = localStorage.getItem("mhp_competitors");
-  return stored ? JSON.parse(stored) : [];
-}
-
-function saveCompetitors(list: Competitor[]) {
-  localStorage.setItem("mhp_competitors", JSON.stringify(list));
-}
-
-// ── Snapshot tracker (local, no DDL needed) ──────────────────────────────────
-// Ring-buffer of daily stats per competitor; used to compute deltas
-// (followers / posts / engagement) over the last 24h+ without a cron.
+// ── Snapshot tracker (local ring-buffer for 24h deltas) ──────────────────────
 interface Snapshot {
   t: number;           // Date.now()
   igFollowers?: number;
@@ -105,7 +93,7 @@ interface Snapshot {
   ttVideos?: number;
 }
 const SNAP_KEY = "mhp_competitor_snapshots_v1";
-const SNAP_MAX = 30;  // per-competitor ring buffer size
+const SNAP_MAX = 30;
 type SnapStore = Record<string, Snapshot[]>;
 
 export function loadSnaps(): SnapStore {
@@ -117,7 +105,6 @@ export function loadSnaps(): SnapStore {
 export function pushSnap(id: string, snap: Snapshot) {
   const all = loadSnaps();
   const list = all[id] ?? [];
-  // Coalesce: if last snapshot is <1h old, overwrite instead of appending
   const last = list[list.length - 1];
   if (last && Date.now() - last.t < 60 * 60 * 1000) {
     list[list.length - 1] = snap;
@@ -131,11 +118,61 @@ export function pushSnap(id: string, snap: Snapshot) {
 export function getBaselineSnap(id: string, minAgeMs = 24 * 60 * 60 * 1000): Snapshot | null {
   const list = loadSnaps()[id] ?? [];
   const cutoff = Date.now() - minAgeMs;
-  // Most recent snapshot older than cutoff
   for (let i = list.length - 1; i >= 0; i--) {
     if (list[i].t <= cutoff) return list[i];
   }
   return null;
+}
+
+// ── DB persistence for competitors list ──────────────────────────────────────
+async function fetchCompetitorsFromDB(): Promise<Competitor[]> {
+  try {
+    const res = await fetch("/api/competitors/snapshots");
+    if (!res.ok) return [];
+    const { snapshots } = await res.json();
+    return (snapshots || []).map((s: any) => ({
+      id: s.id,
+      name: s.name,
+      igUsername: s.data?.igUsername || "",
+      tiktokUsername: s.data?.tiktokUsername || "",
+      igData: s.data?.igData || null,
+      tiktokData: s.data?.tiktokData || null,
+      lastUpdated: s.data?.lastUpdated || new Date(s.created_at).getTime(),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+async function saveCompetitorToDB(comp: Competitor): Promise<string | null> {
+  try {
+    const res = await fetch("/api/competitors/snapshots", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        domain: comp.igUsername || comp.tiktokUsername || comp.id,
+        name: comp.name,
+        data: {
+          igUsername: comp.igUsername,
+          tiktokUsername: comp.tiktokUsername,
+          igData: comp.igData,
+          tiktokData: comp.tiktokData,
+          lastUpdated: comp.lastUpdated,
+        },
+      }),
+    });
+    if (res.ok) {
+      const { snapshot } = await res.json();
+      return snapshot?.id || null;
+    }
+  } catch { /* silently fail */ }
+  return null;
+}
+
+async function deleteCompetitorFromDB(id: string) {
+  try {
+    await fetch(`/api/competitors/snapshots?id=${id}`, { method: "DELETE" });
+  } catch { /* silently fail */ }
 }
 function formatDelta(n: number): { text: string; color: string } {
   if (n === 0) return { text: "0", color: "#A8967E" };
@@ -270,7 +307,7 @@ function MonetizationSpy({ competitors }: { competitors: Competitor[] }) {
 }
 
 export default function CompetitorsPage() {
-  const [competitors, setCompetitors] = useState<Competitor[]>(loadCompetitors);
+  const [competitors, setCompetitors] = useState<Competitor[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formName, setFormName] = useState("");
   const [formIG, setFormIG] = useState("");
@@ -282,8 +319,8 @@ export default function CompetitorsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    saveCompetitors(competitors);
-  }, [competitors]);
+    fetchCompetitorsFromDB().then(setCompetitors);
+  }, []);
 
   const fetchIGData = async (username: string) => {
     if (!username) return null;
@@ -331,6 +368,10 @@ export default function CompetitorsPage() {
         lastUpdated: Date.now(),
       };
 
+      // Save to DB
+      const dbId = await saveCompetitorToDB(newComp);
+      if (dbId) newComp.id = dbId;
+
       // Seed the first snapshot — deltas will start appearing after 24h
       pushSnap(newComp.id, {
         t: Date.now(),
@@ -376,13 +417,14 @@ export default function CompetitorsPage() {
       ttVideos: tiktokData?.videos,
     });
 
-    setCompetitors(prev => prev.map(c =>
-      c.id === id ? { ...c, igData: igData || c.igData, tiktokData: tiktokData || c.tiktokData, lastUpdated: Date.now() } : c
-    ));
+    const updated = { ...comp, igData: igData || comp.igData, tiktokData: tiktokData || comp.tiktokData, lastUpdated: Date.now() };
+    saveCompetitorToDB(updated);
+    setCompetitors(prev => prev.map(c => c.id === id ? updated : c));
     setRefreshingId(null);
   };
 
   const deleteCompetitor = (id: string) => {
+    deleteCompetitorFromDB(id);
     setCompetitors(prev => prev.filter(c => c.id !== id));
     if (expandedId === id) setExpandedId(null);
   };

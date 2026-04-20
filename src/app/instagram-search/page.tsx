@@ -84,23 +84,61 @@ export default function InstagramSearchPage() {
   const [savedAccounts, setSavedAccounts] = useState<string[]>([]);
 
   useEffect(() => {
-    const h = localStorage.getItem("mhp_ig_history");
-    if (h) setHistory(JSON.parse(h));
-    const s = localStorage.getItem("mhp_ig_saved");
-    if (s) setSavedAccounts(JSON.parse(s));
+    // Load saved searches from DB
+    fetch("/api/saved-searches?platform=instagram")
+      .then(res => res.ok ? res.json() : { searches: [] })
+      .then(data => {
+        const searches = data.searches || [];
+        // Separate: queries starting with "save:" are saved accounts, rest are history
+        const saved: string[] = [];
+        const hist: SearchEntry[] = [];
+        for (const s of searches) {
+          if (s.query.startsWith("save:")) {
+            saved.push(s.query.slice(5));
+          } else {
+            hist.push({ query: s.query, timestamp: new Date(s.created_at).getTime() });
+          }
+        }
+        setSavedAccounts(saved);
+        setHistory(hist);
+      })
+      .catch(() => {});
   }, []);
 
   const saveHistory = (entries: SearchEntry[]) => {
     setHistory(entries);
-    localStorage.setItem("mhp_ig_history", JSON.stringify(entries));
+    // Persist the latest entry to DB
+    if (entries.length > 0) {
+      fetch("/api/saved-searches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ platform: "instagram", query: entries[0].query }),
+      }).catch(() => {});
+    }
   };
 
   const toggleSave = (u: string) => {
-    const next = savedAccounts.includes(u)
-      ? savedAccounts.filter(a => a !== u)
-      : [...savedAccounts, u];
-    setSavedAccounts(next);
-    localStorage.setItem("mhp_ig_saved", JSON.stringify(next));
+    const isSaved = savedAccounts.includes(u);
+    if (isSaved) {
+      setSavedAccounts(prev => prev.filter(a => a !== u));
+      // Delete from DB - find and delete the "save:" prefixed entry
+      fetch("/api/saved-searches?platform=instagram")
+        .then(res => res.ok ? res.json() : { searches: [] })
+        .then(data => {
+          const entry = (data.searches || []).find((s: any) => s.query === `save:${u}`);
+          if (entry) {
+            fetch(`/api/saved-searches?id=${entry.id}`, { method: "DELETE" }).catch(() => {});
+          }
+        })
+        .catch(() => {});
+    } else {
+      setSavedAccounts(prev => [...prev, u]);
+      fetch("/api/saved-searches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ platform: "instagram", query: `save:${u}` }),
+      }).catch(() => {});
+    }
   };
 
   const searchUser = async (q?: string) => {
@@ -131,7 +169,20 @@ export default function InstagramSearchPage() {
     }
   };
 
-  const clearHistory = () => { setHistory([]); localStorage.removeItem("mhp_ig_history"); };
+  const clearHistory = () => {
+    // Delete all non-save entries from DB
+    fetch("/api/saved-searches?platform=instagram")
+      .then(res => res.ok ? res.json() : { searches: [] })
+      .then(data => {
+        for (const s of (data.searches || [])) {
+          if (!s.query.startsWith("save:")) {
+            fetch(`/api/saved-searches?id=${s.id}`, { method: "DELETE" }).catch(() => {});
+          }
+        }
+      })
+      .catch(() => {});
+    setHistory([]);
+  };
 
   return (
     <div>

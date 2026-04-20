@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Sparkles,
   Copy,
@@ -54,11 +54,14 @@ type Caption = {
   charCount: number;
 };
 
-type SavedCaption = Caption & {
+type SavedCaption = {
   id: string;
-  topic: string;
   platform: string;
-  savedAt: string;
+  caption: string;
+  hashtags: string[];
+  source_prompt: string;
+  created_at: string;
+  charCount?: number;
 };
 
 export default function CaptionsPage() {
@@ -74,13 +77,23 @@ export default function CaptionsPage() {
   const [error, setError] = useState("");
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
   const [tab, setTab] = useState<"generate" | "saved">("generate");
-  const [savedCaptions, setSavedCaptions] = useState<SavedCaption[]>(() => {
-    if (typeof window !== "undefined") {
-      const stored = localStorage.getItem("mhp_saved_captions");
-      return stored ? JSON.parse(stored) : [];
+  const [savedCaptions, setSavedCaptions] = useState<SavedCaption[]>([]);
+
+  const fetchSavedCaptions = useCallback(async () => {
+    try {
+      const res = await fetch("/api/captions/saved");
+      if (res.ok) {
+        const data = await res.json();
+        setSavedCaptions(data.captions || []);
+      }
+    } catch {
+      // silently fail
     }
-    return [];
-  });
+  }, []);
+
+  useEffect(() => {
+    fetchSavedCaptions();
+  }, [fetchSavedCaptions]);
 
   const generate = async () => {
     if (!topic.trim()) return;
@@ -119,23 +132,36 @@ export default function CaptionsPage() {
     setTimeout(() => setCopiedIdx(null), 2000);
   };
 
-  const saveCaption = (caption: Caption) => {
-    const entry: SavedCaption = {
-      ...caption,
-      id: Date.now().toString(),
-      topic,
-      platform,
-      savedAt: new Date().toISOString(),
-    };
-    const updated = [entry, ...savedCaptions];
-    setSavedCaptions(updated);
-    localStorage.setItem("mhp_saved_captions", JSON.stringify(updated));
+  const saveCaption = async (caption: Caption) => {
+    try {
+      const res = await fetch("/api/captions/saved", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          platform,
+          caption: caption.caption,
+          hashtags: caption.hashtags || [],
+          source_prompt: topic,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSavedCaptions((prev) => [data.caption, ...prev]);
+      }
+    } catch {
+      // silently fail
+    }
   };
 
-  const removeSaved = (id: string) => {
-    const updated = savedCaptions.filter((c) => c.id !== id);
-    setSavedCaptions(updated);
-    localStorage.setItem("mhp_saved_captions", JSON.stringify(updated));
+  const removeSaved = async (id: string) => {
+    try {
+      const res = await fetch(`/api/captions/saved?id=${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setSavedCaptions((prev) => prev.filter((c) => c.id !== id));
+      }
+    } catch {
+      // silently fail
+    }
   };
 
   const isSaved = (caption: string) =>
@@ -450,9 +476,9 @@ export default function CaptionsPage() {
                       <span className="text-xs px-2 py-0.5 rounded-full" style={{ backgroundColor: `${platforms.find((p) => p.id === s.platform)?.color || "#A78BFA"}15`, color: platforms.find((p) => p.id === s.platform)?.color || "#A78BFA" }}>
                         {platforms.find((p) => p.id === s.platform)?.label || s.platform}
                       </span>
-                      <span className="text-xs" style={{ color: "#A8967E" }}>{s.topic}</span>
+                      <span className="text-xs" style={{ color: "#A8967E" }}>{s.source_prompt}</span>
                       <span className="text-xs" style={{ color: "#6B5E50" }}>
-                        {new Date(s.savedAt).toLocaleDateString("en-US")}
+                        {new Date(s.created_at).toLocaleDateString("en-US")}
                       </span>
                     </div>
                     <div className="flex gap-1">
