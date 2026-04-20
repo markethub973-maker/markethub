@@ -21,12 +21,28 @@ const FAL_BASE = "https://queue.fal.run";
 
 const MODELS = {
   tts:    { endpoint: "fal-ai/kokoro/american-english", cost_per_sec: 0.001 },
+  tts_multilingual: { endpoint: "fal-ai/kokoro/multilingual", cost_per_sec: 0.001 },
   music:  { endpoint: "fal-ai/cassetteai/music-generator", cost_per_sec: 0.002 },
   sfx:    { endpoint: "fal-ai/elevenlabs/sound-effects", cost_per_sec: 0.01 },
   // Zero-shot voice cloning — user provides 5-15s of their own voice
   // as a reference clip, F5-TTS synthesizes new text in the same voice.
   clone:  { endpoint: "fal-ai/f5-tts", cost_per_sec: 0.002 },
 };
+
+/**
+ * Detect if text is non-English (Romanian, French, German, etc.)
+ * to route to the multilingual Kokoro model instead of English-only.
+ */
+function isNonEnglish(text: string): boolean {
+  // RO-specific diacritics
+  if (/[ăâîșțĂÂÎȘȚ]/i.test(text)) return true;
+  // FR/DE/ES/IT/PT diacritics beyond basic ASCII
+  if (/[àáâãäåæçèéêëìíîïðñòóôõöùúûüýÿœ]/i.test(text)) return true;
+  // Common RO words
+  const roWords = (text.match(/\b(și|sunt|este|pentru|clientul|nostru|facem|acum|dacă|ce|de la|dar|după|vom|foarte|bun|bine|salut|bună)\b/gi) ?? []).length;
+  if (roWords >= 2) return true;
+  return false;
+}
 
 export interface AudioInput {
   userId: string;
@@ -53,7 +69,10 @@ export interface AudioResult {
 
 export async function generateAudio(input: AudioInput): Promise<AudioResult> {
   const service = createServiceClient();
-  const config = MODELS[input.mode];
+  // For TTS, detect language and pick the right model
+  const config = input.mode === "tts" && isNonEnglish(input.prompt)
+    ? MODELS.tts_multilingual
+    : MODELS[input.mode];
 
   // 1. Insert row
   const { data: row } = await service

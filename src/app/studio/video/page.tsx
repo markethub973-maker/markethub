@@ -343,7 +343,9 @@ export default function AiVideoStudioPage() {
                       muted
                       loop
                       playsInline
-                      onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
+                      preload="metadata"
+                      poster={g.thumbnail_url ?? undefined}
+                      onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
                       onMouseLeave={(e) => {
                         const v = e.currentTarget as HTMLVideoElement;
                         v.pause();

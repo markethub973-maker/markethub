@@ -35,6 +35,8 @@ const TTS_VOICES = [
   { value: "af_bella", label: "Bella (clear female)" },
   { value: "am_adam",  label: "Adam (deep male)" },
   { value: "am_michael", label: "Michael (mid male)" },
+  { value: "rf_nicole", label: "Nicole (RO female)" },
+  { value: "rm_adrian", label: "Adrian (RO male)" },
 ];
 
 export default function AiAudioStudioPage() {
@@ -128,7 +130,7 @@ export default function AiAudioStudioPage() {
     } else {
       // Pause any other playing
       document.querySelectorAll("audio").forEach((a) => a.pause());
-      audioEl.play();
+      audioEl.play().catch(() => {});
       setPlaying(id);
     }
   };
@@ -370,11 +372,14 @@ export default function AiAudioStudioPage() {
                   >
                     {playing === g.id ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
                   </button>
-                  <audio
-                    src={g.audio_url ?? ""}
-                    onEnded={() => setPlaying(null)}
-                    style={{ display: "none" }}
-                  />
+                  {g.audio_url && (
+                    <audio
+                      src={g.audio_url}
+                      preload="none"
+                      onEnded={() => setPlaying(null)}
+                      style={{ display: "none" }}
+                    />
+                  )}
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-semibold line-clamp-1" style={{ color: "var(--color-text)" }}>
                       <span
