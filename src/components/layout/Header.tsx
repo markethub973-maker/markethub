@@ -167,6 +167,22 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
         {/* Extra right content (e.g. admin logout button) */}
         {rightExtra}
 
+        {/* Help button — triggers OnboardingWidget */}
+        <button
+          type="button"
+          aria-label="Help"
+          onClick={() => {
+            const event = new CustomEvent("toggle-help-widget");
+            window.dispatchEvent(event);
+          }}
+          className="p-2 rounded-lg transition-colors"
+          style={{ color: "#78614E" }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.15)")}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+        >
+          <Info className="w-5 h-5" />
+        </button>
+
         {/* Notifications Bell */}
         <div className="relative" ref={notifRef}>
           <button

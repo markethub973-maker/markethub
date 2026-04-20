@@ -43,6 +43,13 @@ interface TicketResult {
 export default function OnboardingWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  // Listen for Header help button click
+  useEffect(() => {
+    const handler = () => setOpen(prev => !prev);
+    window.addEventListener("toggle-help-widget", handler);
+    return () => window.removeEventListener("toggle-help-widget", handler);
+  }, []);
   const [tab, setTab] = useState<Tab>("chat");
   const [tour, setTour] = useState<"full" | "page" | null>(null);
 
@@ -147,23 +154,7 @@ export default function OnboardingWidget() {
         />
       )}
 
-      {/* Floating button — single bottom-right launcher */}
-      {!open && (
-        <button
-          type="button"
-          onClick={() => setOpen(true)}
-          className="fixed bottom-4 right-4 z-[60] flex items-center gap-2 px-4 py-3 rounded-full font-bold text-sm shadow-lg transition-all hover:scale-105"
-          style={{
-            background: "linear-gradient(135deg, var(--color-primary), var(--color-primary-hover))",
-            color: "#1C1814",
-            boxShadow: "0 4px 20px rgba(245,158,11,0.4)",
-          }}
-          aria-label="Open help center"
-        >
-          <LifeBuoy size={16} />
-          <span className="hidden sm:inline">Help</span>
-        </button>
-      )}
+      {/* Floating button removed — Help is now in header next to bell icon */}
 
       {/* Panel */}
       {open && (
