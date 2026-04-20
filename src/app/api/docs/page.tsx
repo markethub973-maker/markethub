@@ -849,11 +849,10 @@ def receive():
           }}
         >
           <p className="text-sm font-bold mb-2" style={{ color: "var(--color-text)" }}>
-            More endpoints coming soon
+            Need a custom endpoint?
           </p>
           <p className="text-xs mb-4" style={{ color: "#78614E" }}>
-            Posts, analytics, CRM contacts, lead search. Meanwhile, need
-            something specific? Email
+            We can build custom API endpoints for your specific use case. Contact us at
             {" "}
             <a
               href="mailto:support@markethubpromo.com"
