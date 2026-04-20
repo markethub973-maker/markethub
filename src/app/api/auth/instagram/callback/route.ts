@@ -15,13 +15,13 @@ export async function GET(req: NextRequest) {
     || `${appUrl}/api/auth/instagram/callback`;
 
   if (error || !code || !stateParam) {
-    return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=${error || "missing_params"}`);
+    return NextResponse.redirect(`${appUrl}/social-accounts?instagram=error&reason=${error || "missing_params"}`);
   }
 
   // ── CSRF: verify HMAC-signed state (VULN-CRIT-1) ─────────────────────────
   const verified = verifyState(stateParam);
   if (!verified) {
-    return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=invalid_state`);
+    return NextResponse.redirect(`${appUrl}/social-accounts?instagram=error&reason=invalid_state`);
   }
 
   // ── Re-verify against current Supabase session — state alone is not an
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   const sessionClient = await createClient();
   const { data: { user: sessionUser } } = await sessionClient.auth.getUser();
   if (!sessionUser || sessionUser.id !== verified.userId) {
-    return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=session_mismatch`);
+    return NextResponse.redirect(`${appUrl}/social-accounts?instagram=error&reason=session_mismatch`);
   }
   const userId = sessionUser.id;
 
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
 
     if (tokenData.error || !tokenData.access_token) {
       console.error("[OAuth] Token error — details redacted for security");
-      return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=token_failed`);
+      return NextResponse.redirect(`${appUrl}/social-accounts?instagram=error&reason=token_failed`);
     }
 
     // Step 2: Exchange for long-lived token (60 days)
@@ -140,13 +140,13 @@ export async function GET(req: NextRequest) {
               instagram_username: directData.username,
             }).eq("id", userId);
 
-            return NextResponse.redirect(`${appUrl}/settings?instagram=connected&accounts=1`);
+            return NextResponse.redirect(`${appUrl}/social-accounts?instagram=connected&accounts=1`);
           }
           debugSteps.push(`db_err:${dbError?.message?.slice(0,30)}`);
         }
       }
       const debugStr = encodeURIComponent(debugSteps.join("|"));
-      return NextResponse.redirect(`${appUrl}/settings?instagram=no_page&debug=${debugStr}`);
+      return NextResponse.redirect(`${appUrl}/social-accounts?instagram=no_page&debug=${debugStr}`);
     }
 
     // Collect ALL Instagram accounts across all pages
@@ -191,7 +191,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (igAccounts.length === 0) {
-      return NextResponse.redirect(`${appUrl}/settings?instagram=no_ig_account`);
+      return NextResponse.redirect(`${appUrl}/social-accounts?instagram=no_ig_account`);
     }
 
     // Step 4: Check existing connections to determine is_primary
@@ -250,10 +250,10 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.redirect(
-      `${appUrl}/settings?instagram=connected&accounts=${savedCount}`
+      `${appUrl}/social-accounts?instagram=connected&accounts=${savedCount}`
     );
   } catch (err) {
     console.error("Instagram callback error:", err);
-    return NextResponse.redirect(`${appUrl}/settings?instagram=error&reason=unexpected`);
+    return NextResponse.redirect(`${appUrl}/social-accounts?instagram=error&reason=unexpected`);
   }
 }

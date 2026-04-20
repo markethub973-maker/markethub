@@ -164,8 +164,9 @@ export default function OnboardingWidget() {
             width: 380,
             height: 560,
             maxHeight: "90dvh",
-            background: "#1C1814",
-            border: "1px solid rgba(245,158,11,0.25)",
+            background: "#FFFCF7",
+            border: "1px solid rgba(200,180,150,0.3)",
+            boxShadow: "0 12px 40px rgba(120,97,78,0.15)",
           }}
         >
           {/* Header */}
@@ -178,7 +179,7 @@ export default function OnboardingWidget() {
                 <LifeBuoy size={14} className="text-white" />
               </div>
               <div>
-                <p className="text-sm font-bold" style={{ color: "var(--color-bg)" }}>Help Center</p>
+                <p className="text-sm font-bold" style={{ color: "#2D2620" }}>Help Center</p>
                 <p className="text-xs" style={{ color: "#A8967E" }}>Chat · Tour · Report</p>
               </div>
             </div>
