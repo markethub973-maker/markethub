@@ -228,22 +228,23 @@ export default function OnboardingChecklist() {
                 <Link
                   href={step.href}
                   onClick={() => handleStepClick(step.id)}
-                  className="px-3 py-1.5 rounded-full text-sm font-medium flex-shrink-0 transition-all hover:scale-105"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold flex-shrink-0 transition-all hover:scale-105"
                   style={{
-                    background: `linear-gradient(135deg, ${step.accentColor}10, ${step.accentColor}10)`,
-                    color: "var(--color-text)",
-                    border: `1px solid ${step.accentColor}20`,
+                    background: `linear-gradient(135deg, ${step.accentColor}15, ${step.accentColor}25)`,
+                    color: step.accentColor,
+                    border: `1px solid ${step.accentColor}30`,
                   }}
                   onMouseEnter={e => {
-                    e.currentTarget.style.background = `linear-gradient(135deg, ${step.accentColor}25, ${step.accentColor}25)`;
+                    e.currentTarget.style.background = `linear-gradient(135deg, ${step.accentColor}25, ${step.accentColor}40)`;
                     e.currentTarget.style.borderColor = step.accentColor;
                   }}
                   onMouseLeave={e => {
-                    e.currentTarget.style.background = `linear-gradient(135deg, ${step.accentColor}10, ${step.accentColor}10)`;
-                    e.currentTarget.style.borderColor = `${step.accentColor}20`;
+                    e.currentTarget.style.background = `linear-gradient(135deg, ${step.accentColor}15, ${step.accentColor}25)`;
+                    e.currentTarget.style.borderColor = `${step.accentColor}30`;
                   }}
                 >
                   Go
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               )}
             </div>
