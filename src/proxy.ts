@@ -808,6 +808,20 @@ export async function proxy(request: NextRequest) {
     // "free" (legacy value) is rank 0, same as "free_test"
     const activePlan = (profile as any).plan ?? null;
 
+    // ── Rate limiting per plan (API routes only) ────────────────────────
+    if (pathname.startsWith("/api/") && !(profile as any).is_admin) {
+      const { checkRateLimit, rateLimitHeaders } = await import("@/lib/rateLimiter");
+      const rl = checkRateLimit(user.id, activePlan ?? "free");
+      if (!rl.allowed) {
+        const limited = NextResponse.json(
+          { error: "Rate limit exceeded. Upgrade your plan for higher limits.", plan: activePlan, retry_after: rl.resetInSeconds },
+          { status: 429, headers: rateLimitHeaders(rl) }
+        );
+        applySecurityHeaders(limited, csp);
+        return limited;
+      }
+    }
+
     // ── Route-level plan gate (server-side, URL bypass protection) ──────────
     const planOverrides = await loadPlanFeaturesOverrides(supabase);
     if (
