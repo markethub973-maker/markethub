@@ -282,6 +282,16 @@ function AssetCard({ asset, onDelete }: { asset: Asset; onDelete: (id: string) =
         style={{ height: 80, backgroundColor: cat.bg }}>
         {url && isImage(asset.mime_type) ? (
           <img src={url} alt={asset.name} className="w-full h-full object-cover" />
+        ) : url && isVideo(asset.mime_type) ? (
+          <video src={url} className="w-full h-full object-cover" muted playsInline preload="metadata"
+            onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play().catch(() => {})}
+            onMouseLeave={(e) => { const v = e.currentTarget as HTMLVideoElement; v.pause(); v.currentTime = 0; }}
+          />
+        ) : url && asset.mime_type?.startsWith("audio/") ? (
+          <div className="flex flex-col items-center justify-center gap-1 w-full h-full">
+            <Icon className="w-5 h-5" style={{ color: cat.color }} />
+            <audio src={url} controls preload="none" className="w-full px-2" style={{ height: 28 }} />
+          </div>
         ) : (
           <Icon className="w-7 h-7" style={{ color: cat.color }} />
         )}
