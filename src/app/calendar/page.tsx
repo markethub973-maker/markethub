@@ -169,7 +169,7 @@ export default function CalendarPage() {
       const res = await fetch("/api/calendar/publish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postId: id }),
+        body: JSON.stringify({ post_id: id }),
       });
       const data = await res.json();
       if (data.error) {
