@@ -12,7 +12,7 @@ import FileDropZone from "@/components/ui/FileDropZone";
 import EngagementPredictor from "@/components/calendar/EngagementPredictor";
 import {
   ChevronLeft, ChevronRight, Plus, X, Instagram, Facebook, Clock,
-  Edit3, Trash2, Check, CalendarDays, LayoutGrid, List, Loader2, RefreshCw, Zap,
+  Edit3, Trash2, Check, CalendarDays, LayoutGrid, List, Loader2, RefreshCw, Zap, Send,
 } from "lucide-react";
 
 const cardStyle = { backgroundColor: "var(--color-bg-secondary)", border: "1px solid rgba(245,215,160,0.25)", boxShadow: "0 1px 3px rgba(120,97,78,0.08)" };
@@ -69,6 +69,8 @@ export default function CalendarPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [publishResult, setPublishResult] = useState<{ ok: boolean; msg: string } | null>(null);
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
@@ -158,6 +160,28 @@ export default function CalendarPage() {
       setError("Failed to save post");
     }
     setSaving(false);
+  };
+
+  const handlePublishNow = async (id: string) => {
+    setPublishing(true);
+    setPublishResult(null);
+    try {
+      const res = await fetch("/api/calendar/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: id }),
+      });
+      const data = await res.json();
+      if (data.error) {
+        setPublishResult({ ok: false, msg: data.error });
+      } else {
+        setPublishResult({ ok: true, msg: `Published! ID: ${data.externalId || "ok"}` });
+        setPosts(prev => prev.map(p => p.id === id ? { ...p, status: "published" } : p));
+      }
+    } catch {
+      setPublishResult({ ok: false, msg: "Network error — try again" });
+    }
+    setPublishing(false);
   };
 
   const handleDelete = async (id: string) => {
@@ -577,6 +601,14 @@ export default function CalendarPage() {
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   {editingPost ? "Save" : "Add"}
                 </button>
+                {editingPost && editingPost.status !== "published" && (
+                  <button type="button" onClick={() => handlePublishNow(editingPost.id)} disabled={publishing || saving}
+                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-bold disabled:opacity-50"
+                    style={{ backgroundColor: "#16A34A", color: "white" }}>
+                    {publishing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                    Publish Now
+                  </button>
+                )}
                 {editingPost && (
                   <button type="button" onClick={() => handleDelete(editingPost.id)} disabled={saving}
                     className="flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold disabled:opacity-50"
@@ -584,11 +616,26 @@ export default function CalendarPage() {
                     <Trash2 className="w-4 h-4" />Delete
                   </button>
                 )}
-                <button type="button" onClick={() => { setShowForm(false); setError(""); }}
+                <button type="button" onClick={() => { setShowForm(false); setError(""); setPublishResult(null); }}
                   className="px-4 py-2.5 rounded-lg text-sm font-semibold" style={{ color: "#A8967E" }}>
                   Cancel
                 </button>
               </div>
+
+              {publishResult && (
+                <div className="flex items-center gap-2 p-3 rounded-lg mt-2"
+                  style={{
+                    backgroundColor: publishResult.ok ? "rgba(22,163,74,0.08)" : "rgba(239,68,68,0.06)",
+                    border: `1px solid ${publishResult.ok ? "rgba(22,163,74,0.2)" : "rgba(239,68,68,0.2)"}`,
+                  }}>
+                  {publishResult.ok
+                    ? <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#16A34A" }} />
+                    : <X className="w-4 h-4 flex-shrink-0" style={{ color: "#EF4444" }} />}
+                  <p className="text-sm" style={{ color: publishResult.ok ? "#16A34A" : "#EF4444" }}>
+                    {publishResult.msg}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
