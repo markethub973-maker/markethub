@@ -61,6 +61,17 @@ confirmare finală → raport complet
 - Dacă găsesc cuvânt interzis → rescriu. Dacă tot apare → blochez și raportez.
 - Se aplică la: preview-uri, pitch messages, landing pages, email templates, cod care generează text extern
 
+### 8. ORICE REGULĂ NOUĂ = IMPLEMENTATĂ ÎN COD, NU DOAR TEXT
+- Când Eduard dă o regulă nouă (ex: "nu contacta agenții"), o implementez în:
+  1. **alex-knowledge.ts** (pentru AI) ✅
+  2. **CRON-urile care execută** (auto-outreach, auto-prospect, followup) ✅
+  3. **alex-executor.ts** (pentru PROPOSE system) ✅
+  4. **brain_knowledge_base** (pentru memorie persistentă) ✅
+- NICIODATĂ nu las o regulă doar ca text — dacă nu e în codul cron-ului, NU EXISTĂ
+- După fiecare regulă nouă: AUDIT toate cron-urile care ar putea încălca regula
+- Avertizez Eduard dacă un cron nu respectă regulile existente
+- Regulile AI (text) ≠ Regulile cod (executabil) — AMBELE obligatorii
+
 ### Anti-pattern-uri INTERZISE:
 - Deploy fără test local = timp pierdut
 - "Am pushuit, verifică tu" = lene
