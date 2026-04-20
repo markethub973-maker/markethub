@@ -279,7 +279,7 @@ export default function BillingPage() {
                 <div className="flex items-center gap-3">
                   <div
                     className="px-2.5 py-1 rounded text-xs font-black"
-                    style={{ backgroundColor: "var(--color-surface-dark)", color: "var(--color-primary)", letterSpacing: 1 }}
+                    style={{ backgroundColor: "white", color: "var(--color-primary)", letterSpacing: 1 }}
                   >
                     {CARD_BRAND_ICONS[data.payment_method.brand] ?? data.payment_method.brand.toUpperCase()}
                   </div>

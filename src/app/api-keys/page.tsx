@@ -79,7 +79,7 @@ export default function ApiKeysPage() {
           <div className="rounded-2xl p-4 space-y-2" style={{ ...card, border: "1px solid rgba(16,185,129,0.3)", backgroundColor: "rgba(16,185,129,0.02)" }}>
             <p className="text-sm font-bold" style={{ color: "#10B981" }}>✅ API Key generated — save it now, it will not be shown again!</p>
             <div className="flex gap-2 items-center">
-              <code className="flex-1 text-xs p-3 rounded-lg break-all" style={{ backgroundColor: "var(--color-surface-dark)", color: "#10B981" }}>{newKey}</code>
+              <code className="flex-1 text-xs p-3 rounded-lg break-all" style={{ backgroundColor: "white", color: "#10B981" }}>{newKey}</code>
               <button type="button" onClick={() => copyKey(newKey)} className="p-2 rounded-lg shrink-0" style={{ backgroundColor: "rgba(16,185,129,0.1)", color: "#10B981" }}>
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </button>
@@ -126,7 +126,7 @@ export default function ApiKeysPage() {
             <Code className="w-4 h-4" style={{ color: "#6366F1" }} />
             <p className="font-bold text-sm" style={{ color: "var(--color-text)" }}>API Usage</p>
           </div>
-          <div className="rounded-lg p-3 text-xs font-mono" style={{ backgroundColor: "var(--color-surface-dark)", color: "#F5D7A0" }}>
+          <div className="rounded-lg p-3 text-xs font-mono" style={{ backgroundColor: "white", color: "#2D2620" }}>
             <p style={{ color: "#A8967E" }}># Authentication</p>
             <p>Authorization: Bearer mhp_your_key_here</p>
             <br />

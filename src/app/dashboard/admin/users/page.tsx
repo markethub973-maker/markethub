@@ -595,7 +595,7 @@ export default function AdminUsersPage() {
       {/* ── Action Modal ─────────────────────────────────────────────────────── */}
       {actionUser && actionType && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
           <div className="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
             <h3 className="font-bold text-lg mb-1" style={{ color: "var(--color-text)" }}>
               {actionType === "block" ? "Block User" : actionType === "unblock" ? "Unblock User" : "Change Plan"}
@@ -644,7 +644,7 @@ export default function AdminUsersPage() {
       {/* ── Edit Cost Modal ──────────────────────────────────────────────────── */}
       {editCost && (
         <div className="fixed inset-0 flex items-center justify-center z-50 p-4"
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          style={{ backgroundColor: "rgba(0,0,0,0.3)" }}>
           <div className="rounded-2xl p-6 w-full max-w-sm shadow-2xl" style={{ backgroundColor: "var(--color-bg-secondary)" }}>
             <h3 className="font-bold text-lg mb-1" style={{ color: "var(--color-text)" }}>Edit Cost</h3>
             <p className="text-sm mb-4" style={{ color: "#A8967E" }}>{editCost.service}</p>

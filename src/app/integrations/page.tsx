@@ -275,7 +275,7 @@ export default function IntegrationsPage() {
 
           {/* Env vars summary table */}
           <div className="print-break" style={{ marginTop: 36, borderRadius: 16, overflow: "hidden", border: "1px solid rgba(245,215,160,0.4)" }}>
-            <div style={{ background: "linear-gradient(135deg, var(--color-surface-dark), var(--color-bg-secondary))", padding: "18px 24px" }}>
+            <div style={{ background: "linear-gradient(135deg, var(--color-bg-secondary), var(--color-bg-secondary))", padding: "18px 24px" }}>
               <h2 style={{ margin: 0, color: "var(--color-bg)", fontSize: 16, fontWeight: 800 }}>Complete Environment Variables Reference</h2>
               <p style={{ margin: "4px 0 0", color: "#A8967E", fontSize: 12 }}>{ENV_SUMMARY.reduce((s, g) => s + g.vars.length, 0)} total variables · configure in Vercel → Settings → Environment Variables</p>
             </div>

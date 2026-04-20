@@ -179,10 +179,10 @@ export default function CaptionsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left: Settings */}
             <div className="lg:col-span-1 space-y-5">
-              <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
+              <div className="rounded-xl p-5 space-y-4" style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}>
                 {/* Topic */}
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#F5D7A0" }}>
+                  <label className="block text-sm font-medium mb-2" style={{ color: "#2D2620" }}>
                     Subject / Product
                   </label>
                   <textarea
@@ -197,7 +197,7 @@ export default function CaptionsPage() {
 
                 {/* Platform */}
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#F5D7A0" }}>
+                  <label className="block text-sm font-medium mb-2" style={{ color: "#2D2620" }}>
                     Platform
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -229,7 +229,7 @@ export default function CaptionsPage() {
 
                 {/* Tone */}
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#F5D7A0" }}>
+                  <label className="block text-sm font-medium mb-2" style={{ color: "#2D2620" }}>
                     Tone
                   </label>
                   <div className="flex flex-wrap gap-1.5">
@@ -256,7 +256,7 @@ export default function CaptionsPage() {
 
                 {/* Language */}
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#F5D7A0" }}>
+                  <label className="block text-sm font-medium mb-2" style={{ color: "#2D2620" }}>
                     Language
                   </label>
                   <select
@@ -297,7 +297,7 @@ export default function CaptionsPage() {
 
                 {/* Max length */}
                 <div>
-                  <label className="block text-sm font-medium mb-2" style={{ color: "#F5D7A0" }}>
+                  <label className="block text-sm font-medium mb-2" style={{ color: "#2D2620" }}>
                     Character limit (optional)
                   </label>
                   <input
@@ -341,19 +341,19 @@ export default function CaptionsPage() {
               )}
 
               {loading && (
-                <div className="rounded-xl p-12 flex flex-col items-center gap-4" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
+                <div className="rounded-xl p-12 flex flex-col items-center gap-4" style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}>
                   <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#A78BFA" }} />
                   <p className="text-sm" style={{ color: "#A8967E" }}>AI is generating creative captions...</p>
                 </div>
               )}
 
               {!loading && captions.length === 0 && !error && (
-                <div className="rounded-xl p-12 flex flex-col items-center gap-4 text-center" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
+                <div className="rounded-xl p-12 flex flex-col items-center gap-4 text-center" style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}>
                   <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, rgba(139,92,246,0.2), rgba(236,72,153,0.2))" }}>
                     <Sparkles className="w-8 h-8" style={{ color: "#A78BFA" }} />
                   </div>
                   <div>
-                    <p className="font-medium" style={{ color: "#F5D7A0" }}>Generate captions with AI</p>
+                    <p className="font-medium" style={{ color: "#2D2620" }}>Generate captions with AI</p>
                     <p className="text-sm mt-1" style={{ color: "#A8967E" }}>
                       Fill in the subject and select the platform, then click generate
                     </p>
@@ -365,7 +365,7 @@ export default function CaptionsPage() {
                 <div
                   key={i}
                   className="rounded-xl p-5 space-y-3"
-                  style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}
+                  style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -434,7 +434,7 @@ export default function CaptionsPage() {
           /* Saved Tab */
           <div className="space-y-4">
             {savedCaptions.length === 0 ? (
-              <div className="rounded-xl p-12 flex flex-col items-center gap-4 text-center" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
+              <div className="rounded-xl p-12 flex flex-col items-center gap-4 text-center" style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}>
                 <Bookmark className="w-8 h-8" style={{ color: "#A8967E" }} />
                 <p className="text-sm" style={{ color: "#A8967E" }}>No saved captions</p>
               </div>
@@ -443,7 +443,7 @@ export default function CaptionsPage() {
                 <div
                   key={s.id}
                   className="rounded-xl p-5 space-y-3"
-                  style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}
+                  style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">

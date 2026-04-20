@@ -297,7 +297,7 @@ export default function CampaignsPage() {
             { label: "IG Reach", value: fmt(totals.totalIGFollowers), icon: Instagram, color: "#E4405F" },
             { label: "TT Reach", value: fmt(totals.totalTTFollowers), icon: Zap, color: "#00F2EA" },
           ].map((s, i) => (
-            <div key={i} className="rounded-xl p-4" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
+            <div key={i} className="rounded-xl p-4" style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}>
               <div className="flex items-center gap-2 mb-2">
                 <s.icon className="w-4 h-4" style={{ color: s.color }} />
                 <span className="text-xs" style={{ color: "#5C4A35" }}>{s.label}</span>
@@ -311,7 +311,7 @@ export default function CampaignsPage() {
         <div className="flex gap-3 mb-4">
           <select title="Filter by status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
             className="rounded-lg px-3 py-2 text-sm outline-none"
-            style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }}>
+            style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }}>
             <option value="all">All statuses</option>
             <option value="active">Active</option>
             <option value="paused">Paused</option>
@@ -320,7 +320,7 @@ export default function CampaignsPage() {
           </select>
           <select title="Filter by platform" value={filterPlatform} onChange={(e) => setFilterPlatform(e.target.value)}
             className="rounded-lg px-3 py-2 text-sm outline-none"
-            style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }}>
+            style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.1)", color: "var(--color-text)" }}>
             <option value="all">All platforms</option>
             {Object.keys(platformColors).map((p) => <option key={p} value={p}>{p}</option>)}
           </select>
@@ -329,7 +329,7 @@ export default function CampaignsPage() {
         {/* Campaign list */}
         <div className="space-y-3">
           {filtered.length === 0 && (
-            <div className="rounded-xl p-12 flex flex-col items-center gap-4 text-center" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
+            <div className="rounded-xl p-12 flex flex-col items-center gap-4 text-center" style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}>
               <Target className="w-8 h-8" style={{ color: "#A8967E" }} />
               <p className="text-sm" style={{ color: "#5C4A35" }}>
                 {campaigns.length === 0 ? "No campaigns yet. Create your first campaign!" : "No campaigns found with the selected filters."}
@@ -348,7 +348,7 @@ export default function CampaignsPage() {
             const sd = c.socialData || {};
 
             return (
-              <div key={c.id} className="rounded-xl overflow-hidden" style={{ backgroundColor: "var(--color-surface-dark)", border: "1px solid rgba(245,215,160,0.08)" }}>
+              <div key={c.id} className="rounded-xl overflow-hidden" style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.08)" }}>
                 {/* Campaign row */}
                 <div className="flex items-center gap-4 p-4 cursor-pointer" onClick={() => setExpandedId(expanded ? null : c.id)}>
                   <div className="flex-1 min-w-0">
@@ -376,7 +376,7 @@ export default function CampaignsPage() {
                   <div className="hidden md:flex items-center gap-6 shrink-0">
                     <div className="text-right">
                       <p className="text-xs" style={{ color: "#5C4A35" }}>Budget</p>
-                      <p className="text-sm font-bold" style={{ color: "#F5D7A0" }}>{fmtCurrency(c.budget)}</p>
+                      <p className="text-sm font-bold" style={{ color: "#2D2620" }}>{fmtCurrency(c.budget)}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs" style={{ color: "#5C4A35" }}>Spent</p>

@@ -281,7 +281,7 @@ export default function TikTokPage() {
                       {video.cover ? (
                         <img src={video.cover} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: "var(--color-surface-dark)" }}>
+                        <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: "white" }}>
                           <Play className="w-8 h-8" style={{ color: TT }} />
                         </div>
                       )}
