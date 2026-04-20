@@ -24,7 +24,10 @@ export async function GET(req: NextRequest) {
     .order("time", { ascending: true });
 
   if (month) {
-    query = query.gte("date", `${month}-01`).lte("date", `${month}-31`);
+    // Calculate last day of month correctly (handles Feb, Apr, Jun, Sep, Nov)
+    const [y, m] = month.split("-").map(Number);
+    const lastDay = new Date(y, m, 0).getDate(); // day 0 of next month = last day of this month
+    query = query.gte("date", `${month}-01`).lte("date", `${month}-${String(lastDay).padStart(2, "0")}`);
   }
 
   const { data, error } = await query;
