@@ -60,12 +60,12 @@ export default function OfferROPage() {
           <Clock className="w-3 h-3" /> Preț lansare — doar primii 10 clienți
         </div>
         <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-          30 de zile de <span style={{ color: "#F59E0B" }}>marketing</span>,<br />
-          livrate în 5 zile.
+          30 de zile de <span style={{ color: "#F59E0B" }}>conținut</span>,<br />
+          gata în 5 zile. Tu doar aprobi.
         </h1>
         <p className="text-lg opacity-70 max-w-2xl mx-auto mb-6">
-          60 de postări, 20 de imagini AI, calendar de conținut 30 zile și 50 de lead-uri calificate —
-          trimise în inbox-ul tău. Tu revizuiești, aprobi, privești publicarea automată.
+          60 de caption-uri scrise în vocea brandului tău, 20 de imagini profesionale, calendar complet pe 30 zile
+          și 50 de prospecți calificați cu mesaje de outreach — totul livrat în inbox-ul tău.
         </p>
         <p className="text-sm font-semibold" style={{ color: "#D97706" }}>
           ⏱ Livrare 5-7 zile · 💳 Plată securizată Stripe · 💯 Fără abonament

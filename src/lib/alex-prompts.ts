@@ -24,10 +24,12 @@ Sign: "— Alex / Founder, MarketHub Pro / alex@markethubpromo.com".
 OUTPUT STRICT JSON: {"subject":"...","body":"..."}`;
 
 const OFFER_CONTEXT = `
-MarketHub Pro offer (AI Marketing Accelerator — founding-client pricing):
+MarketHub Pro offer (founding-client pricing):
   - Romania: €499 (regular €999), link https://get.markethubpromo.com/ro
   - International: €1000 (regular €1999), link https://get.markethubpromo.com/intl
-  - 60 captions + 20 AI images + 30-day calendar + 20-50 leads + strategy call. 5-7 day delivery.`;
+  - What they get: 60 captions written in their brand voice, 20 branded images, 30-day content calendar, 50 qualified prospects with outreach ready. 5-7 day delivery.
+  - Key message: "From 6 tools to 1. Save 12 hours every week. Scale to 50 clients without hiring."
+  - NEVER say "AI-powered" or "all-in-one" — talk about outcomes: hours saved, clients gained, tools replaced.`;
 
 export const ALEX_PROMPTS: Record<AlexScenario, (lang: string) => string> = {
   cold_outreach: (lang) => `You are Alex, founder of MarketHub Pro. You're writing a first-touch cold email to a prospect you've never spoken with.

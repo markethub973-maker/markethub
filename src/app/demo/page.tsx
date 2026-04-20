@@ -4,7 +4,7 @@ import { Zap, Image, Calendar, Users, BarChart2, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Demo — MarketHub Pro",
-  description: "See how MarketHub Pro delivers 3x more social media content with zero extra staff. Book a free 15-minute demo.",
+  description: "See how agencies replace 6 tools with 1 and save 12h/week. 1 brief → 5 posts. 500 prospects/week. Book a free 15-minute demo.",
   alternates: { canonical: "https://markethubpromo.com/demo" },
 };
 
@@ -80,12 +80,12 @@ const card: React.CSSProperties = {
 };
 
 const FEATURES = [
-  { icon: Sparkles, title: "AI Content Generation", desc: "Professional captions in any language. PAS, AIDA, storytelling formulas built in." },
-  { icon: Image, title: "AI Image Studio", desc: "Hyper-realistic images for your brand. Product photos, lifestyle shots, graphics." },
-  { icon: Calendar, title: "Smart Scheduling", desc: "Auto-publish to Instagram, Facebook, LinkedIn. Best-time posting for your audience." },
-  { icon: Users, title: "Brand Voice per Client", desc: "Each client gets their own tone and style. No mix-ups, ever." },
-  { icon: BarChart2, title: "Analytics & Reports", desc: "Engagement tracking, monthly PDF reports, insights per platform." },
-  { icon: Zap, title: "Campaign Auto-Pilot", desc: "One brief, 5 posts with images, captions, hashtags. One click." },
+  { icon: Sparkles, title: "Write a Caption in 10 Seconds", desc: "Not 20 minutes. Professional copy in any language, in your client's brand voice. PAS, AIDA, storytelling — built in." },
+  { icon: Image, title: "No Designer. No Canva. No Editing.", desc: "Generate branded visuals, product photos, lifestyle shots — directly from a text prompt. Your client's style, every time." },
+  { icon: Calendar, title: "One Click, 5 Platforms", desc: "Schedule and auto-publish across Instagram, Facebook, TikTok, LinkedIn, YouTube. No more copy-pasting between tabs." },
+  { icon: Users, title: "Posts Sound Like Your Client", desc: "Brand Voice learns from 10 examples. Every caption, every image, every post matches their tone — not generic ChatGPT." },
+  { icon: BarChart2, title: "Client Report Ready Monday 8AM", desc: "Automated reports sent to your client's inbox. Professional, branded, no manual screenshots from 6 tools." },
+  { icon: Zap, title: "1 Brief → 5 Posts → 2 Minutes", desc: "Write a brief about your client's new product. Get 5 complete posts with images, captions, hashtags. Schedule all instantly." },
 ];
 
 export default function DemoPage() {
@@ -115,12 +115,12 @@ export default function DemoPage() {
 
         {/* Hero */}
         <section style={{ textAlign: "center", padding: "80px 24px 40px", maxWidth: 800, margin: "0 auto" }}>
-          <div style={{ fontSize: 13, color: "#F59E0B", fontWeight: 600, marginBottom: 16, letterSpacing: 2, textTransform: "uppercase" }}>Social Media Content Platform</div>
+          <div style={{ fontSize: 13, color: "#F59E0B", fontWeight: 600, marginBottom: 16, letterSpacing: 2, textTransform: "uppercase" }}>For Agencies Managing 8+ Clients</div>
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-extrabold" style={{ lineHeight: 1.1, marginBottom: 24 }}>
-            3x More Content.<br /><span style={{ color: "#F59E0B" }}>Zero Extra Staff.</span>
+            From <span style={{ color: "#F59E0B" }}>6 Tools</span> to 1.<br />Save 12h Every Week.
           </h1>
           <p className="text-sm sm:text-base md:text-lg" style={{ color: "rgba(255,255,255,0.65)", maxWidth: 560, margin: "0 auto 40px", lineHeight: 1.6 }}>
-            AI-powered social media content for restaurants, hotels, clinics, and retail businesses. Professional posts, images, and scheduling — delivered automatically.
+            Stop juggling Hootsuite + Canva + ChatGPT + Hunter.io + Excel + Analytics. One platform that creates content in your client&apos;s voice, publishes everywhere, and finds you new business.
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
             <Link href="https://calendar.app.google/kmUnEepd8a3Nj1Mh7?hl=en" style={glassBtn}>

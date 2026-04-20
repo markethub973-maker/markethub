@@ -11,9 +11,9 @@ import DashboardPreviewMockup from "@/components/ui/DashboardPreviewMockup";
 import FaqItem from "./FaqItem";
 
 export const metadata: Metadata = {
-  title: "Social Media Marketing Platform for Agencies & Creators",
+  title: "From 6 Tools to 1 — Save 12h/week on Social Media Marketing",
   description:
-    "Cross-platform analytics, content calendar with auto-publish, CRM + lead finder, AI agents, and 31 ready-to-run automations. 14-day free trial.",
+    "1 brief → 5 posts ready to publish. 500 prospects/week without manual search. Analytics in 3 seconds. For agencies managing 8+ clients who want to scale without hiring.",
   alternates: { canonical: "https://markethubpromo.com/promo" },
 };
 
@@ -49,33 +49,33 @@ const FEATURES = [
   {
     icon: <Sparkles className="w-5 h-5" />,
     color: "#8B5CF6",
-    title: "AI Image + Video + Audio Studio",
+    title: "Images + Video + Audio — No Designer Needed",
     description:
-      "Generate branded images ($0.003), short Reels ($0.30), voiceovers and music — all in one click. Brand voice profile means every output sounds like you, not generic stock.",
+      "Generate branded visuals, short Reels, voiceovers and music — without Canva, without a designer. Your brand voice is baked in, so every output sounds like your client, not generic stock.",
     badge: "New",
   },
   {
     icon: <Zap className="w-5 h-5" />,
     color: "#f59e0b",
-    title: "Campaign Auto-Pilot — brief → full plan",
+    title: "1 Brief → 5 Posts Ready to Publish. 2 Minutes.",
     description:
-      "Type a campaign brief, get a 5-post content plan in 10 seconds: hooks, captions, hashtags, image prompts, suggested times. Generate all images, schedule all posts — one click each.",
+      "Write one brief about your client's new product. Get 5 complete posts with hooks, captions, hashtags, and images — each written in your client's brand voice. Schedule all with one click.",
     badge: "Most loved",
   },
   {
     icon: <Search className="w-5 h-5" />,
     color: "#f59e0b",
-    title: "AI Lead Finder — 50+ leads/week",
+    title: "500 New Prospects This Week — No Manual Search",
     description:
-      "Describe your offer. AI scans 8 platforms simultaneously, scores every lead by fit (1–10), flags competitors, and writes personalized outreach in your language. You review and send.",
+      "Describe your ideal client. The system finds them across 8 platforms, scores each by fit, filters out competitors, and drafts personalized outreach in their language. You just review and send.",
     badge: null,
   },
   {
     icon: <BarChart2 className="w-5 h-5" />,
     color: "#6366F1",
-    title: "Multi-Platform Analytics",
+    title: "When Clients Ask 'How's the Campaign?' — Answer in 3 Seconds",
     description:
-      "YouTube channel stats, Instagram insights, TikTok trends, Facebook pages — all real data in one dashboard. Real ER%, demographic breakdowns, competitor benchmarking.",
+      "YouTube, Instagram, TikTok, Facebook, LinkedIn — all metrics in one dashboard. No more screenshotting 6 different tools. Generate a professional client report in 2 clicks.",
     badge: null,
   },
   {
@@ -469,23 +469,22 @@ export default function PromoPage() {
             }}
           >
             <Sparkles className="w-4 h-4" />
-            Powered by AI MarketHub Engine — Premium tier
+            For agencies managing 8+ social media clients
           </div>
 
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-bold leading-tight mb-6" style={{ color: D.heading }}>
-            The marketing platform that
-            <span style={{ color: D.accent }}> finds your clients</span>,
-            writes your copy,
-            and <span style={{ color: D.accent }}>grows your agency</span>
+            From <span style={{ color: D.accent }}>6 tools</span> to 1.
+            <br />
+            Save <span style={{ color: D.accent }}>12 hours</span> every week.
           </h1>
 
           <p className="text-xl mb-4 max-w-2xl mx-auto leading-relaxed" style={{ color: D.body }}>
-            16 specialized AI agents + real-time analytics for YouTube, Instagram, TikTok & Facebook.
-            Find 50+ qualified leads per week — automatically.
+            Write 1 brief, get 5 posts ready to publish. Find 500 prospects without manual search.
+            Answer &quot;how&apos;s the campaign?&quot; in 3 seconds. Scale to 50 clients without hiring.
           </p>
 
           <p className="text-base mb-10 max-w-xl mx-auto" style={{ color: D.muted }}>
-            Used by marketing agencies, content creators and brand owners across Europe, Asia and beyond.
+            Replace Hootsuite + Canva + ChatGPT + Hunter.io + Excel + Google Analytics with one platform.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
@@ -599,10 +598,10 @@ export default function PromoPage() {
         <section id="features" className="px-6 py-24 max-w-5xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: D.heading }}>
-              Everything your agency needs — in one platform
+              Stop paying for 6 tools. Start scaling.
             </h2>
             <p className="text-base max-w-xl mx-auto" style={{ color: D.body }}>
-              From finding your first client to running a full-service agency with 20+ accounts — MarketHub Pro scales with you.
+              Every feature built for one outcome: more clients, less manual work, more money in your pocket.
             </p>
           </div>
 

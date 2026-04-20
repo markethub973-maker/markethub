@@ -32,7 +32,6 @@ export async function GET() {
     reason: "Outreach paused — platform publishing not yet functional (Meta business verification pending)",
   });
 }
-export async function _DISABLED_GET_ORIGINAL(req: NextRequest) {
 // ═══════════════════════════════════════════════════════════════════════
 
 const BATCH_SIZE = 5;
@@ -114,7 +113,7 @@ function buildEmailHtml(businessName: string, body: string, recipientEmail: stri
 </td></tr></table></td></tr></table></body></html>`;
 }
 
-export async function GET(req: NextRequest) {
+async function _ORIGINAL_GET(req: NextRequest) {
   if (!authOk(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -292,4 +291,3 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ ok: true, sent, failed, results });
 }
-} // end _DISABLED_GET_ORIGINAL

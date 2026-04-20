@@ -238,11 +238,11 @@ export default function OnboardingPage() {
               </h1>
               {userName && (
                 <p style={styles.subtitle}>
-                  Hey {userName}, great to have you here.
+                  Hey {userName}, ready to save 12 hours every week?
                 </p>
               )}
               <p style={styles.description}>
-                Let&apos;s set up your account in under 2 minutes
+                Let&apos;s connect your accounts in under 2 minutes — then you&apos;re live.
               </p>
               <button
                 onClick={() => setStep(2)}

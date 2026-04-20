@@ -25,7 +25,7 @@ export async function GET() {
     reason: "Follow-ups paused — platform publishing not yet functional",
   });
 }
-export async function _DISABLED_GET_ORIGINAL() {
+// Original handler disabled:
 
 const HAIKU = "claude-haiku-4-5-20251001";
 
@@ -119,7 +119,7 @@ async function sendEmail(to: string, subject: string, body: string): Promise<boo
   }
 }
 
-export async function GET(req: NextRequest) {
+async function _ORIGINAL_GET(req: NextRequest) {
   const secret = req.headers.get("x-brain-cron-secret");
   if (!secret || secret !== process.env.BRAIN_CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -186,4 +186,3 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ ok: true, ...processed });
 }
-} // end _DISABLED_GET_ORIGINAL

@@ -78,7 +78,7 @@ function wrap(content: EmailContent, recipientEmail?: string): string {
           Need help? Email <a href="mailto:${SUPPORT_EMAIL}" style="color:#D97706;text-decoration:none;">${SUPPORT_EMAIL}</a>
         </p>
         <p style="margin:0;font-size:11px;color:#A8967E;">
-          MarketHub Pro · Social Media Marketing for Agencies & Creators<br/>
+          MarketHub Pro · From 6 Tools to 1. Save 12h/week.<br/>
           ${recipientEmail ? `Sent to ${escape(recipientEmail)}. ` : ""}<a href="${APP_URL}/settings" style="color:#A8967E;">Manage email preferences</a>
         </p>
       </td></tr>

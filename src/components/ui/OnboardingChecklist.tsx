@@ -151,11 +151,11 @@ export default function OnboardingChecklist() {
           </div>
           <div>
             <h3 className="font-semibold text-sm" style={{ color: "var(--color-text)" }}>
-              Welcome to MarketHub Pro! 🎉
+              From 6 tools to 1 — let's get you set up 🎉
             </h3>
             <p className="text-xs mt-0.5" style={{ color: "#A8967E" }}>
               {allDone
-                ? "Setup complete — you're ready to grow!"
+                ? "You're ready — start saving 12 hours every week!"
                 : `${completedCount} of ${STEPS.length} steps completed`}
             </p>
           </div>

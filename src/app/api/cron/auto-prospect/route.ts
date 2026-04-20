@@ -26,8 +26,6 @@ export async function GET() {
     reason: "Prospecting paused — platform publishing not yet functional",
   });
 }
-export async function _DISABLED_GET_ORIGINAL(req: NextRequest) {
-
 function authOk(req: NextRequest): boolean {
   const h = req.headers.get("authorization");
   const cronSecret = process.env.CRON_SECRET;
@@ -67,7 +65,7 @@ const SEARCH_QUERIES_NY = [
   "nail salon NYC Instagram",
 ];
 
-export async function GET(req: NextRequest) {
+async function _ORIGINAL_GET(req: NextRequest) {
   if (!authOk(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -237,4 +235,3 @@ export async function GET(req: NextRequest) {
     results,
   });
 }
-} // end _DISABLED_GET_ORIGINAL

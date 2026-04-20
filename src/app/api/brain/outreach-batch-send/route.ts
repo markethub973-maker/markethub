@@ -169,9 +169,9 @@ ${opts.voiceUrl ? `\n---\nP.S. Am pregătit și o scurtă înregistrare audio cu
 Nu mai doriți emailuri? Răspundeți cu "dezabonare" sau: ${UNSUBSCRIBE_URL}`;
 }
 
-// ── Main handler ────────────────────────────────────────────────────────────
+// ── Main handler (DISABLED — kill switch above) ─────────────────────────────
 
-export async function GET(req: NextRequest) {
+async function _DISABLED_GET(req: NextRequest) {
   if (!(await authOk(req))) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

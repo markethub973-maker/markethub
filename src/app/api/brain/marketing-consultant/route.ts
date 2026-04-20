@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
     tags: ["marketing-consultant", scenario, `lang:${lang}`],
     source: "marketing-consultant endpoint",
     confidence: 0.9,
-  }).then(() => {}).catch(() => {});
+  });
 
   return NextResponse.json({
     type: scenario,

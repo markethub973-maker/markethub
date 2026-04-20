@@ -26,11 +26,11 @@ const OG_IMAGE = `${SITE_URL}/opengraph-image`;
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "MarketHub Pro — Social Media Marketing Platform for Agencies",
+    default: "MarketHub Pro — From 6 Tools to 1. Save 12h/week on Social Media",
     template: "%s · MarketHub Pro",
   },
   description:
-    "All-in-one social media marketing platform: cross-platform analytics, content calendar with auto-publish, CRM + lead finder, AI agents, automation engine. For creators and agencies.",
+    "Replace 6 separate tools with one platform. Write 1 brief, get 5 ready-to-publish posts. Find 500 prospects weekly without manual search. Built for agencies managing 8+ clients.",
   keywords: [
     "social media management",
     "social media marketing",
@@ -64,9 +64,9 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: SITE_URL,
     siteName: "MarketHub Pro",
-    title: "MarketHub Pro — Social Media Marketing Platform for Agencies",
+    title: "MarketHub Pro — From 6 Tools to 1. Save 12h/week on Social Media",
     description:
-      "Cross-platform analytics, calendar with auto-publish, CRM, AI agents, and a 31-template automation engine — in one app.",
+      "1 brief → 5 posts ready to publish. 500 prospects/week without manual search. Analytics across all platforms in 3 seconds. Built for agencies managing 8+ social media clients.",
     images: [
       {
         url: OG_IMAGE,
@@ -78,9 +78,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "MarketHub Pro — Social Media Marketing Platform",
+    title: "MarketHub Pro — From 6 Tools to 1. Save 12h/week.",
     description:
-      "Cross-platform analytics, calendar with auto-publish, CRM, AI agents, and 31 ready automations.",
+      "1 brief → 5 posts. 500 prospects/week. Analytics in 3 seconds. For agencies with 8+ clients.",
     images: [OG_IMAGE],
     creator: "@markethubpro",
   },

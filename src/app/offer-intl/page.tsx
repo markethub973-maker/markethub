@@ -60,12 +60,12 @@ export default function OfferIntlPage() {
           <Clock className="w-3 h-3" /> Founding client pricing — first 10 clients only
         </div>
         <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-          Your next 30 days of <span style={{ color: "#F59E0B" }}>marketing</span>,<br />
-          done for you in 5 days.
+          Your next 30 days of <span style={{ color: "#F59E0B" }}>content</span>,<br />
+          ready in 5 days. You just approve.
         </h1>
         <p className="text-lg opacity-70 max-w-2xl mx-auto mb-6">
-          60 captions, 20 AI images, a 30-day content calendar and 50 qualified leads —
-          shipped to your inbox. You review, approve, watch it publish.
+          60 captions written in your brand voice, 20 branded images, a full 30-day calendar,
+          and 50 qualified prospects with outreach ready — shipped to your inbox.
         </p>
         <p className="text-sm font-semibold" style={{ color: "#D97706" }}>
           ⏱ 5–7 day delivery · 💳 Secure payment via Stripe · 💯 No subscription
