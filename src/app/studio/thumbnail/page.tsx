@@ -170,13 +170,27 @@ export default function ThumbnailPage() {
             className="rounded-xl p-4 space-y-3"
             style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
           >
-            <div className="rounded-lg overflow-hidden" style={{ aspectRatio: "16 / 9", backgroundColor: "rgba(0,0,0,0.03)" }}>
+            <div className="rounded-lg overflow-hidden relative" style={{ aspectRatio: "16 / 9", backgroundColor: "#000" }}>
               <img
                 src={result.image_url}
                 alt={title}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
+              {/* Text overlay — rendered programmatically, not by AI (AI can't write text correctly) */}
+              {title && (
+                <div className="absolute inset-0 flex items-center justify-center p-6" style={{ background: "linear-gradient(180deg, transparent 20%, rgba(0,0,0,0.7) 100%)" }}>
+                  <h2 className="text-center font-extrabold leading-tight" style={{
+                    color: "white",
+                    fontSize: title.length > 40 ? "1.5rem" : title.length > 20 ? "2rem" : "2.5rem",
+                    textShadow: "0 2px 8px rgba(0,0,0,0.8), 0 0 2px rgba(0,0,0,0.9)",
+                    maxWidth: "90%",
+                    wordBreak: "break-word",
+                  }}>
+                    {title}
+                  </h2>
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <p className="text-xs flex-1" style={{ color: "#A8967E" }}>

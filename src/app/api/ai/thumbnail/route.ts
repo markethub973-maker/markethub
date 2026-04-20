@@ -45,13 +45,15 @@ export async function POST(req: NextRequest) {
   const topic = body.topic?.trim().slice(0, 200) ?? "";
   const accent = body.accent?.trim().slice(0, 200) ?? "";
 
+  // Generate image WITHOUT text — AI generators cannot render text correctly,
+  // especially in non-English languages. Text overlay is handled client-side.
   const prompt = [
-    `YouTube thumbnail, 16:9, 1280x720, eye-catching.`,
-    `Large bold text overlay that reads exactly: "${body.title.trim()}" — impact sans-serif, thick white stroke, drop shadow, placed to leave the subject visible.`,
+    `YouTube thumbnail background, 16:9, 1280x720, eye-catching, NO TEXT on image.`,
     topic ? `Topic: ${topic}.` : "",
     accent ? `Include: ${accent}.` : "",
     `Style: ${styleDesc}.`,
-    `Rule-of-thirds composition, strong focal subject, clean background, no extra small text.`,
+    `Rule-of-thirds composition, strong focal subject, clean blurred background, space for text overlay.`,
+    `IMPORTANT: Do NOT put any text, words, letters, or typography on the image. Clean image only.`,
   ]
     .filter(Boolean)
     .join(" ");
