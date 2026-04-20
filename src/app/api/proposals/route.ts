@@ -42,7 +42,7 @@ export async function PATCH(req: NextRequest) {
   const supa = createServiceClient();
 
   if (action === "send" && rest.client_email) {
-    const { data: proposal } = await supa.from("proposals").select("*").eq("id", id).single();
+    const { data: proposal } = await supa.from("proposals").select("*").eq("id", id).eq("user_id", auth.userId).single();
     const { data: owner } = await supa.from("profiles").select("name, email").eq("id", auth.userId).single();
     if (proposal) {
       const services = (proposal.services as any[]) ?? [];

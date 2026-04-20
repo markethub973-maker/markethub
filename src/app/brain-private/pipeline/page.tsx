@@ -41,6 +41,9 @@ function statusLabel(r: Row): string {
 }
 
 export default async function Pipeline() {
+  // NOTE: This is a brain-private page — protected by brain_admin cookie
+  // in proxy.ts. Only Eduard/admin can access. Shows ALL outreach data
+  // intentionally (admin overview). Client pages filter by user_id.
   const svc = createServiceClient();
   const { data } = await svc
     .from("outreach_log")

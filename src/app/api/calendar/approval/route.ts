@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
       approval_responses: {},
     })
     .eq("id", post_id)
+    .eq("user_id", auth.userId)
     .select()
     .single();
 
