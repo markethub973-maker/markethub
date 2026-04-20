@@ -321,17 +321,15 @@ export default function TrendsPage() {
 
           {/* Global Button */}
           <button type="button" onClick={handleGlobal}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-            style={isGlobal ? { backgroundColor: A, color: "white" } : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm transition-all ${isGlobal ? "btn-3d-active" : "btn-3d"}`}
           >
-            <Globe className="w-3 h-3" /> Global
+            <Globe className="w-4 h-4" /> Global
           </button>
 
           {/* International Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button type="button" onClick={() => setDropdownOpen(prev => !prev)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-              style={!isGlobal ? { backgroundColor: A, color: "white" } : { backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.35)" }}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm transition-all ${!isGlobal ? "btn-3d-active" : "btn-3d"}`}
             >
               {!isGlobal ? selectedCountry?.label : "🗺️ International"}
               <ChevronDown className={`w-3 h-3 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
@@ -362,8 +360,7 @@ export default function TrendsPage() {
             ["related", "🔍 Related Queries"],
           ] as const).map(([t, label]) => (
             <button key={t} type="button" onClick={() => setTab(t)}
-              className="px-5 py-2 text-sm font-semibold rounded-lg transition-all"
-              style={tab === t ? { backgroundColor: A, color: "white" } : { color: "#78614E" }}>
+              className={`px-5 py-2 text-sm font-semibold rounded-lg transition-all ${tab === t ? "btn-3d-active" : "btn-3d"}`}>
               {label}
             </button>
           ))}
