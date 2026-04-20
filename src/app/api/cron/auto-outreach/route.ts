@@ -112,10 +112,10 @@ export async function GET(req: NextRequest) {
   const svc = createServiceClient();
 
   // Get prospects with email that haven't been emailed
+  // Get ALL domains already in outreach_log (any status) — never re-send
   const { data: sentRows } = await svc
     .from("outreach_log")
-    .select("domain")
-    .in("status", ["sent", "replied"]);
+    .select("domain");
 
   const sentDomains = new Set((sentRows || []).map((r) => r.domain));
 
@@ -124,6 +124,7 @@ export async function GET(req: NextRequest) {
     .select("domain, business_name, email, country_code, snippet")
     .eq("outreach_status", "prospect")
     .not("email", "is", null)
+    .not("outreach_status", "in", "(blocked_competitor,prospect_parked,prospect_agency)")
     .order("created_at", { ascending: false })
     .limit(50);
 
