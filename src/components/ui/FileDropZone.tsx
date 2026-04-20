@@ -91,7 +91,7 @@ export default function FileDropZone({
         ) : preview ? (
           <div className="relative">
             {isVideo ? (
-              <video src={preview} className="w-full rounded-lg max-h-48 object-cover" controls />
+              <video src={preview} className="w-full rounded-lg max-h-64 object-contain" controls playsInline preload="metadata" style={{ backgroundColor: "#000" }} />
             ) : (
               <img src={preview} alt="Preview" className="w-full rounded-lg max-h-48 object-cover" />
             )}
