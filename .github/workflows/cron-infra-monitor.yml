@@ -1,0 +1,17 @@
+name: Infrastructure Monitor (hourly)
+on:
+  schedule:
+    - cron: "30 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check infrastructure capacity
+        run: |
+          curl -sf -X GET \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "User-Agent: MarketHubCron/1.0" \
+            "https://markethubpromo.com/api/cron/infra-monitor" \
+            --max-time 25 || true
