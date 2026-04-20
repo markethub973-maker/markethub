@@ -456,18 +456,18 @@ export default function LeadsPage() {
           <GlassCard padding="p-3" rounded="rounded-xl" className="flex items-center gap-2 flex-wrap">
             <span className="text-[10px] font-bold uppercase tracking-wider text-glass-secondary">Pipeline:</span>
             <button type="button" onClick={() => setStageFilter("all")}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${stageFilter !== "all" ? "btn-pill" : ""}`}
               style={stageFilter === "all"
                 ? { backgroundColor: AMBER + "20", color: AMBER, border: `1px solid ${AMBER}40` }
-                : { backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.2)" }}>
+                : undefined}>
               All ({leads.length})
             </button>
             {PIPELINE_STAGES.map(s => (
               <button key={s.key} type="button" onClick={() => setStageFilter(s.key)}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all"
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${stageFilter !== s.key ? "btn-pill" : ""}`}
                 style={stageFilter === s.key
                   ? { backgroundColor: s.color + "20", color: s.color, border: `1px solid ${s.color}40` }
-                  : { backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.2)" }}>
+                  : undefined}>
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: s.color }} />
                 {s.label} ({stageCounts[s.key] || 0})
               </button>
@@ -492,10 +492,10 @@ export default function LeadsPage() {
                 const color = t === "all" ? AMBER : TYPE_COLORS[t] || AMBER;
                 return (
                   <button key={t} type="button" onClick={() => setFilter(t)}
-                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all"
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${filter !== t ? "btn-pill" : ""}`}
                     style={filter === t
                       ? { backgroundColor: color + "20", color, border: `1px solid ${color}40` }
-                      : { backgroundColor: "rgba(245,215,160,0.1)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.2)" }}>
+                      : undefined}>
                     <Icon className="w-3 h-3" />
                     {t === "all" ? `All (${leads.length})` : `${TYPE_LABELS[t] || t} (${typeCounts[t] || 0})`}
                   </button>

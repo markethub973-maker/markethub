@@ -1134,6 +1134,62 @@ button[style*="rgba(245,215,160,0.2)"] {
 }
 
 
+/* ── Pill buttons per platform color (same pattern as instagram-search) ── */
+/* Amber (MarketHub default — trends, channels, general) */
+.btn-pill, .btn-pill-amber {
+  background: linear-gradient(135deg, rgba(245,158,11,0.063), rgba(217,119,6,0.063));
+  color: var(--color-text); border: 1px solid rgba(245,158,11,0.125); transition: all 0.2s ease;
+}
+.btn-pill:hover, .btn-pill-amber:hover {
+  background: linear-gradient(135deg, rgba(245,158,11,0.155), rgba(217,119,6,0.155));
+  border-color: #F59E0B; transform: scale(1.05);
+}
+/* YouTube — red */
+.btn-pill-yt {
+  background: linear-gradient(135deg, rgba(255,0,0,0.063), rgba(204,0,0,0.063));
+  color: var(--color-text); border: 1px solid rgba(255,0,0,0.125); transition: all 0.2s ease;
+}
+.btn-pill-yt:hover {
+  background: linear-gradient(135deg, rgba(255,0,0,0.155), rgba(204,0,0,0.155));
+  border-color: #FF0000; transform: scale(1.05);
+}
+/* TikTok — cyan */
+.btn-pill-tt {
+  background: linear-gradient(135deg, rgba(0,242,234,0.063), rgba(0,0,0,0.03));
+  color: var(--color-text); border: 1px solid rgba(0,242,234,0.125); transition: all 0.2s ease;
+}
+.btn-pill-tt:hover {
+  background: linear-gradient(135deg, rgba(0,242,234,0.155), rgba(0,0,0,0.06));
+  border-color: #00F2EA; transform: scale(1.05);
+}
+/* Facebook — blue */
+.btn-pill-fb {
+  background: linear-gradient(135deg, rgba(24,119,242,0.063), rgba(66,103,178,0.063));
+  color: var(--color-text); border: 1px solid rgba(24,119,242,0.125); transition: all 0.2s ease;
+}
+.btn-pill-fb:hover {
+  background: linear-gradient(135deg, rgba(24,119,242,0.155), rgba(66,103,178,0.155));
+  border-color: #1877F2; transform: scale(1.05);
+}
+/* LinkedIn — dark blue */
+.btn-pill-li {
+  background: linear-gradient(135deg, rgba(10,102,194,0.063), rgba(0,76,153,0.063));
+  color: var(--color-text); border: 1px solid rgba(10,102,194,0.125); transition: all 0.2s ease;
+}
+.btn-pill-li:hover {
+  background: linear-gradient(135deg, rgba(10,102,194,0.155), rgba(0,76,153,0.155));
+  border-color: #0A66C2; transform: scale(1.05);
+}
+/* Instagram — pink/purple */
+.btn-pill-ig {
+  background: linear-gradient(135deg, rgba(225,48,108,0.063), rgba(131,58,180,0.063));
+  color: var(--color-text); border: 1px solid rgba(225,48,108,0.125); transition: all 0.2s ease;
+}
+.btn-pill-ig:hover {
+  background: linear-gradient(135deg, rgba(225,48,108,0.155), rgba(131,58,180,0.155));
+  border-color: #E1306C; transform: scale(1.05);
+}
+
 /* ── 3D Bej Button (inactive state) ────────── */
 .btn-3d {
   background: linear-gradient(180deg, #D4C8B8 0%, #C4B8A8 50%, #B0A494 100%) !important;
