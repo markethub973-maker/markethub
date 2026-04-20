@@ -552,7 +552,14 @@ export default function ResearchPage() {
         body: JSON.stringify(body),
       });
       const data = await res.json();
-      if (!res.ok) setError(data.error || "Search failed");
+      if (!res.ok) {
+        const msg = typeof data?.error === "string" ? data.error
+          : typeof data?.message === "string" ? data.message
+          : JSON.stringify(data).includes("limit exceeded") ? "Search quota exceeded for this month. Please try again next month or upgrade your plan."
+          : JSON.stringify(data).includes("disabled") ? "This search provider is temporarily unavailable. Please try again later."
+          : "Search failed. Please try again.";
+        setError(msg);
+      }
       else setResults(data);
     } catch {
       setError("Network error");
