@@ -292,3 +292,4 @@ export async function GET(req: NextRequest) {
 
   return NextResponse.json({ ok: true, sent, failed, results });
 }
+} // end _DISABLED_GET_ORIGINAL

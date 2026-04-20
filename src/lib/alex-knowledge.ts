@@ -769,6 +769,23 @@ Language: Romanian when talking to Eduard/team. English for legal terminology re
   },
 ];
 
+/**
+ * Marketing Consultant & Positioning Audit — available tools for Alex's team.
+ *
+ * Endpoint: POST /api/brain/marketing-consultant
+ * Body: { description: "product description", type: "consultant"|"audit", lang: "ro"|"en" }
+ *
+ * "consultant" → Vera (CMO) runs full analysis: transformation, USP, objections, benefits rewrite, positioning score, copy fixes
+ * "audit" → Leo (Strategist) + Iris (Copywriter) run positioning audit: category, beachhead, competitive alternatives, value matrix, one-liners, messaging hierarchy, channel recommendations
+ *
+ * Use cases:
+ * - Before sending outreach to a prospect → run "consultant" on their business to personalize pitch
+ * - Weekly → run "audit" on our own MarketHub Pro messaging to keep it sharp
+ * - When prospect replies with objections → run "consultant" to generate counter-arguments
+ * - Before creating landing pages → run "audit" to nail positioning
+ */
+export const MARKETING_CONSULTANT_SCENARIOS = ["marketing_consultant", "positioning_audit"] as const;
+
 export function agentById(id: string): AlexAgent | undefined {
   return ALEX_AGENTS.find((a) => a.id === id);
 }
