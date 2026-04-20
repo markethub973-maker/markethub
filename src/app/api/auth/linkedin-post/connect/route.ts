@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
 
   const clientId = process.env.LINKEDIN_CLIENT_ID;
   if (!clientId) {
-    return NextResponse.redirect(new URL("/settings?error=linkedin_not_configured", req.url));
+    return NextResponse.redirect(new URL("/social-accounts?error=linkedin_not_configured", req.url));
   }
 
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/linkedin-post/callback`;

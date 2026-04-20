@@ -260,12 +260,10 @@ export default function TikTokPage() {
                 { key: "hashtags" as const, label: `Hashtags (${hashtags.length})`, icon: <Hash className="w-3.5 h-3.5" /> },
               ].map(tab => (
                 <button key={tab.key} type="button" onClick={() => setActiveTab(tab.key)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all"
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold transition-all ${activeTab !== tab.key ? "btn-pill-tt" : ""}`}
                   style={activeTab === tab.key ? {
                     background: `linear-gradient(135deg, ${TT}20, ${TT2}20)`, color: TT2, border: `1px solid ${TT2}40`,
-                  } : {
-                    backgroundColor: "var(--color-bg-secondary)", color: "#78614E", border: "1px solid rgba(245,215,160,0.25)",
-                  }}>
+                  } : undefined}>
                   {tab.icon}{tab.label}
                 </button>
               ))}

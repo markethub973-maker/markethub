@@ -839,7 +839,7 @@ export default function MetaInsightsPage() {
           <div className="flex flex-wrap gap-2 bg-white border border-[#E8D9C5] rounded-xl p-2 flex-1">
             {TABS.map(t => (
               <button type="button" key={t.id} onClick={() => setTab(t.id)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.id ? "bg-[#F59E0B] text-white" : "text-[#78614E] hover:bg-[#F5E8D4]"}`}>
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.id ? "bg-[#1877F2] text-white" : "btn-pill-fb"}`}>
                 <span>{t.icon}</span>{t.label}
               </button>
             ))}

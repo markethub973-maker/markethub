@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const appId = process.env.META_APP_ID;
-  if (!appId) return NextResponse.redirect(new URL("/settings?error=meta_not_configured", req.url));
+  if (!appId) return NextResponse.redirect(new URL("/social-accounts?error=meta_not_configured", req.url));
 
   const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/facebook-page/callback`;
   const scope = "pages_show_list,pages_read_engagement,pages_read_user_content,read_insights";

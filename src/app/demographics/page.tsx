@@ -65,8 +65,7 @@ export default function DemographicsPage() {
               <p className="text-xs mt-2" style={{ color: "#C4AA8A" }}>
                 Note: Demographic data requires an Instagram Business account with at least 100 followers.
               </p>
-              <button onClick={reload} className="mt-3 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
-                style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.2)" }}>
+              <button onClick={reload} className="mt-3 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg btn-pill">
                 <RefreshCw className="w-3 h-3" /> Retry
               </button>
             </div>

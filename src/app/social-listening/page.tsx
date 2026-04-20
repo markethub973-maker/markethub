@@ -196,14 +196,14 @@ export default function SocialListeningPage() {
         {allKeywords.length > 1 && (
           <div className="flex gap-2 flex-wrap">
             <button type="button" onClick={() => setFilterKeyword("all")}
-              className="text-xs px-3 py-1.5 rounded-full font-medium transition-all"
-              style={filterKeyword === "all" ? { backgroundColor: "var(--color-text)", color: "var(--color-bg)" } : { ...card, color: "#78614E" }}>
+              className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all ${filterKeyword !== "all" ? "btn-pill" : ""}`}
+              style={filterKeyword === "all" ? { backgroundColor: "var(--color-text)", color: "var(--color-bg)" } : undefined}>
               All
             </button>
             {allKeywords.map(k => (
               <button key={k} type="button" onClick={() => setFilterKeyword(k)}
-                className="text-xs px-3 py-1.5 rounded-full font-medium transition-all"
-                style={filterKeyword === k ? { backgroundColor: "#6366F1", color: "white" } : { ...card, color: "#78614E" }}>
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition-all ${filterKeyword !== k ? "btn-pill" : ""}`}
+                style={filterKeyword === k ? { backgroundColor: "#6366F1", color: "white" } : undefined}>
                 {k}
               </button>
             ))}

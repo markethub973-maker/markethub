@@ -198,10 +198,10 @@ export default function HashtagsPage() {
             { key: "sets", label: `My Sets (${sets.length})`, icon: <BookOpen className="w-3.5 h-3.5" /> },
           ].map(t => (
             <button key={t.key} type="button" onClick={() => setMainTab(t.key as "search" | "sets")}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold transition-all ${mainTab !== t.key ? "btn-pill" : ""}`}
               style={mainTab === t.key
                 ? { backgroundColor: "var(--color-primary)", color: "white" }
-                : { backgroundColor: "var(--color-bg-secondary)", color: "#A8967E", border: "1px solid rgba(245,215,160,0.3)" }}>
+                : undefined}>
               {t.icon}{t.label}
             </button>
           ))}
@@ -263,8 +263,7 @@ export default function HashtagsPage() {
                       </div>
                     </div>
                     <button onClick={saveCurrentAsSet}
-                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg"
-                      style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary-hover)", border: "1px solid rgba(245,158,11,0.2)" }}>
+                      className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg btn-pill">
                       <Plus className="w-3 h-3" />Save to sets
                     </button>
                   </div>
@@ -289,10 +288,10 @@ export default function HashtagsPage() {
                     { key: "recent", label: "Recent Posts", icon: <Search className="w-3.5 h-3.5" /> },
                   ].map(t => (
                     <button key={t.key} type="button" onClick={() => setTab(t.key as "top" | "recent")}
-                      className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all"
+                      className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold transition-all ${tab !== t.key ? "btn-pill" : ""}`}
                       style={tab === t.key
                         ? { backgroundColor: "rgba(225,48,108,0.12)", color: IG, border: "1px solid rgba(225,48,108,0.25)" }
-                        : { backgroundColor: "transparent", color: "#A8967E", border: "1px solid rgba(245,215,160,0.2)" }}>
+                        : undefined}>
                       {t.icon}{t.label}
                     </button>
                   ))}

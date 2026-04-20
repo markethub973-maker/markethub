@@ -306,7 +306,7 @@ export default function VideosPage() {
             <button
               type="button"
               onClick={() => { setSearchInput(""); fetchTrending(region); }}
-              className="px-4 py-2.5 text-sm font-semibold rounded-lg btn-pill"
+              className="px-4 py-2.5 text-sm font-semibold rounded-lg btn-pill-yt"
             >
               Trending
             </button>

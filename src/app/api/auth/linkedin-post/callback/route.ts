@@ -10,15 +10,15 @@ export async function GET(req: NextRequest) {
   const error = searchParams.get("error");
 
   if (error || !code || !stateParam) {
-    return NextResponse.redirect(new URL(`/settings?error=${error || "missing_code"}`, req.url));
+    return NextResponse.redirect(new URL(`/social-accounts?error=${error || "missing_code"}`, req.url));
   }
 
   const verified = verifyState(stateParam);
-  if (!verified) return NextResponse.redirect(new URL("/settings?error=invalid_state", req.url));
+  if (!verified) return NextResponse.redirect(new URL("/social-accounts?error=invalid_state", req.url));
 
   const sessionClient = await createClient();
   const { data: { user } } = await sessionClient.auth.getUser();
-  if (!user || user.id !== verified.userId) return NextResponse.redirect(new URL("/settings?error=session_mismatch", req.url));
+  if (!user || user.id !== verified.userId) return NextResponse.redirect(new URL("/social-accounts?error=session_mismatch", req.url));
 
   const clientId = process.env.LINKEDIN_CLIENT_ID!;
   const clientSecret = process.env.LINKEDIN_CLIENT_SECRET!;
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     body: new URLSearchParams({ grant_type: "authorization_code", code, redirect_uri: redirectUri, client_id: clientId, client_secret: clientSecret }),
   });
 
-  if (!tokenRes.ok) return NextResponse.redirect(new URL("/settings?error=token_exchange_failed", req.url));
+  if (!tokenRes.ok) return NextResponse.redirect(new URL("/social-accounts?error=token_exchange_failed", req.url));
   const { access_token, expires_in } = await tokenRes.json();
 
   const supa = createServiceClient();
@@ -38,5 +38,5 @@ export async function GET(req: NextRequest) {
     linkedin_access_token: access_token,
   }).eq("id", user.id);
 
-  return NextResponse.redirect(new URL("/settings?linkedin=connected", req.url));
+  return NextResponse.redirect(new URL("/social-accounts?linkedin=connected", req.url));
 }

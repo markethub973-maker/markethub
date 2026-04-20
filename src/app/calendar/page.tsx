@@ -246,8 +246,8 @@ export default function CalendarPage() {
             <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid rgba(245,215,160,0.3)" }}>
               {([{ key: "month", icon: <LayoutGrid className="w-3.5 h-3.5" /> }, { key: "list", icon: <List className="w-3.5 h-3.5" /> }] as const).map(v => (
                 <button key={v.key} type="button" onClick={() => setView(v.key)}
-                  className="px-2.5 py-1.5"
-                  style={{ backgroundColor: view === v.key ? "rgba(245,158,11,0.15)" : "var(--color-bg)", color: view === v.key ? "var(--color-primary-hover)" : "#A8967E" }}>
+                  className={`px-2.5 py-1.5 ${view !== v.key ? "btn-pill" : ""}`}
+                  style={view === v.key ? { backgroundColor: "rgba(245,158,11,0.15)", color: "var(--color-primary-hover)" } : undefined}>
                   {v.icon}
                 </button>
               ))}

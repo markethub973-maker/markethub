@@ -448,8 +448,7 @@ export default function CompetitorsPage() {
                 type="button"
                 onClick={refreshAll}
                 disabled={refreshingId !== null}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
-                style={{ ...cardStyle, color: "#78614E" }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold btn-pill"
               >
                 <RefreshCw className={`w-4 h-4 ${refreshingId ? "animate-spin" : ""}`} />
                 Refresh All
@@ -457,10 +456,10 @@ export default function CompetitorsPage() {
               <button
                 type="button"
                 onClick={() => setCompareMode(v => !v)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold ${!compareMode ? "btn-pill" : ""}`}
                 style={compareMode
                   ? { backgroundColor: "rgba(245,158,11,0.1)", color: "var(--color-primary)", border: "1px solid rgba(245,158,11,0.3)" }
-                  : { ...cardStyle, color: "#78614E" }
+                  : undefined
                 }
               >
                 <ArrowUpDown className="w-4 h-4" />
