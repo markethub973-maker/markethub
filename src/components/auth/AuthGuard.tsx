@@ -8,6 +8,7 @@ import OnboardingWidget from "@/components/onboarding/OnboardingWidget";
 import TrialWarningBanner from "@/components/TrialWarningBanner";
 import AmbientBlobs from "@/components/ui/AmbientBlobs";
 import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
+import OnboardingCheck from "@/components/auth/OnboardingCheck";
 import { createClient } from "@/lib/supabase/client";
 
 const PUBLIC_PATHS = [
@@ -44,6 +45,7 @@ function isPublicPath(pathname: string): boolean {
   if (pathname.startsWith("/approve/")) return true; // client approval
   if (pathname.startsWith("/report/")) return true;  // shared report
   if (pathname.startsWith("/offer"))    return true;  // /offer-ro, /offer-intl, /offer/thanks
+  if (pathname.startsWith("/onboarding")) return true; // new user onboarding
   if (pathname.startsWith("/reseller")) return true; // reseller landing + tier pages + signup
   if (pathname.startsWith("/p/")) return true;       // prospect landing pages
   if (pathname.startsWith("/book/")) return true;   // booking pages
@@ -115,21 +117,23 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   // Regular dashboard: sidebar + main layout
   return (
-    <div className="app-bg">
-      <AmbientBlobs />
-      {showOnboarding && (
-        <OnboardingWizard onComplete={() => setShowOnboarding(false)} />
-      )}
-      <Sidebar />
-      <main className="md:ml-64 min-h-screen flex flex-col relative z-10">
-        <TrialWarningBanner />
-        <div className="flex-1">
-          <ModuleBoundary name="Page">
-            {children}
-          </ModuleBoundary>
-        </div>
-      </main>
-      <OnboardingWidget />
-    </div>
+    <OnboardingCheck>
+      <div className="app-bg">
+        <AmbientBlobs />
+        {showOnboarding && (
+          <OnboardingWizard onComplete={() => setShowOnboarding(false)} />
+        )}
+        <Sidebar />
+        <main className="md:ml-64 min-h-screen flex flex-col relative z-10">
+          <TrialWarningBanner />
+          <div className="flex-1">
+            <ModuleBoundary name="Page">
+              {children}
+            </ModuleBoundary>
+          </div>
+        </main>
+        <OnboardingWidget />
+      </div>
+    </OnboardingCheck>
   );
 }

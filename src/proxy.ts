@@ -160,6 +160,7 @@ const PUBLIC_PATHS = [
   "/privacy",
   "/terms",
   "/upgrade-required",
+  "/onboarding",
   "/auth/callback",
   "/api/auth",
   "/api/pricing",           // public — used on register page before login
@@ -208,6 +209,7 @@ const PUBLIC_PATHS = [
   "/offer-pt",              // Portugal + BR DFY landing (€700)
   "/offer/thanks",          // post-payment confirmation (shared by both tiers)
   "/api/offer",             // one-time Stripe checkout for the DFY offer
+  "/onboarding",            // new user onboarding wizard
   "/reseller",              // public reseller/freelancer landing + signup
   "/api/reseller/signup",   // reseller registration endpoint (creates user)
   "/p/",                    // public prospect landing pages (/p/[slug])
