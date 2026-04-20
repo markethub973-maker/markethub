@@ -444,8 +444,8 @@ export default function CalendarPage() {
         {showForm && (
           <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
             onClick={() => { setShowForm(false); setError(""); }}>
-            <div className="w-full max-w-lg rounded-xl p-6 space-y-4 max-h-[90vh] overflow-y-auto shadow-xl"
-              style={{ backgroundColor: "#FFFCF7", border: "1px solid rgba(200,180,150,0.4)" }}
+            <div className="w-full max-w-lg rounded-xl p-6 space-y-4 max-h-[90vh] overflow-y-auto"
+              style={{ backgroundColor: "#FFFFFF", border: "2px solid #D4A574", boxShadow: "0 8px 32px rgba(0,0,0,0.2)" }}
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between">
                 <h3 className="font-bold" style={{ color: "var(--color-text)" }}>{editingPost ? "Edit post" : "New post"}</h3>
@@ -601,7 +601,7 @@ export default function CalendarPage() {
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                   {editingPost ? "Save" : "Add"}
                 </button>
-                {editingPost && editingPost.status !== "published" && (
+                {editingPost && (
                   <button type="button" onClick={() => handlePublishNow(editingPost.id)} disabled={publishing || saving}
                     className="flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-bold disabled:opacity-50"
                     style={{ backgroundColor: "#16A34A", color: "white" }}>
