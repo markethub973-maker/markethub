@@ -35,8 +35,6 @@ const TTS_VOICES = [
   { value: "af_bella", label: "Bella (clear female)" },
   { value: "am_adam",  label: "Adam (deep male)" },
   { value: "am_michael", label: "Michael (mid male)" },
-  { value: "rf_nicole", label: "Nicole (RO female)" },
-  { value: "rm_adrian", label: "Adrian (RO male)" },
 ];
 
 export default function AiAudioStudioPage() {
