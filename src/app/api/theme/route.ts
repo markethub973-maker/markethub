@@ -54,19 +54,15 @@ export async function POST(req: NextRequest) {
     .eq("user_id", auth.userId)
     .eq("is_active", true);
 
-  // Upsert the new active theme
+  // Insert the new active theme
   const { data, error } = await supabase
     .from("user_themes")
-    .upsert(
-      {
-        user_id: auth.userId,
-        theme_name,
-        config,
-        is_active: true,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "user_id,theme_name" }
-    )
+    .insert({
+      user_id: auth.userId,
+      theme_name,
+      config,
+      is_active: true,
+    })
     .select()
     .single();
 
