@@ -14,7 +14,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # 🛑 KILL SWITCH — all Alex operations paused until social media is functional
   run:
+    if: false  # 🛑 KILL SWITCH — paused until social media is functional
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

@@ -6,6 +6,7 @@ on:
 
 jobs:
   monitor:
+    if: false  # 🛑 KILL SWITCH — paused until social media is functional
     runs-on: ubuntu-latest
     steps:
       - name: Check infrastructure capacity

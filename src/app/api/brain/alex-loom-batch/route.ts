@@ -29,6 +29,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -48,6 +50,7 @@ interface ProspectCandidate {
 }
 
 export async function GET(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!authOk(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const url = req.nextUrl;

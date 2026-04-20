@@ -17,6 +17,8 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { generateJson } from "@/lib/llm";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
 import { startActivity, completeActivity } from "@/lib/agent-activity";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -47,6 +49,7 @@ interface TurboScoutResult {
 }
 
 export async function GET(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (req.headers.get("x-brain-cron-secret") !== process.env.BRAIN_CRON_SECRET &&
       !(req.headers.get("authorization") ?? "").includes(process.env.CRON_SECRET ?? "_NOTSET_")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

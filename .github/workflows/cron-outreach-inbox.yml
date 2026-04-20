@@ -6,6 +6,7 @@ on:
 
 jobs:
   scan:
+    if: false  # 🛑 KILL SWITCH — paused until social media is functional
     runs-on: ubuntu-latest
     steps:
       - name: Scan Gmail for prospect replies

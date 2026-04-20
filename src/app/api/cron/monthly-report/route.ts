@@ -6,6 +6,8 @@ import { renderToBuffer } from "@react-pdf/renderer";
 import { createElement } from "react";
 import { MarketingReportPDF, MarketingReportData } from "@/lib/marketingReportPDF";
 import { resolveIGToken } from "@/lib/igToken";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 const CRON_SECRET = process.env.CRON_SECRET!;
 const FROM = "MarketHub Pro <rapoarte@markethubpromo.com>";
@@ -71,6 +73,7 @@ function buildHtml(data: {
 }
 
 export async function GET(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   // Accept: cron Bearer token (from Vercel cron) OR valid admin session cookie.
   // The old admin path only checked for the cookie NAME being present —
   // replaced with the proper HMAC-verified isAdminAuthorized() check.

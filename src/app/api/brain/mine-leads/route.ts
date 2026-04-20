@@ -18,6 +18,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
 import { tagClientNeeds } from "@/lib/client-needs-tagger";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -54,6 +56,7 @@ function domainOf(urlOrDomain: string | undefined): string | null {
 }
 
 export async function POST(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!authOk(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

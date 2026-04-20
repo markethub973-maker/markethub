@@ -8,6 +8,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { webSearch } from "@/lib/webSearch";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +26,7 @@ function authOk(req: NextRequest): boolean {
 }
 
 export async function GET(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!authOk(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -49,6 +52,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!authOk(req)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

@@ -23,6 +23,8 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { publishToLinkedIn, type ScheduledPostRow } from "@/lib/publishers";
 import { generateText } from "@/lib/llm";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -84,6 +86,7 @@ async function generateDailyPost(): Promise<{ text: string; pillar: Pillar } | n
 // n8n calls with POST + x-brain-cron-secret header
 // Both work — same logic.
 export async function GET(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   const bearer = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
   const cronOk = bearer && bearer === process.env.CRON_SECRET;
   const brainOk = req.headers.get("x-brain-cron-secret") === process.env.BRAIN_CRON_SECRET;
@@ -94,6 +97,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (req.headers.get("x-brain-cron-secret") !== process.env.BRAIN_CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
 import { verifyCronSecret } from "@/lib/cronAuth";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function GET(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!verifyCronSecret(req, "/api/cron/trending-scan")) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

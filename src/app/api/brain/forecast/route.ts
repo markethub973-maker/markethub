@@ -12,6 +12,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +25,7 @@ function authOk(req: NextRequest): boolean {
 }
 
 export async function GET(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!authOk(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const svc = createServiceClient();
   const now = Date.now();

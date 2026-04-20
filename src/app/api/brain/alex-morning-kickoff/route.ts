@@ -15,6 +15,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { generateText } from "@/lib/llm";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -159,6 +161,7 @@ async function notifyTelegram(summary: string): Promise<boolean> {
 }
 
 export async function GET(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!authOk(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const state = await buildState();

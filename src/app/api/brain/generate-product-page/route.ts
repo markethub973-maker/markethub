@@ -18,6 +18,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import type { BrainProduct } from "@/lib/brainProducts";
 import { OUTPUT_SAFETY_RULES } from "@/lib/anthropic-client";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -34,6 +36,7 @@ function slugify(name: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   // Admin gate — only the operator (or Brain itself with admin token)
   // can generate product pages.
   const supa = await createClient();

@@ -17,6 +17,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { embedBatch } from "@/lib/embed";
 import { startActivity, completeActivity, failActivity } from "@/lib/agent-activity";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -41,6 +43,7 @@ interface ShoppingItem {
 }
 
 export async function POST(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!authOk(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = (await req.json().catch(() => ({}))) as {

@@ -17,6 +17,8 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { generateJson } from "@/lib/llm";
 import { ALEX_KNOWLEDGE_BRIEF } from "@/lib/alex-knowledge";
 import { startActivity, completeActivity } from "@/lib/agent-activity";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -51,6 +53,7 @@ function authOk(req: NextRequest): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  if (isAlexPaused()) return pausedResponse();
   if (!authOk(req)) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = (await req.json().catch(() => ({}))) as {

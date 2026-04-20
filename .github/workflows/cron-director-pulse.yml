@@ -5,7 +5,9 @@ on:
   workflow_dispatch: {}
 
 jobs:
+  # 🛑 KILL SWITCH — all Alex operations paused until social media is functional
   pulse:
+    if: false  # 🛑 KILL SWITCH — paused until social media is functional
     runs-on: ubuntu-latest
     steps:
       - name: Log director activities

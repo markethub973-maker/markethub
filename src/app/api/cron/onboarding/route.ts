@@ -6,6 +6,8 @@ import {
   sendOnboarding4_Competitors,
   sendOnboarding5_ProTips,
 } from "@/lib/resend";
+import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
+
 
 const CRON_SECRET = process.env.CRON_SECRET!;
 
@@ -21,6 +23,7 @@ const STEPS = [
 const WINDOW_MS = 6 * 60 * 60 * 1000; // ±6 hours
 
 export async function GET(req: Request) {
+  if (isAlexPaused()) return pausedResponse();
   const authHeader = req.headers.get("authorization");
   const fromCron = CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`;
   if (!fromCron) {

@@ -16,6 +16,7 @@ concurrency:
 
 jobs:
   run:
+    if: false  # 🛑 KILL SWITCH — paused until social media is functional
     runs-on: ubuntu-latest
     timeout-minutes: 3
     steps:
