@@ -116,6 +116,26 @@ export async function generateAudio(input: AudioInput): Promise<AudioResult> {
       })
       .eq("id", id);
 
+    // Persist audio to Supabase storage — Fal URLs are temporary
+    if (result.ok && result.audio_url) {
+      try {
+        const audioRes = await fetch(result.audio_url, { signal: AbortSignal.timeout(15000) });
+        if (audioRes.ok) {
+          const blob = await audioRes.arrayBuffer();
+          const ext = result.audio_url.includes(".mp3") ? "mp3" : "wav";
+          const path = `audio/${input.userId}/${id}.${ext}`;
+          const { error: upErr } = await service.storage
+            .from("public-assets")
+            .upload(path, new Uint8Array(blob), { contentType: ext === "mp3" ? "audio/mpeg" : "audio/wav", upsert: true });
+          if (!upErr) {
+            const { data: urlData } = service.storage.from("public-assets").getPublicUrl(path);
+            result.audio_url = urlData.publicUrl;
+            await service.from("ai_audio_generations").update({ audio_url: urlData.publicUrl }).eq("id", id);
+          }
+        }
+      } catch { /* non-fatal — keep Fal URL as fallback */ }
+    }
+
     if (result.ok && result.audio_url) {
       void dispatchWebhookEvent(input.userId, "audio.generated", {
         generation_id: id,
