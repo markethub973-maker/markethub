@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
     .maybeSingle();
 
   if (!page) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ business_name: null, available_slots: [] });
   }
 
   // If no date, just return business info
