@@ -1,232 +1,271 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { useTheme } from "@/context/ThemeContext";
-import { type ThemeConfig } from "@/lib/theme";
-import GlassCard from "./GlassCard";
-
 /**
- * Floating theme picker — bottom-right corner, toggled by palette icon.
- * Shows 5 preset swatches + custom accent color picker.
+ * Theme Customizer — floating side panel (WordPress Customizer style).
+ *
+ * Opens as a sliding panel from the right on ANY page.
+ * Changes apply LIVE to the current page via CSS variables.
+ * User navigates normally with panel open.
+ * Save persists to DB (user_themes table).
  */
-const PUBLIC_PATHS = ["/promo", "/pricing", "/login", "/register", "/white-label", "/privacy", "/terms", "/help"];
+
+import { useState, useCallback, useEffect } from "react";
+import { X, Save, RotateCcw, ChevronDown, ChevronRight, Palette } from "lucide-react";
+
+interface ThemeConfig {
+  primary: string;
+  primaryHover: string;
+  bg: string;
+  bgSecondary: string;
+  text: string;
+  border: string;
+  surface: string;
+  fontFamily: string;
+  fontSize: number;
+  headingWeight: number;
+  buttonRadius: number;
+  cardRadius: number;
+  cardShadow: string;
+  sidebarBg: string;
+  sidebarText: string;
+}
+
+const DEFAULT: ThemeConfig = {
+  primary: "#F59E0B", primaryHover: "#D97706", bg: "#FFFCF7", bgSecondary: "#FFFFFF",
+  text: "#2D2620", border: "#F5D7A0", surface: "#FFFFFF", fontFamily: "system-ui",
+  fontSize: 16, headingWeight: 700, buttonRadius: 12, cardRadius: 16,
+  cardShadow: "0 1px 3px rgba(120,97,78,0.08)", sidebarBg: "#1C1814", sidebarText: "#FFF8F0",
+};
+
+const PRESETS: Record<string, { label: string; colors: Partial<ThemeConfig> }> = {
+  default: { label: "Cream", colors: {} },
+  ocean: { label: "Ocean", colors: { primary: "#0EA5E9", primaryHover: "#0284C7", bg: "#F0F9FF", text: "#0C4A6E", border: "#BAE6FD", surface: "#F8FDFF", sidebarBg: "#0C4A6E" } },
+  forest: { label: "Forest", colors: { primary: "#16A34A", primaryHover: "#15803D", bg: "#F0FDF4", text: "#14532D", border: "#BBF7D0", surface: "#F8FFF8", sidebarBg: "#14532D" } },
+  midnight: { label: "Dark", colors: { primary: "#8B5CF6", primaryHover: "#7C3AED", bg: "#1E1B2E", bgSecondary: "#2D2A3E", text: "#E8E4F0", border: "#3D3A4E", surface: "#252238", sidebarBg: "#13111F", sidebarText: "#E8E4F0" } },
+  rose: { label: "Rose", colors: { primary: "#E11D48", primaryHover: "#BE123C", bg: "#FFF1F2", text: "#4C0519", border: "#FECDD3", surface: "#FFFBFB", sidebarBg: "#4C0519" } },
+  lavender: { label: "Lavender", colors: { primary: "#A855F7", primaryHover: "#9333EA", bg: "#FAF5FF", text: "#3B0764", border: "#E9D5FF", surface: "#FDFAFF", sidebarBg: "#3B0764" } },
+};
+
+const SHADOWS: Record<string, string> = {
+  none: "none", light: "0 1px 3px rgba(120,97,78,0.08)",
+  medium: "0 4px 12px rgba(120,97,78,0.12)", heavy: "0 8px 24px rgba(120,97,78,0.18)",
+};
+
+const FONTS = ["system-ui", "Inter", "Poppins", "Roboto", "Open Sans", "Montserrat", "Playfair Display"];
+
+function applyToPage(c: ThemeConfig) {
+  const r = document.documentElement;
+  r.style.setProperty("--color-primary", c.primary);
+  r.style.setProperty("--color-primary-hover", c.primaryHover);
+  r.style.setProperty("--color-bg", c.bg);
+  r.style.setProperty("--color-bg-secondary", c.bgSecondary);
+  r.style.setProperty("--color-text", c.text);
+  r.style.setProperty("--color-border", c.border);
+  r.style.setProperty("--color-surface", c.surface);
+  r.style.setProperty("--sidebar-bg", c.sidebarBg);
+  r.style.setProperty("--sidebar-text", c.sidebarText);
+}
 
 export default function ThemeCustomizer() {
-  const { theme, setTheme, themes } = useTheme();
   const [open, setOpen] = useState(false);
-  const [hide, setHide] = useState(false);
-  const pathname = usePathname();
+  const [config, setConfig] = useState<ThemeConfig>(DEFAULT);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [sections, setSections] = useState<Record<string, boolean>>({ presets: true, colors: true, typography: false, elements: false });
 
   useEffect(() => {
-    const p = pathname;
-    const host = typeof window !== "undefined" ? window.location.hostname : "";
-    // Hide only on public pages — show on all dashboard/app pages
-    const isPublic =
-      host === "get.markethubpromo.com" ||
-      p === "/login" || p === "/register" || p === "/promo" ||
-      p === "/demo" || p === "/pricing" ||
-      p.startsWith("/features") || p.startsWith("/white-label") ||
-      p.startsWith("/offer") || p.startsWith("/l/") ||
-      p.startsWith("/guides") || p.startsWith("/for/") || p.startsWith("/vs/");
-    setHide(isPublic);
-  }, [pathname]);
+    fetch("/api/theme").then(r => r.json()).then(d => {
+      if (d.theme?.config) {
+        const merged = { ...DEFAULT, ...d.theme.config };
+        setConfig(merged);
+        applyToPage(merged);
+      }
+    }).catch(() => {});
+  }, []);
 
-  if (hide) return null;
+  const update = useCallback((partial: Partial<ThemeConfig>) => {
+    setConfig(prev => { const next = { ...prev, ...partial }; applyToPage(next); return next; });
+  }, []);
 
-  const handlePresetClick = (t: ThemeConfig) => {
-    setTheme(t);
-  };
+  const applyPreset = useCallback((key: string) => {
+    const p = PRESETS[key];
+    if (p) { const next = { ...DEFAULT, ...p.colors }; setConfig(next); applyToPage(next); }
+  }, []);
 
-  const handleColorChange = (field: keyof ThemeConfig, hex: string) => {
-    const update: Partial<ThemeConfig> = { name: "Custom", [field]: hex };
-    // Auto-derive accentGlow when accent changes
-    if (field === "accent") {
-      const r = parseInt(hex.slice(1, 3), 16);
-      const g = parseInt(hex.slice(3, 5), 16);
-      const b = parseInt(hex.slice(5, 7), 16);
-      update.accentGlow = `rgba(${r},${g},${b},0.2)`;
-    }
-    setTheme({ ...theme, ...update });
-  };
+  const reset = useCallback(() => { setConfig(DEFAULT); applyToPage(DEFAULT); }, []);
+
+  const save = useCallback(async () => {
+    setSaving(true); setMsg("");
+    try {
+      const res = await fetch("/api/theme", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ theme_name: "Custom", config }) });
+      setMsg(res.ok ? "Saved!" : "Error");
+    } catch { setMsg("Error"); }
+    setSaving(false); setTimeout(() => setMsg(""), 2000);
+  }, [config]);
+
+  const toggle = (s: string) => setSections(prev => ({ ...prev, [s]: !prev[s] }));
 
   return (
-    <div className="fixed bottom-4 left-52 z-50">
-      {/* Toggle button */}
-      <button
-        onClick={() => setOpen((v) => !v)}
-        className="w-12 h-12 rounded-full btn-liquid-primary flex items-center justify-center shadow-lg"
-        title="Theme Customizer"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <circle cx="13.5" cy="6.5" r="2.5" />
-          <circle cx="17.5" cy="10.5" r="2.5" />
-          <circle cx="8.5" cy="7.5" r="2.5" />
-          <circle cx="6.5" cy="12.5" r="2.5" />
-          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12a10 10 0 0 0 4 8" />
-          <circle cx="12" cy="17" r="2" />
-        </svg>
-      </button>
-
-      {/* Panel */}
-      {open && (
-        <div
-          className="absolute bottom-14 left-0 w-72"
-          style={{
-            animation: "slideUpIn 0.2s ease-out",
-          }}
-        >
-          <div style={{
-            background: "#0d0b1e",
-            backdropFilter: "blur(32px) saturate(180%)",
-            border: "1px solid rgba(255,255,255,0.18)",
-            borderRadius: 16,
-            padding: 20,
-            boxShadow: "0 20px 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.1)",
-            position: "relative",
-            overflow: "hidden",
-          }}>
-            {/* Glass shine effect */}
-            <div style={{
-              position: "absolute", top: 0, left: 0, right: 0, height: "40%",
-              background: "linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 100%)",
-              borderRadius: "16px 16px 60% 60%", pointerEvents: "none",
-            }} />
-            <h3 style={{ color: "rgba(255,255,255,0.9)", fontWeight: 600, fontSize: 14, marginBottom: 16 }}>
-              Theme Customizer
-            </h3>
-
-            {/* Preset swatches */}
-            <div className="flex gap-3 mb-5">
-              {themes.map((t) => (
-                <button
-                  key={t.name}
-                  onClick={() => handlePresetClick(t)}
-                  className="group relative flex flex-col items-center gap-1"
-                  title={t.name}
-                >
-                  <div
-                    className="w-10 h-10 rounded-full border-2 transition-all"
-                    style={{
-                      background: `linear-gradient(135deg, ${t.bg1}, ${t.accent})`,
-                      borderColor:
-                        theme.name === t.name
-                          ? t.accent
-                          : "rgba(255,255,255,0.1)",
-                      boxShadow:
-                        theme.name === t.name
-                          ? `0 0 12px ${t.accentGlow}`
-                          : "none",
-                    }}
-                  />
-                  <span
-                    className="text-[10px] text-glass-muted group-hover:text-glass-secondary transition-colors"
-                    style={{
-                      color:
-                        theme.name === t.name ? t.accent : undefined,
-                    }}
-                  >
-                    {t.name.split(" ")[0]}
-                  </span>
-                </button>
-              ))}
-            </div>
-
-            {/* Color pickers — all customizable */}
-            <div className="space-y-2.5">
-              {([
-                { key: "accent" as const, label: "Accent", hint: "Buttons, CTAs" },
-                { key: "bg1" as const, label: "Background", hint: "Page gradient start" },
-                { key: "bg2" as const, label: "Mid tone", hint: "Page gradient center" },
-                { key: "bg3" as const, label: "Light bg", hint: "Page gradient end" },
-              ] as const).map((f) => (
-                <label key={f.key} className="flex items-center gap-3 text-xs">
-                  <input
-                    type="color"
-                    value={theme[f.key]}
-                    onChange={(e) => handleColorChange(f.key, e.target.value)}
-                    className="w-7 h-7 rounded-lg cursor-pointer border-none bg-transparent flex-shrink-0"
-                  />
-                  <span style={{ width: 80, color: "rgba(255,255,255,0.65)" }}>{f.label}</span>
-                  <span style={{ color: "rgba(255,255,255,0.3)", fontFamily: "monospace", fontSize: 10 }}>{theme[f.key]}</span>
-                </label>
-              ))}
-            </div>
-
-            {/* Text colors */}
-            <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-              <p style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>Text Colors</p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <label style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12 }}>
-                  <input
-                    type="color"
-                    value={theme.textSidebar?.startsWith("#") ? theme.textSidebar : "#FFF8F0"}
-                    onChange={(e) => handleColorChange("textSidebar", e.target.value)}
-                    style={{ width: 28, height: 28, borderRadius: 8, cursor: "pointer", border: "none", background: "transparent", flexShrink: 0 }}
-                  />
-                  <span style={{ color: "rgba(255,255,255,0.65)" }}>Sidebar text</span>
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 12 }}>
-                  <input
-                    type="color"
-                    value={theme.textWorkspace?.startsWith("#") ? theme.textWorkspace : "#2D2620"}
-                    onChange={(e) => handleColorChange("textWorkspace", e.target.value)}
-                    style={{ width: 28, height: 28, borderRadius: 8, cursor: "pointer", border: "none", background: "transparent", flexShrink: 0 }}
-                  />
-                  <span style={{ color: "rgba(255,255,255,0.65)" }}>Workspace text</span>
-                </label>
-              </div>
-            </div>
-
-            {/* Blob colors */}
-            <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.08)" }}>
-              <p style={{ fontSize: 9, color: "rgba(255,255,255,0.3)", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>Ambient Blobs</p>
-              <div className="space-y-2">
-                {([
-                  { key: "blob1" as const, label: "Blob 1" },
-                  { key: "blob2" as const, label: "Blob 2" },
-                  { key: "blob3" as const, label: "Blob 3" },
-                ] as const).map((f) => (
-                  <label key={f.key} className="flex items-center gap-3 text-xs">
-                    <input
-                      type="color"
-                      value={theme.accent}
-                      onChange={(e) => {
-                        const r = parseInt(e.target.value.slice(1, 3), 16);
-                        const g = parseInt(e.target.value.slice(3, 5), 16);
-                        const b = parseInt(e.target.value.slice(5, 7), 16);
-                        handleColorChange(f.key, `rgba(${r},${g},${b},0.15)`);
-                      }}
-                      className="w-7 h-7 rounded-lg cursor-pointer border-none bg-transparent flex-shrink-0"
-                    />
-                    <span style={{ color: "rgba(255,255,255,0.65)" }}>{f.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ marginTop: 12, paddingTop: 10, borderTop: "1px solid rgba(255,255,255,0.08)", fontSize: 10, color: "rgba(255,255,255,0.3)" }}>
-              Active: {theme.name}
-            </div>
-          </div>
-        </div>
+    <>
+      {/* Floating trigger button — always visible */}
+      {!open && (
+        <button onClick={() => setOpen(true)} title="Customize theme"
+          className="fixed bottom-20 right-4 z-[98] w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
+          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "white" }}>
+          <Palette className="w-5 h-5" />
+        </button>
       )}
 
-      <style>{`
-        @keyframes slideUpIn {
-          from { opacity: 0; transform: translateY(12px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      {open && (
+        <>
+          {/* Backdrop — click to close */}
+          <div className="fixed inset-0 z-[99]" style={{ background: "rgba(0,0,0,0.08)" }} onClick={() => setOpen(false)} />
+
+          {/* Panel */}
+          <div className="fixed top-0 right-0 h-full z-[100] flex flex-col"
+            style={{ width: 300, background: "#FFFFFF", boxShadow: "-4px 0 24px rgba(0,0,0,0.15)" }}>
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b shrink-0" style={{ borderColor: "rgba(200,180,150,0.25)" }}>
+              <div className="flex items-center gap-2">
+                <Palette className="w-4 h-4" style={{ color: "#F59E0B" }} />
+                <span className="text-sm font-bold" style={{ color: "#2D2620" }}>Customize</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                {msg && <span className="text-xs font-medium" style={{ color: msg === "Saved!" ? "#16A34A" : "#DC2626" }}>{msg}</span>}
+                <button onClick={reset} title="Reset" className="p-1.5 rounded-lg hover:bg-gray-100">
+                  <RotateCcw className="w-3.5 h-3.5" style={{ color: "#A8967E" }} />
+                </button>
+                <button onClick={save} disabled={saving} title="Save"
+                  className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-white" style={{ background: "#F59E0B" }}>
+                  <Save className="w-3 h-3" />{saving ? "..." : "Save"}
+                </button>
+                <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100">
+                  <X className="w-4 h-4" style={{ color: "#A8967E" }} />
+                </button>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
+              <SectionBlock title="Presets" open={sections.presets} onToggle={() => toggle("presets")}>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {Object.entries(PRESETS).map(([key, p]) => {
+                    const c = { ...DEFAULT, ...p.colors };
+                    return (
+                      <button key={key} onClick={() => applyPreset(key)}
+                        className="flex flex-col items-center gap-1 p-2 rounded-lg border text-xs font-medium transition-all hover:scale-105"
+                        style={{ borderColor: "rgba(200,180,150,0.25)", background: "white" }}>
+                        <div className="flex gap-0.5">
+                          <div className="w-4 h-4 rounded-full border border-gray-200" style={{ background: c.primary }} />
+                          <div className="w-4 h-4 rounded-full border border-gray-200" style={{ background: c.bg }} />
+                          <div className="w-4 h-4 rounded-full border border-gray-200" style={{ background: c.text }} />
+                        </div>
+                        <span style={{ color: "#78614E" }}>{p.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </SectionBlock>
+
+              <SectionBlock title="Colors" open={sections.colors} onToggle={() => toggle("colors")}>
+                <ColorRow label="Primary" value={config.primary} onChange={v => update({ primary: v })} />
+                <ColorRow label="Primary Hover" value={config.primaryHover} onChange={v => update({ primaryHover: v })} />
+                <ColorRow label="Background" value={config.bg} onChange={v => update({ bg: v })} />
+                <ColorRow label="Cards" value={config.bgSecondary} onChange={v => update({ bgSecondary: v })} />
+                <ColorRow label="Text" value={config.text} onChange={v => update({ text: v })} />
+                <ColorRow label="Borders" value={config.border} onChange={v => update({ border: v })} />
+                <ColorRow label="Surface" value={config.surface} onChange={v => update({ surface: v })} />
+                <ColorRow label="Sidebar" value={config.sidebarBg} onChange={v => update({ sidebarBg: v })} />
+                <ColorRow label="Sidebar Text" value={config.sidebarText} onChange={v => update({ sidebarText: v })} />
+              </SectionBlock>
+
+              <SectionBlock title="Typography" open={sections.typography} onToggle={() => toggle("typography")}>
+                <div className="mb-3">
+                  <label className="text-xs font-medium mb-1 block" style={{ color: "#78614E" }}>Font</label>
+                  <select value={config.fontFamily} onChange={e => update({ fontFamily: e.target.value })}
+                    className="w-full px-2 py-1.5 text-xs rounded-lg border" style={{ borderColor: "rgba(200,180,150,0.3)" }}>
+                    {FONTS.map(f => <option key={f} value={f}>{f}</option>)}
+                  </select>
+                </div>
+                <SliderRow label="Font Size" value={config.fontSize} min={13} max={18} unit="px" onChange={v => update({ fontSize: v })} />
+                <SliderRow label="Heading Weight" value={config.headingWeight} min={500} max={900} step={100} onChange={v => update({ headingWeight: v })} />
+              </SectionBlock>
+
+              <SectionBlock title="Buttons & Cards" open={sections.elements} onToggle={() => toggle("elements")}>
+                <SliderRow label="Button Radius" value={config.buttonRadius} min={0} max={24} unit="px" onChange={v => update({ buttonRadius: v })} />
+                <SliderRow label="Card Radius" value={config.cardRadius} min={0} max={24} unit="px" onChange={v => update({ cardRadius: v })} />
+                <div className="mb-2">
+                  <label className="text-xs font-medium mb-1 block" style={{ color: "#78614E" }}>Card Shadow</label>
+                  <div className="grid grid-cols-4 gap-1">
+                    {Object.keys(SHADOWS).map(s => (
+                      <button key={s} onClick={() => update({ cardShadow: SHADOWS[s] })}
+                        className="px-1.5 py-1 text-xs rounded-lg border capitalize"
+                        style={{
+                          borderColor: config.cardShadow === SHADOWS[s] ? "#F59E0B" : "rgba(200,180,150,0.3)",
+                          background: config.cardShadow === SHADOWS[s] ? "rgba(245,158,11,0.1)" : "white", color: "#78614E",
+                        }}>{s}</button>
+                    ))}
+                  </div>
+                </div>
+                <div className="mt-3 p-3 rounded-lg" style={{ background: config.bg, border: `1px solid ${config.border}` }}>
+                  <p className="text-xs mb-2" style={{ color: "#A8967E" }}>Preview:</p>
+                  <button className="px-4 py-2 text-xs font-bold text-white mb-2"
+                    style={{ background: config.primary, borderRadius: config.buttonRadius, boxShadow: `0 3px 0 0 ${config.primaryHover}` }}>Button</button>
+                  <div className="p-2 text-xs" style={{
+                    background: config.surface, border: `1px solid ${config.border}`,
+                    borderRadius: config.cardRadius, boxShadow: config.cardShadow, color: config.text,
+                  }}>Card preview</div>
+                </div>
+              </SectionBlock>
+            </div>
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
+function SectionBlock({ title, open, onToggle, children }: { title: string; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  return (
+    <div className="border-b pb-2 mb-2" style={{ borderColor: "rgba(200,180,150,0.15)" }}>
+      <button onClick={onToggle} className="flex items-center justify-between w-full py-2 text-xs font-bold uppercase tracking-wider" style={{ color: "#78614E" }}>
+        {title}
+        {open ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+      </button>
+      {open && <div className="pt-1">{children}</div>}
+    </div>
+  );
+}
+
+function ColorRow({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex items-center justify-between mb-2">
+      <span className="text-xs" style={{ color: "#78614E" }}>{label}</span>
+      <div className="flex items-center gap-1.5">
+        <input type="text" value={value}
+          onChange={e => { if (/^#[0-9A-Fa-f]{0,6}$/.test(e.target.value)) onChange(e.target.value); }}
+          className="w-16 px-1.5 py-0.5 text-xs rounded border text-center font-mono" style={{ borderColor: "rgba(200,180,150,0.3)" }} />
+        <input type="color" value={value.length === 7 ? value : "#000000"}
+          onChange={e => onChange(e.target.value)}
+          className="w-6 h-6 rounded border cursor-pointer" style={{ borderColor: "rgba(200,180,150,0.3)" }} />
+      </div>
+    </div>
+  );
+}
+
+function SliderRow({ label, value, min, max, step = 1, unit, onChange }: {
+  label: string; value: number; min: number; max: number; step?: number; unit?: string; onChange: (v: number) => void;
+}) {
+  return (
+    <div className="mb-2.5">
+      <div className="flex justify-between mb-0.5">
+        <span className="text-xs" style={{ color: "#78614E" }}>{label}</span>
+        <span className="text-xs font-mono font-bold" style={{ color: "#F59E0B" }}>{value}{unit || ""}</span>
+      </div>
+      <input type="range" min={min} max={max} step={step} value={value}
+        onChange={e => onChange(Number(e.target.value))}
+        className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+        style={{ background: `linear-gradient(to right, #F59E0B ${((value - min) / (max - min)) * 100}%, rgba(200,180,150,0.2) 0%)` }} />
     </div>
   );
 }

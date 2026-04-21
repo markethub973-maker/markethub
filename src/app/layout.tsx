@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { UserThemeProvider } from "@/components/providers/ThemeProvider";
 // ThemeSwitcher moved to Sidebar — no longer floating
 import { ThemeProvider as LiquidGlassThemeProvider } from "@/context/ThemeContext";
-// ThemeCustomizer removed — integrated into Sidebar Theme button
+import ThemeCustomizerPanel from "@/components/ui/ThemeCustomizer";
 import CommandPalette from "@/components/ui/CommandPalette";
 import ToastContainer from "@/components/ui/ToastContainer";
 
@@ -189,8 +189,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ThemeProvider>
             <UserThemeProvider>
             <AuthGuard>{children}</AuthGuard>
-            {/* Theme Customize button (original, top-right) */}
-            {/* ThemeSwitcher moved to Sidebar */}
+            {/* Theme Customizer — floating panel, opens on any page */}
+            <ThemeCustomizerPanel />
             {/* M9 Sprint 1 — floating AI consultant (bottom-left) */}
             <AskConsultant />
             {/* GDPR cookie consent banner — gates analytics loading */}
