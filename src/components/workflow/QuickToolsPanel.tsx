@@ -136,6 +136,33 @@ const TOOL_CATEGORIES: ToolCategory[] = [
 
 // ── Quick Tool Inline Runner ───────────────────────────────────────────────
 
+function extractText(data: Record<string, unknown>): string | null {
+  // Try common response field names
+  for (const key of ["caption", "captions", "text", "output", "result", "content", "hooks", "versions", "variants", "hashtags", "suggestions", "script", "strategy"]) {
+    const val = data[key];
+    if (typeof val === "string" && val.length > 0) return val;
+    if (Array.isArray(val) && val.length > 0) {
+      // Array of strings
+      if (typeof val[0] === "string") return val.map((v, i) => `${i + 1}. ${v}`).join("\n\n");
+      // Array of objects with caption/text/title field
+      if (typeof val[0] === "object" && val[0] !== null) {
+        const items = val.map((v: Record<string, unknown>, i: number) => {
+          const txt = v.caption || v.text || v.title || v.content || v.hook || v.variant || JSON.stringify(v);
+          return `${i + 1}. ${txt}`;
+        });
+        return items.join("\n\n");
+      }
+    }
+  }
+  // Score-based response
+  if (data.score !== undefined) {
+    const parts = [`Score: ${data.score}/100`];
+    if (Array.isArray(data.suggestions)) parts.push("\nSuggestions:\n" + (data.suggestions as string[]).map((s, i) => `${i + 1}. ${s}`).join("\n"));
+    return parts.join("\n");
+  }
+  return null;
+}
+
 function ToolRunner({ tool, onClose }: { tool: QuickTool; onClose: () => void }) {
   const [input, setInput] = useState("");
   const [running, setRunning] = useState(false);
@@ -181,7 +208,8 @@ function ToolRunner({ tool, onClose }: { tool: QuickTool; onClose: () => void })
       if (!res.ok) {
         setError(data.error || `Failed with status ${res.status}`);
       } else {
-        setResult(JSON.stringify(data, null, 2));
+        const formatted = extractText(data);
+        setResult(formatted || JSON.stringify(data, null, 2));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Network error");
@@ -239,12 +267,21 @@ function ToolRunner({ tool, onClose }: { tool: QuickTool; onClose: () => void })
       )}
 
       {result && (
-        <pre
-          className="px-3 py-2 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap"
-          style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.2)", color: "var(--color-text)", maxHeight: 200 }}
-        >
-          {result}
-        </pre>
+        <div className="relative">
+          <pre
+            className="px-3 py-2 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap"
+            style={{ backgroundColor: "white", border: "1px solid rgba(245,215,160,0.2)", color: "var(--color-text)", maxHeight: 200 }}
+          >
+            {result}
+          </pre>
+          <button
+            onClick={() => { navigator.clipboard.writeText(result); }}
+            className="absolute top-1 right-1 px-2 py-0.5 rounded text-xs font-medium transition-colors"
+            style={{ backgroundColor: "rgba(245,158,11,0.1)", color: "#D97706" }}
+          >
+            Copy
+          </button>
+        </div>
       )}
     </div>
   );
