@@ -97,8 +97,23 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}));
   const name: string = body.name || `Backup ${new Date().toISOString().slice(0, 16).replace("T", " ")}`;
   const description: string = body.description || "";
+  const backupType: string = body.backup_type || "total"; // "total" | "incremental"
 
   const supa = createServiceClient();
+
+  // For incremental: find last backup to get timestamp cutoff
+  let incrementalSince: string | null = null;
+  if (backupType === "incremental") {
+    const { data: lastBackup } = await supa
+      .from("platform_backups")
+      .select("created_at")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+    if (lastBackup) {
+      incrementalSince = lastBackup.created_at;
+    }
+  }
 
   // 1. Get git info
   let gitCommit = "unknown";
@@ -111,15 +126,31 @@ export async function POST(req: NextRequest) {
     // Ignore git errors in serverless
   }
 
-  // 2. Dump all tables
+  // 2. Dump tables (total = all rows, incremental = only changed since last backup)
   const tableData: Record<string, Record<string, unknown>[]> = {};
   const rowCounts: Record<string, number> = {};
   const tablesIncluded: string[] = [];
 
   for (const table of BACKUP_TABLES) {
-    const { rows, count } = await fetchAllRows(supa, table);
-    if (count > 0 || rows.length === 0) {
-      // Include even empty tables for completeness
+    if (backupType === "incremental" && incrementalSince) {
+      // Incremental: only rows created or updated since last backup
+      let query = supa.from(table).select("*");
+      // Try updated_at first, fall back to created_at
+      const { data: updatedRows } = await query.or(`created_at.gte.${incrementalSince},updated_at.gte.${incrementalSince}`).limit(10000);
+      if (updatedRows && updatedRows.length > 0) {
+        tableData[table] = updatedRows as Record<string, unknown>[];
+        rowCounts[table] = updatedRows.length;
+        tablesIncluded.push(table);
+      } else {
+        // Try only created_at (table might not have updated_at)
+        const { data: createdRows } = await supa.from(table).select("*").gte("created_at", incrementalSince).limit(10000);
+        tableData[table] = (createdRows || []) as Record<string, unknown>[];
+        rowCounts[table] = (createdRows || []).length;
+        tablesIncluded.push(table);
+      }
+    } else {
+      // Total: all rows
+      const { rows, count } = await fetchAllRows(supa, table);
       tableData[table] = rows;
       rowCounts[table] = count;
       tablesIncluded.push(table);
@@ -146,6 +177,8 @@ export async function POST(req: NextRequest) {
     tables: tableData,
     env_var_names: envVarNames,
     git: { commit: gitCommit, tag: gitTag },
+    backup_type: backupType,
+    incremental_since: incrementalSince,
     created_at: new Date().toISOString(),
     platform: "markethubpromo.com",
   };

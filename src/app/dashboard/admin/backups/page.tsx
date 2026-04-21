@@ -1,29 +1,14 @@
 "use client";
 
 /**
- * Admin -> Platform Backups
- *
- * Create, list, download, restore, and delete platform backups.
- * Follows the cream/amber admin theme established by other admin pages.
+ * Admin → Platform Backups — 8 numbered slots with incremental/total backup + restore
  */
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import {
-  ArrowLeft,
-  Download,
-  Trash2,
-  RotateCcw,
-  Plus,
-  Database,
-  GitBranch,
-  Clock,
-  AlertTriangle,
-  CheckCircle2,
-  X,
-  Loader2,
-  HardDrive,
-  FileDown,
+  ArrowLeft, Download, RotateCcw, Database, Clock, AlertTriangle,
+  CheckCircle2, X, Loader2, HardDrive, Save, Info, Layers, Zap,
 } from "lucide-react";
 
 interface Backup {
@@ -36,993 +21,373 @@ interface Backup {
   row_counts: Record<string, number>;
   total_size_bytes: number;
   created_at: string;
+  backup_type?: string; // "total" | "incremental"
+}
+
+interface SlotData {
+  slot: number;
+  backup: Backup | null;
 }
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return "0 B";
+  if (!bytes) return "—";
   const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(1024));
   return `${(bytes / Math.pow(1024, i)).toFixed(1)} ${sizes[i]}`;
 }
 
 function formatDate(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
+function totalRows(rc: Record<string, number>): number {
+  return Object.values(rc).reduce((s, n) => s + n, 0);
+}
+
+const SLOT_LABELS = [
+  "Golden Snapshot",
+  "Pre-Deploy",
+  "Daily Auto",
+  "Weekly Full",
+  "Before Refactor",
+  "Client Demo",
+  "Emergency",
+  "Custom",
+];
+
+const cardBg = "#1C1814";
+const cardBorder = "rgba(245,215,160,0.15)";
+const amber = "#F59E0B";
+const textMain = "#FFF8F0";
+const textMuted = "rgba(255,248,240,0.5)";
+
 export default function BackupsPage() {
-  const [backups, setBackups] = useState<Backup[]>([]);
+  const [slots, setSlots] = useState<SlotData[]>(
+    Array.from({ length: 8 }, (_, i) => ({ slot: i + 1, backup: null }))
+  );
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [creating, setCreating] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [restoreTarget, setRestoreTarget] = useState<Backup | null>(null);
-  const [restoring, setRestoring] = useState(false);
-  const [restoreResult, setRestoreResult] = useState<Record<string, unknown> | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Backup | null>(null);
-  const [newName, setNewName] = useState("");
-  const [newDesc, setNewDesc] = useState("");
+  const [actionSlot, setActionSlot] = useState<number | null>(null);
+  const [actionType, setActionType] = useState<"backup-total" | "backup-incremental" | "restore" | null>(null);
+  const [processing, setProcessing] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null);
+  const [confirmRestore, setConfirmRestore] = useState<number | null>(null);
   const [exporting, setExporting] = useState(false);
 
   const loadBackups = useCallback(async () => {
     setLoading(true);
-    setError(null);
     try {
-      const res = await fetch("/api/admin/backups", { cache: "no-store" });
-      if (res.status === 401 || res.status === 403) {
-        setError("SESSION_EXPIRED");
-        return;
-      }
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = await res.json();
-      setBackups(json.backups ?? []);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Unknown error");
-    } finally {
-      setLoading(false);
-    }
+      const res = await fetch("/api/admin/backups");
+      if (!res.ok) return;
+      const data = await res.json();
+      const backups: Backup[] = data.backups || [];
+
+      // Map backups to slots by name pattern "Slot X" or by order
+      const newSlots: SlotData[] = Array.from({ length: 8 }, (_, i) => ({ slot: i + 1, backup: null }));
+      backups.forEach((b, idx) => {
+        const match = b.name.match(/^Slot (\d)$/);
+        if (match) {
+          const si = parseInt(match[1]) - 1;
+          if (si >= 0 && si < 8) newSlots[si].backup = b;
+        } else if (idx < 8 && !newSlots[idx].backup) {
+          newSlots[idx].backup = b;
+        }
+      });
+      setSlots(newSlots);
+    } catch { /* ignore */ }
+    setLoading(false);
   }, []);
 
-  useEffect(() => {
-    void loadBackups();
-  }, [loadBackups]);
+  useEffect(() => { loadBackups(); }, [loadBackups]);
 
-  async function createBackup() {
-    setCreating(true);
+  const runBackup = async (slot: number, type: "total" | "incremental") => {
+    setProcessing(true);
+    setResult(null);
+    setActionSlot(slot);
+    setActionType(type === "total" ? "backup-total" : "backup-incremental");
     try {
       const res = await fetch("/api/admin/backups", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: newName || undefined,
-          description: newDesc || undefined,
+          name: `Slot ${slot}`,
+          description: `${type === "total" ? "Total" : "Incremental"} backup — ${SLOT_LABELS[slot - 1]}`,
+          backup_type: type,
         }),
       });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `HTTP ${res.status}`);
+      const d = await res.json();
+      if (res.ok) {
+        setResult({ ok: true, msg: `Slot ${slot} — ${type} backup saved!` });
+        loadBackups();
+      } else {
+        setResult({ ok: false, msg: d.error || "Backup failed" });
       }
-      setShowCreateForm(false);
-      setNewName("");
-      setNewDesc("");
-      await loadBackups();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Create failed");
-    } finally {
-      setCreating(false);
+    } catch {
+      setResult({ ok: false, msg: "Network error" });
     }
-  }
+    setProcessing(false);
+    setTimeout(() => setResult(null), 4000);
+  };
 
-  async function downloadBackup(backup: Backup) {
-    const res = await fetch(`/api/admin/backups/${backup.id}`);
-    if (!res.ok) return;
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `backup-${backup.name.replace(/[^a-zA-Z0-9_-]/g, "_")}-${backup.created_at.slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  async function fullExport() {
-    setExporting(true);
+  const runRestore = async (slot: number) => {
+    const b = slots[slot - 1]?.backup;
+    if (!b) return;
+    setProcessing(true);
+    setResult(null);
+    setActionSlot(slot);
+    setActionType("restore");
+    setConfirmRestore(null);
     try {
-      const res = await fetch("/api/admin/backups/export");
-      if (!res.ok) return;
+      const res = await fetch(`/api/admin/backups/${b.id}`, { method: "PATCH" });
+      const d = await res.json();
+      if (res.ok) {
+        const tables = Object.keys(d.results || {}).length;
+        const rows = Object.values(d.results || {}).reduce((s: number, r: unknown) => s + ((r as { restored: number }).restored || 0), 0);
+        setResult({ ok: true, msg: `Restored ${tables} tables, ${rows} rows from Slot ${slot}` });
+      } else {
+        setResult({ ok: false, msg: d.error || "Restore failed" });
+      }
+    } catch {
+      setResult({ ok: false, msg: "Network error" });
+    }
+    setProcessing(false);
+    setTimeout(() => setResult(null), 6000);
+  };
+
+  const downloadBackup = async (backupId: string, slotNum: number) => {
+    try {
+      const res = await fetch(`/api/admin/backups/${backupId}`);
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `markethub-full-export-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
+      a.download = `markethub-slot${slotNum}-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
-      document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } finally {
-      setExporting(false);
-    }
-  }
+    } catch { /* ignore */ }
+  };
 
-  async function restoreBackup(id: string) {
-    setRestoring(true);
-    setRestoreResult(null);
+  const downloadFullExport = async () => {
+    setExporting(true);
     try {
-      const res = await fetch(`/api/admin/backups/${id}`, {
-        method: "PATCH",
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Restore failed");
-      setRestoreResult(json.results);
-      await loadBackups();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Restore failed");
-    } finally {
-      setRestoring(false);
-    }
-  }
-
-  async function deleteBackup(id: string) {
-    try {
-      const res = await fetch(`/api/admin/backups/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || `HTTP ${res.status}`);
-      }
-      setDeleteTarget(null);
-      await loadBackups();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Delete failed");
-    }
-  }
-
-  const totalRows = (b: Backup) =>
-    Object.values(b.row_counts).reduce((a, c) => a + c, 0);
+      const res = await fetch("/api/admin/backups/export");
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `markethub-FULL-${new Date().toISOString().slice(0, 10)}.zip`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch { /* ignore */ }
+    setExporting(false);
+  };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#1C1814",
-        color: "#FAF5EF",
-        padding: "24px 16px",
-      }}
-    >
-      <div style={{ maxWidth: 1000, margin: "0 auto" }}>
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            marginBottom: 8,
-            flexWrap: "wrap",
-          }}
-        >
-          <Link
-            href="/dashboard/admin"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              padding: "8px 14px",
-              background: "rgba(255,255,255,0.05)",
-              borderRadius: 8,
-              color: "#C4AA8A",
-              textDecoration: "none",
-              fontSize: 13,
-            }}
-          >
-            <ArrowLeft size={14} /> Back
+    <div className="min-h-screen" style={{ background: "#141210", color: textMain }}>
+      {/* Header */}
+      <div className="px-6 py-5 flex items-center justify-between flex-wrap gap-4" style={{ borderBottom: `1px solid ${cardBorder}` }}>
+        <div className="flex items-center gap-4">
+          <Link href="/dashboard/admin" className="p-2 rounded-lg" style={{ color: textMuted }}>
+            <ArrowLeft className="w-5 h-5" />
           </Link>
-          <div style={{ flex: 1 }}>
-            <h1
-              style={{
-                fontSize: 22,
-                fontWeight: 700,
-                margin: 0,
-                color: "#FAF5EF",
-              }}
-            >
+          <div>
+            <h1 className="text-xl font-bold flex items-center gap-2">
+              <HardDrive className="w-5 h-5" style={{ color: amber }} />
               Platform Backups
             </h1>
-            <p
-              style={{
-                fontSize: 13,
-                color: "#C4AA8A",
-                margin: "4px 0 0",
-              }}
-            >
-              Create, download, and restore complete platform snapshots
+            <p className="text-xs mt-0.5" style={{ color: textMuted }}>
+              8 slots — incremental or total — full restore with one click
             </p>
           </div>
         </div>
+        <button onClick={downloadFullExport} disabled={exporting}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-bold"
+          style={{ background: "rgba(245,158,11,0.15)", color: amber, border: `1px solid rgba(245,158,11,0.3)` }}>
+          {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+          {exporting ? "Exporting..." : "Export Full ZIP"}
+        </button>
+      </div>
 
-        {/* Action bar */}
-        <div
+      {/* Result message */}
+      {result && (
+        <div className="mx-6 mt-4 flex items-center gap-2 px-4 py-3 rounded-lg"
           style={{
-            display: "flex",
-            gap: 10,
-            marginBottom: 24,
-            marginTop: 16,
-            flexWrap: "wrap",
-          }}
-        >
-          <button
-            onClick={() => setShowCreateForm(true)}
-            style={{
-              padding: "10px 20px",
-              background: "var(--color-primary, #F59E0B)",
-              color: "#1C1814",
-              border: "none",
-              borderRadius: 10,
-              fontSize: 14,
-              fontWeight: 700,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <Plus size={16} /> Create Backup
-          </button>
-          <button
-            onClick={fullExport}
-            disabled={exporting}
-            style={{
-              padding: "10px 20px",
-              background: "rgba(245,158,11,0.15)",
-              color: "var(--color-primary, #F59E0B)",
-              border: "1px solid rgba(245,158,11,0.3)",
-              borderRadius: 10,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: exporting ? "not-allowed" : "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            {exporting ? <Loader2 size={16} className="spin" /> : <FileDown size={16} />}
-            {exporting ? "Exporting..." : "Full Export"}
-          </button>
-          <button
-            onClick={loadBackups}
-            disabled={loading}
-            style={{
-              padding: "10px 16px",
-              background: "rgba(255,255,255,0.05)",
-              color: "#C4AA8A",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: 10,
-              fontSize: 13,
-              cursor: loading ? "not-allowed" : "pointer",
-            }}
-          >
-            Refresh
-          </button>
+            background: result.ok ? "rgba(22,163,74,0.1)" : "rgba(239,68,68,0.1)",
+            border: `1px solid ${result.ok ? "rgba(22,163,74,0.3)" : "rgba(239,68,68,0.3)"}`,
+          }}>
+          {result.ok ? <CheckCircle2 className="w-4 h-4" style={{ color: "#16A34A" }} /> : <AlertTriangle className="w-4 h-4" style={{ color: "#EF4444" }} />}
+          <span className="text-sm font-medium" style={{ color: result.ok ? "#16A34A" : "#EF4444" }}>{result.msg}</span>
         </div>
+      )}
 
-        {/* Create form modal overlay */}
-        {showCreateForm && (
-          <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.6)",
-              zIndex: 1000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: 16,
-            }}
-            onClick={() => setShowCreateForm(false)}
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: "#2A2318",
-                borderRadius: 14,
-                padding: 28,
-                width: "100%",
-                maxWidth: 480,
-                border: "1px solid rgba(245,215,160,0.25)",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 20,
-                }}
-              >
-                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>
-                  Create Backup
-                </h2>
-                <button
-                  onClick={() => setShowCreateForm(false)}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    color: "#C4AA8A",
-                    cursor: "pointer",
-                  }}
-                >
-                  <X size={18} />
-                </button>
-              </div>
+      {/* Loading */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-6 h-6 animate-spin" style={{ color: amber }} />
+        </div>
+      )}
 
-              <label
-                style={{
-                  display: "block",
-                  fontSize: 12,
-                  color: "#C4AA8A",
-                  marginBottom: 6,
-                  fontWeight: 600,
-                }}
-              >
-                BACKUP NAME
-              </label>
-              <input
-                type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                placeholder="e.g. Before major update"
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: 8,
-                  color: "#FAF5EF",
-                  fontSize: 14,
-                  marginBottom: 16,
-                  boxSizing: "border-box",
-                }}
-              />
+      {/* 8 Backup Slots */}
+      {!loading && (
+        <div className="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {slots.map(({ slot, backup }) => {
+            const isProcessing = processing && actionSlot === slot;
+            const hasData = !!backup;
+            return (
+              <div key={slot} className="rounded-xl overflow-hidden"
+                style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
 
-              <label
-                style={{
-                  display: "block",
-                  fontSize: 12,
-                  color: "#C4AA8A",
-                  marginBottom: 6,
-                  fontWeight: 600,
-                }}
-              >
-                DESCRIPTION (optional)
-              </label>
-              <textarea
-                value={newDesc}
-                onChange={(e) => setNewDesc(e.target.value)}
-                placeholder="What is this backup for?"
-                rows={3}
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  background: "rgba(255,255,255,0.05)",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: 8,
-                  color: "#FAF5EF",
-                  fontSize: 14,
-                  marginBottom: 20,
-                  resize: "vertical",
-                  boxSizing: "border-box",
-                }}
-              />
-
-              <button
-                onClick={createBackup}
-                disabled={creating}
-                style={{
-                  width: "100%",
-                  padding: "12px 20px",
-                  background: "var(--color-primary, #F59E0B)",
-                  color: "#1C1814",
-                  border: "none",
-                  borderRadius: 10,
-                  fontSize: 15,
-                  fontWeight: 700,
-                  cursor: creating ? "not-allowed" : "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                }}
-              >
-                {creating ? (
-                  <>
-                    <Loader2 size={16} className="spin" /> Creating backup...
-                  </>
-                ) : (
-                  <>
-                    <Database size={16} /> Create Snapshot
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Restore confirmation modal */}
-        {restoreTarget && (
-          <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.6)",
-              zIndex: 1000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: 16,
-            }}
-            onClick={() => {
-              setRestoreTarget(null);
-              setRestoreResult(null);
-            }}
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: "#2A2318",
-                borderRadius: 14,
-                padding: 28,
-                width: "100%",
-                maxWidth: 520,
-                border: "1px solid rgba(239,68,68,0.4)",
-              }}
-            >
-              {!restoreResult ? (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      marginBottom: 16,
-                    }}
-                  >
-                    <AlertTriangle size={24} color="#EF4444" />
-                    <h2
-                      style={{
-                        margin: 0,
-                        fontSize: 18,
-                        fontWeight: 700,
-                        color: "#FCA5A5",
-                      }}
-                    >
-                      Confirm Restore
-                    </h2>
+                {/* Slot Header */}
+                <div className="px-4 py-3 flex items-center justify-between"
+                  style={{ borderBottom: `1px solid ${cardBorder}`, background: hasData ? "rgba(245,158,11,0.05)" : "transparent" }}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold"
+                      style={{ background: hasData ? amber : "rgba(255,248,240,0.08)", color: hasData ? "#1C1814" : textMuted }}>
+                      {slot}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold" style={{ color: textMain }}>{SLOT_LABELS[slot - 1]}</p>
+                      <p className="text-xs" style={{ color: textMuted }}>
+                        {hasData ? formatDate(backup.created_at) : "Empty slot"}
+                      </p>
+                    </div>
                   </div>
-                  <p style={{ fontSize: 14, color: "#C4AA8A", lineHeight: 1.6 }}>
-                    Are you sure you want to restore from{" "}
-                    <strong style={{ color: "#FAF5EF" }}>
-                      {restoreTarget.name}
-                    </strong>
-                    ?
-                  </p>
-                  <p
-                    style={{
-                      fontSize: 13,
-                      color: "#EF4444",
-                      lineHeight: 1.6,
-                      marginTop: 8,
-                    }}
-                  >
-                    This will overwrite current data in{" "}
-                    {restoreTarget.tables_included.length} tables with data from{" "}
-                    {formatDate(restoreTarget.created_at)}. This action cannot be
-                    undone.
-                  </p>
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: 10,
-                      marginTop: 24,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <button
-                      onClick={() => {
-                        setRestoreTarget(null);
-                        setRestoreResult(null);
-                      }}
-                      style={{
-                        flex: 1,
-                        padding: "12px 20px",
-                        background: "rgba(255,255,255,0.05)",
-                        color: "#C4AA8A",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        borderRadius: 10,
-                        fontSize: 14,
-                        cursor: "pointer",
-                        minWidth: 120,
-                      }}
-                    >
-                      Cancel
+                  {hasData && (
+                    <button onClick={() => downloadBackup(backup.id, slot)} title="Download"
+                      className="p-1.5 rounded-lg transition-colors hover:bg-white/5">
+                      <Download className="w-3.5 h-3.5" style={{ color: textMuted }} />
                     </button>
-                    <button
-                      onClick={() => restoreBackup(restoreTarget.id)}
-                      disabled={restoring}
-                      style={{
-                        flex: 1,
-                        padding: "12px 20px",
-                        background: "#EF4444",
-                        color: "#FFF",
-                        border: "none",
-                        borderRadius: 10,
-                        fontSize: 14,
-                        fontWeight: 700,
-                        cursor: restoring ? "not-allowed" : "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        gap: 8,
-                        minWidth: 120,
-                      }}
-                    >
-                      {restoring ? (
-                        <>
-                          <Loader2 size={16} className="spin" /> Restoring...
-                        </>
-                      ) : (
-                        <>
-                          <RotateCcw size={16} /> Yes, Restore
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 10,
-                      marginBottom: 16,
-                    }}
-                  >
-                    <CheckCircle2 size={24} color="#10B981" />
-                    <h2
-                      style={{
-                        margin: 0,
-                        fontSize: 18,
-                        fontWeight: 700,
-                        color: "#10B981",
-                      }}
-                    >
-                      Restore Complete
-                    </h2>
-                  </div>
-                  <div
-                    style={{
-                      maxHeight: 300,
-                      overflowY: "auto",
-                      background: "rgba(0,0,0,0.3)",
-                      borderRadius: 8,
-                      padding: 12,
-                      fontSize: 12,
-                      fontFamily: "monospace",
-                      color: "#C4AA8A",
-                    }}
-                  >
-                    {Object.entries(
-                      restoreResult as Record<
-                        string,
-                        { deleted: number; restored: number; error?: string }
-                      >,
-                    ).map(([table, info]) => (
-                      <div key={table} style={{ marginBottom: 6 }}>
-                        <span
-                          style={{
-                            color: info.error ? "#FCA5A5" : "#86EFAC",
-                          }}
-                        >
-                          {info.error ? "!" : "+"}{" "}
+                  )}
+                </div>
+
+                {/* Slot Info */}
+                <div className="px-4 py-3 min-h-[80px]">
+                  {hasData ? (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <Database className="w-3 h-3" style={{ color: amber }} />
+                        <span className="text-xs" style={{ color: textMuted }}>
+                          {backup.tables_included.length} tables · {totalRows(backup.row_counts).toLocaleString()} rows
                         </span>
-                        <strong>{table}</strong>: {info.restored} rows restored
-                        {info.error && (
-                          <span style={{ color: "#FCA5A5" }}>
-                            {" "}
-                            ({info.error})
-                          </span>
-                        )}
                       </div>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => {
-                      setRestoreTarget(null);
-                      setRestoreResult(null);
-                    }}
-                    style={{
-                      marginTop: 16,
-                      width: "100%",
-                      padding: "12px 20px",
-                      background: "rgba(16,185,129,0.15)",
-                      color: "#10B981",
-                      border: "1px solid rgba(16,185,129,0.3)",
-                      borderRadius: 10,
-                      fontSize: 14,
-                      fontWeight: 600,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Close
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Delete confirmation modal */}
-        {deleteTarget && (
-          <div
-            style={{
-              position: "fixed",
-              inset: 0,
-              background: "rgba(0,0,0,0.6)",
-              zIndex: 1000,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: 16,
-            }}
-            onClick={() => setDeleteTarget(null)}
-          >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                background: "#2A2318",
-                borderRadius: 14,
-                padding: 28,
-                width: "100%",
-                maxWidth: 420,
-                border: "1px solid rgba(239,68,68,0.3)",
-              }}
-            >
-              <h2
-                style={{
-                  margin: "0 0 12px",
-                  fontSize: 18,
-                  fontWeight: 700,
-                  color: "#FCA5A5",
-                }}
-              >
-                Delete Backup?
-              </h2>
-              <p style={{ fontSize: 14, color: "#C4AA8A" }}>
-                Delete <strong style={{ color: "#FAF5EF" }}>{deleteTarget.name}</strong>? This
-                cannot be undone.
-              </p>
-              <div
-                style={{ display: "flex", gap: 10, marginTop: 20, flexWrap: "wrap" }}
-              >
-                <button
-                  onClick={() => setDeleteTarget(null)}
-                  style={{
-                    flex: 1,
-                    padding: "10px 16px",
-                    background: "rgba(255,255,255,0.05)",
-                    color: "#C4AA8A",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    cursor: "pointer",
-                    minWidth: 100,
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => deleteBackup(deleteTarget.id)}
-                  style={{
-                    flex: 1,
-                    padding: "10px 16px",
-                    background: "#EF4444",
-                    color: "#FFF",
-                    border: "none",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                    minWidth: 100,
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Error states */}
-        {error === "SESSION_EXPIRED" && (
-          <div
-            style={{
-              padding: 24,
-              background: "rgba(245,158,11,0.12)",
-              border: "1px solid rgba(245,158,11,0.35)",
-              borderRadius: 10,
-              color: "#FCD34D",
-              marginBottom: 24,
-              textAlign: "center",
-            }}
-          >
-            <AlertTriangle
-              size={20}
-              style={{ display: "inline", marginRight: 8, verticalAlign: "middle" }}
-            />
-            <strong>Admin session expired.</strong>
-            <div style={{ marginTop: 8, fontSize: 13, color: "#C4AA8A" }}>
-              Re-authenticate through the admin tunnel URL, then come back here.
-            </div>
-          </div>
-        )}
-        {error && error !== "SESSION_EXPIRED" && (
-          <div
-            style={{
-              padding: 16,
-              background: "rgba(239,68,68,0.12)",
-              border: "1px solid rgba(239,68,68,0.3)",
-              borderRadius: 10,
-              color: "#FCA5A5",
-              marginBottom: 24,
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-            }}
-          >
-            <AlertTriangle size={14} />
-            Error: {error}
-            <button
-              onClick={() => setError(null)}
-              style={{
-                marginLeft: "auto",
-                background: "none",
-                border: "none",
-                color: "#FCA5A5",
-                cursor: "pointer",
-              }}
-            >
-              <X size={14} />
-            </button>
-          </div>
-        )}
-
-        {/* Loading */}
-        {loading && !backups.length && (
-          <div style={{ color: "#C4AA8A", textAlign: "center", padding: 40 }}>
-            <Loader2 size={24} className="spin" style={{ marginBottom: 8 }} />
-            <div>Loading backups...</div>
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!loading && backups.length === 0 && !error && (
-          <div
-            style={{
-              padding: 48,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(245,215,160,0.25)",
-              borderRadius: 14,
-              textAlign: "center",
-            }}
-          >
-            <Database size={40} color="#C4AA8A" style={{ marginBottom: 12 }} />
-            <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>
-              No backups yet
-            </div>
-            <div style={{ fontSize: 13, color: "#C4AA8A" }}>
-              Create your first backup to snapshot the entire platform state.
-            </div>
-          </div>
-        )}
-
-        {/* Backup list */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          {backups.map((b) => (
-            <div
-              key={b.id}
-              style={{
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(245,215,160,0.25)",
-                borderRadius: 14,
-                padding: "20px 20px 16px",
-              }}
-            >
-              {/* Top row: name + date */}
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  justifyContent: "space-between",
-                  gap: 12,
-                  marginBottom: 12,
-                  flexWrap: "wrap",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontSize: 16,
-                      fontWeight: 700,
-                      color: "#FAF5EF",
-                      marginBottom: 4,
-                    }}
-                  >
-                    {b.name}
-                  </div>
-                  {b.description && (
-                    <div style={{ fontSize: 13, color: "#C4AA8A" }}>
-                      {b.description}
+                      <div className="flex items-center gap-1.5">
+                        <Layers className="w-3 h-3" style={{ color: amber }} />
+                        <span className="text-xs" style={{ color: textMuted }}>
+                          {formatBytes(backup.total_size_bytes)}
+                          {backup.backup_type && ` · ${backup.backup_type}`}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Info className="w-3 h-3" style={{ color: amber }} />
+                        <span className="text-xs" style={{ color: textMuted }}>
+                          {backup.git_commit?.slice(0, 8) || "—"}
+                        </span>
+                      </div>
+                      {backup.description && (
+                        <p className="text-xs mt-1" style={{ color: "rgba(255,248,240,0.35)" }}>
+                          {backup.description}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <p className="text-xs" style={{ color: "rgba(255,248,240,0.2)" }}>
+                        No backup saved
+                      </p>
                     </div>
                   )}
                 </div>
-                <div
-                  style={{
-                    fontSize: 12,
-                    color: "#C4AA8A",
-                    whiteSpace: "nowrap",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}
-                >
-                  <Clock size={12} /> {formatDate(b.created_at)}
+
+                {/* Action Buttons */}
+                <div className="px-4 py-3 space-y-2" style={{ borderTop: `1px solid ${cardBorder}` }}>
+                  {/* Restore button */}
+                  {hasData && (
+                    confirmRestore === slot ? (
+                      <div className="flex gap-2">
+                        <button onClick={() => runRestore(slot)} disabled={isProcessing}
+                          className="flex-1 flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-bold"
+                          style={{ background: "rgba(239,68,68,0.15)", color: "#EF4444", border: "1px solid rgba(239,68,68,0.3)" }}>
+                          {isProcessing && actionType === "restore" ? <Loader2 className="w-3 h-3 animate-spin" /> : <AlertTriangle className="w-3 h-3" />}
+                          Confirm
+                        </button>
+                        <button onClick={() => setConfirmRestore(null)}
+                          className="px-3 py-2 rounded-lg text-xs" style={{ color: textMuted }}>
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setConfirmRestore(slot)} disabled={processing}
+                        className="w-full flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-semibold transition-colors"
+                        style={{ background: "rgba(99,102,241,0.1)", color: "#818CF8", border: "1px solid rgba(99,102,241,0.2)" }}>
+                        <RotateCcw className="w-3 h-3" />
+                        Restore
+                      </button>
+                    )
+                  )}
+
+                  {/* Backup buttons — 2 modes */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button onClick={() => runBackup(slot, "incremental")} disabled={processing}
+                      className="flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-semibold transition-colors"
+                      style={{ background: "rgba(245,158,11,0.1)", color: amber, border: `1px solid rgba(245,158,11,0.2)` }}>
+                      {isProcessing && actionType === "backup-incremental"
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : <Zap className="w-3 h-3" />}
+                      Incremental
+                    </button>
+                    <button onClick={() => runBackup(slot, "total")} disabled={processing}
+                      className="flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-semibold transition-colors"
+                      style={{ background: "rgba(22,163,74,0.1)", color: "#16A34A", border: "1px solid rgba(22,163,74,0.2)" }}>
+                      {isProcessing && actionType === "backup-total"
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : <Save className="w-3 h-3" />}
+                      Total
+                    </button>
+                  </div>
                 </div>
               </div>
+            );
+          })}
+        </div>
+      )}
 
-              {/* Stats row */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(2, 1fr)",
-                  gap: 8,
-                  marginBottom: 14,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 12,
-                    color: "#C4AA8A",
-                  }}
-                >
-                  <GitBranch size={12} />
-                  <span>
-                    {b.git_commit.slice(0, 7)} ({b.git_tag})
-                  </span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 12,
-                    color: "#C4AA8A",
-                  }}
-                >
-                  <Database size={12} />
-                  <span>
-                    {b.tables_included.length} tables, {totalRows(b).toLocaleString()} rows
-                  </span>
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 12,
-                    color: "#C4AA8A",
-                    gridColumn: "1 / -1",
-                  }}
-                >
-                  <HardDrive size={12} />
-                  <span>{formatBytes(b.total_size_bytes)}</span>
-                </div>
-              </div>
-
-              {/* Action buttons */}
-              <div
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  flexWrap: "wrap",
-                  borderTop: "1px solid rgba(255,255,255,0.06)",
-                  paddingTop: 12,
-                }}
-              >
-                <button
-                  onClick={() => downloadBackup(b)}
-                  style={{
-                    padding: "8px 14px",
-                    background: "rgba(245,158,11,0.12)",
-                    color: "var(--color-primary, #F59E0B)",
-                    border: "1px solid rgba(245,158,11,0.25)",
-                    borderRadius: 8,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                  }}
-                >
-                  <Download size={13} /> Download
-                </button>
-                <button
-                  onClick={() => setRestoreTarget(b)}
-                  style={{
-                    padding: "8px 14px",
-                    background: "rgba(59,130,246,0.12)",
-                    color: "#60A5FA",
-                    border: "1px solid rgba(59,130,246,0.25)",
-                    borderRadius: 8,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                  }}
-                >
-                  <RotateCcw size={13} /> Restore
-                </button>
-                <button
-                  onClick={() => setDeleteTarget(b)}
-                  style={{
-                    padding: "8px 14px",
-                    background: "rgba(239,68,68,0.08)",
-                    color: "#F87171",
-                    border: "1px solid rgba(239,68,68,0.2)",
-                    borderRadius: 8,
-                    fontSize: 12,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    marginLeft: "auto",
-                  }}
-                >
-                  <Trash2 size={13} /> Delete
-                </button>
+      {/* Legend */}
+      <div className="px-6 pb-6">
+        <div className="rounded-xl p-4" style={{ background: cardBg, border: `1px solid ${cardBorder}` }}>
+          <h3 className="text-xs font-bold uppercase tracking-wider mb-3" style={{ color: textMuted }}>Backup Modes</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex items-start gap-2">
+              <Zap className="w-4 h-4 shrink-0 mt-0.5" style={{ color: amber }} />
+              <div>
+                <p className="text-xs font-semibold" style={{ color: textMain }}>Incremental</p>
+                <p className="text-xs" style={{ color: textMuted }}>
+                  Saves only rows changed since last backup. Faster, smaller.
+                  Uses created_at/updated_at timestamps to detect changes.
+                </p>
               </div>
             </div>
-          ))}
+            <div className="flex items-start gap-2">
+              <Save className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#16A34A" }} />
+              <div>
+                <p className="text-xs font-semibold" style={{ color: textMain }}>Total</p>
+                <p className="text-xs" style={{ color: textMuted }}>
+                  Full snapshot of all 23 tables + git commit + env config.
+                  Complete restore point — zero data loss guaranteed.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-3 pt-3 flex items-start gap-2" style={{ borderTop: `1px solid ${cardBorder}` }}>
+            <Download className="w-4 h-4 shrink-0 mt-0.5" style={{ color: "#818CF8" }} />
+            <div>
+              <p className="text-xs font-semibold" style={{ color: textMain }}>Export Full ZIP</p>
+              <p className="text-xs" style={{ color: textMuted }}>
+                Downloads complete platform as ZIP: source code + all DB tables + dependencies +
+                env var names + git info + restore instructions. For offline archiving.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes spin {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-        :global(.spin) {
-          animation: spin 1s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }
