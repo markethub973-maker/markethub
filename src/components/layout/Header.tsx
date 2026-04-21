@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search, ChevronDown, LogOut, User, AlertTriangle, Info, CheckCircle, XCircle, ArrowRight, X } from "lucide-react";
+import { Bell, Search, ChevronDown, LogOut, User, AlertTriangle, Info, CheckCircle, XCircle, ArrowRight, X, Palette } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -166,6 +166,22 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
 
         {/* Extra right content (e.g. admin logout button) */}
         {rightExtra}
+
+        {/* Customize button — triggers theme panel */}
+        <button
+          type="button"
+          aria-label="Customize theme"
+          onClick={() => {
+            const event = new CustomEvent("toggle-theme-customizer");
+            window.dispatchEvent(event);
+          }}
+          className="p-2 rounded-lg transition-colors"
+          style={{ color: "#F59E0B" }}
+          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,158,11,0.1)")}
+          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+        >
+          <Palette className="w-5 h-5" />
+        </button>
 
         {/* Help button — triggers OnboardingWidget */}
         <button

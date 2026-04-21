@@ -73,6 +73,13 @@ export default function ThemeCustomizer() {
   const [msg, setMsg] = useState("");
   const [sections, setSections] = useState<Record<string, boolean>>({ presets: true, colors: true, typography: false, elements: false });
 
+  // Listen for header button toggle
+  useEffect(() => {
+    const handler = () => setOpen(prev => !prev);
+    window.addEventListener("toggle-theme-customizer", handler);
+    return () => window.removeEventListener("toggle-theme-customizer", handler);
+  }, []);
+
   useEffect(() => {
     fetch("/api/theme").then(r => r.json()).then(d => {
       if (d.theme?.config) {
@@ -107,15 +114,6 @@ export default function ThemeCustomizer() {
 
   return (
     <>
-      {/* Floating trigger button — always visible */}
-      {!open && (
-        <button onClick={() => setOpen(true)} title="Customize theme"
-          className="fixed bottom-20 right-4 z-[98] w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110"
-          style={{ background: "linear-gradient(135deg, #F59E0B, #D97706)", color: "white" }}>
-          <Palette className="w-5 h-5" />
-        </button>
-      )}
-
       {open && (
         <>
           {/* Backdrop — click to close */}
