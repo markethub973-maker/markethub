@@ -702,9 +702,29 @@ export default function SettingsPage() {
               <span className="text-xs font-bold" style={{ color: "#8B5CF6" }}>Reset →</span>
             </button>
 
-            <a
-              href="/api/user/export-data"
-              className="block rounded-lg p-3 flex items-center justify-between transition-all hover:bg-black/5"
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  const res = await fetch("/api/user/export-data");
+                  if (!res.ok) throw new Error("Export failed");
+                  const blob = await res.blob();
+                  const disposition = res.headers.get("Content-Disposition") ?? "";
+                  const match = disposition.match(/filename="?([^"]+)"?/);
+                  const filename = match?.[1] ?? `markethub-data-export-${new Date().toISOString().slice(0, 10)}.json`;
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = filename;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  URL.revokeObjectURL(url);
+                } catch {
+                  alert("Could not download your data. Please try again.");
+                }
+              }}
+              className="block rounded-lg p-3 w-full text-left flex items-center justify-between transition-all hover:bg-black/5 cursor-pointer"
               style={{ backgroundColor: "white", border: "1px solid rgba(0,0,0,0.06)" }}
             >
               <div>
@@ -716,7 +736,7 @@ export default function SettingsPage() {
                 </p>
               </div>
               <span className="text-xs font-bold" style={{ color: "#10B981" }}>Download →</span>
-            </a>
+            </button>
 
             <a
               href="/privacy"

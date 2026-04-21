@@ -144,6 +144,7 @@ export default function BillingPage() {
   const plan = data?.plan ?? "free_test";
   const isExpired = plan === "expired" || data?.status === "expired";
   const isTrial = plan === "free_test";
+  const isAgency = plan === "agency";
   const planLabel = PLAN_LABELS[plan] ?? plan;
 
   return (
@@ -209,14 +210,16 @@ export default function BillingPage() {
               )}
 
               <div className="flex flex-wrap items-center gap-3">
-                <Link
-                  href="/upgrade"
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-                  style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
-                >
-                  <Zap className="w-4 h-4" />
-                  {isExpired ? "Reactivate" : isTrial ? "Upgrade Now" : "Change Plan"}
-                </Link>
+                {(isExpired || !isAgency) && (
+                  <Link
+                    href="/upgrade"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+                    style={{ backgroundColor: "var(--color-primary)", color: "#1C1814" }}
+                  >
+                    <Zap className="w-4 h-4" />
+                    {isExpired ? "Reactivate" : isTrial ? "Upgrade Now" : "Change Plan"}
+                  </Link>
+                )}
 
                 {!isTrial && !isExpired && (
                   <button
