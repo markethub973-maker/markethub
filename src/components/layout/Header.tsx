@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Search, ChevronDown, LogOut, User, AlertTriangle, Info, CheckCircle, XCircle, ArrowRight, X, Palette } from "lucide-react";
+import { Bell, Search, ChevronDown, LogOut, User, AlertTriangle, Info, LifeBuoy, CheckCircle, XCircle, ArrowRight, X, Palette } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -191,12 +191,13 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
             const event = new CustomEvent("toggle-help-widget");
             window.dispatchEvent(event);
           }}
-          className="p-2 rounded-lg transition-colors"
-          style={{ color: "#78614E" }}
-          onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(245,215,160,0.15)")}
-          onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-colors"
+          style={{ color: "#D97706", backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)" }}
+          onMouseEnter={e => { e.currentTarget.style.backgroundColor = "rgba(245,158,11,0.15)"; e.currentTarget.style.borderColor = "rgba(245,158,11,0.4)"; }}
+          onMouseLeave={e => { e.currentTarget.style.backgroundColor = "rgba(245,158,11,0.08)"; e.currentTarget.style.borderColor = "rgba(245,158,11,0.2)"; }}
         >
-          <Info className="w-5 h-5" />
+          <LifeBuoy className="w-4 h-4" />
+          Help
         </button>
 
         {/* Notifications Bell */}

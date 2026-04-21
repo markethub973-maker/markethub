@@ -22,6 +22,8 @@ export interface ThemeConfig {
   text: string;
   border: string;
   surface: string;
+  sidebarBg: string;
+  sidebarText: string;
   // Typography
   fontFamily: string;
   fontSize: number; // px
@@ -41,6 +43,8 @@ export const DEFAULT_THEME_CONFIG: ThemeConfig = {
   text: "#2D2620",
   border: "#F5D7A0",
   surface: "#FFFFFF",
+  sidebarBg: "#1C1814",
+  sidebarText: "#FFF8F0",
   fontFamily: "system-ui",
   fontSize: 16,
   headingWeight: 700,
@@ -69,6 +73,7 @@ const UserThemeContext = createContext<UserThemeContextValue | undefined>(undefi
 
 function applyThemeConfig(config: ThemeConfig) {
   const root = document.documentElement;
+  // Colors
   root.style.setProperty("--color-primary", config.primary);
   root.style.setProperty("--color-primary-hover", config.primaryHover);
   root.style.setProperty("--color-bg", config.bg);
@@ -76,9 +81,14 @@ function applyThemeConfig(config: ThemeConfig) {
   root.style.setProperty("--color-text", config.text);
   root.style.setProperty("--color-border", config.border);
   root.style.setProperty("--color-surface", config.surface);
+  // Sidebar — correct variable names
+  root.style.setProperty("--color-surface-dark", config.sidebarBg || "#1C1814");
+  root.style.setProperty("--color-surface-dark-text", config.sidebarText || "#FFF8F0");
+  // Typography
   root.style.setProperty("--font-family-base", config.fontFamily);
   root.style.setProperty("--font-size-base", `${config.fontSize}px`);
   root.style.setProperty("--heading-weight", `${config.headingWeight}`);
+  // Elements
   root.style.setProperty("--button-radius", `${config.buttonRadius}px`);
   root.style.setProperty("--card-radius", `${config.cardRadius}px`);
   root.style.setProperty("--card-shadow", SHADOW_MAP[config.cardShadow] || SHADOW_MAP.light);

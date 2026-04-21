@@ -251,10 +251,79 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: Inter, Arial, sans-serif;
+  font-family: var(--font-family-base, Inter), Arial, sans-serif !important;
+  font-size: var(--font-size-base, 16px);
   background: var(--color-bg);
   color: var(--color-text);
   transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Theme Customizer: font family propagates to ALL elements */
+* {
+  font-family: inherit;
+}
+
+/* Theme Customizer: Font Size (base) + Text Scale (multiplier) — work together
+   Font Size = setează dimensiunea de bază (13-18px)
+   Text Scale = multiplică TOTUL (80%-150%) independent */
+.text-xs  { font-size: calc(var(--font-size-base, 16px) * 0.75  * var(--text-scale, 1)) !important; }
+.text-sm  { font-size: calc(var(--font-size-base, 16px) * 0.875 * var(--text-scale, 1)) !important; }
+.text-base{ font-size: calc(var(--font-size-base, 16px) * 1     * var(--text-scale, 1)) !important; }
+.text-lg  { font-size: calc(var(--font-size-base, 16px) * 1.125 * var(--text-scale, 1)) !important; }
+.text-xl  { font-size: calc(var(--font-size-base, 16px) * 1.25  * var(--text-scale, 1)) !important; }
+.text-2xl { font-size: calc(var(--font-size-base, 16px) * 1.5   * var(--text-scale, 1)) !important; }
+.text-3xl { font-size: calc(var(--font-size-base, 16px) * 1.875 * var(--text-scale, 1)) !important; }
+.text-4xl { font-size: calc(var(--font-size-base, 16px) * 2.25  * var(--text-scale, 1)) !important; }
+.text-5xl { font-size: calc(var(--font-size-base, 16px) * 3     * var(--text-scale, 1)) !important; }
+h1 { font-size: calc(var(--font-size-base, 16px) * 2     * var(--text-scale, 1)) !important; }
+h2 { font-size: calc(var(--font-size-base, 16px) * 1.5   * var(--text-scale, 1)) !important; }
+h3 { font-size: calc(var(--font-size-base, 16px) * 1.25  * var(--text-scale, 1)) !important; }
+
+/* ── Theme Customizer: typography & element variables ──────────────── */
+/* Heading Weight — applies to headings AND Tailwind bold classes */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--heading-weight, 700) !important;
+}
+:root[style*="--heading-weight"] .font-bold {
+  font-weight: var(--heading-weight, 700) !important;
+}
+:root[style*="--heading-weight"] .font-semibold {
+  font-weight: calc(var(--heading-weight, 700) - 100) !important;
+}
+:root[style*="--heading-weight"] .font-extrabold {
+  font-weight: calc(var(--heading-weight, 700) + 100) !important;
+}
+:root[style*="--heading-weight"] .font-medium {
+  font-weight: calc(var(--heading-weight, 700) - 200) !important;
+}
+
+/* Button radius — override Tailwind when customizer is active */
+:root[style*="--button-radius"] button,
+:root[style*="--button-radius"] a.rounded-lg,
+:root[style*="--button-radius"] a.rounded-xl,
+:root[style*="--button-radius"] .btn-3d,
+:root[style*="--button-radius"] .btn-3d-active,
+:root[style*="--button-radius"] [class*="btn-3d"] {
+  border-radius: var(--button-radius) !important;
+}
+
+/* Card radius — override Tailwind rounded classes when customizer is active */
+:root[style*="--card-radius"] .rounded-xl,
+:root[style*="--card-radius"] .rounded-2xl,
+:root[style*="--card-radius"] .rounded-lg {
+  border-radius: var(--card-radius) !important;
+}
+
+/* Card shadow — override when customizer sets it */
+:root[style*="--card-shadow"] .rounded-xl,
+:root[style*="--card-shadow"] .rounded-2xl {
+  box-shadow: var(--card-shadow) !important;
+}
+
+/* Border color — override hardcoded border colors */
+:root[style*="--color-border"] .rounded-xl,
+:root[style*="--color-border"] .rounded-2xl {
+  border-color: var(--color-border) !important;
 }
 
 /* Scrollbar — picks up theme accent automatically */

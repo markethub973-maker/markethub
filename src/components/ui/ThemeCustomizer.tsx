@@ -28,13 +28,15 @@ interface ThemeConfig {
   cardShadow: string;
   sidebarBg: string;
   sidebarText: string;
+  textScale: number; // percentage 80-150
 }
 
 const DEFAULT: ThemeConfig = {
   primary: "#F59E0B", primaryHover: "#D97706", bg: "#FFFCF7", bgSecondary: "#FFFFFF",
   text: "#2D2620", border: "#F5D7A0", surface: "#FFFFFF", fontFamily: "system-ui",
   fontSize: 16, headingWeight: 700, buttonRadius: 12, cardRadius: 16,
-  cardShadow: "0 1px 3px rgba(120,97,78,0.08)", sidebarBg: "#1C1814", sidebarText: "#FFF8F0",
+  cardShadow: "0 2px 4px rgba(120,97,78,0.1), 0 1px 2px rgba(120,97,78,0.06)",
+  sidebarBg: "#1C1814", sidebarText: "#FFF8F0", textScale: 100,
 };
 
 const PRESETS: Record<string, { label: string; colors: Partial<ThemeConfig> }> = {
@@ -47,14 +49,28 @@ const PRESETS: Record<string, { label: string; colors: Partial<ThemeConfig> }> =
 };
 
 const SHADOWS: Record<string, string> = {
-  none: "none", light: "0 1px 3px rgba(120,97,78,0.08)",
-  medium: "0 4px 12px rgba(120,97,78,0.12)", heavy: "0 8px 24px rgba(120,97,78,0.18)",
+  none: "none",
+  light: "0 2px 4px rgba(120,97,78,0.1), 0 1px 2px rgba(120,97,78,0.06)",
+  medium: "0 4px 8px rgba(120,97,78,0.12), 0 2px 4px rgba(120,97,78,0.08), 0 8px 16px rgba(120,97,78,0.06)",
+  heavy: "0 8px 16px rgba(120,97,78,0.15), 0 4px 8px rgba(120,97,78,0.1), 0 16px 32px rgba(120,97,78,0.12), 0 1px 0 rgba(120,97,78,0.05)",
 };
 
 const FONTS = ["system-ui", "Inter", "Poppins", "Roboto", "Open Sans", "Montserrat", "Playfair Display"];
 
+function loadGoogleFont(family: string) {
+  if (family === "system-ui") return;
+  const id = `gfont-${family.replace(/\s/g, "-")}`;
+  if (document.getElementById(id)) return;
+  const link = document.createElement("link");
+  link.id = id;
+  link.rel = "stylesheet";
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(family)}:wght@400;500;600;700;800;900&display=swap`;
+  document.head.appendChild(link);
+}
+
 function applyToPage(c: ThemeConfig) {
   const r = document.documentElement;
+  // Colors
   r.style.setProperty("--color-primary", c.primary);
   r.style.setProperty("--color-primary-hover", c.primaryHover);
   r.style.setProperty("--color-bg", c.bg);
@@ -62,8 +78,20 @@ function applyToPage(c: ThemeConfig) {
   r.style.setProperty("--color-text", c.text);
   r.style.setProperty("--color-border", c.border);
   r.style.setProperty("--color-surface", c.surface);
-  r.style.setProperty("--sidebar-bg", c.sidebarBg);
-  r.style.setProperty("--sidebar-text", c.sidebarText);
+  // Sidebar — use the CORRECT variable names that Sidebar.tsx reads
+  r.style.setProperty("--color-surface-dark", c.sidebarBg);
+  r.style.setProperty("--color-surface-dark-text", c.sidebarText);
+  // Typography — load font + apply
+  loadGoogleFont(c.fontFamily);
+  r.style.setProperty("--font-family-base", `'${c.fontFamily}'`);
+  r.style.setProperty("--font-size-base", `${c.fontSize}px`);
+  r.style.setProperty("--heading-weight", `${c.headingWeight}`);
+  // Text scale — independent zoom for text only
+  r.style.setProperty("--text-scale", `${(c.textScale || 100) / 100}`);
+  // Elements
+  r.style.setProperty("--button-radius", `${c.buttonRadius}px`);
+  r.style.setProperty("--card-radius", `${c.cardRadius}px`);
+  r.style.setProperty("--card-shadow", c.cardShadow);
 }
 
 export default function ThemeCustomizer() {
@@ -71,7 +99,9 @@ export default function ThemeCustomizer() {
   const [config, setConfig] = useState<ThemeConfig>(DEFAULT);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
-  const [sections, setSections] = useState<Record<string, boolean>>({ presets: true, colors: true, typography: false, elements: false });
+  const [activeSlot, setActiveSlot] = useState(1);
+  const [slots, setSlots] = useState<Array<{ id: string; theme_name: string; config: ThemeConfig } | null>>([null, null, null]);
+  const [sections, setSections] = useState<Record<string, boolean>>({ memory: true, presets: true, colors: true, typography: false, elements: false });
 
   // Listen for header button toggle
   useEffect(() => {
@@ -80,12 +110,20 @@ export default function ThemeCustomizer() {
     return () => window.removeEventListener("toggle-theme-customizer", handler);
   }, []);
 
+  // Load saved themes on mount
   useEffect(() => {
     fetch("/api/theme").then(r => r.json()).then(d => {
       if (d.theme?.config) {
         const merged = { ...DEFAULT, ...d.theme.config };
         setConfig(merged);
         applyToPage(merged);
+      }
+      if (d.slots) {
+        const loaded = [null, null, null] as typeof slots;
+        d.slots.forEach((s: { id: string; theme_name: string; config: ThemeConfig }, i: number) => {
+          if (i < 3) loaded[i] = s;
+        });
+        setSlots(loaded);
       }
     }).catch(() => {});
   }, []);
@@ -101,14 +139,41 @@ export default function ThemeCustomizer() {
 
   const reset = useCallback(() => { setConfig(DEFAULT); applyToPage(DEFAULT); }, []);
 
-  const save = useCallback(async () => {
+  const saveToSlot = useCallback(async (slot: number) => {
     setSaving(true); setMsg("");
     try {
-      const res = await fetch("/api/theme", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ theme_name: "Custom", config }) });
-      setMsg(res.ok ? "Saved!" : "Error");
+      const res = await fetch("/api/theme", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slot, theme_name: `Slot ${slot}`, config, set_active: true }),
+      });
+      const d = await res.json();
+      if (res.ok) {
+        setMsg(`Slot ${slot} saved!`);
+        setActiveSlot(slot);
+        setSlots(prev => {
+          const next = [...prev];
+          next[slot - 1] = { id: d.theme?.id, theme_name: `Slot ${slot}`, config };
+          return next;
+        });
+      } else {
+        setMsg(d.error || "Error");
+      }
     } catch { setMsg("Error"); }
     setSaving(false); setTimeout(() => setMsg(""), 2000);
   }, [config]);
+
+  const loadFromSlot = useCallback((slot: number) => {
+    const s = slots[slot - 1];
+    if (s?.config) {
+      const merged = { ...DEFAULT, ...s.config };
+      setConfig(merged);
+      applyToPage(merged);
+      setActiveSlot(slot);
+      setMsg(`Slot ${slot} loaded`);
+      setTimeout(() => setMsg(""), 1500);
+    }
+  }, [slots]);
 
   const toggle = (s: string) => setSections(prev => ({ ...prev, [s]: !prev[s] }));
 
@@ -133,9 +198,9 @@ export default function ThemeCustomizer() {
                 <button onClick={reset} title="Reset" className="p-1.5 rounded-lg hover:bg-gray-100">
                   <RotateCcw className="w-3.5 h-3.5" style={{ color: "#A8967E" }} />
                 </button>
-                <button onClick={save} disabled={saving} title="Save"
+                <button onClick={() => saveToSlot(activeSlot)} disabled={saving} title={`Save to Slot ${activeSlot}`}
                   className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-bold text-white" style={{ background: "#F59E0B" }}>
-                  <Save className="w-3 h-3" />{saving ? "..." : "Save"}
+                  <Save className="w-3 h-3" />{saving ? "..." : `Save ${activeSlot}`}
                 </button>
                 <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-gray-100">
                   <X className="w-4 h-4" style={{ color: "#A8967E" }} />
@@ -145,6 +210,48 @@ export default function ThemeCustomizer() {
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
+              {/* Memory Slots */}
+              <SectionBlock title="Memory Slots" open={sections.memory} onToggle={() => toggle("memory")}>
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3].map(slot => {
+                    const s = slots[slot - 1];
+                    const isActive = activeSlot === slot;
+                    return (
+                      <div key={slot} className="flex flex-col gap-1">
+                        <button
+                          onClick={() => s ? loadFromSlot(slot) : saveToSlot(slot)}
+                          className="p-2.5 rounded-lg border text-center transition-all"
+                          style={{
+                            borderColor: isActive ? "#F59E0B" : "rgba(200,180,150,0.25)",
+                            background: isActive ? "rgba(245,158,11,0.1)" : "white",
+                            boxShadow: isActive ? "0 0 0 2px rgba(245,158,11,0.3)" : "none",
+                          }}>
+                          {s ? (
+                            <div className="flex gap-0.5 justify-center mb-1">
+                              <div className="w-3 h-3 rounded-full" style={{ background: (s.config as ThemeConfig).primary || "#ccc" }} />
+                              <div className="w-3 h-3 rounded-full border border-gray-200" style={{ background: (s.config as ThemeConfig).bg || "#fff" }} />
+                              <div className="w-3 h-3 rounded-full" style={{ background: (s.config as ThemeConfig).text || "#333" }} />
+                            </div>
+                          ) : (
+                            <div className="text-lg mb-0.5" style={{ color: "#C4AA8A" }}>+</div>
+                          )}
+                          <div className="text-xs font-medium" style={{ color: s ? "#2D2620" : "#C4AA8A" }}>
+                            {s ? `Slot ${slot}` : "Empty"}
+                          </div>
+                        </button>
+                        {s && (
+                          <button onClick={() => saveToSlot(slot)} disabled={saving}
+                            className="text-xs py-1 rounded border transition-colors"
+                            style={{ borderColor: "rgba(200,180,150,0.25)", color: "#A8967E" }}>
+                            Overwrite
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </SectionBlock>
+
               <SectionBlock title="Presets" open={sections.presets} onToggle={() => toggle("presets")}>
                 <div className="grid grid-cols-3 gap-1.5">
                   {Object.entries(PRESETS).map(([key, p]) => {
@@ -172,9 +279,9 @@ export default function ThemeCustomizer() {
                 <ColorRow label="Cards" value={config.bgSecondary} onChange={v => update({ bgSecondary: v })} />
                 <ColorRow label="Text" value={config.text} onChange={v => update({ text: v })} />
                 <ColorRow label="Borders" value={config.border} onChange={v => update({ border: v })} />
-                <ColorRow label="Surface" value={config.surface} onChange={v => update({ surface: v })} />
                 <ColorRow label="Sidebar" value={config.sidebarBg} onChange={v => update({ sidebarBg: v })} />
                 <ColorRow label="Sidebar Text" value={config.sidebarText} onChange={v => update({ sidebarText: v })} />
+                <ColorRow label="Surface" value={config.surface} onChange={v => update({ surface: v })} />
               </SectionBlock>
 
               <SectionBlock title="Typography" open={sections.typography} onToggle={() => toggle("typography")}>
@@ -186,6 +293,7 @@ export default function ThemeCustomizer() {
                   </select>
                 </div>
                 <SliderRow label="Font Size" value={config.fontSize} min={13} max={18} unit="px" onChange={v => update({ fontSize: v })} />
+                <SliderRow label="Text Scale" value={config.textScale || 100} min={80} max={150} unit="%" onChange={v => update({ textScale: v })} />
                 <SliderRow label="Heading Weight" value={config.headingWeight} min={500} max={900} step={100} onChange={v => update({ headingWeight: v })} />
               </SectionBlock>
 
