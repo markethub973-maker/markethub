@@ -28,8 +28,14 @@ export async function getProjects(status?: ProjectStatus): Promise<Project[]> {
 
 export async function createProject(payload: Partial<Project>): Promise<Project> {
   const supabase = createClient();
+  // Ensure user_id is set — required by RLS policy
+  if (!payload.user_id) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error("Not authenticated");
+    payload.user_id = user.id;
+  }
   const { data, error } = await supabase.from("projects").insert(payload).select().single();
-  if (error) throw error;
+  if (error) throw new Error(error.message);
   return data;
 }
 

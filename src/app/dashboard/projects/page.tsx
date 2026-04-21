@@ -161,8 +161,9 @@ export default function ProjectsPage() {
       setForm({ ...EMPTY_FORM });
       setTab("active");
       await fetchProjects();
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("[CreateProject]", err);
+      alert(`Error: ${err instanceof Error ? err.message : "Failed to create project"}`);
     } finally {
       setSaving(false);
     }
