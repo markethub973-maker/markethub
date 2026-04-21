@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import ProjectBadge from "@/components/projects/ProjectBadge";
 
 interface HeaderProps {
   title: string;
@@ -163,6 +164,9 @@ export default function Header({ title, subtitle, rightExtra }: HeaderProps) {
             />
           </div>
         )}
+
+        {/* Active project badge */}
+        <ProjectBadge />
 
         {/* Extra right content (e.g. admin logout button) */}
         {rightExtra}
