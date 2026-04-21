@@ -676,6 +676,22 @@ export default function Sidebar() {
             <ThemeSwitcherInline />
           </div>
 
+          {/* Customize — for all users */}
+          <Link
+            href="/dashboard/customize"
+            className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+            style={pathname === "/dashboard/customize" ? {
+              backgroundColor: "rgba(245,158,11,0.15)",
+              color: "var(--color-primary)",
+              border: "1px solid rgba(245,158,11,0.3)",
+            } : { color: sidebarTextMuted }}
+            onMouseEnter={e => { e.currentTarget.style.color = sidebarTextColor; e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)"; }}
+            onMouseLeave={e => { e.currentTarget.style.color = sidebarTextMuted; e.currentTarget.style.removeProperty("background-color"); }}
+          >
+            <Palette className="w-4 h-4" />
+            Customize
+          </Link>
+
           {/* Social Accounts — for ALL users */}
           <Link
             href="/social-accounts"

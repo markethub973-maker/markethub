@@ -64,7 +64,7 @@ const TOOL_CATEGORIES: ToolCategory[] = [
     icon: <Sparkles size={14} />,
     color: "#F59E0B",
     tools: [
-      { id: "caption", name: "Caption Writer", description: "Generate platform-optimized captions with hooks and CTAs", icon: <Type size={14} />, api: "/api/ai/caption", placeholder: "Topic or post idea..." },
+      { id: "caption", name: "Caption Writer", description: "Generate platform-optimized captions with hooks and CTAs", icon: <Type size={14} />, api: "/api/captions", placeholder: "Topic or post idea..." },
       { id: "ab-titles", name: "A/B Titles", description: "Generate multiple title variants for split testing", icon: <ArrowRightLeft size={14} />, api: "/api/ai/ab-titles", placeholder: "Main title to generate variants for..." },
       { id: "hooks", name: "Hook Generator", description: "Create scroll-stopping opening lines and attention grabbers", icon: <Lightbulb size={14} />, api: "/api/ai/hooks", placeholder: "Topic or niche..." },
       { id: "hashtags", name: "Hashtag Suggester", description: "Find the best hashtag mix for maximum reach and engagement", icon: <Hash size={14} />, api: "/api/ai/hashtags", placeholder: "Post topic or caption..." },
@@ -72,7 +72,7 @@ const TOOL_CATEGORIES: ToolCategory[] = [
       { id: "image", name: "AI Image", description: "Generate custom images and graphics with text-to-image AI", icon: <Image size={14} />, api: "/api/studio/image", placeholder: "Describe the image you want..." },
       { id: "video", name: "AI Video", description: "Create short-form video content from text prompts", icon: <Video size={14} />, api: "/api/studio/video", placeholder: "Describe the video scene..." },
       { id: "audio", name: "AI Audio", description: "Generate voiceovers, music and sound effects", icon: <Music size={14} />, api: "/api/studio/audio", placeholder: "Describe the audio..." },
-      { id: "reels-script", name: "Reels Script", description: "Write complete scripts for Instagram Reels and TikTok", icon: <Clapperboard size={14} />, api: "/api/ai/reels-script", placeholder: "Reels topic or concept..." },
+      { id: "reels-script", name: "Reels Script", description: "Write complete scripts for Instagram Reels and TikTok", icon: <Clapperboard size={14} />, api: "/api/studio/reels-script", placeholder: "Reels topic or concept..." },
       { id: "content-gap", name: "Content Gap", description: "Find content opportunities your competitors are missing", icon: <SearchCheck size={14} />, api: "/api/ai/content-gap", placeholder: "Your niche or competitor URL..." },
       { id: "recycler", name: "Content Recycler", description: "Transform old top-performing content into fresh new posts", icon: <RefreshCw size={14} />, api: "/api/ai/recycler", placeholder: "Paste old post to recycle..." },
       { id: "repurpose", name: "Repurpose Content", description: "Adapt content from one platform format to another", icon: <ArrowRightLeft size={14} />, api: "/api/ai/repurpose", placeholder: "Paste content to repurpose..." },
@@ -86,7 +86,7 @@ const TOOL_CATEGORIES: ToolCategory[] = [
     tools: [
       { id: "sentiment", name: "Sentiment Analysis", description: "Analyze audience sentiment from comments and mentions", icon: <Smile size={14} />, api: "/api/ai/sentiment", placeholder: "Text or URL to analyze..." },
       { id: "engagement-predict", name: "Engagement Predictor", description: "Predict engagement score (0-100) for a post before publishing", icon: <TrendingUp size={14} />, api: "/api/ai/engagement-predict", placeholder: "Paste caption or post content..." },
-      { id: "best-time", name: "Best Time to Post", description: "Calculate optimal posting times per platform and audience", icon: <Clock size={14} />, api: "/api/ai/best-time", placeholder: "Platform and audience type..." },
+      { id: "best-time", name: "Best Time to Post", description: "Calculate optimal posting times per platform and audience", icon: <Clock size={14} />, api: "/api/analytics/best-time", placeholder: "Platform and audience type..." },
     ],
   },
   {
@@ -95,8 +95,8 @@ const TOOL_CATEGORIES: ToolCategory[] = [
     icon: <FileDown size={14} />,
     color: "#10B981",
     tools: [
-      { id: "pdf-report", name: "PDF Report", description: "Generate a branded performance PDF with charts and insights", icon: <FileText size={14} />, api: "/api/reports/pdf", placeholder: "Report title or date range..." },
-      { id: "excel-export", name: "Excel Export", description: "Export analytics data to a structured Excel spreadsheet", icon: <FileSpreadsheet size={14} />, api: "/api/reports/excel", placeholder: "Data type to export..." },
+      { id: "pdf-report", name: "PDF Report", description: "Generate a branded performance PDF with charts and insights", icon: <FileText size={14} />, api: "/api/pdf/marketing-report", placeholder: "Report title or date range..." },
+      { id: "excel-export", name: "Excel Export", description: "Export analytics data to a structured Excel spreadsheet", icon: <FileSpreadsheet size={14} />, api: "/api/reports/send", placeholder: "Data type to export..." },
       { id: "email-report", name: "Email Report", description: "Send a performance summary directly to a client email", icon: <Mail size={14} />, api: "/api/email/send-report", placeholder: "Client email address..." },
     ],
   },
@@ -106,7 +106,7 @@ const TOOL_CATEGORIES: ToolCategory[] = [
     icon: <CalendarDays size={14} />,
     color: "#8B5CF6",
     tools: [
-      { id: "campaign-strategy", name: "Campaign Strategy", description: "Generate a full campaign plan with themes, timeline and KPIs", icon: <Brain size={14} />, api: "/api/ai/content-strategy", placeholder: "Campaign goal or brief..." },
+      { id: "campaign-strategy", name: "Campaign Strategy", description: "Generate a full campaign plan with themes, timeline and KPIs", icon: <Brain size={14} />, api: "/api/ai/content-gap", placeholder: "Campaign goal or brief..." },
       { id: "content-calendar", name: "Content Calendar", description: "Auto-fill a week or month of content slots with AI ideas", icon: <CalendarDays size={14} />, api: "/api/calendar", placeholder: "Number of days and niche..." },
       { id: "brand-voice", name: "Brand Voice", description: "Define and save brand tone, vocabulary and style guidelines", icon: <Palette size={14} />, api: "/api/brand/voice", placeholder: "Describe your brand personality..." },
     ],
@@ -117,9 +117,9 @@ const TOOL_CATEGORIES: ToolCategory[] = [
     icon: <Users size={14} />,
     color: "#EC4899",
     tools: [
-      { id: "lead-finder", name: "Lead Finder", description: "Search for potential client leads matching your ideal profile", icon: <UserSearch size={14} />, api: "/api/ai/lead-finder", placeholder: "Industry and location..." },
-      { id: "lead-enrich", name: "Lead Enrichment", description: "Add contact info, company details and social profiles to leads", icon: <UserCheck size={14} />, api: "/api/ai/lead-enrich", placeholder: "Company name or domain..." },
-      { id: "competitor-scan", name: "Competitor Scan", description: "Deep-analyze a competitor social strategy and content mix", icon: <Eye size={14} />, api: "/api/ai/competitor-scan", placeholder: "Competitor name or URL..." },
+      { id: "lead-finder", name: "Lead Finder", description: "Search for potential client leads matching your ideal profile", icon: <UserSearch size={14} />, api: "/api/brain/mine-leads", placeholder: "Industry and location..." },
+      { id: "lead-enrich", name: "Lead Enrichment", description: "Add contact info, company details and social profiles to leads", icon: <UserCheck size={14} />, api: "/api/studio/lead-enrich", placeholder: "Company name or domain..." },
+      { id: "competitor-scan", name: "Competitor Scan", description: "Deep-analyze a competitor social strategy and content mix", icon: <Eye size={14} />, api: "/api/ai/content-gap", placeholder: "Competitor name or URL..." },
     ],
   },
   {
@@ -128,8 +128,8 @@ const TOOL_CATEGORIES: ToolCategory[] = [
     icon: <Shield size={14} />,
     color: "#EF4444",
     tools: [
-      { id: "abuse-scan", name: "Abuse Scan", description: "Check your accounts for suspicious activity and unauthorized access", icon: <ShieldCheck size={14} />, api: "/api/security/abuse-scan", placeholder: "Account or platform to scan..." },
-      { id: "security-check", name: "Security Audit", description: "Run a full security check on connected integrations and tokens", icon: <Shield size={14} />, api: "/api/security/check", placeholder: "Run full audit..." },
+      { id: "abuse-scan", name: "Abuse Scan", description: "Check your accounts for suspicious activity and unauthorized access", icon: <ShieldCheck size={14} />, api: "/api/cron/abuse-scan", placeholder: "Account or platform to scan..." },
+      { id: "security-check", name: "Security Audit", description: "Run a full security check on connected integrations and tokens", icon: <Shield size={14} />, api: "/api/security/health-check", placeholder: "Run full audit..." },
     ],
   },
 ];
