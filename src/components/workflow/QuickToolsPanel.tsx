@@ -148,11 +148,34 @@ function ToolRunner({ tool, onClose }: { tool: QuickTool; onClose: () => void })
     setResult(null);
     setError(null);
 
+    // Map tool ID to the correct parameter name each API expects
+    const PARAM_MAP: Record<string, (v: string) => Record<string, unknown>> = {
+      "caption":            (v) => ({ topic: v, platform: "instagram" }),
+      "ab-titles":          (v) => ({ title: v }),
+      "hashtags":           (v) => ({ caption: v, platform: "instagram" }),
+      "thumbnail":          (v) => ({ title: v }),
+      "reels-script":       (v) => ({ topic: v }),
+      "repurpose":          (v) => ({ caption: v, target_platform: "tiktok" }),
+      "recycler":           (v) => ({ input: v }),
+      "hooks":              (v) => ({ input: v }),
+      "engagement-predict": (v) => ({ input: v }),
+      "sentiment":          (v) => ({ comments: [v], platform: "instagram" }),
+      "content-gap":        (v) => ({ competitor_captions: [v], my_captions: [v] }),
+      "best-time":          (v) => ({ platform: v || "instagram" }),
+      "email-report":       (v) => ({ email: v }),
+      "brand-voice":        (v) => ({ description: v }),
+      "lead-finder":        (v) => ({ query: v }),
+      "lead-enrich":        (v) => ({ domain: v }),
+    };
+
+    const buildBody = PARAM_MAP[tool.id] || ((v: string) => ({ input: v }));
+    const body = { ...buildBody(input.trim()), quick_tool: true };
+
     try {
       const res = await fetch(tool.api, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input: input.trim(), quick_tool: true }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (!res.ok) {
