@@ -10,6 +10,7 @@ import {
   Target, Instagram, Shield, ChevronDown, Puzzle, Search,
   Database, Hash, Link2, Lock, X, ArrowRight, HardDrive, Tag, ShoppingBag,
   UserCheck, FileText, Linkedin, UserPlus, Clock, Gift, Calculator, Palette, Key, Send,
+  FolderKanban, Eye, Workflow,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useTheme } from "@/context/ThemeContext";
@@ -110,115 +111,185 @@ import {
   PLAN_ORDER, plansWithAccess, type PlanId,
 } from "@/lib/plan-features";
 
-// ── Nav structure ─────────────────────────────────────────────────────────────
-const navGroups = [
+// ── Nav structure (sectioned) ─────────────────────────────────────────────────
+interface NavGroup {
+  label: string;
+  icon: typeof PlayCircle;
+  items: { href: string; label: string; icon: typeof PlayCircle }[];
+}
+interface NavSection {
+  section: string;
+  groups: NavGroup[];
+}
+
+const navSections: NavSection[] = [
   {
-    label: "YouTube Analytics",
-    icon: PlayCircle,
-    items: [
-      { href: "/", label: "Overview", icon: LayoutDashboard },
-      { href: "/my-channel", label: "My Channel", icon: PlayCircle },
-      { href: "/videos", label: "Top Videos", icon: PlayCircle },
-      { href: "/channels", label: "Channels", icon: Users },
+    section: "PROJECT",
+    groups: [
+      {
+        label: "Projects",
+        icon: FolderKanban,
+        items: [
+          { href: "/dashboard/projects", label: "All Projects", icon: FolderKanban },
+        ],
+      },
+      {
+        label: "Overview",
+        icon: Eye,
+        items: [
+          { href: "/dashboard/overview", label: "Dashboard Overview", icon: Eye },
+        ],
+      },
+      {
+        label: "AI Workflow",
+        icon: Workflow,
+        items: [
+          { href: "/dashboard/workflow", label: "Workflow Builder", icon: Workflow },
+        ],
+      },
     ],
   },
   {
-    label: "Social Platforms",
-    icon: Users,
-    items: [
-      { href: "/instagram", label: "My Instagram", icon: Instagram },
-      { href: "/instagram-search", label: "IG Search", icon: Instagram },
-      { href: "/meta-insights", label: "Meta Insights", icon: BarChart3 },
-      { href: "/tiktok", label: "TikTok", icon: Zap },
-      { href: "/linkedin", label: "LinkedIn", icon: Linkedin },
+    section: "PHASE 1 — RESEARCH",
+    groups: [
+      {
+        label: "Discover",
+        icon: TrendingUp,
+        items: [
+          { href: "/competitors", label: "Competitors", icon: BarChart3 },
+          { href: "/ads-library", label: "Ads Library", icon: Library },
+          { href: "/trends", label: "Trends", icon: LineChart },
+          { href: "/news", label: "News", icon: Newspaper },
+          { href: "/social-listening", label: "Social Listening", icon: Bell },
+        ],
+      },
+      {
+        label: "Research & Leads",
+        icon: Target,
+        items: [
+          { href: "/research", label: "Research Hub", icon: Search },
+          { href: "/lead-finder", label: "Lead Finder", icon: Megaphone },
+          { href: "/leads", label: "Leads Database", icon: Database },
+          { href: "/ai-hub", label: "AI Hub", icon: Sparkles },
+        ],
+      },
     ],
   },
   {
-    label: "Discover",
-    icon: TrendingUp,
-    items: [
-      { href: "/competitors", label: "Competitors", icon: BarChart3 },
-      { href: "/ads-library", label: "Ads Library", icon: Library },
-      { href: "/trends", label: "Trends", icon: LineChart },
-      { href: "/news", label: "News", icon: Newspaper },
-      { href: "/social-listening", label: "Social Listening", icon: Bell },
+    section: "PHASE 2 — PLAN",
+    groups: [
+      {
+        label: "Content & Planning",
+        icon: CalendarDays,
+        items: [
+          { href: "/calendar", label: "Calendar", icon: CalendarDays },
+          { href: "/brand/voice", label: "Brand Voice", icon: Sparkles },
+          { href: "/brand/strategy", label: "Content Strategy", icon: Sparkles },
+          { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
+          { href: "/bio", label: "Link in Bio", icon: Link2 },
+          { href: "/monthly-report", label: "Performance Report", icon: BarChart3 },
+        ],
+      },
+      {
+        label: "Assets & Storage",
+        icon: HardDrive,
+        items: [
+          { href: "/assets", label: "All Assets", icon: HardDrive },
+          { href: "/studio/assets", label: "Asset Library", icon: HardDrive },
+        ],
+      },
     ],
   },
   {
-    label: "Research & Leads",
-    icon: Target,
-    items: [
-      { href: "/research", label: "Research Hub", icon: Search },
-      { href: "/lead-finder", label: "Lead Finder", icon: Megaphone },
-      { href: "/leads", label: "Leads Database", icon: Database },
-      { href: "/ai-hub", label: "AI Hub", icon: Sparkles },
+    section: "PHASE 3 — CREATE & PUBLISH",
+    groups: [
+      {
+        label: "AI Studio",
+        icon: Sparkles,
+        items: [
+          { href: "/studio/image", label: "AI Image Studio", icon: Sparkles },
+          { href: "/studio/video", label: "AI Video Studio", icon: Sparkles },
+          { href: "/studio/audio", label: "AI Audio Studio", icon: Sparkles },
+          { href: "/captions", label: "AI Captions", icon: Sparkles },
+          { href: "/studio/reels", label: "Reels Script Studio", icon: Sparkles },
+          { href: "/studio/campaign", label: "Campaign Auto-Pilot", icon: Sparkles },
+          { href: "/studio/repurpose", label: "Content Repurposer", icon: Sparkles },
+          { href: "/studio/thumbnail", label: "Thumbnail Generator", icon: Sparkles },
+          { href: "/studio/ab-winner", label: "A/B Winner Picker", icon: Sparkles },
+          { href: "/studio/recycle", label: "Post Recycler", icon: Sparkles },
+          { href: "/studio/video-caption", label: "Video \u2192 Caption", icon: Sparkles },
+          { href: "/studio/hooks", label: "Hook Library", icon: Sparkles },
+          { href: "/studio/content-gap", label: "Content Gap Analyzer", icon: Sparkles },
+          { href: "/studio/hashtag-scan", label: "Hashtag Scanner", icon: Sparkles },
+          { href: "/studio/lead-enrich", label: "Lead Enrichment", icon: Sparkles },
+          { href: "/studio/queue", label: "Publish Queue", icon: Clock },
+        ],
+      },
+      {
+        label: "Social Platforms",
+        icon: Users,
+        items: [
+          { href: "/instagram", label: "My Instagram", icon: Instagram },
+          { href: "/instagram-search", label: "IG Search", icon: Instagram },
+          { href: "/meta-insights", label: "Meta Insights", icon: BarChart3 },
+          { href: "/tiktok", label: "TikTok", icon: Zap },
+          { href: "/linkedin", label: "LinkedIn", icon: Linkedin },
+        ],
+      },
     ],
   },
   {
-    label: "Content & Planning",
-    icon: CalendarDays,
-    items: [
-      { href: "/calendar", label: "Calendar", icon: CalendarDays },
-      { href: "/captions", label: "AI Captions", icon: Sparkles },
-      { href: "/studio/image", label: "AI Image Studio", icon: Sparkles },
-      { href: "/studio/video", label: "AI Video Studio", icon: Sparkles },
-      { href: "/studio/audio", label: "AI Audio Studio", icon: Sparkles },
-      { href: "/studio/assets", label: "Asset Library", icon: HardDrive },
-      { href: "/studio/reels", label: "Reels Script Studio", icon: Sparkles },
-      { href: "/studio/queue", label: "Publish Queue", icon: Clock },
-      { href: "/studio/campaign", label: "Campaign Auto-Pilot", icon: Sparkles },
-      { href: "/studio/repurpose", label: "Content Repurposer", icon: Sparkles },
-      { href: "/studio/thumbnail", label: "Thumbnail Generator", icon: Sparkles },
-      { href: "/studio/ab-winner", label: "A/B Winner Picker", icon: Sparkles },
-      { href: "/studio/recycle", label: "Post Recycler", icon: Sparkles },
-      { href: "/studio/video-caption", label: "Video → Caption", icon: Sparkles },
-      { href: "/studio/hooks", label: "Hook Library", icon: Sparkles },
-      { href: "/studio/content-gap", label: "Content Gap Analyzer", icon: Sparkles },
-      { href: "/studio/hashtag-scan", label: "Hashtag Scanner", icon: Sparkles },
-      { href: "/studio/lead-enrich", label: "Lead Enrichment", icon: Sparkles },
-      { href: "/brand/voice", label: "Brand Voice", icon: Sparkles },
-      { href: "/brand/strategy", label: "Content Strategy", icon: Sparkles },
-      { href: "/hashtags", label: "Hashtag Manager", icon: Hash },
-      { href: "/bio", label: "Link in Bio", icon: Link2 },
-      { href: "/monthly-report", label: "Performance Report", icon: BarChart3 },
+    section: "PHASE 4 — ANALYTICS",
+    groups: [
+      {
+        label: "YouTube Analytics",
+        icon: PlayCircle,
+        items: [
+          { href: "/", label: "Overview", icon: LayoutDashboard },
+          { href: "/my-channel", label: "My Channel", icon: PlayCircle },
+          { href: "/videos", label: "Top Videos", icon: PlayCircle },
+          { href: "/channels", label: "Channels", icon: Users },
+        ],
+      },
     ],
   },
   {
-    label: "Assets & Storage",
-    icon: HardDrive,
-    items: [
-      { href: "/assets", label: "All Assets", icon: HardDrive },
-    ],
-  },
-  {
-    label: "Clients",
-    icon: UserSquare2,
-    items: [
-      { href: "/clients", label: "Multi-Account", icon: UserSquare2 },
-      { href: "/campaigns", label: "Campaigns", icon: Target },
-      { href: "/proposals", label: "Proposals", icon: FileText },
-      { href: "/influencers", label: "Influencer DB", icon: UserPlus },
-      { href: "/email-reports", label: "Activity Reports", icon: Mail },
-      { href: "/alerts", label: "Alerts", icon: Bell },
-      { href: "/affiliate", label: "Affiliate Hub", icon: Tag },
-      { href: "/trending-alerts", label: "Trending Products", icon: ShoppingBag },
-    ],
-  },
-  {
-    label: "Agency",
-    icon: UserCheck,
-    items: [
-      { href: "/team", label: "Team", icon: UserCheck },
-      { href: "/time-tracking", label: "Time Tracking", icon: Clock },
-      { href: "/roi-calculator", label: "ROI Calculator", icon: Calculator },
-      { href: "/referral", label: "Referral", icon: Gift },
-      { href: "/dashboard/white-label", label: "White-label", icon: Palette },
-      { href: "/api-keys", label: "API Keys", icon: Key },
-      { href: "/email-campaigns", label: "Email Campaigns", icon: Send },
-      { href: "/dashboard/automations", label: "Automations", icon: Zap },
+    section: "PHASE 5 — REPORT",
+    groups: [
+      {
+        label: "Clients",
+        icon: UserSquare2,
+        items: [
+          { href: "/clients", label: "Multi-Account", icon: UserSquare2 },
+          { href: "/campaigns", label: "Campaigns", icon: Target },
+          { href: "/proposals", label: "Proposals", icon: FileText },
+          { href: "/influencers", label: "Influencer DB", icon: UserPlus },
+          { href: "/email-reports", label: "Activity Reports", icon: Mail },
+          { href: "/alerts", label: "Alerts", icon: Bell },
+          { href: "/affiliate", label: "Affiliate Hub", icon: Tag },
+          { href: "/trending-alerts", label: "Trending Products", icon: ShoppingBag },
+        ],
+      },
+      {
+        label: "Agency",
+        icon: UserCheck,
+        items: [
+          { href: "/team", label: "Team", icon: UserCheck },
+          { href: "/time-tracking", label: "Time Tracking", icon: Clock },
+          { href: "/roi-calculator", label: "ROI Calculator", icon: Calculator },
+          { href: "/referral", label: "Referral", icon: Gift },
+          { href: "/dashboard/white-label", label: "White-label", icon: Palette },
+          { href: "/api-keys", label: "API Keys", icon: Key },
+          { href: "/email-campaigns", label: "Email Campaigns", icon: Send },
+          { href: "/dashboard/automations", label: "Automations", icon: Zap },
+        ],
+      },
     ],
   },
 ];
+
+// Flat list for backward-compat (used by expand/active checks)
+const navGroups = navSections.flatMap(s => s.groups);
 
 interface Profile {
   subscription_plan: string;
@@ -469,118 +540,137 @@ export default function Sidebar() {
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 px-3 py-6 space-y-1 overflow-y-auto">
-          {navGroups.map(({ label: groupLabel, icon: GroupIcon, items }) => {
-            const isExpanded = expandedGroups.has(groupLabel);
-            const hasActiveItem = items.some(item => pathname === item.href);
-            // Group is "locked" if all items are locked
-            const allLocked = items.every(item => !canAccessRoute(userPlan, item.href));
-            const someLocked = items.some(item => !canAccessRoute(userPlan, item.href));
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+          {navSections.map(({ section, groups }) => (
+            <div key={section} className="mb-1">
+              {/* Section header */}
+              <p
+                className="px-4 pt-4 pb-1 text-[8px] font-bold tracking-widest uppercase select-none"
+                style={{ color: sidebarTextColor, opacity: 0.2 }}
+              >
+                {section}
+              </p>
 
-            return (
-              <div key={groupLabel} className="mb-2">
-                <button
-                  type="button"
-                  onClick={() => toggleGroup(groupLabel)}
-                  className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
-                  style={hasActiveItem ? {
-                    backgroundColor: "rgba(245,158,11,0.15)",
-                    color: "var(--color-primary)",
-                    border: "1px solid rgba(245,158,11,0.3)",
-                  } : allLocked ? {
-                    color: "#4A3F35",
-                  } : {
-                    color: sidebarTextMuted,
-                  }}
-                  onMouseEnter={e => {
-                    if (!hasActiveItem) e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.04)";
-                  }}
-                  onMouseLeave={e => {
-                    if (!hasActiveItem) e.currentTarget.style.removeProperty("background-color");
-                  }}
-                >
-                  <GroupIcon className="w-4 h-4" />
-                  <span className="flex-1 text-left">{groupLabel}</span>
-                  {someLocked && !allLocked && (
-                    <Lock className="w-3 h-3 opacity-40" />
-                  )}
-                  <ChevronDown
-                    className="w-4 h-4 transition-transform"
-                    style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
-                  />
-                </button>
+              {groups.map(({ label: groupLabel, icon: GroupIcon, items }) => {
+                const isExpanded = expandedGroups.has(groupLabel);
+                const hasActiveItem = items.some(item => pathname === item.href);
+                const allLocked = items.every(item => !canAccessRoute(userPlan, item.href));
+                const someLocked = items.some(item => !canAccessRoute(userPlan, item.href));
 
-                {isExpanded && (
-                  <div className="mt-1 ml-2 space-y-1 border-l pl-2" style={{ borderColor: "rgba(120,97,78,0.3)" }}>
-                    {items.map(({ href, label, icon: Icon }) => {
-                      const active = pathname === href;
-                      const locked = !canAccessRoute(userPlan, href);
-                      const gate = getRouteGate(href);
+                return (
+                  <div key={groupLabel} className="mb-1">
+                    <button
+                      type="button"
+                      onClick={() => toggleGroup(groupLabel)}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
+                      style={hasActiveItem ? {
+                        backgroundColor: "rgba(245,158,11,0.15)",
+                        color: "var(--color-primary)",
+                        border: "1px solid rgba(245,158,11,0.3)",
+                      } : allLocked ? {
+                        color: "#4A3F35",
+                      } : {
+                        color: sidebarTextMuted,
+                      }}
+                      onMouseEnter={e => {
+                        if (!hasActiveItem) e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.04)";
+                      }}
+                      onMouseLeave={e => {
+                        if (!hasActiveItem) e.currentTarget.style.removeProperty("background-color");
+                      }}
+                    >
+                      <GroupIcon className="w-4 h-4" />
+                      <span className="flex-1 text-left">{groupLabel}</span>
+                      {someLocked && !allLocked && (
+                        <Lock className="w-3 h-3 opacity-40" />
+                      )}
+                      <ChevronDown
+                        className="w-4 h-4 transition-transform"
+                        style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)" }}
+                      />
+                    </button>
 
-                      if (locked) {
-                        return (
-                          <button
-                            type="button"
-                            key={href}
-                            onClick={e => { e.preventDefault(); setLockedModal(href); }}
-                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all"
-                            style={{ color: "#3D3028", cursor: "pointer" }}
-                            title={`Requires ${gate ? PLAN_LABELS[gate.minPlan] : "upgrade"} plan`}
-                            onMouseEnter={e => {
-                              e.currentTarget.style.color = "#6B5A4E";
-                              e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.03)";
-                            }}
-                            onMouseLeave={e => {
-                              e.currentTarget.style.color = "#3D3028";
-                              e.currentTarget.style.removeProperty("background-color");
-                            }}
-                          >
-                            <Icon className="w-4 h-4" />
-                            <span className="flex-1 text-left">{label}</span>
-                            <Lock className="w-3 h-3 flex-shrink-0" style={{ color: "var(--color-primary)", opacity: 0.5 }} />
-                          </button>
-                        );
-                      }
+                    {isExpanded && (
+                      <div className="mt-1 ml-2 space-y-1 border-l pl-2" style={{ borderColor: "rgba(120,97,78,0.3)" }}>
+                        {items.map(({ href, label, icon: Icon }) => {
+                          const active = pathname === href;
+                          const locked = !canAccessRoute(userPlan, href);
+                          const gate = getRouteGate(href);
 
-                      return (
-                        <Link
-                          key={href}
-                          href={href}
-                          onClick={e => handleNavClick(href, e)}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all"
-                          style={active ? {
-                            backgroundColor: "rgba(245,158,11,0.2)",
-                            color: "var(--color-primary)",
-                          } : {
-                            color: sidebarTextMuted,
-                          }}
-                          onMouseEnter={e => {
-                            if (!active) {
-                              e.currentTarget.style.color = sidebarTextColor;
-                              e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
-                            }
-                          }}
-                          onMouseLeave={e => {
-                            if (!active) {
-                              e.currentTarget.style.color = sidebarTextMuted;
-                              e.currentTarget.style.removeProperty("background-color");
-                            }
-                          }}
-                        >
-                          <Icon className="w-4 h-4" />
-                          {label}
-                        </Link>
-                      );
-                    })}
+                          if (locked) {
+                            return (
+                              <button
+                                type="button"
+                                key={href}
+                                onClick={e => { e.preventDefault(); setLockedModal(href); }}
+                                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all"
+                                style={{ color: "#3D3028", cursor: "pointer" }}
+                                title={`Requires ${gate ? PLAN_LABELS[gate.minPlan] : "upgrade"} plan`}
+                                onMouseEnter={e => {
+                                  e.currentTarget.style.color = "#6B5A4E";
+                                  e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.03)";
+                                }}
+                                onMouseLeave={e => {
+                                  e.currentTarget.style.color = "#3D3028";
+                                  e.currentTarget.style.removeProperty("background-color");
+                                }}
+                              >
+                                <Icon className="w-4 h-4" />
+                                <span className="flex-1 text-left">{label}</span>
+                                <Lock className="w-3 h-3 flex-shrink-0" style={{ color: "var(--color-primary)", opacity: 0.5 }} />
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <Link
+                              key={href}
+                              href={href}
+                              onClick={e => handleNavClick(href, e)}
+                              className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all"
+                              style={active ? {
+                                backgroundColor: "rgba(245,158,11,0.2)",
+                                color: "var(--color-primary)",
+                              } : {
+                                color: sidebarTextMuted,
+                              }}
+                              onMouseEnter={e => {
+                                if (!active) {
+                                  e.currentTarget.style.color = sidebarTextColor;
+                                  e.currentTarget.style.backgroundColor = "rgba(255,248,240,0.05)";
+                                }
+                              }}
+                              onMouseLeave={e => {
+                                if (!active) {
+                                  e.currentTarget.style.color = sidebarTextMuted;
+                                  e.currentTarget.style.removeProperty("background-color");
+                                }
+                              }}
+                            >
+                              <Icon className="w-4 h-4" />
+                              {label}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         {/* Bottom */}
         <div className="px-3 py-4" style={{ borderTop: "1px solid rgba(245,215,160,0.1)" }}>
+          {/* SYSTEM section header */}
+          <p
+            className="px-4 pb-1 text-[8px] font-bold tracking-widest uppercase select-none"
+            style={{ color: sidebarTextColor, opacity: 0.2 }}
+          >
+            SYSTEM
+          </p>
+
           {/* Theme — for all users */}
           <div className="px-1 py-1">
             <ThemeSwitcherInline />
