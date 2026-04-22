@@ -3,7 +3,6 @@ import Script from "next/script";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import AuthGuard from "@/components/auth/AuthGuard";
-import AskConsultant from "@/components/ui/AskConsultant";
 import CookieConsent from "@/components/ui/CookieConsent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { UserThemeProvider } from "@/components/providers/ThemeProvider";
@@ -191,8 +190,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <AuthGuard>{children}</AuthGuard>
             {/* Theme Customizer — floating panel, opens on any page */}
             <ThemeCustomizerPanel />
-            {/* M9 Sprint 1 — floating AI consultant (bottom-left) */}
-            <AskConsultant />
             {/* GDPR cookie consent banner — gates analytics loading */}
             <CookieConsent />
           </UserThemeProvider>

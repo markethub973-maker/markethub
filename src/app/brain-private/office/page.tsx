@@ -15,9 +15,9 @@ import {
   Target, Users, TrendingUp, Mail, ArrowLeft, Send, Loader2,
   Sparkles, Command, BookOpen,
 } from "lucide-react";
-import type { AlexAgent } from "@/lib/alex-knowledge";
+interface AgentDef { id: string; name: string; title: string; discipline: string; icon: string; example_tasks: string[]; }
 
-const AGENTS_SEED: Array<Pick<AlexAgent, "id" | "name" | "title" | "discipline" | "icon" | "example_tasks">> = [
+const AGENTS_SEED: Array<AgentDef> = [
   { id: "cmo",        name: "Vera",   title: "Director Marketing",      discipline: "Poziționare & brand",  icon: "🎯", example_tasks: ["Scrie o declarație de poziționare", "Alege segmentul-cap de pod", "Rezumă categoria într-o propoziție"] },
   { id: "content",    name: "Marcus", title: "Director Conținut",       discipline: "Articole lungi, SEO",  icon: "✍️", example_tasks: ["Schițează un articol-pilon", "30 de hook-uri LinkedIn", "Rescrie folosind PAS"] },
   { id: "sales",      name: "Sofia",  title: "Director Vânzări",        discipline: "Pipeline, obiecții",   icon: "🤝", example_tasks: ["Ce fac cu răspunsul ăsta?", "Cum răspund la 'e prea scump'", "Scorul MEDDIC pentru acest deal"] },
