@@ -8,9 +8,6 @@
  *   - Chat → /api/onboarding/chat (quick product Q&A, tour controls)
  *   - Tour → full app tour / page guide via TourOverlay
  *   - Report → persistent support ticket via /api/support/tickets
- *
- * Bottom-LEFT widget (AskConsultant) stays separate — strategic advice,
- * different purpose.
  */
 
 import { useState, useEffect, useRef } from "react";

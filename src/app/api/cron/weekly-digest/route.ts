@@ -2,9 +2,6 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { Resend } from "resend";
 import Anthropic from "@anthropic-ai/sdk";
-import { isAlexPaused, pausedResponse } from "@/lib/killSwitch";
-
-
 const FROM = "MarketHub Pro <noreply@markethubpromo.com>";
 const CRON_SECRET = process.env.CRON_SECRET!;
 
@@ -172,7 +169,6 @@ function fallbackDigest(weekLabel: string): DigestResult {
 }
 
 export async function GET(req: Request) {
-  if (isAlexPaused()) return pausedResponse();
   // Cron: Bearer token. Manual admin trigger: admin session cookie.
   const authHeader = req.headers.get("authorization");
   const fromCron = CRON_SECRET && authHeader === `Bearer ${CRON_SECRET}`;

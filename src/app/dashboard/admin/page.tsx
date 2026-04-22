@@ -35,7 +35,6 @@ import AdminSecurityAgents from "@/components/admin/AdminSecurityAgents";
 import Admin2FAPanel from "@/components/admin/Admin2FAPanel";
 import AdminEmailPreview from "@/components/admin/AdminEmailPreview";
 import AdminAiUsage from "@/components/admin/AdminAiUsage";
-import BrainStatusWidget from "@/components/admin/BrainStatusWidget";
 import AuditLogViewer from "@/components/admin/AuditLogViewer";
 import { ModuleBoundary } from "@/components/ModuleBoundary";
 import GlassCard from "@/components/ui/GlassCard";
@@ -55,7 +54,7 @@ type PanelId =
   | "audit" | "health" | "tests" | "plantest" | "restore"
   | "persona" | "progress" | "testaccounts" | "business" | "security"
   | "support" | "secagents" | "twofa" | "emailpreview" | "aiusage"
-  | "brainstatus" | "auditviewer";
+  | "auditviewer";
 
 interface PanelDef {
   id: PanelId;
@@ -96,8 +95,7 @@ const PANELS: PanelDef[] = [
   { id: "tests",       label: "Integration Tests",icon: Bug,         color: "var(--color-primary)", bg: "rgba(245,158,11,0.1)", group: "Security & QA" },
   { id: "plantest",    label: "Plan Test Agent", icon: FlaskConical, color: "#8B5CF6", bg: "rgba(139,92,246,0.1)", group: "Security & QA" },
   { id: "restore",     label: "Restore / Backup",icon: RefreshCw,    color: "#EF4444", bg: "rgba(239,68,68,0.1)",  group: "Security & QA" },
-  // Brain & Intelligence
-  { id: "brainstatus", label: "Brain Status",     icon: Cpu,          color: "#8B5CF6", bg: "rgba(139,92,246,0.12)", group: "Brain & Intelligence" },
+  // Audit & Intelligence
   { id: "auditviewer", label: "Audit Viewer",     icon: BookOpen,     color: "#0EA5E9", bg: "rgba(14,165,233,0.1)",  group: "Brain & Intelligence" },
   // Marketing Tools
   { id: "persona",     label: "Buyer Persona",   icon: Users,        color: "#EC4899", bg: "rgba(236,72,153,0.1)", group: "Marketing Tools" },
@@ -128,7 +126,6 @@ const PANEL_CONTENT: Record<PanelId, React.ReactNode> = {
   tests:        <ModuleBoundary name="Integration Tests" minimal><AdminTestRunner /></ModuleBoundary>,
   plantest:     <ModuleBoundary name="Plan Test Agent" minimal><AdminPlanTestAgent /></ModuleBoundary>,
   restore:      <ModuleBoundary name="Restore" minimal><AdminRestorePanel /></ModuleBoundary>,
-  brainstatus:  <ModuleBoundary name="Brain Status" minimal><BrainStatusWidget /></ModuleBoundary>,
   auditviewer:  <ModuleBoundary name="Audit Viewer" minimal><AuditLogViewer /></ModuleBoundary>,
   persona:      <ModuleBoundary name="Buyer Persona" minimal><AdminBuyerPersona /></ModuleBoundary>,
   progress:     <ModuleBoundary name="Feature Progress" minimal><AdminFeatureProgress /></ModuleBoundary>,
